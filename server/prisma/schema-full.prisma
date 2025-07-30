@@ -1,0 +1,248 @@
+// This is your Prisma schema file,
+// learn more about it in the docs: https://pris.ly/d/prisma-schema
+
+generator client {
+  provider = "prisma-client-js"
+  output   = "./generated"
+}
+
+datasource db {
+  provider = "postgresql"
+  url      = env("DATABASE_URL")
+}
+
+// Пользователи
+model User {
+  id           String   @id @default(cuid())
+  email        String   @unique
+  password     String
+  name         String
+  language     Language @default(RU)
+  country      String
+  role         Role     @default(STUDENT)
+  registeredAt DateTime @default(now())
+  
+  // Дополнительная информация
+  university   String?
+  faculty      String?
+  year         String?
+  plan         Plan     @default(FREEMIUM)
+  phone        String?
+  gender       Gender?
+  
+  // Связи
+  reminders    Reminder[]
+  chatMessages ChatMessage[]
+  profile      Profile?
+  supportTickets SupportTicket[]
+  
+  @@map("users")
+}
+
+// Профили пользователей
+model Profile {
+  id          String   @id @default(cuid())
+  userId      String   @unique
+  avatar      String?
+  bio         String?
+  interests   String[]
+  socialLinks Json?
+  createdAt   DateTime @default(now())
+  updatedAt   DateTime @updatedAt
+  
+  user        User     @relation(fields: [userId], references: [id], onDelete: Cascade)
+  
+  @@map("profiles")
+}
+
+// Напоминания
+model Reminder {
+  id          String           @id @default(cuid())
+  userId      String
+  title       String
+  description String?
+  dueDate     DateTime
+  priority    ReminderPriority @default(MEDIUM)
+  status      ReminderStatus   @default(PENDING)
+  category    ReminderCategory
+  createdAt   DateTime         @default(now())
+  updatedAt   DateTime         @updatedAt
+  
+  user        User             @relation(fields: [userId], references: [id], onDelete: Cascade)
+  
+  @@map("reminders")
+}
+
+// Образовательные гайды
+model Guide {
+  id          String      @id @default(cuid())
+  title       String
+  description String
+  content     String
+  category    GuideCategory
+  tags        String[]
+  difficulty  Difficulty  @default(BEGINNER)
+  language    Language    @default(RU)
+  isPublished Boolean     @default(false)
+  createdAt   DateTime    @default(now())
+  updatedAt   DateTime    @updatedAt
+  
+  // Статистика
+  views       Int         @default(0)
+  likes       Int         @default(0)
+  
+  @@map("guides")
+}
+
+// Сообщения чата с AI
+model ChatMessage {
+  id        String   @id @default(cuid())
+  userId    String
+  content   String
+  isUser    Boolean  // true - сообщение пользователя, false - ответ AI
+  timestamp DateTime @default(now())
+  
+  user      User     @relation(fields: [userId], references: [id], onDelete: Cascade)
+  
+  @@map("chat_messages")
+}
+
+// Обращения в поддержку
+model SupportTicket {
+  id          String            @id @default(cuid())
+  userId      String?
+  name        String
+  email       String
+  subject     String
+  message     String
+  status      SupportStatus     @default(OPEN)
+  priority    SupportPriority   @default(MEDIUM)
+  category    SupportCategory   @default(GENERAL)
+  createdAt   DateTime          @default(now())
+  updatedAt   DateTime          @updatedAt
+  
+  // Связи
+  user        User?             @relation(fields: [userId], references: [id], onDelete: SetNull)
+  responses   SupportResponse[]
+  
+  @@map("support_tickets")
+}
+
+// Ответы на обращения в поддержку
+model SupportResponse {
+  id          String        @id @default(cuid())
+  ticketId    String
+  adminId     String?
+  content     String
+  isAdmin     Boolean       @default(false)
+  createdAt   DateTime      @default(now())
+  
+  // Связи
+  ticket      SupportTicket @relation(fields: [ticketId], references: [id], onDelete: Cascade)
+  admin       Admin?        @relation(fields: [adminId], references: [id], onDelete: SetNull)
+  
+  @@map("support_responses")
+}
+
+// Администраторы
+model Admin {
+  id       String @id @default(cuid())
+  email    String @unique
+  password String
+  name     String
+  role     AdminRole @default(ADMIN)
+  createdAt DateTime @default(now())
+  
+  // Связи
+  supportResponses SupportResponse[]
+  
+  @@map("admins")
+}
+
+// Enums
+enum Language {
+  RU
+  EN
+  FR
+  AR
+}
+
+enum Role {
+  STUDENT
+  ADMIN
+  GUEST
+}
+
+enum Plan {
+  FREEMIUM
+  PREMIUM
+}
+
+enum Gender {
+  MALE
+  FEMALE
+}
+
+enum ReminderPriority {
+  LOW
+  MEDIUM
+  HIGH
+  URGENT
+}
+
+enum ReminderStatus {
+  PENDING
+  COMPLETED
+  CANCELLED
+}
+
+enum ReminderCategory {
+  EDUCATION
+  LIFE
+  DOCUMENTS
+  HEALTH
+  OTHER
+}
+
+enum GuideCategory {
+  EDUCATION
+  LIFE
+  DOCUMENTS
+  CULTURE
+  LEGAL
+  OTHER
+}
+
+enum Difficulty {
+  BEGINNER
+  INTERMEDIATE
+  ADVANCED
+}
+
+enum AdminRole {
+  ADMIN
+  SUPER_ADMIN
+}
+
+enum SupportStatus {
+  OPEN
+  IN_PROGRESS
+  RESOLVED
+  CLOSED
+}
+
+enum SupportPriority {
+  LOW
+  MEDIUM
+  HIGH
+  URGENT
+}
+
+enum SupportCategory {
+  GENERAL
+  TECHNICAL
+  BILLING
+  FEATURE_REQUEST
+  BUG_REPORT
+  ACCOUNT
+}
