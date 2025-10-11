@@ -45,7 +45,7 @@ export const organizationStructuredData = {
   description:
     "Платформа для помощи иностранным студентам в адаптации к жизни и учёбе в России",
   url: "https://adapted-russia.com",
-  logo: "https://adapted-russia.com/logo.png",
+  logo: "https://adapted-russia.com/favicon.svg",
   sameAs: [
     "https://twitter.com/adaptedrussia",
     "https://facebook.com/adaptedrussia",

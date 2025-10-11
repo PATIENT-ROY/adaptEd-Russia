@@ -336,3 +336,62 @@ html {
 * {
     transition: all 0.3s ease;
 }
+
+
+/* Footer animations */
+
+@keyframes footerFadeInUp {
+    from {
+        opacity: 0;
+        transform: translateY(30px);
+    }
+    to {
+        opacity: 1;
+        transform: translateY(0);
+    }
+}
+
+@keyframes footerSlideIn {
+    from {
+        opacity: 0;
+        transform: translateX(-20px);
+    }
+    to {
+        opacity: 1;
+        transform: translateX(0);
+    }
+}
+
+@keyframes footerIconPulse {
+    0%,
+    100% {
+        transform: scale(1);
+    }
+    50% {
+        transform: scale(1.1);
+    }
+}
+
+.footer-animate {
+    animation: footerFadeInUp 0.8s ease-out;
+}
+
+.footer-link-animate {
+    animation: footerSlideIn 0.6s ease-out;
+}
+
+.footer-icon-animate:hover {
+    animation: footerIconPulse 0.6s ease-in-out;
+}
+
+
+/* Footer responsive improvements */
+
+@media (max-width: 768px) {
+    .footer-animate {
+        animation: footerFadeInUp 0.6s ease-out;
+    }
+    .footer-link-animate {
+        animation: footerSlideIn 0.4s ease-out;
+    }
+}

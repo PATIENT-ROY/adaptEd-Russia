@@ -25,15 +25,20 @@ import {
   ChevronDown,
   LogOut,
   BookOpen,
-  MapPin,
   Phone,
   GraduationCap,
   Home,
+  CreditCard,
+  Receipt,
+  Download,
+  Eye,
+  Clock,
 } from "lucide-react";
 import Link from "next/link";
 import { useState } from "react";
 import { useAuth } from "@/contexts/AuthContext";
 import { ProfileEditForm } from "@/components/ui/profile-edit-form";
+import { Plan } from "@/types";
 
 // Расширенный тип для пользователя с дополнительными полями
 interface ExtendedUser {
@@ -47,17 +52,9 @@ interface ExtendedUser {
   year?: string;
   plan?: string;
   phone?: string;
-  country?: string;
   gender?: string;
-  registeredAt?: string;
+  city?: string;
 }
-
-// Моковые данные для демонстрации (дополнительная информация)
-const additionalUserInfo = {
-  plan: "freemium" as "freemium" | "premium",
-  notificationsUsed: 1,
-  notificationsLimit: 2,
-};
 
 const stats = [
   {
@@ -66,14 +63,6 @@ const stats = [
     icon: FileText,
     color: "from-blue-500 to-blue-600",
     change: "+3",
-    period: "за месяц",
-  },
-  {
-    title: "Дней в России",
-    value: "45",
-    icon: Calendar,
-    color: "from-green-500 to-green-600",
-    change: "+15",
     period: "за месяц",
   },
   {
@@ -124,6 +113,55 @@ const recentActivity = [
     color: "text-green-600",
   },
 ];
+
+// Функция для получения истории платежей на основе плана пользователя
+const getBillingHistory = (userPlan: Plan) => {
+  if (userPlan === Plan.PREMIUM) {
+    // Для Premium пользователей показываем реальные платежи
+    return [
+      {
+        id: "inv_001",
+        date: "2024-01-15",
+        amount: 2990,
+        currency: "RUB",
+        status: "paid",
+        description: "Premium подписка - 1 месяц",
+        invoiceNumber: "INV-2024-001",
+      },
+      {
+        id: "inv_002",
+        date: "2024-01-01",
+        amount: 2990,
+        currency: "RUB",
+        status: "paid",
+        description: "Premium подписка - 1 месяц",
+        invoiceNumber: "INV-2024-002",
+      },
+      {
+        id: "inv_003",
+        date: "2023-12-15",
+        amount: 2990,
+        currency: "RUB",
+        status: "paid",
+        description: "Premium подписка - 1 месяц",
+        invoiceNumber: "INV-2023-003",
+      },
+    ];
+  } else {
+    // Для Freemium пользователей показываем только бесплатные планы
+    return [
+      {
+        id: "inv_001",
+        date: "2024-01-01",
+        amount: 0,
+        currency: "RUB",
+        status: "free",
+        description: "Freemium план",
+        invoiceNumber: "INV-2024-001",
+      },
+    ];
+  }
+};
 
 const quickActions = [
   {
@@ -190,6 +228,7 @@ const achievements = [
 export default function ProfilePage() {
   const [isSettingsOpen, setIsSettingsOpen] = useState(false);
   const [isEditFormVisible, setIsEditFormVisible] = useState(false);
+  const [isBillingHistoryOpen, setIsBillingHistoryOpen] = useState(false);
   const { user, logout, updateProfile } = useAuth();
 
   // Если пользователь не загружен, показываем загрузку
@@ -209,14 +248,7 @@ export default function ProfilePage() {
   // Получаем первую букву имени для аватара
   const avatar = user.name.charAt(0).toUpperCase();
 
-  // Получаем количество дней в России (примерно)
   const extendedUser = user as ExtendedUser;
-  const joinDate = extendedUser.registeredAt
-    ? new Date(extendedUser.registeredAt)
-    : new Date();
-  const daysInRussia = Math.floor(
-    (new Date().getTime() - joinDate.getTime()) / (1000 * 60 * 60 * 24)
-  );
 
   return (
     <Layout>
@@ -250,6 +282,11 @@ export default function ProfilePage() {
                 </h1>
                 <p className="text-sm sm:text-base md:text-lg lg:text-xl text-white/80 mb-3 sm:mb-4">
                   {extendedUser.university || "Университет не указан"}
+                  {extendedUser.city && (
+                    <span className="ml-2 text-white/60">
+                      • {extendedUser.city}
+                    </span>
+                  )}
                 </p>
                 <div className="flex flex-wrap justify-center lg:justify-start gap-2 sm:gap-3 md:gap-4 text-xs sm:text-sm md:text-base">
                   <span className="inline-flex items-center px-2 sm:px-3 md:px-4 py-1 md:py-2 rounded-full bg-white/20 backdrop-blur-sm">
@@ -260,14 +297,13 @@ export default function ProfilePage() {
                     <Calendar className="mr-1 sm:mr-2 h-3 w-3 sm:h-4 sm:w-4 md:h-5 md:w-5" />
                     {extendedUser.year || "Курс не указан"}
                   </span>
-                  {(extendedUser.plan || additionalUserInfo.plan) ===
-                  "premium" ? (
+                  {user.plan === Plan.PREMIUM ? (
                     <span className="inline-flex items-center px-2 sm:px-3 md:px-4 py-1 md:py-2 rounded-full bg-gradient-to-r from-yellow-400 to-orange-500">
                       <Crown className="mr-1 sm:mr-2 h-3 w-3 sm:h-4 sm:w-4 md:h-5 md:w-5" />
                       Премиум
                     </span>
                   ) : (
-                    <span className="inline-flex items-center px-2 sm:px-3 md:px-4 py-1 md:py-2 rounded-full bg-white/20 backdrop-blur-sm">
+                    <span className="inline-flex items-center px-2 sm:px-3 md:px-4 py-1 md:py-2 rounded-full bg-red-500 text-white border-2 border-red-600">
                       <Zap className="mr-1 sm:mr-2 h-3 w-3 sm:h-4 sm:w-4 md:h-5 md:w-5" />
                       Freemium
                     </span>
@@ -277,13 +313,8 @@ export default function ProfilePage() {
 
               {/* Quick Stats */}
               <div className="w-full lg:w-auto grid grid-cols-2 lg:grid-cols-4 gap-2 sm:gap-3 md:gap-4 max-w-md lg:max-w-none">
-                {stats.map((stat, index) => {
+                {stats.map((stat) => {
                   const Icon = stat.icon;
-                  // Обновляем значение "Дней в России" на реальное
-                  const displayValue =
-                    stat.title === "Дней в России"
-                      ? daysInRussia.toString()
-                      : stat.value;
                   return (
                     <div
                       key={stat.title}
@@ -295,7 +326,7 @@ export default function ProfilePage() {
                         <Icon className="h-4 w-4 sm:h-5 sm:w-5 md:h-6 md:w-6 text-white" />
                       </div>
                       <p className="text-lg sm:text-xl md:text-2xl font-bold text-white">
-                        {displayValue}
+                        {stat.value}
                       </p>
                       <p className="text-xs sm:text-sm md:text-base text-white/80 leading-tight">
                         {stat.title}
@@ -352,6 +383,167 @@ export default function ProfilePage() {
             </div>
           </div>
 
+          {/* Billing & Invoices Section */}
+          <div
+            className="animate-fade-in-up"
+            style={{ animationDelay: "0.3s" }}
+          >
+            <div className="flex items-center justify-between mb-4 sm:mb-6">
+              <h2 className="text-xl sm:text-2xl font-bold text-slate-900">
+                История платежей
+              </h2>
+              <div className="flex items-center space-x-3">
+                <Button
+                  variant="outline"
+                  className="flex items-center space-x-2 hover:bg-blue-50 hover:border-blue-300 hover:text-blue-700 transition-all duration-300"
+                  onClick={() => setIsBillingHistoryOpen(!isBillingHistoryOpen)}
+                >
+                  <Receipt className="h-4 w-4" />
+                  <span>{isBillingHistoryOpen ? "Скрыть" : "Показать"}</span>
+                  <ChevronDown
+                    className={`h-4 w-4 transition-transform duration-300 ${
+                      isBillingHistoryOpen ? "rotate-180" : ""
+                    }`}
+                  />
+                </Button>
+                <Link href="/payment/test">
+                  <Button
+                    variant="outline"
+                    className="flex items-center space-x-2 hover:bg-green-50 hover:border-green-300 hover:text-green-700 transition-all duration-300"
+                  >
+                    <CreditCard className="h-4 w-4" />
+                    <span>Управление подпиской</span>
+                  </Button>
+                </Link>
+              </div>
+            </div>
+
+            {isBillingHistoryOpen && (
+              <Card className="border-0 shadow-xl animate-fade-in-up">
+                <CardHeader>
+                  <CardTitle className="flex items-center space-x-3">
+                    <div className="w-10 h-10 rounded-2xl bg-gradient-to-br from-green-500 to-emerald-600 flex items-center justify-center shadow-lg">
+                      <Receipt className="h-5 w-5 text-white" />
+                    </div>
+                    <span>Счета и платежи</span>
+                  </CardTitle>
+                </CardHeader>
+                <CardContent>
+                  <div className="space-y-4">
+                    {getBillingHistory(user.plan).map((invoice, index) => (
+                      <div
+                        key={invoice.id}
+                        className="flex items-center justify-between p-4 rounded-xl bg-slate-50 hover:bg-slate-100 transition-all duration-300 group"
+                        style={{ animationDelay: `${index * 0.1}s` }}
+                      >
+                        <div className="flex items-center space-x-4">
+                          <div
+                            className={`w-12 h-12 rounded-xl flex items-center justify-center ${
+                              invoice.status === "paid"
+                                ? "bg-green-100 text-green-600"
+                                : invoice.status === "free"
+                                ? "bg-blue-100 text-blue-600"
+                                : "bg-yellow-100 text-yellow-600"
+                            }`}
+                          >
+                            {invoice.status === "paid" ? (
+                              <CheckCircle className="h-6 w-6" />
+                            ) : invoice.status === "free" ? (
+                              <Crown className="h-6 w-6" />
+                            ) : (
+                              <Clock className="h-6 w-6" />
+                            )}
+                          </div>
+                          <div>
+                            <p className="font-semibold text-slate-900">
+                              {invoice.description}
+                            </p>
+                            <div className="flex items-center space-x-4 text-sm text-slate-600">
+                              <span>{invoice.invoiceNumber}</span>
+                              <span>•</span>
+                              <span>
+                                {new Date(invoice.date).toLocaleDateString(
+                                  "ru-RU"
+                                )}
+                              </span>
+                            </div>
+                          </div>
+                        </div>
+
+                        <div className="flex items-center space-x-3">
+                          <div className="text-right">
+                            <p
+                              className={`font-bold text-lg ${
+                                invoice.status === "paid"
+                                  ? "text-green-600"
+                                  : invoice.status === "free"
+                                  ? "text-blue-600"
+                                  : "text-yellow-600"
+                              }`}
+                            >
+                              {invoice.status === "free"
+                                ? "Бесплатно"
+                                : `${invoice.amount} ₽`}
+                            </p>
+                            <p className="text-sm text-slate-500 capitalize">
+                              {invoice.status === "paid"
+                                ? "Оплачено"
+                                : invoice.status === "free"
+                                ? "Активен"
+                                : "В ожидании"}
+                            </p>
+                          </div>
+
+                          <div className="flex space-x-2">
+                            <Button
+                              variant="ghost"
+                              size="sm"
+                              className="h-8 w-8 p-0 hover:bg-slate-200"
+                              onClick={() =>
+                                alert(`Просмотр счета ${invoice.invoiceNumber}`)
+                              }
+                            >
+                              <Eye className="h-4 w-4" />
+                            </Button>
+                            {invoice.status === "paid" && (
+                              <Button
+                                variant="ghost"
+                                size="sm"
+                                className="h-8 w-8 p-0 hover:bg-slate-200"
+                                onClick={() =>
+                                  alert(
+                                    `Скачивание счета ${invoice.invoiceNumber}`
+                                  )
+                                }
+                              >
+                                <Download className="h-4 w-4" />
+                              </Button>
+                            )}
+                          </div>
+                        </div>
+                      </div>
+                    ))}
+                  </div>
+
+                  <div className="mt-6 pt-4 border-t border-slate-200">
+                    <div className="flex items-center justify-between text-sm text-slate-600">
+                      <span>
+                        Всего счетов: {getBillingHistory(user.plan).length}
+                      </span>
+                      <span>
+                        Общая сумма:{" "}
+                        {getBillingHistory(user.plan)
+                          .filter((inv) => inv.status === "paid")
+                          .reduce((sum, inv) => sum + inv.amount, 0)}{" "}
+                        ₽
+                      </span>
+                    </div>
+                  </div>
+                </CardContent>
+              </Card>
+            )}
+          </div>
+
           {/* Main Content Grid */}
           <div className="grid grid-cols-1 lg:grid-cols-3 gap-6 sm:gap-8">
             {/* Left Column - Personal Info (Desktop only) */}
@@ -395,15 +587,7 @@ export default function ProfilePage() {
                         </p>
                       </div>
                     </div>
-                    <div className="flex items-center space-x-3 p-3 rounded-xl bg-slate-50">
-                      <MapPin className="h-5 w-5 text-slate-500" />
-                      <div>
-                        <p className="text-sm text-slate-500">Страна</p>
-                        <p className="font-medium text-slate-900">
-                          {extendedUser.country || "Страна не указана"}
-                        </p>
-                      </div>
-                    </div>
+
                     <div className="flex items-center space-x-3 p-3 rounded-xl bg-slate-50">
                       <Languages className="h-5 w-5 text-slate-500" />
                       <div>
@@ -431,21 +615,6 @@ export default function ProfilePage() {
                             : extendedUser.gender === "female"
                             ? "Женский"
                             : "Не указан"}
-                        </p>
-                      </div>
-                    </div>
-                    <div className="flex items-center space-x-3 p-3 rounded-xl bg-slate-50">
-                      <Calendar className="h-5 w-5 text-slate-500" />
-                      <div>
-                        <p className="text-sm text-slate-500">
-                          Дата регистрации
-                        </p>
-                        <p className="font-medium text-slate-900">
-                          {extendedUser.registeredAt
-                            ? new Date(
-                                extendedUser.registeredAt
-                              ).toLocaleDateString("ru-RU")
-                            : "Не указана"}
                         </p>
                       </div>
                     </div>

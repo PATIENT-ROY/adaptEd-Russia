@@ -31,9 +31,12 @@ const navigationItems = [
   { href: "/dashboard", label: "Главная", icon: Home },
   { href: "/education-guide", label: "Учёба", icon: BookOpen },
   { href: "/life-guide", label: "Быт", icon: HomeIcon },
+  { href: "/support", label: "Поддержка", icon: HelpCircle },
+];
+
+const authenticatedNavigationItems = [
   { href: "/reminders", label: "Напоминания", icon: Bell },
   { href: "/ai-helper", label: "AI Помощник", icon: MessageSquare },
-  { href: "/support", label: "Поддержка", icon: HelpCircle },
 ];
 
 export function Navigation({
@@ -80,6 +83,7 @@ export function Navigation({
 
           {/* Desktop Navigation */}
           <div className="hidden lg:flex lg:items-center lg:space-x-4">
+            {/* Основная навигация для всех */}
             {navigationItems.map((item) => {
               const Icon = item.icon;
               const isActive = pathname === item.href;
@@ -122,6 +126,52 @@ export function Navigation({
                 </Link>
               );
             })}
+
+            {/* Дополнительная навигация только для авторизованных пользователей */}
+            {user &&
+              authenticatedNavigationItems.map((item) => {
+                const Icon = item.icon;
+                const isActive = pathname === item.href;
+
+                return (
+                  <Link
+                    key={item.href}
+                    href={item.href}
+                    className={cn(
+                      "modern-nav-item flex items-center space-x-2 rounded-xl px-4 py-2 text-sm font-medium transition-all duration-200",
+                      isActive
+                        ? "bg-blue-50 text-blue-700 shadow-sm"
+                        : "text-slate-600 hover:bg-slate-50"
+                    )}
+                    style={{
+                      position: "relative",
+                      textDecoration: "none",
+                    }}
+                  >
+                    <Icon
+                      className={cn(
+                        "h-4 w-4 transition-colors duration-200",
+                        isActive ? "text-blue-600" : "text-slate-500"
+                      )}
+                    />
+                    <span>{item.label}</span>
+                    {isActive && (
+                      <div
+                        style={{
+                          position: "absolute",
+                          bottom: "-2px",
+                          left: "0",
+                          width: "100%",
+                          height: "2px",
+                          background:
+                            "linear-gradient(90deg, #3b82f6, #8b5cf6)",
+                          borderRadius: "1px",
+                        }}
+                      />
+                    )}
+                  </Link>
+                );
+              })}
           </div>
 
           {/* Right side - Language Switcher, Profile, Mobile Menu */}
@@ -164,11 +214,6 @@ export function Navigation({
                     Войти
                   </Button>
                 </Link>
-                <Link href="/register">
-                  <Button className="rounded-lg sm:rounded-xl bg-gradient-to-r from-blue-500 to-purple-600 hover:from-blue-600 hover:to-purple-700 text-xs sm:text-sm h-6 sm:h-7 lg:h-8 px-2 sm:px-3">
-                    Регистрация
-                  </Button>
-                </Link>
               </div>
             )}
 
@@ -191,6 +236,7 @@ export function Navigation({
         {isMobileMenuOpen && (
           <div className="lg:hidden py-4 border-t border-slate-200 bg-white/95 backdrop-blur-sm animate-slide-in-from-top">
             <div className="space-y-2">
+              {/* Основная навигация для всех */}
               {navigationItems.map((item, index) => {
                 const Icon = item.icon;
                 const isActive = pathname === item.href;
@@ -222,13 +268,52 @@ export function Navigation({
                 );
               })}
 
+              {/* Дополнительная навигация только для авторизованных пользователей */}
+              {user &&
+                authenticatedNavigationItems.map((item, index) => {
+                  const Icon = item.icon;
+                  const isActive = pathname === item.href;
+
+                  return (
+                    <Link
+                      key={item.href}
+                      href={item.href}
+                      className={cn(
+                        "flex items-center space-x-3 px-4 py-3 rounded-xl text-sm font-medium transition-all duration-300 transform hover:scale-105",
+                        isActive
+                          ? "bg-blue-50 text-blue-700 shadow-sm"
+                          : "text-slate-600 hover:bg-slate-50"
+                      )}
+                      style={{
+                        animationDelay: `${
+                          (navigationItems.length + index) * 100
+                        }ms`,
+                        animationFillMode: "both",
+                      }}
+                      onClick={() => setIsMobileMenuOpen(false)}
+                    >
+                      <Icon
+                        className={cn(
+                          "h-5 w-5",
+                          isActive ? "text-blue-600" : "text-slate-500"
+                        )}
+                      />
+                      <span>{item.label}</span>
+                    </Link>
+                  );
+                })}
+
               {/* Admin Panel Link for Mobile */}
               {user?.role === Role.ADMIN && (
                 <Link
                   href="/admin"
                   className="flex items-center space-x-3 px-4 py-3 rounded-xl text-sm font-medium bg-gradient-to-r from-red-500 to-red-600 text-white hover:from-red-600 hover:to-red-700 transition-all duration-300 transform hover:scale-105"
                   style={{
-                    animationDelay: `${navigationItems.length * 100}ms`,
+                    animationDelay: `${
+                      (navigationItems.length +
+                        (user ? authenticatedNavigationItems.length : 0)) *
+                      100
+                    }ms`,
                     animationFillMode: "both",
                   }}
                   onClick={() => setIsMobileMenuOpen(false)}

@@ -13,6 +13,7 @@ const createReminderSchema = z.object({
   dueDate: z.string().datetime(),
   priority: z.enum(['LOW', 'MEDIUM', 'HIGH', 'URGENT']).default('MEDIUM'),
   category: z.enum(['EDUCATION', 'LIFE', 'DOCUMENTS', 'HEALTH', 'OTHER']),
+  notificationMethod: z.enum(['email', 'telegram', 'vk']).default('email'),
 });
 
 // Схема валидации для обновления напоминания

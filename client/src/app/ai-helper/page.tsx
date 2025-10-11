@@ -55,8 +55,7 @@ const quickQuestions = [
 export default function AiHelperPage() {
   const { user } = useAuth();
   const { messages, loading, error, sendMessage, clearChat } = useChat(
-    user?.id || "",
-    user?.language
+    user?.id || ""
   );
   const [inputMessage, setInputMessage] = useState("");
   const messagesEndRef = useRef<HTMLDivElement>(null);

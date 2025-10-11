@@ -3,7 +3,8 @@ export enum Language {
   RU = 'RU',
   EN = 'EN',
   FR = 'FR',
-  AR = 'AR'
+  AR = 'AR',
+  ZH = 'ZH'
 }
 
 export enum Role {
@@ -76,7 +77,6 @@ export interface User {
   phone?: string;
   gender?: Gender;
   registeredAt: Date;
-  updatedAt: Date;
 }
 
 export interface Profile {
@@ -131,6 +131,101 @@ export interface Admin {
   permissions: string[];
   createdAt: Date;
   updatedAt: Date;
+}
+
+// Payment types
+export interface Payment {
+  id: string;
+  userId: string;
+  amount: number;
+  currency: string;
+  description: string;
+  status: PaymentStatus;
+  paymentMethod: PaymentMethod;
+  yooKassaPaymentId?: string;
+  createdAt: Date;
+  updatedAt: Date;
+}
+
+export interface Subscription {
+  id: string;
+  userId: string;
+  planId: string;
+  status: SubscriptionStatus;
+  startDate: Date;
+  endDate: Date;
+  autoRenew: boolean;
+  paymentId: string;
+  createdAt: Date;
+  updatedAt: Date;
+}
+
+export interface SubscriptionPlan {
+  id: string;
+  name: string;
+  price: number;
+  currency: string;
+  interval: SubscriptionInterval;
+  features: string[];
+  isActive: boolean;
+  createdAt: Date;
+  updatedAt: Date;
+}
+
+export enum PaymentStatus {
+  PENDING = 'PENDING',
+  SUCCEEDED = 'SUCCEEDED',
+  CANCELED = 'CANCELED',
+  FAILED = 'FAILED'
+}
+
+export enum PaymentMethod {
+  CARD = 'CARD',
+  SBP = 'SBP',
+  WALLET = 'WALLET'
+}
+
+export enum SubscriptionStatus {
+  ACTIVE = 'ACTIVE',
+  EXPIRED = 'EXPIRED',
+  CANCELED = 'CANCELED',
+  PENDING = 'PENDING'
+}
+
+export enum SubscriptionInterval {
+  MONTHLY = 'MONTHLY',
+  YEARLY = 'YEARLY'
+}
+
+// YooKassa types
+export interface YooKassaPaymentRequest {
+  amount: {
+    value: string;
+    currency: string;
+  };
+  capture: boolean;
+  confirmation: {
+    type: 'redirect' | 'embedded';
+    return_url?: string;
+  };
+  description: string;
+  metadata?: Record<string, string>;
+}
+
+export interface YooKassaPaymentResponse {
+  id: string;
+  status: string;
+  amount: {
+    value: string;
+    currency: string;
+  };
+  confirmation: {
+    type: string;
+    confirmation_url?: string;
+  };
+  created_at: string;
+  description: string;
+  metadata?: Record<string, string>;
 }
 
 // API Types

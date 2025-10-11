@@ -56,7 +56,7 @@ const mockUsers = [
     name: "Чжан Вэй",
     email: "zhang@example.com",
     country: "Китай",
-    language: "zh",
+    language: "ZH",
     role: "student",
     status: "pending",
     registeredAt: "2024-01-13",

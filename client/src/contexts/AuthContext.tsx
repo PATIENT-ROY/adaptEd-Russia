@@ -1,14 +1,22 @@
 "use client";
 
-import React, { createContext, useContext, useState, useEffect } from "react";
+import React, {
+  createContext,
+  useContext,
+  useState,
+  useEffect,
+  useCallback,
+} from "react";
 import type { User } from "@/types";
-import { Language, Role, Plan } from "@/types";
 
 interface AuthContextType {
   user: User | null;
   login: (email: string, password: string) => Promise<boolean>;
   register: (
-    userData: Omit<User, "id" | "createdAt" | "updatedAt" | "password">
+    userData: Omit<User, "id" | "createdAt" | "updatedAt" | "password"> & {
+      password: string;
+      country: string;
+    }
   ) => Promise<boolean>;
   logout: () => void;
   updateProfile: (userData: Partial<User>) => Promise<boolean>;
@@ -25,17 +33,25 @@ export function AuthProvider({ children }: { children: React.ReactNode }) {
   const [isNewUser, setIsNewUser] = useState(false);
 
   useEffect(() => {
-    // Проверяем сохраненного пользователя в localStorage
+    // Проверяем сохраненного пользователя и токен в localStorage
     const savedUser = localStorage.getItem("user");
+    const savedToken = localStorage.getItem("token");
     const savedNewUserFlag = localStorage.getItem("isNewUser");
 
-    if (savedUser) {
+    if (savedUser && savedToken) {
       try {
         setUser(JSON.parse(savedUser));
+        console.log("User and token restored from localStorage");
       } catch (error) {
         console.error("Error parsing saved user:", error);
         localStorage.removeItem("user");
+        localStorage.removeItem("token");
       }
+    } else if (savedUser && !savedToken) {
+      // Если есть пользователь, но нет токена, очищаем данные
+      console.log("User found but no token, clearing data");
+      localStorage.removeItem("user");
+      localStorage.removeItem("isNewUser");
     }
 
     // Восстанавливаем флаг нового пользователя
@@ -46,69 +62,111 @@ export function AuthProvider({ children }: { children: React.ReactNode }) {
     setIsLoading(false);
   }, []);
 
-  const login = async (email: string): Promise<boolean> => {
-    setIsLoading(true);
-    try {
-      // Имитация API запроса
-      await new Promise((resolve) => setTimeout(resolve, 1000));
+  const login = useCallback(
+    async (email: string, password: string): Promise<boolean> => {
+      setIsLoading(true);
+      try {
+        // Реальный API запрос
+        const response = await fetch(
+          `${
+            process.env.NEXT_PUBLIC_API_URL || "http://localhost:3003/api"
+          }/auth/login`,
+          {
+            method: "POST",
+            headers: {
+              "Content-Type": "application/json",
+            },
+            body: JSON.stringify({ email, password }),
+          }
+        );
 
-      // Моковые данные пользователя
-      const mockUser: User = {
-        id: "1",
-        name: email.includes("admin")
-          ? "Анна Петрова (Админ)"
-          : "Ахмед Аль-Махмуд",
-        email,
-        language: Language.RU,
-        role: email.includes("admin") ? Role.ADMIN : Role.STUDENT,
-        plan: Plan.FREEMIUM,
-        createdAt: new Date().toISOString(),
-        updatedAt: new Date().toISOString(),
-      };
+        const data = await response.json();
 
-      setUser(mockUser);
-      localStorage.setItem("user", JSON.stringify(mockUser));
-      return true;
-    } catch (error) {
-      console.error("Login error:", error);
-      return false;
-    } finally {
-      setIsLoading(false);
-    }
-  };
+        if (data.success && data.data) {
+          const { user, token } = data.data;
 
-  const register = async (
-    userData: Omit<User, "id" | "createdAt" | "updatedAt" | "password">
-  ): Promise<boolean> => {
-    setIsLoading(true);
-    try {
-      // Имитация API запроса
-      await new Promise((resolve) => setTimeout(resolve, 1000));
+          // Сохраняем пользователя и токен
+          setUser(user);
+          localStorage.setItem("user", JSON.stringify(user));
+          localStorage.setItem("token", token);
 
-      const newUser: User = {
-        ...userData,
-        id: Date.now().toString(),
-        createdAt: new Date().toISOString(),
-        updatedAt: new Date().toISOString(),
-      };
+          console.log("Login successful, token saved:", token);
+          return true;
+        } else {
+          console.error("Login failed:", data.error);
+          return false;
+        }
+      } catch (error) {
+        console.error("Login error:", error);
+        return false;
+      } finally {
+        setIsLoading(false);
+      }
+    },
+    []
+  );
 
-      setUser(newUser);
-      localStorage.setItem("user", JSON.stringify(newUser));
+  const register = useCallback(
+    async (
+      userData: Omit<User, "id" | "createdAt" | "updatedAt" | "password"> & {
+        password: string;
+        country: string;
+      }
+    ): Promise<boolean> => {
+      setIsLoading(true);
+      console.log("Register function called with:", userData);
+      try {
+        // Реальный API запрос
+        const response = await fetch(
+          `${
+            process.env.NEXT_PUBLIC_API_URL || "http://localhost:3003/api"
+          }/auth/register`,
+          {
+            method: "POST",
+            headers: {
+              "Content-Type": "application/json",
+            },
+            body: JSON.stringify({
+              name: userData.name,
+              email: userData.email,
+              password: userData.password,
+              country: userData.country,
+              language: userData.language,
+            }),
+          }
+        );
 
-      // Устанавливаем флаг нового пользователя
-      setIsNewUser(true);
-      localStorage.setItem("isNewUser", "true");
+        const data = await response.json();
 
-      return true;
-    } catch (error) {
-      console.error("Register error:", error);
-      return false;
-    } finally {
-      setIsLoading(false);
-    }
-  };
+        if (data.success && data.data) {
+          const { user, token } = data.data;
 
-  const logout = () => {
+          // Сохраняем пользователя и токен
+          setUser(user);
+          localStorage.setItem("user", JSON.stringify(user));
+          localStorage.setItem("token", token);
+
+          // Устанавливаем флаг нового пользователя
+          setIsNewUser(true);
+          localStorage.setItem("isNewUser", "true");
+
+          console.log("Registration successful, token saved:", token);
+          return true;
+        } else {
+          console.error("Registration failed:", data.error);
+          return false;
+        }
+      } catch (error) {
+        console.error("Register error:", error);
+        return false;
+      } finally {
+        setIsLoading(false);
+      }
+    },
+    []
+  );
+
+  const logout = useCallback(() => {
     // Сохраняем информацию о выходе для показа уведомления
     const userName = user?.name.split(" ")[0] || "Пользователь";
     localStorage.setItem(
@@ -119,41 +177,45 @@ export function AuthProvider({ children }: { children: React.ReactNode }) {
       })
     );
 
-    // Очищаем данные пользователя
+    // Очищаем данные пользователя и токен
     setUser(null);
     setIsNewUser(false);
     localStorage.removeItem("user");
     localStorage.removeItem("isNewUser");
+    localStorage.removeItem("token");
 
     // Перенаправляем на главную страницу
     window.location.href = "/";
-  };
+  }, [user]);
 
-  const clearNewUserFlag = () => {
+  const clearNewUserFlag = useCallback(() => {
     setIsNewUser(false);
     localStorage.removeItem("isNewUser");
-  };
+  }, []);
 
-  const updateProfile = async (userData: Partial<User>): Promise<boolean> => {
-    if (!user) return false;
+  const updateProfile = useCallback(
+    async (userData: Partial<User>): Promise<boolean> => {
+      if (!user) return false;
 
-    try {
-      // Имитация API запроса
-      await new Promise((resolve) => setTimeout(resolve, 1000));
+      try {
+        // Имитация API запроса
+        await new Promise((resolve) => setTimeout(resolve, 1000));
 
-      const updatedUser: User = {
-        ...user,
-        ...userData,
-      };
+        const updatedUser: User = {
+          ...user,
+          ...userData,
+        };
 
-      setUser(updatedUser);
-      localStorage.setItem("user", JSON.stringify(updatedUser));
-      return true;
-    } catch (error) {
-      console.error("Update profile error:", error);
-      return false;
-    }
-  };
+        setUser(updatedUser);
+        localStorage.setItem("user", JSON.stringify(updatedUser));
+        return true;
+      } catch (error) {
+        console.error("Update profile error:", error);
+        return false;
+      }
+    },
+    [user]
+  );
 
   return (
     <AuthContext.Provider

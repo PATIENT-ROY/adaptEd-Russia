@@ -1,8 +1,8 @@
 import { useState, useEffect } from 'react';
 import { apiClient } from '@/lib/api';
-import type { ChatMessage, Language } from '@/types';
+import type { ChatMessage } from '@/types';
 
-export function useChat(userId: string, language?: Language) {
+export function useChat(userId: string) {
   const [messages, setMessages] = useState<ChatMessage[]>([]);
   const [loading, setLoading] = useState(false);
   const [error, setError] = useState<string | null>(null);

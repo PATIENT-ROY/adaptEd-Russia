@@ -80,6 +80,7 @@ export default function RemindersPage() {
     date: "",
     category: ReminderCategory.OTHER,
     priority: ReminderPriority.MEDIUM,
+    notificationMethod: "email" as "email" | "telegram" | "vk",
   });
 
   const pendingReminders = reminders.filter(
@@ -105,6 +106,7 @@ export default function RemindersPage() {
         category: newReminder.category,
         priority: newReminder.priority,
         status: ReminderStatus.PENDING,
+        notificationMethod: newReminder.notificationMethod,
       });
 
       setNewReminder({
@@ -113,6 +115,7 @@ export default function RemindersPage() {
         date: "",
         category: ReminderCategory.OTHER,
         priority: ReminderPriority.MEDIUM,
+        notificationMethod: "email",
       });
       setShowAddForm(false);
     } catch (error) {
@@ -327,6 +330,89 @@ export default function RemindersPage() {
                         </svg>
                       </div>
                     </div>
+                  </div>
+                </div>
+
+                <div>
+                  <label className="block text-sm font-medium text-gray-700 mb-1">
+                    Способ уведомления
+                  </label>
+                  <div className="space-y-2">
+                    <label className="flex items-center space-x-2 cursor-pointer">
+                      <input
+                        type="radio"
+                        name="notificationMethod"
+                        value="email"
+                        checked={newReminder.notificationMethod === "email"}
+                        onChange={(e) =>
+                          setNewReminder((prev) => ({
+                            ...prev,
+                            notificationMethod: e.target.value as
+                              | "email"
+                              | "telegram"
+                              | "vk",
+                          }))
+                        }
+                        className="h-4 w-4 text-purple-600 border-gray-300 focus:ring-purple-500"
+                      />
+                      <span className="text-sm text-gray-700">📧 Email</span>
+                    </label>
+                    <label className="flex items-center space-x-2 cursor-pointer">
+                      <input
+                        type="radio"
+                        name="notificationMethod"
+                        value="telegram"
+                        checked={newReminder.notificationMethod === "telegram"}
+                        onChange={(e) =>
+                          setNewReminder((prev) => ({
+                            ...prev,
+                            notificationMethod: e.target.value as
+                              | "email"
+                              | "telegram"
+                              | "vk",
+                          }))
+                        }
+                        className="h-4 w-4 text-purple-600 border-gray-300 focus:ring-purple-500"
+                      />
+                      <div className="flex items-center space-x-2">
+                        <div className="w-5 h-5 bg-blue-500 rounded-full flex items-center justify-center">
+                          <svg
+                            className="w-3 h-3 text-white"
+                            fill="currentColor"
+                            viewBox="0 0 24 24"
+                          >
+                            <path d="M9.78 18.65l.28-4.23 7.68-6.92c.34-.31-.07-.46-.52-.19L7.74 13.3 3.64 12c-.88-.25-.89-.86.2-1.3l15.97-6.16c.73-.33 1.43.18 1.15 1.3l-2.72 12.81c-.19.91-.74 1.13-1.5.71L12.6 16.3l-1.99 1.93c-.23.23-.42.42-.83.42z" />
+                          </svg>
+                        </div>
+                        <span className="text-sm text-gray-700">Telegram</span>
+                      </div>
+                    </label>
+                    <label className="flex items-center space-x-2 cursor-pointer">
+                      <input
+                        type="radio"
+                        name="notificationMethod"
+                        value="vk"
+                        checked={newReminder.notificationMethod === "vk"}
+                        onChange={(e) =>
+                          setNewReminder((prev) => ({
+                            ...prev,
+                            notificationMethod: e.target.value as
+                              | "email"
+                              | "telegram"
+                              | "vk",
+                          }))
+                        }
+                        className="h-4 w-4 text-purple-600 border-gray-300 focus:ring-purple-500"
+                      />
+                      <div className="flex items-center space-x-2">
+                        <div className="w-5 h-5 bg-blue-600 rounded-lg flex items-center justify-center">
+                          <span className="text-white text-xs font-bold">
+                            VK
+                          </span>
+                        </div>
+                        <span className="text-sm text-gray-700">ВКонтакте</span>
+                      </div>
+                    </label>
                   </div>
                 </div>
 

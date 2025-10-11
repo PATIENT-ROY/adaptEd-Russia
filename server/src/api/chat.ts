@@ -18,7 +18,7 @@ router.get('/messages', authMiddleware, async (req: Request, res: Response) => {
 
     const messages = await prisma.chatMessage.findMany({
       where: { userId: user.userId },
-      orderBy: { timestamp: 'asc' },
+      orderBy: { createdAt: 'asc' },
     });
 
     res.json({

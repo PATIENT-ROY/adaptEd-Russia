@@ -23,12 +23,12 @@ import {
   AlertCircle,
   User,
   Globe,
-  GraduationCap,
   BookOpen,
   Home,
   Bell,
+  ArrowLeft,
 } from "lucide-react";
-import { Language, Role, Plan } from "@/types";
+import { Role, Plan, Language } from "@/types";
 
 export default function RegisterPage() {
   const [formData, setFormData] = useState({
@@ -76,6 +76,8 @@ export default function RegisterPage() {
       const success = await register({
         name: formData.name,
         email: formData.email,
+        password: formData.password,
+        country: formData.country,
         language: formData.language,
         role: Role.STUDENT,
         plan: Plan.FREEMIUM,
@@ -109,7 +111,17 @@ export default function RegisterPage() {
         </div>
 
         {/* Register Card */}
-        <Card className="border-0 shadow-2xl animate-fade-in-up">
+        <Card className="border-0 shadow-2xl animate-fade-in-up relative">
+          {/* Go Back Button - positioned in top-left corner */}
+          <div className="absolute top-4 left-4 z-10">
+            <Link
+              href="/"
+              className="inline-flex items-center justify-center w-10 h-10 rounded-full bg-slate-100 hover:bg-slate-200 text-slate-600 hover:text-slate-900 transition-all duration-200 group"
+            >
+              <ArrowLeft className="h-5 w-5 group-hover:-translate-x-1 transition-transform duration-200" />
+            </Link>
+          </div>
+
           <CardHeader className="text-center pb-6">
             <div className="w-16 h-16 rounded-2xl bg-gradient-to-br from-green-500 to-emerald-600 flex items-center justify-center mx-auto mb-4 shadow-lg">
               <UserPlus className="h-8 w-8 text-white" />
@@ -190,47 +202,6 @@ export default function RegisterPage() {
                     className="pl-10 h-12 border-slate-200 focus:border-blue-500 focus:ring-blue-500"
                     required
                   />
-                </div>
-              </div>
-
-              {/* Language */}
-              <div className="space-y-2">
-                <label
-                  htmlFor="language"
-                  className="text-sm font-medium text-slate-700"
-                >
-                  Предпочитаемый язык
-                </label>
-                <div className="relative">
-                  <GraduationCap className="absolute left-3 top-1/2 transform -translate-y-1/2 h-4 w-4 text-slate-400" />
-                  <select
-                    id="language"
-                    name="language"
-                    value={formData.language}
-                    onChange={handleChange}
-                    className="w-full pl-10 pr-4 h-12 border border-slate-200 rounded-lg focus:border-blue-500 focus:ring-blue-500 bg-white appearance-none"
-                    required
-                  >
-                    <option value="ru">Русский</option>
-                    <option value="en">English</option>
-                    <option value="fr">Français</option>
-                    <option value="ar">العربية</option>
-                  </select>
-                  <div className="absolute right-3 top-1/2 transform -translate-y-1/2 pointer-events-none">
-                    <svg
-                      className="h-4 w-4 text-slate-400"
-                      fill="none"
-                      stroke="currentColor"
-                      viewBox="0 0 24 24"
-                    >
-                      <path
-                        strokeLinecap="round"
-                        strokeLinejoin="round"
-                        strokeWidth={2}
-                        d="M19 9l-7 7-7-7"
-                      />
-                    </svg>
-                  </div>
                 </div>
               </div>
 

@@ -17,7 +17,10 @@ import Link from "next/link";
 import { useAuth } from "@/contexts/AuthContext";
 import { useReminders } from "@/hooks/useReminders";
 import { useState, useEffect } from "react";
-import type { Reminder } from "@/types";
+import type { Reminder, UserProgress, DailyQuest } from "@/types";
+import { UserLevel, QuestType } from "@/types";
+import { UserProgressComponent } from "@/components/ui/user-progress";
+import { DailyQuestsComponent } from "@/components/ui/daily-quests";
 
 const quickActions = [
   {
@@ -54,6 +57,69 @@ export default function DashboardPage() {
   const { user } = useAuth();
   const { reminders, loading } = useReminders(user?.id || "");
   const [upcomingReminders, setUpcomingReminders] = useState<Reminder[]>([]);
+  const [userProgress, setUserProgress] = useState<UserProgress | null>(null);
+  const [dailyQuests, setDailyQuests] = useState<DailyQuest[]>([]);
+
+  // Инициализация моковых данных после загрузки пользователя
+  useEffect(() => {
+    if (user?.id) {
+      // Моковые данные прогресса пользователя (в реальности из API)
+      setUserProgress({
+        id: "1",
+        userId: user.id,
+        level: UserLevel.ADAPTING,
+        xp: 245,
+        adaptationProgress: 65,
+        streak: 5,
+        lastVisit: new Date().toISOString(),
+        totalGuidesRead: 12,
+        totalAIQuestions: 23,
+        totalRemindersCompleted: 8,
+        createdAt: new Date().toISOString(),
+        updatedAt: new Date().toISOString(),
+      });
+
+      // Моковые ежедневные квесты (в реальности из API)
+      setDailyQuests([
+        {
+          id: "1",
+          userId: user.id,
+          questType: QuestType.READ_GUIDES,
+          title: "Прочитать 3 гайда",
+          description: "Изучите любые 3 гайда на платформе",
+          target: 3,
+          progress: 3,
+          xpReward: 30,
+          date: new Date().toISOString(),
+          completed: true,
+        },
+        {
+          id: "2",
+          userId: user.id,
+          questType: QuestType.ASK_AI,
+          title: "Задать 2 вопроса AI",
+          description: "Воспользуйтесь AI-помощником",
+          target: 2,
+          progress: 1,
+          xpReward: 10,
+          date: new Date().toISOString(),
+          completed: false,
+        },
+        {
+          id: "3",
+          userId: user.id,
+          questType: QuestType.CREATE_REMINDER,
+          title: "Создать напоминание",
+          description: "Добавьте новое напоминание",
+          target: 1,
+          progress: 0,
+          xpReward: 15,
+          date: new Date().toISOString(),
+          completed: false,
+        },
+      ]);
+    }
+  }, [user]);
 
   useEffect(() => {
     if (reminders.length > 0) {
@@ -95,6 +161,18 @@ export default function DashboardPage() {
             </CardContent>
           </Card>
 
+          {/* User Progress & Daily Quests */}
+          {userProgress && (
+            <div className="grid grid-cols-1 xl:grid-cols-3 gap-6 sm:gap-8">
+              <div className="xl:col-span-2">
+                <UserProgressComponent progress={userProgress} />
+              </div>
+              <div>
+                <DailyQuestsComponent quests={dailyQuests} />
+              </div>
+            </div>
+          )}
+
           {/* Quick Actions */}
           <div>
             <h2 className="text-xl sm:text-2xl font-bold text-slate-900 mb-4 sm:mb-6">
@@ -106,21 +184,23 @@ export default function DashboardPage() {
                 return (
                   <Link key={action.title} href={action.href}>
                     <Card
-                      className="group hover:scale-105 transition-all duration-300 animate-fade-in-up cursor-pointer"
+                      className="group hover:scale-105 transition-all duration-300 animate-fade-in-up cursor-pointer h-full"
                       style={{ animationDelay: `${index * 0.1}s` }}
                     >
-                      <CardContent className="p-4 sm:p-6 text-center">
-                        <div
-                          className={`w-12 h-12 sm:w-16 sm:h-16 rounded-2xl bg-gradient-to-br ${action.gradient} flex items-center justify-center mx-auto mb-3 sm:mb-4 shadow-lg group-hover:scale-110 transition-transform duration-300`}
-                        >
-                          <Icon className="h-6 w-6 sm:h-8 sm:w-8 text-white" />
+                      <CardContent className="p-4 sm:p-6 text-center h-full flex flex-col justify-between">
+                        <div>
+                          <div
+                            className={`w-12 h-12 sm:w-16 sm:h-16 rounded-2xl bg-gradient-to-br ${action.gradient} flex items-center justify-center mx-auto mb-3 sm:mb-4 shadow-lg group-hover:scale-110 transition-transform duration-300`}
+                          >
+                            <Icon className="h-6 w-6 sm:h-8 sm:w-8 text-white" />
+                          </div>
+                          <h3 className="text-base sm:text-lg font-semibold text-slate-900 mb-1 sm:mb-2">
+                            {action.title}
+                          </h3>
+                          <p className="text-xs sm:text-sm text-slate-600">
+                            {action.description}
+                          </p>
                         </div>
-                        <h3 className="text-base sm:text-lg font-semibold text-slate-900 mb-1 sm:mb-2">
-                          {action.title}
-                        </h3>
-                        <p className="text-xs sm:text-sm text-slate-600">
-                          {action.description}
-                        </p>
                       </CardContent>
                     </Card>
                   </Link>

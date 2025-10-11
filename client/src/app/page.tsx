@@ -14,7 +14,6 @@ import {
   Bell,
   MessageSquare,
   Globe,
-  ArrowRight,
   Sparkles,
   Crown,
   CreditCard,
@@ -26,7 +25,6 @@ import {
   Award,
   Target,
   Rocket,
-  GraduationCap,
 } from "lucide-react";
 import Link from "next/link";
 import {
@@ -155,7 +153,7 @@ const pricingPlans = [
       "Приоритетный доступ к AI-чату",
       "Расширенные шаблоны документов",
       "Приоритетная поддержка 24/7",
-      "Персональный менеджер",
+      "Персональный план адаптации",
       "Эксклюзивные гайды и материалы",
     ],
     popular: true,
@@ -181,7 +179,7 @@ const testimonials = [
   {
     name: "джесс дайда",
     country: "Д.Р.Конго",
-    text: "AI-помощник отвечает на все мои вопросы на испанском языке. Очень удобно!",
+    text: "AI-помощник отвечает на все мои вопросы на французском языке. Очень удобно!",
     rating: 5,
   },
   {
@@ -223,7 +221,7 @@ export default function HomePage() {
 
               <div className="flex flex-col sm:flex-row gap-3 sm:gap-4 justify-center mb-8 sm:mb-12 max-w-2xl mx-auto">
                 <Link href="/register" className="w-full sm:w-auto">
-                  <Button className="w-full sm:w-auto text-sm sm:text-base lg:text-lg px-4 sm:px-6 lg:px-8 py-3 sm:py-4 bg-gradient-to-r from-blue-500 to-purple-600 hover:from-blue-600 hover:to-purple-700 text-white shadow-xl hover:shadow-2xl transform hover:scale-105 transition-all duration-300">
+                  <Button className="w-full sm:w-auto text-sm sm:text-base lg:text-lg px-4 sm:px-6 lg:px-8 py-3 sm:py-4 border-2 bg-white/15 backdrop-blur-sm border-white/40 text-white sm:hover:bg-white/20 sm:hover:border-white/50 active:bg-white/30 active:scale-95 shadow-lg sm:hover:shadow-xl active:shadow-md transform sm:hover:scale-105 transition-all duration-300">
                     <Rocket className="mr-2 h-4 w-4 sm:h-5 sm:w-5" />
                     Начать адаптацию
                   </Button>
@@ -231,7 +229,7 @@ export default function HomePage() {
                 <Link href="/education-guide" className="w-full sm:w-auto">
                   <Button
                     variant="outline"
-                    className="w-full sm:w-auto text-sm sm:text-base lg:text-lg px-4 sm:px-6 lg:px-8 py-3 sm:py-4 border-white/30 text-white hover:bg-white/10 backdrop-blur-sm"
+                    className="w-full sm:w-auto text-sm sm:text-base lg:text-lg px-4 sm:px-6 lg:px-8 py-3 sm:py-4 border-white/40 text-white bg-white/10 sm:hover:bg-white/20 active:bg-white/30 active:scale-95 backdrop-blur-sm shadow-lg sm:hover:shadow-xl active:shadow-md transform sm:hover:scale-105 transition-all duration-300"
                   >
                     <BookOpen className="mr-2 h-4 w-4 sm:h-5 sm:w-5" />
                     Образовательные гайды
@@ -285,7 +283,7 @@ export default function HomePage() {
                 return (
                   <Card
                     key={feature.title}
-                    className="group hover:scale-105 transition-all duration-300 animate-fade-in-up border-0 shadow-xl hover:shadow-2xl overflow-hidden cursor-pointer"
+                    className="group hover:scale-105 transition-all duration-300 animate-fade-in-up border-0 shadow-xl hover:shadow-2xl overflow-hidden"
                     style={{
                       animationDelay: `${index * 0.1}s`,
                       background:
@@ -429,7 +427,7 @@ export default function HomePage() {
           <div className="mx-auto max-w-6xl px-3 sm:px-4 lg:px-6">
             <div className="text-center mb-12 sm:mb-16 lg:mb-20">
               <h2 className="text-2xl sm:text-3xl md:text-4xl lg:text-5xl xl:text-6xl font-bold tracking-tight text-slate-900 mb-4 sm:mb-6">
-                💸 Монетизация
+                💸 Подписки
               </h2>
               <p className="text-sm sm:text-base md:text-lg lg:text-xl text-slate-600 max-w-3xl mx-auto px-2">
                 Выберите план, который подходит именно вам
@@ -496,7 +494,11 @@ export default function HomePage() {
                         ))}
                       </ul>
                     </div>
-                    <Link href="/register">
+                    <Link
+                      href={
+                        plan.name === "Freemium" ? "/register" : "/payment/test"
+                      }
+                    >
                       <Button
                         className={`w-full text-sm sm:text-base lg:text-lg py-3 sm:py-4 ${
                           plan.popular
@@ -544,19 +546,22 @@ export default function HomePage() {
                   size="lg"
                   className="group text-sm sm:text-base lg:text-lg px-4 sm:px-6 lg:px-8 py-3 sm:py-4 bg-gradient-to-r from-blue-500 to-purple-600 hover:from-blue-600 hover:to-purple-700 text-white shadow-2xl hover:shadow-3xl transform hover:scale-105 transition-all duration-300"
                 >
-                  <Rocket className="mr-2 h-4 w-4 sm:h-5 sm:w-5" />
-                  Зарегистрироваться
-                  <ArrowRight className="ml-2 h-4 w-4 sm:h-5 sm:w-5 group-hover:translate-x-1 transition-transform duration-200" />
+                  <Rocket className="mr-2 h-4 w-4 sm:h-5 sm:w-5 group-hover:translate-x-1 transition-transform duration-200" />
+                  <span className="group-hover:translate-x-1 transition-transform duration-200">
+                    Зарегистрироваться
+                  </span>
                 </Button>
               </Link>
               <Link href="/login">
                 <Button
                   variant="outline"
                   size="lg"
-                  className="text-sm sm:text-base lg:text-lg px-4 sm:px-6 lg:px-8 py-3 sm:py-4 border-2 border-white/30 bg-white/10 text-white hover:bg-white/20 backdrop-blur-sm shadow-xl hover:shadow-2xl transform hover:scale-105 transition-all duration-300"
+                  className="group text-sm sm:text-base lg:text-lg px-4 sm:px-6 lg:px-8 py-3 sm:py-4 border-2 border-white/30 bg-white/10 text-white hover:bg-white/20 backdrop-blur-sm shadow-xl hover:shadow-2xl transform hover:scale-105 transition-all duration-300"
                 >
-                  <Target className="mr-2 h-4 w-4 sm:h-5 sm:w-5" />
-                  Войти в аккаунт
+                  <Target className="mr-2 h-4 w-4 sm:h-5 sm:w-5 group-hover:translate-x-1 transition-transform duration-200" />
+                  <span className="group-hover:translate-x-1 transition-transform duration-200">
+                    Войти в аккаунт
+                  </span>
                 </Button>
               </Link>
             </div>

@@ -24,6 +24,7 @@ import {
   BookOpen,
   Globe,
   Users,
+  ArrowLeft,
 } from "lucide-react";
 
 export default function LoginPage() {
@@ -71,7 +72,17 @@ export default function LoginPage() {
         </div>
 
         {/* Login Card */}
-        <Card className="border-0 shadow-2xl animate-fade-in-up">
+        <Card className="border-0 shadow-2xl animate-fade-in-up relative">
+          {/* Go Back Button - positioned in top-left corner */}
+          <div className="absolute top-4 left-4 z-10">
+            <Link
+              href="/"
+              className="inline-flex items-center justify-center w-10 h-10 rounded-full bg-slate-100 hover:bg-slate-200 text-slate-600 hover:text-slate-900 transition-all duration-200 group"
+            >
+              <ArrowLeft className="h-5 w-5 group-hover:-translate-x-1 transition-transform duration-200" />
+            </Link>
+          </div>
+
           <CardHeader className="text-center pb-6">
             <div className="w-16 h-16 rounded-2xl bg-gradient-to-br from-blue-500 to-purple-600 flex items-center justify-center mx-auto mb-4 shadow-lg">
               <LogIn className="h-8 w-8 text-white" />

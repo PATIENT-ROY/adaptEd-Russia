@@ -116,6 +116,84 @@ const lifeGuides: Guide[] = [
     createdAt: "2024-01-09",
     updatedAt: "2024-01-16",
   },
+  {
+    id: "9",
+    title: "Как получить полис ОМС",
+    category: GuideCategory.LIFE,
+    content:
+      "Пошаговая инструкция по получению обязательного медицинского страхования. Где получить, какие документы нужны, сроки оформления и что покрывает полис ОМС.",
+    language: Language.RU,
+    tags: ["медицина", "полис", "ОМС", "страховка"],
+    difficulty: Difficulty.INTERMEDIATE,
+    isPublished: true,
+    createdAt: "2024-01-20",
+    updatedAt: "2024-01-20",
+  },
+  {
+    id: "10",
+    title: "Как записаться к врачу",
+    category: GuideCategory.LIFE,
+    content:
+      "Способы записи к врачу: через интернет, по телефону, в регистратуре. Как выбрать специалиста, подготовиться к приёму и что взять с собой.",
+    language: Language.RU,
+    tags: ["медицина", "врач", "запись", "приём"],
+    difficulty: Difficulty.BEGINNER,
+    isPublished: true,
+    createdAt: "2024-01-20",
+    updatedAt: "2024-01-20",
+  },
+  {
+    id: "11",
+    title: "Стоматология в России",
+    category: GuideCategory.LIFE,
+    content:
+      "Как найти стоматолога, что входит в ОМС, платные услуги. Подготовка к визиту, стоимость лечения и профилактика.",
+    language: Language.RU,
+    tags: ["медицина", "стоматология", "зубы", "лечение"],
+    difficulty: Difficulty.INTERMEDIATE,
+    isPublished: true,
+    createdAt: "2024-01-20",
+    updatedAt: "2024-01-20",
+  },
+  {
+    id: "12",
+    title: "Аптеки и лекарства",
+    category: GuideCategory.LIFE,
+    content:
+      "Как найти аптеку, рецептурные и безрецептурные лекарства. Российские аналоги, цены и правила покупки медикаментов.",
+    language: Language.RU,
+    tags: ["медицина", "аптека", "лекарства", "рецепт"],
+    difficulty: Difficulty.BEGINNER,
+    isPublished: true,
+    createdAt: "2024-01-20",
+    updatedAt: "2024-01-20",
+  },
+  {
+    id: "13",
+    title: "Экстренная медицинская помощь",
+    category: GuideCategory.LIFE,
+    content:
+      "Что делать в экстренных случаях, когда вызывать скорую, как описать симптомы. Первая помощь до приезда врачей.",
+    language: Language.RU,
+    tags: ["медицина", "скорая", "экстренная", "помощь"],
+    difficulty: Difficulty.ADVANCED,
+    isPublished: true,
+    createdAt: "2024-01-20",
+    updatedAt: "2024-01-20",
+  },
+  {
+    id: "14",
+    title: "Медицинские анализы",
+    category: GuideCategory.LIFE,
+    content:
+      "Где сдать анализы, подготовка к исследованиям, сроки готовности. Бесплатные и платные анализы, расшифровка результатов.",
+    language: Language.RU,
+    tags: ["медицина", "анализы", "лаборатория", "исследования"],
+    difficulty: Difficulty.INTERMEDIATE,
+    isPublished: true,
+    createdAt: "2024-01-20",
+    updatedAt: "2024-01-20",
+  },
 ];
 
 const categories = [
@@ -191,7 +269,28 @@ export default function LifeGuidePage() {
             );
           case "health":
             return guide.tags.some((tag) =>
-              ["медицина", "врач", "здоровье"].includes(tag)
+              [
+                "медицина",
+                "врач",
+                "здоровье",
+                "полис",
+                "ОМС",
+                "страховка",
+                "запись",
+                "приём",
+                "стоматология",
+                "зубы",
+                "лечение",
+                "аптека",
+                "лекарства",
+                "рецепт",
+                "скорая",
+                "экстренная",
+                "помощь",
+                "анализы",
+                "лаборатория",
+                "исследования",
+              ].includes(tag)
             );
           case "services":
             return guide.tags.some((tag) =>

@@ -7,7 +7,13 @@ import {
   UpdateProfileRequest,
   Reminder,
   Guide,
-  ChatMessage
+  ChatMessage,
+  SubscriptionPlan,
+  PaymentRequest,
+  PaymentResponse,
+  Payment,
+  Subscription,
+  TestData
 } from '@/types';
 
 const API_BASE_URL = process.env.NEXT_PUBLIC_API_URL || 'http://localhost:3003/api';
@@ -194,3 +200,153 @@ export const apiClient = new ApiClient(API_BASE_URL);
 
 // Экспортируем типы для удобства
 export type { ApiResponse, AuthResponse, LoginRequest, RegisterRequest, User, UpdateProfileRequest }; 
+
+// Payment API functions
+export const getSubscriptionPlans = async (): Promise<SubscriptionPlan[]> => {
+  console.log('Fetching subscription plans from:', `${API_BASE_URL}/payments/plans`);
+  try {
+    const response = await fetch(`${API_BASE_URL}/payments/plans`);
+    console.log('Response status:', response.status);
+    console.log('Response ok:', response.ok);
+    
+    if (!response.ok) {
+      const errorText = await response.text();
+      console.error('Error response:', errorText);
+      throw new Error(`Failed to fetch subscription plans: ${response.status} ${response.statusText}`);
+    }
+    
+    const data = await response.json();
+    console.log('Subscription plans received:', data);
+    return data;
+  } catch (error) {
+    console.error('Error in getSubscriptionPlans:', error);
+    throw error;
+  }
+};
+
+export const createPayment = async (data: PaymentRequest): Promise<PaymentResponse> => {
+  const token = typeof window !== 'undefined' ? localStorage.getItem('token') : null;
+  
+  if (!token) {
+    throw new Error('Authentication required. Please log in first.');
+  }
+  
+  const response = await fetch(`${API_BASE_URL}/payments/create-payment`, {
+    method: 'POST',
+    headers: {
+      'Content-Type': 'application/json',
+      'Authorization': `Bearer ${token}`,
+    },
+    body: JSON.stringify(data),
+  });
+  
+  if (response.status === 401) {
+    throw new Error('Authentication required. Please log in first.');
+  }
+  
+  if (!response.ok) {
+    throw new Error(`Failed to create payment: ${response.status} ${response.statusText}`);
+  }
+  
+  return response.json();
+};
+
+export const getPayment = async (paymentId: string): Promise<Payment> => {
+  const token = typeof window !== 'undefined' ? localStorage.getItem('token') : null;
+  const response = await fetch(`${API_BASE_URL}/payments/payment/${paymentId}`, {
+    headers: {
+      'Authorization': `Bearer ${token}`,
+    },
+  });
+  if (!response.ok) throw new Error('Failed to fetch payment');
+  return response.json();
+};
+
+export const cancelPayment = async (paymentId: string): Promise<void> => {
+  const token = typeof window !== 'undefined' ? localStorage.getItem('token') : null;
+  const response = await fetch(`${API_BASE_URL}/payments/payment/${paymentId}/cancel`, {
+    method: 'POST',
+    headers: {
+      'Authorization': `Bearer ${token}`,
+    },
+  });
+  if (!response.ok) throw new Error('Failed to cancel payment');
+};
+
+export const getSubscription = async (): Promise<Subscription | null> => {
+  const token = typeof window !== 'undefined' ? localStorage.getItem('token') : null;
+  
+  if (!token) {
+    console.log('No token found, skipping subscription fetch');
+    return null;
+  }
+  
+  try {
+    const response = await fetch(`${API_BASE_URL}/payments/subscription`, {
+      headers: {
+        'Authorization': `Bearer ${token}`,
+      },
+    });
+    
+    if (response.status === 401) {
+      console.log('Unauthorized, user not logged in');
+      return null;
+    }
+    
+    if (!response.ok) throw new Error('Failed to fetch subscription');
+    return response.json();
+  } catch (error) {
+    console.error('Error fetching subscription:', error);
+    return null;
+  }
+};
+
+export const getPaymentHistory = async (): Promise<Payment[]> => {
+  const token = typeof window !== 'undefined' ? localStorage.getItem('token') : null;
+  
+  if (!token) {
+    console.log('No token found, skipping payment history fetch');
+    return [];
+  }
+  
+  try {
+    const response = await fetch(`${API_BASE_URL}/payments/history`, {
+      headers: {
+        'Authorization': `Bearer ${token}`,
+      },
+    });
+    
+    if (response.status === 401) {
+      console.log('Unauthorized, user not logged in');
+      return [];
+    }
+    
+    if (!response.ok) throw new Error('Failed to fetch payment history');
+    return response.json();
+  } catch (error) {
+    console.error('Error fetching payment history:', error);
+    return [];
+  }
+};
+
+export const getTestData = async (): Promise<TestData> => {
+  console.log('Fetching test data from:', `${API_BASE_URL}/payments/test-data`);
+  try {
+    const response = await fetch(`${API_BASE_URL}/payments/test-data`);
+    console.log('Response status:', response.status);
+    console.log('Response ok:', response.ok);
+    
+    if (!response.ok) {
+      const errorText = await response.text();
+      console.error('Error response:', errorText);
+      throw new Error(`Failed to fetch test data: ${response.status} ${response.statusText}`);
+    }
+    
+    const data = await response.json();
+    console.log('Test data received:', data);
+    return data;
+  } catch (error) {
+    console.error('Error in getTestData:', error);
+    throw error;
+  }
+}; 

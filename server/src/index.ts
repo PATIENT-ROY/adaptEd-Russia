@@ -11,21 +11,34 @@ import guideRoutes from './api/guides.js';
 import reminderRoutes from './api/reminders.js';
 import chatRoutes from './api/chat.js';
 import supportRoutes from './api/support.js';
+import grantRoutes from './api/grants.js';
+import paymentRoutes from './api/payments.js';
 
 // Загружаем переменные окружения
 dotenv.config();
 
 const app = express();
-const PORT = process.env.PORT || 3003;
+const PORT = process.env.PORT || 56548;
 
 // Middleware безопасности
 app.use(helmet());
 
-// CORS настройки
-app.use(cors({
-  origin: process.env.CLIENT_URL || 'http://localhost:3000',
-  credentials: true,
-}));
+      // CORS настройки
+      app.use(cors({
+        origin: [
+          'http://localhost:3000',
+          'http://localhost:3001',
+          'http://localhost:3007',
+          'http://localhost:3008',
+          'http://192.168.0.101:3000',
+          'http://192.168.0.101:3001',
+          'http://192.168.0.101:3007',
+          'http://192.168.0.101:3008',
+          '127.0.4.240:56548',
+          ...(process.env.CLIENT_URL ? [process.env.CLIENT_URL] : [])
+        ],
+        credentials: true,
+      }));
 
 // Rate limiting - временно отключено для тестирования
 // const limiter = rateLimit({
@@ -115,6 +128,8 @@ app.use('/api/guides', guideRoutes);
 app.use('/api/reminders', reminderRoutes);
 app.use('/api/chat', chatRoutes);
 app.use('/api/support', supportRoutes);
+app.use('/api/grants', grantRoutes);
+app.use('/api/payments', paymentRoutes);
 
 // 404 handler
 app.use('*', (req, res) => {

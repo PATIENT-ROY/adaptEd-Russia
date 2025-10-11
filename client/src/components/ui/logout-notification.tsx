@@ -30,7 +30,7 @@ export function LogoutNotification({
   onClose,
   isVisible,
 }: LogoutNotificationProps) {
-  const [isAnimating, setIsAnimating] = useState(false);
+
   const [isClient, setIsClient] = useState(false);
 
   useEffect(() => {
@@ -41,7 +41,6 @@ export function LogoutNotification({
     if (!isClient) return;
 
     if (isVisible) {
-      setIsAnimating(true);
       // Автоматически скрыть через 8 секунд
       const timer = setTimeout(() => {
         onClose();

@@ -18,6 +18,7 @@ import {
   X,
   Loader2,
   Phone,
+  MapPin,
 } from "lucide-react";
 import type { User as UserType } from "@/types";
 
@@ -27,6 +28,7 @@ interface ExtendedUser extends UserType {
   year?: string;
   phone?: string;
   gender?: string;
+  city?: string;
 }
 
 interface ProfileEditFormProps {
@@ -48,6 +50,7 @@ export function ProfileEditForm({
     year: user.year || "",
     phone: user.phone || "",
     gender: user.gender || "",
+    city: user.city || "",
   });
   const [isLoading, setIsLoading] = useState(false);
   const [error, setError] = useState("");
@@ -73,6 +76,7 @@ export function ProfileEditForm({
         year: formData.year,
         phone: formData.phone,
         gender: formData.gender as "male" | "female" | undefined,
+        city: formData.city,
       });
 
       if (success) {
@@ -91,7 +95,7 @@ export function ProfileEditForm({
 
   return (
     <div className="fixed inset-0 z-50 flex items-center justify-center p-4 bg-black/20 backdrop-blur-sm animate-fade-in">
-      <Card className="w-full max-w-md border-0 shadow-2xl animate-slide-in-from-top">
+      <Card className="w-full max-w-md max-h-[90vh] overflow-y-auto border-0 shadow-2xl animate-slide-in-from-top">
         <CardHeader className="text-center pb-4 relative">
           <Button
             variant="ghost"
@@ -153,6 +157,28 @@ export function ProfileEditForm({
                   type="tel"
                   placeholder="+7 (999) 123-45-67"
                   value={formData.phone}
+                  onChange={handleChange}
+                  className="pl-10 h-12 border-slate-200 focus:border-blue-500 focus:ring-blue-500"
+                />
+              </div>
+            </div>
+
+            {/* City */}
+            <div className="space-y-2">
+              <label
+                htmlFor="city"
+                className="text-sm font-medium text-slate-700"
+              >
+                Город
+              </label>
+              <div className="relative">
+                <MapPin className="absolute left-3 top-1/2 transform -translate-y-1/2 h-4 w-4 text-slate-400" />
+                <Input
+                  id="city"
+                  name="city"
+                  type="text"
+                  placeholder="Москва, Санкт-Петербург..."
+                  value={formData.city}
                   onChange={handleChange}
                   className="pl-10 h-12 border-slate-200 focus:border-blue-500 focus:ring-blue-500"
                 />

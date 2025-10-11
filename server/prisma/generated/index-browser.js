@@ -116,9 +116,6 @@ Prisma.NullTypes = {
  */
 
 exports.Prisma.TransactionIsolationLevel = makeStrictEnum({
-  ReadUncommitted: 'ReadUncommitted',
-  ReadCommitted: 'ReadCommitted',
-  RepeatableRead: 'RepeatableRead',
   Serializable: 'Serializable'
 });
 
@@ -159,6 +156,7 @@ exports.Prisma.ReminderScalarFieldEnum = {
   priority: 'priority',
   status: 'status',
   category: 'category',
+  notificationMethod: 'notificationMethod',
   createdAt: 'createdAt',
   updatedAt: 'updatedAt'
 };
@@ -221,14 +219,81 @@ exports.Prisma.AdminScalarFieldEnum = {
   updatedAt: 'updatedAt'
 };
 
+exports.Prisma.SubscriptionPlanScalarFieldEnum = {
+  id: 'id',
+  name: 'name',
+  price: 'price',
+  currency: 'currency',
+  interval: 'interval',
+  features: 'features',
+  isActive: 'isActive',
+  createdAt: 'createdAt',
+  updatedAt: 'updatedAt'
+};
+
+exports.Prisma.PaymentScalarFieldEnum = {
+  id: 'id',
+  userId: 'userId',
+  amount: 'amount',
+  currency: 'currency',
+  description: 'description',
+  status: 'status',
+  paymentMethod: 'paymentMethod',
+  yooKassaPaymentId: 'yooKassaPaymentId',
+  createdAt: 'createdAt',
+  updatedAt: 'updatedAt'
+};
+
+exports.Prisma.SubscriptionScalarFieldEnum = {
+  id: 'id',
+  userId: 'userId',
+  planId: 'planId',
+  status: 'status',
+  startDate: 'startDate',
+  endDate: 'endDate',
+  autoRenew: 'autoRenew',
+  paymentId: 'paymentId',
+  createdAt: 'createdAt',
+  updatedAt: 'updatedAt'
+};
+
+exports.Prisma.GrantScalarFieldEnum = {
+  id: 'id',
+  title: 'title',
+  description: 'description',
+  amount: 'amount',
+  type: 'type',
+  status: 'status',
+  level: 'level',
+  category: 'category',
+  organization: 'organization',
+  applicationDeadline: 'applicationDeadline',
+  requirements: 'requirements',
+  benefits: 'benefits',
+  eligibility: 'eligibility',
+  applicationProcess: 'applicationProcess',
+  contactInfo: 'contactInfo',
+  tags: 'tags',
+  isFeatured: 'isFeatured',
+  createdAt: 'createdAt',
+  updatedAt: 'updatedAt'
+};
+
+exports.Prisma.UserGrantApplicationScalarFieldEnum = {
+  id: 'id',
+  userId: 'userId',
+  grantId: 'grantId',
+  status: 'status',
+  documents: 'documents',
+  notes: 'notes',
+  submittedAt: 'submittedAt',
+  createdAt: 'createdAt',
+  updatedAt: 'updatedAt'
+};
+
 exports.Prisma.SortOrder = {
   asc: 'asc',
   desc: 'desc'
-};
-
-exports.Prisma.QueryMode = {
-  default: 'default',
-  insensitive: 'insensitive'
 };
 
 exports.Prisma.NullsOrder = {
@@ -245,7 +310,12 @@ exports.Prisma.ModelName = {
   ChatMessage: 'ChatMessage',
   SupportTicket: 'SupportTicket',
   SupportResponse: 'SupportResponse',
-  Admin: 'Admin'
+  Admin: 'Admin',
+  SubscriptionPlan: 'SubscriptionPlan',
+  Payment: 'Payment',
+  Subscription: 'Subscription',
+  Grant: 'Grant',
+  UserGrantApplication: 'UserGrantApplication'
 };
 
 /**

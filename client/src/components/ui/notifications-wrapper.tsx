@@ -39,7 +39,7 @@ export function NotificationsWrapper({ children }: NotificationsWrapperProps) {
         } else {
           localStorage.removeItem("logoutNotification");
         }
-      } catch (error) {
+      } catch {
         localStorage.removeItem("logoutNotification");
       }
     }

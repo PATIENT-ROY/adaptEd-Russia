@@ -3,6 +3,7 @@ import { Inter } from "next/font/google";
 import "./globals.css";
 import { AuthProvider } from "@/contexts/AuthContext";
 import { NotificationsWrapper } from "@/components/ui/notifications-wrapper";
+import { ConditionalFooter } from "@/components/layout/conditional-footer";
 
 const inter = Inter({ subsets: ["latin"] });
 
@@ -46,9 +47,9 @@ export const metadata: Metadata = {
     siteName: "AdaptEd Russia",
     images: [
       {
-        url: "/og-image.jpg",
-        width: 1200,
-        height: 630,
+        url: "/favicon.svg",
+        width: 32,
+        height: 32,
         alt: "AdaptEd Russia - Помощь иностранным студентам",
       },
     ],
@@ -58,7 +59,7 @@ export const metadata: Metadata = {
     title: "AdaptEd Russia - Помощь иностранным студентам в России",
     description:
       "Платформа для помощи иностранным студентам в адаптации к жизни и учёбе в российских вузах.",
-    images: ["/og-image.jpg"],
+    images: ["/favicon.svg"],
   },
   robots: {
     index: true,
@@ -85,31 +86,30 @@ export default function RootLayout({
   return (
     <html lang="ru">
       <head>
-        <link rel="icon" href="/favicon.ico" />
-        <link
-          rel="apple-touch-icon"
-          sizes="180x180"
-          href="/apple-touch-icon.png"
-        />
+        <link rel="icon" type="image/svg+xml" href="/favicon.svg?v=2" />
         <link
           rel="icon"
           type="image/png"
           sizes="32x32"
-          href="/favicon-32x32.png"
+          href="/favicon.svg?v=2"
         />
         <link
           rel="icon"
           type="image/png"
           sizes="16x16"
-          href="/favicon-16x16.png"
+          href="/favicon.svg?v=2"
         />
+        <link rel="apple-touch-icon" href="/favicon.svg?v=2" />
         <link rel="manifest" href="/site.webmanifest" />
-        <meta name="theme-color" content="#3b82f6" />
-        <meta name="msapplication-TileColor" content="#3b82f6" />
+        <meta name="theme-color" content="#2563eb" />
+        <meta name="msapplication-TileColor" content="#2563eb" />
       </head>
       <body className={inter.className}>
         <AuthProvider>
-          <NotificationsWrapper>{children}</NotificationsWrapper>
+          <NotificationsWrapper>
+            {children}
+            <ConditionalFooter />
+          </NotificationsWrapper>
         </AuthProvider>
       </body>
     </html>

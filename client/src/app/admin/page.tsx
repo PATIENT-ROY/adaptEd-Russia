@@ -135,7 +135,7 @@ const adminActions = [
   {
     title: "AI аналитика",
     description: "Статистика запросов и популярные вопросы",
-    icon: MessageSquare,
+    icon: Activity,
     href: "/admin/ai-analytics",
     color: "from-purple-500 to-purple-600",
   },
@@ -260,9 +260,13 @@ export default function AdminPage() {
             {adminActions.map((action, index) => {
               const Icon = action.icon;
               return (
-                <Link key={action.title} href={action.href}>
+                <Link
+                  key={action.title}
+                  href={action.href}
+                  className="h-full block"
+                >
                   <Card
-                    className="group hover:scale-105 transition-all duration-300 animate-fade-in-up cursor-pointer"
+                    className="group hover:scale-105 transition-all duration-300 animate-fade-in-up cursor-pointer h-full"
                     style={{ animationDelay: `${index * 0.1}s` }}
                   >
                     <CardContent className="p-4 sm:p-6">

@@ -11,7 +11,7 @@ const registerSchema = z.object({
   email: z.string().email('Неверный формат email'),
   password: z.string().min(6, 'Пароль должен содержать минимум 6 символов'),
   name: z.string().min(2, 'Имя должно содержать минимум 2 символа'),
-  language: z.enum(['RU', 'EN', 'FR', 'AR']).default('RU'),
+  language: z.enum(['RU', 'EN', 'FR', 'AR', 'ZH']).default('RU'),
   country: z.string().min(2, 'Укажите страну'),
 });
 
@@ -74,7 +74,7 @@ router.post('/register', async (req: Request, res: Response) => {
     });
 
     const response: AuthResponse = {
-      user,
+      user: user as any,
       token,
       message: 'Пользователь успешно зарегистрирован',
     };
@@ -125,7 +125,7 @@ router.post('/login', async (req: Request, res: Response) => {
     });
 
     const response: AuthResponse = {
-      user,
+      user: user as any,
       token,
       message: 'Успешный вход в систему',
     };
