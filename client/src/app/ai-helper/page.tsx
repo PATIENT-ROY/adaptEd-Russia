@@ -31,21 +31,25 @@ import ReactMarkdown from "react-markdown";
 
 const quickQuestions = [
   {
+    id: "1",
     question: "Что делать при потере паспорта?",
     category: "life",
     icon: AlertCircle,
   },
   {
+    id: "2",
     question: "Как зарегистрироваться в общежитии?",
     category: "life",
     icon: Home,
   },
   {
+    id: "3",
     question: "Когда начинается сессия?",
     category: "education",
     icon: Clock,
   },
   {
+    id: "4",
     question: "Как писать курсовую работу?",
     category: "education",
     icon: BookOpen,
@@ -210,28 +214,43 @@ export default function AiHelperPage() {
                               <div className="prose prose-sm max-w-none text-sm sm:text-base">
                                 <ReactMarkdown
                                   components={{
-                                    p: ({ children }) => (
-                                      <p className="mb-1 sm:mb-2 last:mb-0">
+                                    p: ({ children, ...props }) => (
+                                      <p
+                                        className="mb-1 sm:mb-2 last:mb-0"
+                                        {...props}
+                                      >
                                         {children}
                                       </p>
                                     ),
-                                    ul: ({ children }) => (
-                                      <ul className="list-disc list-inside mb-1 sm:mb-2 space-y-0.5 sm:space-y-1">
+                                    ul: ({ children, ...props }) => (
+                                      <ul
+                                        className="list-disc list-inside mb-1 sm:mb-2 space-y-0.5 sm:space-y-1"
+                                        {...props}
+                                      >
                                         {children}
                                       </ul>
                                     ),
-                                    ol: ({ children }) => (
-                                      <ol className="list-decimal list-inside mb-1 sm:mb-2 space-y-0.5 sm:space-y-1">
+                                    ol: ({ children, ...props }) => (
+                                      <ol
+                                        className="list-decimal list-inside mb-1 sm:mb-2 space-y-0.5 sm:space-y-1"
+                                        {...props}
+                                      >
                                         {children}
                                       </ol>
                                     ),
-                                    li: ({ children }) => (
-                                      <li className="text-xs sm:text-sm">
+                                    li: ({ children, ...props }) => (
+                                      <li
+                                        className="text-xs sm:text-sm"
+                                        {...props}
+                                      >
                                         {children}
                                       </li>
                                     ),
-                                    strong: ({ children }) => (
-                                      <strong className="font-semibold">
+                                    strong: ({ children, ...props }) => (
+                                      <strong
+                                        className="font-semibold"
+                                        {...props}
+                                      >
                                         {children}
                                       </strong>
                                     ),
@@ -294,11 +313,11 @@ export default function AiHelperPage() {
                   </CardDescription>
                 </CardHeader>
                 <CardContent className="p-4 sm:p-6 space-y-3 sm:space-y-4">
-                  {quickQuestions.map((item, index) => {
+                  {quickQuestions.map((item) => {
                     const Icon = item.icon;
                     return (
                       <div
-                        key={index}
+                        key={item.id}
                         className={`w-full border border-gray-300 rounded-lg p-4 sm:p-5 bg-white hover:bg-gray-50 hover:shadow-sm transition-all duration-200 cursor-pointer ${
                           loading
                             ? "opacity-50 cursor-not-allowed"

@@ -33,6 +33,7 @@ import {
   Download,
   Eye,
   Clock,
+  Globe,
 } from "lucide-react";
 import Link from "next/link";
 import { useState } from "react";
@@ -47,6 +48,7 @@ interface ExtendedUser {
   name: string;
   language: string;
   role: string;
+  country?: string;
   university?: string;
   faculty?: string;
   year?: string;
@@ -282,6 +284,11 @@ export default function ProfilePage() {
                 </h1>
                 <p className="text-sm sm:text-base md:text-lg lg:text-xl text-white/80 mb-3 sm:mb-4">
                   {extendedUser.university || "Университет не указан"}
+                  {extendedUser.country && (
+                    <span className="ml-2 text-white/60">
+                      • {extendedUser.country}
+                    </span>
+                  )}
                   {extendedUser.city && (
                     <span className="ml-2 text-white/60">
                       • {extendedUser.city}
@@ -602,6 +609,15 @@ export default function ProfilePage() {
                             : user.language === "AR"
                             ? "العربية"
                             : user.language}
+                        </p>
+                      </div>
+                    </div>
+                    <div className="flex items-center space-x-3 p-3 rounded-xl bg-slate-50">
+                      <Globe className="h-5 w-5 text-slate-500" />
+                      <div>
+                        <p className="text-sm text-slate-500">Страна</p>
+                        <p className="font-medium text-slate-900">
+                          {extendedUser.country || "Страна не указана"}
                         </p>
                       </div>
                     </div>

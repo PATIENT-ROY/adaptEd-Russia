@@ -2,8 +2,10 @@ import type { Metadata } from "next";
 import { Inter } from "next/font/google";
 import "./globals.css";
 import { AuthProvider } from "@/contexts/AuthContext";
+import { LanguageProvider } from "@/contexts/LanguageContext";
 import { NotificationsWrapper } from "@/components/ui/notifications-wrapper";
 import { ConditionalFooter } from "@/components/layout/conditional-footer";
+import { HtmlLang } from "@/components/language/html-lang";
 
 const inter = Inter({ subsets: ["latin"] });
 
@@ -106,10 +108,13 @@ export default function RootLayout({
       </head>
       <body className={inter.className}>
         <AuthProvider>
-          <NotificationsWrapper>
-            {children}
-            <ConditionalFooter />
-          </NotificationsWrapper>
+          <LanguageProvider>
+            <HtmlLang />
+            <NotificationsWrapper>
+              {children}
+              <ConditionalFooter />
+            </NotificationsWrapper>
+          </LanguageProvider>
         </AuthProvider>
       </body>
     </html>

@@ -71,6 +71,14 @@ class ApiClient {
       const data = await response.json();
 
       if (!response.ok) {
+        // Если недействительный токен, очищаем его
+        if (response.status === 401 || data.error?.includes('токен') || data.error?.includes('token')) {
+          this.clearToken();
+          // Перенаправляем на страницу входа только если это не страница входа
+          if (typeof window !== 'undefined' && !window.location.pathname.includes('/login')) {
+            window.location.href = '/login';
+          }
+        }
         throw new Error(data.error || 'Ошибка запроса');
       }
 
@@ -175,12 +183,13 @@ class ApiClient {
   }
 
   // Чат
-  async sendMessage(content: string): Promise<ChatMessage> {
-    const response = await this.request<ChatMessage>('/chat/messages', {
+  async sendMessage(content: string): Promise<any> {
+    const response = await this.request<any>('/chat/messages', {
       method: 'POST',
       body: JSON.stringify({ content }),
     });
-    return response.data!;
+    // API возвращает { userMessage, aiMessage }
+    return response.data || response;
   }
 
   async getChatHistory(): Promise<ChatMessage[]> {

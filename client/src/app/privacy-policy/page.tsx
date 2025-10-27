@@ -1,6 +1,5 @@
 "use client";
 
-import Link from "next/link";
 import { Card, CardContent, CardHeader, CardTitle } from "@/components/ui/card";
 import {
   Shield,
@@ -12,6 +11,7 @@ import {
   Mail,
   Phone,
 } from "lucide-react";
+import { formatDate, getCurrentDateISO } from "@/lib/date-utils";
 
 export default function PrivacyPolicyPage() {
   return (
@@ -26,7 +26,7 @@ export default function PrivacyPolicyPage() {
             Политика обработки персональных данных
           </h1>
           <p className="text-xl text-gray-600">
-            Последнее обновление: {new Date().toLocaleDateString("ru-RU")}
+            Последнее обновление: {formatDate(getCurrentDateISO())}
           </p>
         </div>
 
@@ -267,17 +267,6 @@ export default function PrivacyPolicyPage() {
               </div>
             </CardContent>
           </Card>
-        </div>
-
-        {/* Кнопка возврата */}
-        <div className="text-center mt-12">
-          <Link
-            href="/support"
-            className="inline-flex items-center px-6 py-3 bg-blue-600 text-white rounded-lg hover:bg-blue-700 transition-colors duration-200"
-          >
-            <Shield className="h-4 w-4 mr-2" />
-            Вернуться к форме поддержки
-          </Link>
         </div>
       </div>
     </div>

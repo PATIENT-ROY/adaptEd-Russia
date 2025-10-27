@@ -30,6 +30,70 @@ import {
 } from "lucide-react";
 import { Role, Plan, Language } from "@/types";
 
+// Список стран
+const countries = [
+  "Россия",
+  "Казахстан",
+  "Узбекистан",
+  "Азербайджан",
+  "Армения",
+  "Белоруссия",
+  "Кыргызстан",
+  "Таджикистан",
+  "Туркменистан",
+  "Молдова",
+  "Украина",
+  "Грузия",
+  "Китай",
+  "Вьетнам",
+  "Индонезия",
+  "Индия",
+  "Бангладеш",
+  "Пакистан",
+  "Иран",
+  "Египет",
+  "Нигерия",
+  "Эфиопия",
+  "Кения",
+  "Марокко",
+  "Тунис",
+  "Алжир",
+  "Гана",
+  "Сенегал",
+  "Бразилия",
+  "Мексика",
+  "Аргентина",
+  "Колумбия",
+  "Чили",
+  "Перу",
+  "Боливия",
+  "США",
+  "Канада",
+  "Великобритания",
+  "Германия",
+  "Франция",
+  "Италия",
+  "Испания",
+  "Польша",
+  "Чехия",
+  "Венгрия",
+  "Румыния",
+  "Болгария",
+  "Греция",
+  "Португалия",
+  "Нидерланды",
+  "Бельгия",
+  "Австрия",
+  "Швейцария",
+  "Швеция",
+  "Норвегия",
+  "Дания",
+  "Финляндия",
+  "Ирландия",
+  "Исландия",
+  "Люксембург",
+];
+
 export default function RegisterPage() {
   const [formData, setFormData] = useState({
     name: "",
@@ -191,17 +255,22 @@ export default function RegisterPage() {
                   Страна
                 </label>
                 <div className="relative">
-                  <Globe className="absolute left-3 top-1/2 transform -translate-y-1/2 h-4 w-4 text-slate-400" />
-                  <Input
+                  <Globe className="absolute left-3 top-1/2 transform -translate-y-1/2 h-4 w-4 text-slate-400 pointer-events-none" />
+                  <select
                     id="country"
                     name="country"
-                    type="text"
-                    placeholder="Ваша страна"
                     value={formData.country}
                     onChange={handleChange}
-                    className="pl-10 h-12 border-slate-200 focus:border-blue-500 focus:ring-blue-500"
+                    className="w-full pl-10 h-12 border border-slate-200 rounded-lg focus:border-blue-500 focus:ring-2 focus:ring-blue-500 bg-white text-slate-900 appearance-none"
                     required
-                  />
+                  >
+                    <option value="">Выберите страну</option>
+                    {countries.map((country) => (
+                      <option key={country} value={country}>
+                        {country}
+                      </option>
+                    ))}
+                  </select>
                 </div>
               </div>
 

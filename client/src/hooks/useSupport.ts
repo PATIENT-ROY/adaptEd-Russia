@@ -65,7 +65,6 @@ export const useSupport = () => {
   };
 
   const getFAQ = async (): Promise<FAQItem[]> => {
-    setIsLoading(true);
     setError(null);
 
     try {
@@ -76,18 +75,17 @@ export const useSupport = () => {
         throw new Error(data.message || 'Ошибка при получении FAQ');
       }
 
-      return data.data;
+      return data.data || data;
     } catch (err) {
       const errorMessage = err instanceof Error ? err.message : 'Неизвестная ошибка';
       setError(errorMessage);
-      throw err;
-    } finally {
-      setIsLoading(false);
+      console.error('FAQ loading error:', err);
+      // Возвращаем пустой массив в случае ошибки
+      return [];
     }
   };
 
   const getContactInfo = async (): Promise<ContactInfo> => {
-    setIsLoading(true);
     setError(null);
 
     try {
@@ -98,13 +96,12 @@ export const useSupport = () => {
         throw new Error(data.message || 'Ошибка при получении контактной информации');
       }
 
-      return data.data;
+      return data.data || data;
     } catch (err) {
       const errorMessage = err instanceof Error ? err.message : 'Неизвестная ошибка';
       setError(errorMessage);
+      console.error('Contact info loading error:', err);
       throw err;
-    } finally {
-      setIsLoading(false);
     }
   };
 

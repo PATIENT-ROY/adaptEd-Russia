@@ -13,6 +13,7 @@ import chatRoutes from './api/chat.js';
 import supportRoutes from './api/support.js';
 import grantRoutes from './api/grants.js';
 import paymentRoutes from './api/payments.js';
+import scheduleRoutes from './api/schedule.js';
 
 // Загружаем переменные окружения
 dotenv.config();
@@ -130,6 +131,7 @@ app.use('/api/chat', chatRoutes);
 app.use('/api/support', supportRoutes);
 app.use('/api/grants', grantRoutes);
 app.use('/api/payments', paymentRoutes);
+app.use('/api/schedule', scheduleRoutes);
 
 // 404 handler
 app.use('*', (req, res) => {

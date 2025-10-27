@@ -6,6 +6,7 @@ import { cn } from "@/lib/utils";
 import { Button } from "@/components/ui/button";
 import { LanguageSwitcher } from "@/components/ui/language-switcher";
 import { useAuth } from "@/contexts/AuthContext";
+import { useTranslation } from "@/hooks/useTranslation";
 import {
   Home,
   BookOpen,
@@ -27,16 +28,16 @@ interface NavigationProps {
   onLanguageChange: (language: Language) => void;
 }
 
-const navigationItems = [
-  { href: "/dashboard", label: "Главная", icon: Home },
-  { href: "/education-guide", label: "Учёба", icon: BookOpen },
-  { href: "/life-guide", label: "Быт", icon: HomeIcon },
-  { href: "/support", label: "Поддержка", icon: HelpCircle },
+const navigationItemsConfig = [
+  { href: "/dashboard", labelKey: "nav.home", icon: Home },
+  { href: "/education-guide", labelKey: "nav.education", icon: BookOpen },
+  { href: "/life-guide", labelKey: "nav.life", icon: HomeIcon },
+  { href: "/support", labelKey: "nav.support", icon: HelpCircle },
 ];
 
-const authenticatedNavigationItems = [
-  { href: "/reminders", label: "Напоминания", icon: Bell },
-  { href: "/ai-helper", label: "AI Помощник", icon: MessageSquare },
+const authenticatedNavigationItemsConfig = [
+  { href: "/reminders", labelKey: "nav.reminders", icon: Bell },
+  { href: "/ai-helper", labelKey: "nav.aiHelper", icon: MessageSquare },
 ];
 
 export function Navigation({
@@ -46,6 +47,7 @@ export function Navigation({
   const pathname = usePathname();
   const [isMobileMenuOpen, setIsMobileMenuOpen] = useState(false);
   const { user } = useAuth();
+  const { t } = useTranslation();
 
   return (
     <nav
@@ -84,7 +86,7 @@ export function Navigation({
           {/* Desktop Navigation */}
           <div className="hidden lg:flex lg:items-center lg:space-x-4">
             {/* Основная навигация для всех */}
-            {navigationItems.map((item) => {
+            {navigationItemsConfig.map((item) => {
               const Icon = item.icon;
               const isActive = pathname === item.href;
 
@@ -109,7 +111,7 @@ export function Navigation({
                       isActive ? "text-blue-600" : "text-slate-500"
                     )}
                   />
-                  <span>{item.label}</span>
+                  <span>{t(item.labelKey)}</span>
                   {isActive && (
                     <div
                       style={{
@@ -129,7 +131,7 @@ export function Navigation({
 
             {/* Дополнительная навигация только для авторизованных пользователей */}
             {user &&
-              authenticatedNavigationItems.map((item) => {
+              authenticatedNavigationItemsConfig.map((item) => {
                 const Icon = item.icon;
                 const isActive = pathname === item.href;
 
@@ -154,7 +156,7 @@ export function Navigation({
                         isActive ? "text-blue-600" : "text-slate-500"
                       )}
                     />
-                    <span>{item.label}</span>
+                    <span>{t(item.labelKey)}</span>
                     {isActive && (
                       <div
                         style={{
@@ -188,7 +190,7 @@ export function Navigation({
                   <Link href="/admin">
                     <Button className="rounded-lg sm:rounded-xl bg-gradient-to-r from-red-500 to-red-600 hover:from-red-600 hover:to-red-700 text-white shadow-lg hover:shadow-xl transform hover:scale-105 transition-all duration-300 text-xs sm:text-sm h-6 sm:h-7 lg:h-8 px-2 sm:px-3 font-medium">
                       <Shield className="mr-1 h-2 w-2 sm:h-2.5 sm:w-2.5" />
-                      <span className="hidden sm:inline">Админ</span>
+                      <span className="hidden sm:inline">{t("nav.admin")}</span>
                     </Button>
                   </Link>
                 )}
@@ -211,7 +213,7 @@ export function Navigation({
                     variant="outline"
                     className="rounded-lg sm:rounded-xl text-xs sm:text-sm h-6 sm:h-7 lg:h-8 px-2 sm:px-3"
                   >
-                    Войти
+                    {t("nav.login")}
                   </Button>
                 </Link>
               </div>
@@ -234,10 +236,10 @@ export function Navigation({
 
         {/* Mobile Navigation */}
         {isMobileMenuOpen && (
-          <div className="lg:hidden py-4 border-t border-slate-200 bg-white/95 backdrop-blur-sm animate-slide-in-from-top">
+          <div className="lg:hidden py-4 border-t border-slate-200 bg-white animate-slide-in-from-top">
             <div className="space-y-2">
               {/* Основная навигация для всех */}
-              {navigationItems.map((item, index) => {
+              {navigationItemsConfig.map((item, index) => {
                 const Icon = item.icon;
                 const isActive = pathname === item.href;
 
@@ -263,14 +265,14 @@ export function Navigation({
                         isActive ? "text-blue-600" : "text-slate-500"
                       )}
                     />
-                    <span>{item.label}</span>
+                    <span>{t(item.labelKey)}</span>
                   </Link>
                 );
               })}
 
               {/* Дополнительная навигация только для авторизованных пользователей */}
               {user &&
-                authenticatedNavigationItems.map((item, index) => {
+                authenticatedNavigationItemsConfig.map((item, index) => {
                   const Icon = item.icon;
                   const isActive = pathname === item.href;
 
@@ -286,7 +288,7 @@ export function Navigation({
                       )}
                       style={{
                         animationDelay: `${
-                          (navigationItems.length + index) * 100
+                          (navigationItemsConfig.length + index) * 100
                         }ms`,
                         animationFillMode: "both",
                       }}
@@ -298,7 +300,7 @@ export function Navigation({
                           isActive ? "text-blue-600" : "text-slate-500"
                         )}
                       />
-                      <span>{item.label}</span>
+                      <span>{t(item.labelKey)}</span>
                     </Link>
                   );
                 })}
@@ -310,8 +312,10 @@ export function Navigation({
                   className="flex items-center space-x-3 px-4 py-3 rounded-xl text-sm font-medium bg-gradient-to-r from-red-500 to-red-600 text-white hover:from-red-600 hover:to-red-700 transition-all duration-300 transform hover:scale-105"
                   style={{
                     animationDelay: `${
-                      (navigationItems.length +
-                        (user ? authenticatedNavigationItems.length : 0)) *
+                      (navigationItemsConfig.length +
+                        (user
+                          ? authenticatedNavigationItemsConfig.length
+                          : 0)) *
                       100
                     }ms`,
                     animationFillMode: "both",
@@ -319,7 +323,7 @@ export function Navigation({
                   onClick={() => setIsMobileMenuOpen(false)}
                 >
                   <Shield className="h-5 w-5" />
-                  <span>Админ-панель</span>
+                  <span>{t("nav.admin")}</span>
                 </Link>
               )}
             </div>

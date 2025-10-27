@@ -2,6 +2,8 @@
 
 import Link from "next/link";
 import { useAuth } from "@/contexts/AuthContext";
+import { useTranslation } from "@/hooks/useTranslation";
+import { getCurrentYear } from "@/lib/date-utils";
 import {
   Mail,
   Phone,
@@ -18,24 +20,25 @@ import {
 } from "lucide-react";
 
 export function Footer() {
-  const currentYear = new Date().getFullYear();
+  const currentYear = getCurrentYear();
   const { user } = useAuth();
+  const { t } = useTranslation();
 
   const footerLinks = {
     platform: [
-      { href: "/dashboard", label: "Главная" },
-      { href: "/education-guide", label: "Учёба" },
-      { href: "/life-guide", label: "Быт" },
+      { href: "/dashboard", labelKey: "nav.home" },
+      { href: "/education-guide", labelKey: "nav.education" },
+      { href: "/life-guide", labelKey: "nav.life" },
       // AI Помощник и Напоминания только для авторизованных пользователей
       ...(user
         ? [
-            { href: "/ai-helper", label: "AI Помощник" },
-            { href: "/reminders", label: "Напоминания" },
+            { href: "/ai-helper", labelKey: "nav.aiHelper" },
+            { href: "/reminders", labelKey: "nav.reminders" },
           ]
         : []),
     ],
     support: [
-      { href: "/support", label: "Поддержка" },
+      { href: "/support", labelKey: "nav.support" },
       // Убираем дублирование - "Политика конфиденциальности" только внизу
     ],
   };
@@ -100,7 +103,7 @@ export function Footer() {
           >
             <h3 className="text-sm sm:text-base lg:text-lg font-semibold text-white mb-3 sm:mb-4 flex items-center">
               <BookOpen className="h-4 w-4 sm:h-5 sm:w-5 mr-2 text-blue-400" />
-              Платформа
+              {t("footer.platform")}
             </h3>
             <ul className="space-y-0.5 sm:space-y-1">
               {footerLinks.platform.map((link, index) => (
@@ -110,7 +113,7 @@ export function Footer() {
                     className="text-xs sm:text-sm text-slate-300 hover:text-blue-400 transition-colors duration-300 hover:translate-x-1 inline-block py-0.5"
                     style={{ animationDelay: `${(index + 1) * 50}ms` }}
                   >
-                    {link.label}
+                    {t(link.labelKey)}
                   </Link>
                 </li>
               ))}
@@ -124,7 +127,7 @@ export function Footer() {
           >
             <h3 className="text-sm sm:text-base lg:text-lg font-semibold text-white mb-3 sm:mb-4 flex items-center">
               <Shield className="h-4 w-4 sm:h-5 sm:w-5 mr-2 text-blue-400" />
-              Поддержка
+              {t("footer.support")}
             </h3>
             <ul className="space-y-0.5 sm:space-y-1 mb-3 sm:mb-4">
               {footerLinks.support.map((link, index) => (
@@ -164,19 +167,23 @@ export function Footer() {
         <div className="mx-auto max-w-screen-2xl px-3 sm:px-4 lg:px-8 py-3 sm:py-4 lg:py-5">
           <div className="flex flex-col sm:flex-row items-center justify-between space-y-2 sm:space-y-0">
             <div className="flex items-center space-x-2 text-slate-400 text-xs sm:text-sm text-center sm:text-left">
-              <span>© {currentYear} AdaptEd Russia. Все права защищены.</span>
+              <span>
+                © {currentYear} AdaptEd Russia. {t("footer.copyright")}.
+              </span>
               <span className="hidden sm:inline">|</span>
-              <span className="hidden sm:inline">Сделано с</span>
+              <span className="hidden sm:inline">{t("footer.madeWith")}</span>
               <Heart className="h-3 w-3 sm:h-4 sm:w-4 text-red-500 inline" />
-              <span className="hidden sm:inline">в России</span>
+              <span className="hidden sm:inline">{t("footer.inRussia")}</span>
             </div>
 
             <div className="flex items-center space-x-3 sm:space-x-4 text-xs sm:text-sm">
               <Link
                 href="/privacy-policy"
                 className="text-slate-400 hover:text-blue-400 transition-colors duration-300 flex items-center"
+                target="_blank"
+                rel="noopener noreferrer"
               >
-                Политика конфиденциальности
+                {t("footer.privacy")}
               </Link>
               <div className="flex items-center space-x-1 sm:space-x-2 text-slate-400">
                 <Globe className="h-3 w-3 sm:h-4 sm:w-4" />
