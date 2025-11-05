@@ -78,6 +78,11 @@ export type Grant = $Result.DefaultSelection<Prisma.$GrantPayload>
  * 
  */
 export type UserGrantApplication = $Result.DefaultSelection<Prisma.$UserGrantApplicationPayload>
+/**
+ * Model DocScanUsage
+ * 
+ */
+export type DocScanUsage = $Result.DefaultSelection<Prisma.$DocScanUsagePayload>
 
 /**
  * ##  Prisma Client ʲˢ
@@ -331,6 +336,16 @@ export class PrismaClient<
     * ```
     */
   get userGrantApplication(): Prisma.UserGrantApplicationDelegate<ExtArgs>;
+
+  /**
+   * `prisma.docScanUsage`: Exposes CRUD operations for the **DocScanUsage** model.
+    * Example usage:
+    * ```ts
+    * // Fetch zero or more DocScanUsages
+    * const docScanUsages = await prisma.docScanUsage.findMany()
+    * ```
+    */
+  get docScanUsage(): Prisma.DocScanUsageDelegate<ExtArgs>;
 }
 
 export namespace Prisma {
@@ -784,7 +799,8 @@ export namespace Prisma {
     Payment: 'Payment',
     Subscription: 'Subscription',
     Grant: 'Grant',
-    UserGrantApplication: 'UserGrantApplication'
+    UserGrantApplication: 'UserGrantApplication',
+    DocScanUsage: 'DocScanUsage'
   };
 
   export type ModelName = (typeof ModelName)[keyof typeof ModelName]
@@ -800,7 +816,7 @@ export namespace Prisma {
 
   export type TypeMap<ExtArgs extends $Extensions.InternalArgs = $Extensions.DefaultArgs, ClientOptions = {}> = {
     meta: {
-      modelProps: "user" | "profile" | "reminder" | "guide" | "chatMessage" | "supportTicket" | "supportResponse" | "admin" | "subscriptionPlan" | "payment" | "subscription" | "grant" | "userGrantApplication"
+      modelProps: "user" | "profile" | "reminder" | "guide" | "chatMessage" | "supportTicket" | "supportResponse" | "admin" | "subscriptionPlan" | "payment" | "subscription" | "grant" | "userGrantApplication" | "docScanUsage"
       txIsolationLevel: Prisma.TransactionIsolationLevel
     }
     model: {
@@ -1714,6 +1730,76 @@ export namespace Prisma {
           }
         }
       }
+      DocScanUsage: {
+        payload: Prisma.$DocScanUsagePayload<ExtArgs>
+        fields: Prisma.DocScanUsageFieldRefs
+        operations: {
+          findUnique: {
+            args: Prisma.DocScanUsageFindUniqueArgs<ExtArgs>
+            result: $Utils.PayloadToResult<Prisma.$DocScanUsagePayload> | null
+          }
+          findUniqueOrThrow: {
+            args: Prisma.DocScanUsageFindUniqueOrThrowArgs<ExtArgs>
+            result: $Utils.PayloadToResult<Prisma.$DocScanUsagePayload>
+          }
+          findFirst: {
+            args: Prisma.DocScanUsageFindFirstArgs<ExtArgs>
+            result: $Utils.PayloadToResult<Prisma.$DocScanUsagePayload> | null
+          }
+          findFirstOrThrow: {
+            args: Prisma.DocScanUsageFindFirstOrThrowArgs<ExtArgs>
+            result: $Utils.PayloadToResult<Prisma.$DocScanUsagePayload>
+          }
+          findMany: {
+            args: Prisma.DocScanUsageFindManyArgs<ExtArgs>
+            result: $Utils.PayloadToResult<Prisma.$DocScanUsagePayload>[]
+          }
+          create: {
+            args: Prisma.DocScanUsageCreateArgs<ExtArgs>
+            result: $Utils.PayloadToResult<Prisma.$DocScanUsagePayload>
+          }
+          createMany: {
+            args: Prisma.DocScanUsageCreateManyArgs<ExtArgs>
+            result: BatchPayload
+          }
+          createManyAndReturn: {
+            args: Prisma.DocScanUsageCreateManyAndReturnArgs<ExtArgs>
+            result: $Utils.PayloadToResult<Prisma.$DocScanUsagePayload>[]
+          }
+          delete: {
+            args: Prisma.DocScanUsageDeleteArgs<ExtArgs>
+            result: $Utils.PayloadToResult<Prisma.$DocScanUsagePayload>
+          }
+          update: {
+            args: Prisma.DocScanUsageUpdateArgs<ExtArgs>
+            result: $Utils.PayloadToResult<Prisma.$DocScanUsagePayload>
+          }
+          deleteMany: {
+            args: Prisma.DocScanUsageDeleteManyArgs<ExtArgs>
+            result: BatchPayload
+          }
+          updateMany: {
+            args: Prisma.DocScanUsageUpdateManyArgs<ExtArgs>
+            result: BatchPayload
+          }
+          upsert: {
+            args: Prisma.DocScanUsageUpsertArgs<ExtArgs>
+            result: $Utils.PayloadToResult<Prisma.$DocScanUsagePayload>
+          }
+          aggregate: {
+            args: Prisma.DocScanUsageAggregateArgs<ExtArgs>
+            result: $Utils.Optional<AggregateDocScanUsage>
+          }
+          groupBy: {
+            args: Prisma.DocScanUsageGroupByArgs<ExtArgs>
+            result: $Utils.Optional<DocScanUsageGroupByOutputType>[]
+          }
+          count: {
+            args: Prisma.DocScanUsageCountArgs<ExtArgs>
+            result: $Utils.Optional<DocScanUsageCountAggregateOutputType> | number
+          }
+        }
+      }
     }
   } & {
     other: {
@@ -1881,6 +1967,7 @@ export namespace Prisma {
     payments: number
     subscriptions: number
     userGrantApplications: number
+    docScanUsage: number
   }
 
   export type UserCountOutputTypeSelect<ExtArgs extends $Extensions.InternalArgs = $Extensions.DefaultArgs> = {
@@ -1890,6 +1977,7 @@ export namespace Prisma {
     payments?: boolean | UserCountOutputTypeCountPaymentsArgs
     subscriptions?: boolean | UserCountOutputTypeCountSubscriptionsArgs
     userGrantApplications?: boolean | UserCountOutputTypeCountUserGrantApplicationsArgs
+    docScanUsage?: boolean | UserCountOutputTypeCountDocScanUsageArgs
   }
 
   // Custom InputTypes
@@ -1943,6 +2031,13 @@ export namespace Prisma {
    */
   export type UserCountOutputTypeCountUserGrantApplicationsArgs<ExtArgs extends $Extensions.InternalArgs = $Extensions.DefaultArgs> = {
     where?: UserGrantApplicationWhereInput
+  }
+
+  /**
+   * UserCountOutputType without action
+   */
+  export type UserCountOutputTypeCountDocScanUsageArgs<ExtArgs extends $Extensions.InternalArgs = $Extensions.DefaultArgs> = {
+    where?: DocScanUsageWhereInput
   }
 
 
@@ -2348,6 +2443,7 @@ export namespace Prisma {
     payments?: boolean | User$paymentsArgs<ExtArgs>
     subscriptions?: boolean | User$subscriptionsArgs<ExtArgs>
     userGrantApplications?: boolean | User$userGrantApplicationsArgs<ExtArgs>
+    docScanUsage?: boolean | User$docScanUsageArgs<ExtArgs>
     _count?: boolean | UserCountOutputTypeDefaultArgs<ExtArgs>
   }, ExtArgs["result"]["user"]>
 
@@ -2393,6 +2489,7 @@ export namespace Prisma {
     payments?: boolean | User$paymentsArgs<ExtArgs>
     subscriptions?: boolean | User$subscriptionsArgs<ExtArgs>
     userGrantApplications?: boolean | User$userGrantApplicationsArgs<ExtArgs>
+    docScanUsage?: boolean | User$docScanUsageArgs<ExtArgs>
     _count?: boolean | UserCountOutputTypeDefaultArgs<ExtArgs>
   }
   export type UserIncludeCreateManyAndReturn<ExtArgs extends $Extensions.InternalArgs = $Extensions.DefaultArgs> = {}
@@ -2407,6 +2504,7 @@ export namespace Prisma {
       payments: Prisma.$PaymentPayload<ExtArgs>[]
       subscriptions: Prisma.$SubscriptionPayload<ExtArgs>[]
       userGrantApplications: Prisma.$UserGrantApplicationPayload<ExtArgs>[]
+      docScanUsage: Prisma.$DocScanUsagePayload<ExtArgs>[]
     }
     scalars: $Extensions.GetPayloadResult<{
       id: string
@@ -2794,6 +2892,7 @@ export namespace Prisma {
     payments<T extends User$paymentsArgs<ExtArgs> = {}>(args?: Subset<T, User$paymentsArgs<ExtArgs>>): Prisma.PrismaPromise<$Result.GetResult<Prisma.$PaymentPayload<ExtArgs>, T, "findMany"> | Null>
     subscriptions<T extends User$subscriptionsArgs<ExtArgs> = {}>(args?: Subset<T, User$subscriptionsArgs<ExtArgs>>): Prisma.PrismaPromise<$Result.GetResult<Prisma.$SubscriptionPayload<ExtArgs>, T, "findMany"> | Null>
     userGrantApplications<T extends User$userGrantApplicationsArgs<ExtArgs> = {}>(args?: Subset<T, User$userGrantApplicationsArgs<ExtArgs>>): Prisma.PrismaPromise<$Result.GetResult<Prisma.$UserGrantApplicationPayload<ExtArgs>, T, "findMany"> | Null>
+    docScanUsage<T extends User$docScanUsageArgs<ExtArgs> = {}>(args?: Subset<T, User$docScanUsageArgs<ExtArgs>>): Prisma.PrismaPromise<$Result.GetResult<Prisma.$DocScanUsagePayload<ExtArgs>, T, "findMany"> | Null>
     /**
      * Attaches callbacks for the resolution and/or rejection of the Promise.
      * @param onfulfilled The callback to execute when the Promise is resolved.
@@ -3281,6 +3380,26 @@ export namespace Prisma {
     take?: number
     skip?: number
     distinct?: UserGrantApplicationScalarFieldEnum | UserGrantApplicationScalarFieldEnum[]
+  }
+
+  /**
+   * User.docScanUsage
+   */
+  export type User$docScanUsageArgs<ExtArgs extends $Extensions.InternalArgs = $Extensions.DefaultArgs> = {
+    /**
+     * Select specific fields to fetch from the DocScanUsage
+     */
+    select?: DocScanUsageSelect<ExtArgs> | null
+    /**
+     * Choose, which related nodes to fetch as well
+     */
+    include?: DocScanUsageInclude<ExtArgs> | null
+    where?: DocScanUsageWhereInput
+    orderBy?: DocScanUsageOrderByWithRelationInput | DocScanUsageOrderByWithRelationInput[]
+    cursor?: DocScanUsageWhereUniqueInput
+    take?: number
+    skip?: number
+    distinct?: DocScanUsageScalarFieldEnum | DocScanUsageScalarFieldEnum[]
   }
 
   /**
@@ -15430,6 +15549,983 @@ export namespace Prisma {
 
 
   /**
+   * Model DocScanUsage
+   */
+
+  export type AggregateDocScanUsage = {
+    _count: DocScanUsageCountAggregateOutputType | null
+    _avg: DocScanUsageAvgAggregateOutputType | null
+    _sum: DocScanUsageSumAggregateOutputType | null
+    _min: DocScanUsageMinAggregateOutputType | null
+    _max: DocScanUsageMaxAggregateOutputType | null
+  }
+
+  export type DocScanUsageAvgAggregateOutputType = {
+    scanCount: number | null
+  }
+
+  export type DocScanUsageSumAggregateOutputType = {
+    scanCount: number | null
+  }
+
+  export type DocScanUsageMinAggregateOutputType = {
+    id: string | null
+    userId: string | null
+    month: string | null
+    scanCount: number | null
+    createdAt: Date | null
+    updatedAt: Date | null
+  }
+
+  export type DocScanUsageMaxAggregateOutputType = {
+    id: string | null
+    userId: string | null
+    month: string | null
+    scanCount: number | null
+    createdAt: Date | null
+    updatedAt: Date | null
+  }
+
+  export type DocScanUsageCountAggregateOutputType = {
+    id: number
+    userId: number
+    month: number
+    scanCount: number
+    createdAt: number
+    updatedAt: number
+    _all: number
+  }
+
+
+  export type DocScanUsageAvgAggregateInputType = {
+    scanCount?: true
+  }
+
+  export type DocScanUsageSumAggregateInputType = {
+    scanCount?: true
+  }
+
+  export type DocScanUsageMinAggregateInputType = {
+    id?: true
+    userId?: true
+    month?: true
+    scanCount?: true
+    createdAt?: true
+    updatedAt?: true
+  }
+
+  export type DocScanUsageMaxAggregateInputType = {
+    id?: true
+    userId?: true
+    month?: true
+    scanCount?: true
+    createdAt?: true
+    updatedAt?: true
+  }
+
+  export type DocScanUsageCountAggregateInputType = {
+    id?: true
+    userId?: true
+    month?: true
+    scanCount?: true
+    createdAt?: true
+    updatedAt?: true
+    _all?: true
+  }
+
+  export type DocScanUsageAggregateArgs<ExtArgs extends $Extensions.InternalArgs = $Extensions.DefaultArgs> = {
+    /**
+     * Filter which DocScanUsage to aggregate.
+     */
+    where?: DocScanUsageWhereInput
+    /**
+     * {@link https://www.prisma.io/docs/concepts/components/prisma-client/sorting Sorting Docs}
+     * 
+     * Determine the order of DocScanUsages to fetch.
+     */
+    orderBy?: DocScanUsageOrderByWithRelationInput | DocScanUsageOrderByWithRelationInput[]
+    /**
+     * {@link https://www.prisma.io/docs/concepts/components/prisma-client/pagination#cursor-based-pagination Cursor Docs}
+     * 
+     * Sets the start position
+     */
+    cursor?: DocScanUsageWhereUniqueInput
+    /**
+     * {@link https://www.prisma.io/docs/concepts/components/prisma-client/pagination Pagination Docs}
+     * 
+     * Take `±n` DocScanUsages from the position of the cursor.
+     */
+    take?: number
+    /**
+     * {@link https://www.prisma.io/docs/concepts/components/prisma-client/pagination Pagination Docs}
+     * 
+     * Skip the first `n` DocScanUsages.
+     */
+    skip?: number
+    /**
+     * {@link https://www.prisma.io/docs/concepts/components/prisma-client/aggregations Aggregation Docs}
+     * 
+     * Count returned DocScanUsages
+    **/
+    _count?: true | DocScanUsageCountAggregateInputType
+    /**
+     * {@link https://www.prisma.io/docs/concepts/components/prisma-client/aggregations Aggregation Docs}
+     * 
+     * Select which fields to average
+    **/
+    _avg?: DocScanUsageAvgAggregateInputType
+    /**
+     * {@link https://www.prisma.io/docs/concepts/components/prisma-client/aggregations Aggregation Docs}
+     * 
+     * Select which fields to sum
+    **/
+    _sum?: DocScanUsageSumAggregateInputType
+    /**
+     * {@link https://www.prisma.io/docs/concepts/components/prisma-client/aggregations Aggregation Docs}
+     * 
+     * Select which fields to find the minimum value
+    **/
+    _min?: DocScanUsageMinAggregateInputType
+    /**
+     * {@link https://www.prisma.io/docs/concepts/components/prisma-client/aggregations Aggregation Docs}
+     * 
+     * Select which fields to find the maximum value
+    **/
+    _max?: DocScanUsageMaxAggregateInputType
+  }
+
+  export type GetDocScanUsageAggregateType<T extends DocScanUsageAggregateArgs> = {
+        [P in keyof T & keyof AggregateDocScanUsage]: P extends '_count' | 'count'
+      ? T[P] extends true
+        ? number
+        : GetScalarType<T[P], AggregateDocScanUsage[P]>
+      : GetScalarType<T[P], AggregateDocScanUsage[P]>
+  }
+
+
+
+
+  export type DocScanUsageGroupByArgs<ExtArgs extends $Extensions.InternalArgs = $Extensions.DefaultArgs> = {
+    where?: DocScanUsageWhereInput
+    orderBy?: DocScanUsageOrderByWithAggregationInput | DocScanUsageOrderByWithAggregationInput[]
+    by: DocScanUsageScalarFieldEnum[] | DocScanUsageScalarFieldEnum
+    having?: DocScanUsageScalarWhereWithAggregatesInput
+    take?: number
+    skip?: number
+    _count?: DocScanUsageCountAggregateInputType | true
+    _avg?: DocScanUsageAvgAggregateInputType
+    _sum?: DocScanUsageSumAggregateInputType
+    _min?: DocScanUsageMinAggregateInputType
+    _max?: DocScanUsageMaxAggregateInputType
+  }
+
+  export type DocScanUsageGroupByOutputType = {
+    id: string
+    userId: string
+    month: string
+    scanCount: number
+    createdAt: Date
+    updatedAt: Date
+    _count: DocScanUsageCountAggregateOutputType | null
+    _avg: DocScanUsageAvgAggregateOutputType | null
+    _sum: DocScanUsageSumAggregateOutputType | null
+    _min: DocScanUsageMinAggregateOutputType | null
+    _max: DocScanUsageMaxAggregateOutputType | null
+  }
+
+  type GetDocScanUsageGroupByPayload<T extends DocScanUsageGroupByArgs> = Prisma.PrismaPromise<
+    Array<
+      PickEnumerable<DocScanUsageGroupByOutputType, T['by']> &
+        {
+          [P in ((keyof T) & (keyof DocScanUsageGroupByOutputType))]: P extends '_count'
+            ? T[P] extends boolean
+              ? number
+              : GetScalarType<T[P], DocScanUsageGroupByOutputType[P]>
+            : GetScalarType<T[P], DocScanUsageGroupByOutputType[P]>
+        }
+      >
+    >
+
+
+  export type DocScanUsageSelect<ExtArgs extends $Extensions.InternalArgs = $Extensions.DefaultArgs> = $Extensions.GetSelect<{
+    id?: boolean
+    userId?: boolean
+    month?: boolean
+    scanCount?: boolean
+    createdAt?: boolean
+    updatedAt?: boolean
+    user?: boolean | UserDefaultArgs<ExtArgs>
+  }, ExtArgs["result"]["docScanUsage"]>
+
+  export type DocScanUsageSelectCreateManyAndReturn<ExtArgs extends $Extensions.InternalArgs = $Extensions.DefaultArgs> = $Extensions.GetSelect<{
+    id?: boolean
+    userId?: boolean
+    month?: boolean
+    scanCount?: boolean
+    createdAt?: boolean
+    updatedAt?: boolean
+    user?: boolean | UserDefaultArgs<ExtArgs>
+  }, ExtArgs["result"]["docScanUsage"]>
+
+  export type DocScanUsageSelectScalar = {
+    id?: boolean
+    userId?: boolean
+    month?: boolean
+    scanCount?: boolean
+    createdAt?: boolean
+    updatedAt?: boolean
+  }
+
+  export type DocScanUsageInclude<ExtArgs extends $Extensions.InternalArgs = $Extensions.DefaultArgs> = {
+    user?: boolean | UserDefaultArgs<ExtArgs>
+  }
+  export type DocScanUsageIncludeCreateManyAndReturn<ExtArgs extends $Extensions.InternalArgs = $Extensions.DefaultArgs> = {
+    user?: boolean | UserDefaultArgs<ExtArgs>
+  }
+
+  export type $DocScanUsagePayload<ExtArgs extends $Extensions.InternalArgs = $Extensions.DefaultArgs> = {
+    name: "DocScanUsage"
+    objects: {
+      user: Prisma.$UserPayload<ExtArgs>
+    }
+    scalars: $Extensions.GetPayloadResult<{
+      id: string
+      userId: string
+      month: string
+      scanCount: number
+      createdAt: Date
+      updatedAt: Date
+    }, ExtArgs["result"]["docScanUsage"]>
+    composites: {}
+  }
+
+  type DocScanUsageGetPayload<S extends boolean | null | undefined | DocScanUsageDefaultArgs> = $Result.GetResult<Prisma.$DocScanUsagePayload, S>
+
+  type DocScanUsageCountArgs<ExtArgs extends $Extensions.InternalArgs = $Extensions.DefaultArgs> = 
+    Omit<DocScanUsageFindManyArgs, 'select' | 'include' | 'distinct'> & {
+      select?: DocScanUsageCountAggregateInputType | true
+    }
+
+  export interface DocScanUsageDelegate<ExtArgs extends $Extensions.InternalArgs = $Extensions.DefaultArgs> {
+    [K: symbol]: { types: Prisma.TypeMap<ExtArgs>['model']['DocScanUsage'], meta: { name: 'DocScanUsage' } }
+    /**
+     * Find zero or one DocScanUsage that matches the filter.
+     * @param {DocScanUsageFindUniqueArgs} args - Arguments to find a DocScanUsage
+     * @example
+     * // Get one DocScanUsage
+     * const docScanUsage = await prisma.docScanUsage.findUnique({
+     *   where: {
+     *     // ... provide filter here
+     *   }
+     * })
+     */
+    findUnique<T extends DocScanUsageFindUniqueArgs>(args: SelectSubset<T, DocScanUsageFindUniqueArgs<ExtArgs>>): Prisma__DocScanUsageClient<$Result.GetResult<Prisma.$DocScanUsagePayload<ExtArgs>, T, "findUnique"> | null, null, ExtArgs>
+
+    /**
+     * Find one DocScanUsage that matches the filter or throw an error with `error.code='P2025'` 
+     * if no matches were found.
+     * @param {DocScanUsageFindUniqueOrThrowArgs} args - Arguments to find a DocScanUsage
+     * @example
+     * // Get one DocScanUsage
+     * const docScanUsage = await prisma.docScanUsage.findUniqueOrThrow({
+     *   where: {
+     *     // ... provide filter here
+     *   }
+     * })
+     */
+    findUniqueOrThrow<T extends DocScanUsageFindUniqueOrThrowArgs>(args: SelectSubset<T, DocScanUsageFindUniqueOrThrowArgs<ExtArgs>>): Prisma__DocScanUsageClient<$Result.GetResult<Prisma.$DocScanUsagePayload<ExtArgs>, T, "findUniqueOrThrow">, never, ExtArgs>
+
+    /**
+     * Find the first DocScanUsage that matches the filter.
+     * Note, that providing `undefined` is treated as the value not being there.
+     * Read more here: https://pris.ly/d/null-undefined
+     * @param {DocScanUsageFindFirstArgs} args - Arguments to find a DocScanUsage
+     * @example
+     * // Get one DocScanUsage
+     * const docScanUsage = await prisma.docScanUsage.findFirst({
+     *   where: {
+     *     // ... provide filter here
+     *   }
+     * })
+     */
+    findFirst<T extends DocScanUsageFindFirstArgs>(args?: SelectSubset<T, DocScanUsageFindFirstArgs<ExtArgs>>): Prisma__DocScanUsageClient<$Result.GetResult<Prisma.$DocScanUsagePayload<ExtArgs>, T, "findFirst"> | null, null, ExtArgs>
+
+    /**
+     * Find the first DocScanUsage that matches the filter or
+     * throw `PrismaKnownClientError` with `P2025` code if no matches were found.
+     * Note, that providing `undefined` is treated as the value not being there.
+     * Read more here: https://pris.ly/d/null-undefined
+     * @param {DocScanUsageFindFirstOrThrowArgs} args - Arguments to find a DocScanUsage
+     * @example
+     * // Get one DocScanUsage
+     * const docScanUsage = await prisma.docScanUsage.findFirstOrThrow({
+     *   where: {
+     *     // ... provide filter here
+     *   }
+     * })
+     */
+    findFirstOrThrow<T extends DocScanUsageFindFirstOrThrowArgs>(args?: SelectSubset<T, DocScanUsageFindFirstOrThrowArgs<ExtArgs>>): Prisma__DocScanUsageClient<$Result.GetResult<Prisma.$DocScanUsagePayload<ExtArgs>, T, "findFirstOrThrow">, never, ExtArgs>
+
+    /**
+     * Find zero or more DocScanUsages that matches the filter.
+     * Note, that providing `undefined` is treated as the value not being there.
+     * Read more here: https://pris.ly/d/null-undefined
+     * @param {DocScanUsageFindManyArgs} args - Arguments to filter and select certain fields only.
+     * @example
+     * // Get all DocScanUsages
+     * const docScanUsages = await prisma.docScanUsage.findMany()
+     * 
+     * // Get first 10 DocScanUsages
+     * const docScanUsages = await prisma.docScanUsage.findMany({ take: 10 })
+     * 
+     * // Only select the `id`
+     * const docScanUsageWithIdOnly = await prisma.docScanUsage.findMany({ select: { id: true } })
+     * 
+     */
+    findMany<T extends DocScanUsageFindManyArgs>(args?: SelectSubset<T, DocScanUsageFindManyArgs<ExtArgs>>): Prisma.PrismaPromise<$Result.GetResult<Prisma.$DocScanUsagePayload<ExtArgs>, T, "findMany">>
+
+    /**
+     * Create a DocScanUsage.
+     * @param {DocScanUsageCreateArgs} args - Arguments to create a DocScanUsage.
+     * @example
+     * // Create one DocScanUsage
+     * const DocScanUsage = await prisma.docScanUsage.create({
+     *   data: {
+     *     // ... data to create a DocScanUsage
+     *   }
+     * })
+     * 
+     */
+    create<T extends DocScanUsageCreateArgs>(args: SelectSubset<T, DocScanUsageCreateArgs<ExtArgs>>): Prisma__DocScanUsageClient<$Result.GetResult<Prisma.$DocScanUsagePayload<ExtArgs>, T, "create">, never, ExtArgs>
+
+    /**
+     * Create many DocScanUsages.
+     * @param {DocScanUsageCreateManyArgs} args - Arguments to create many DocScanUsages.
+     * @example
+     * // Create many DocScanUsages
+     * const docScanUsage = await prisma.docScanUsage.createMany({
+     *   data: [
+     *     // ... provide data here
+     *   ]
+     * })
+     *     
+     */
+    createMany<T extends DocScanUsageCreateManyArgs>(args?: SelectSubset<T, DocScanUsageCreateManyArgs<ExtArgs>>): Prisma.PrismaPromise<BatchPayload>
+
+    /**
+     * Create many DocScanUsages and returns the data saved in the database.
+     * @param {DocScanUsageCreateManyAndReturnArgs} args - Arguments to create many DocScanUsages.
+     * @example
+     * // Create many DocScanUsages
+     * const docScanUsage = await prisma.docScanUsage.createManyAndReturn({
+     *   data: [
+     *     // ... provide data here
+     *   ]
+     * })
+     * 
+     * // Create many DocScanUsages and only return the `id`
+     * const docScanUsageWithIdOnly = await prisma.docScanUsage.createManyAndReturn({ 
+     *   select: { id: true },
+     *   data: [
+     *     // ... provide data here
+     *   ]
+     * })
+     * Note, that providing `undefined` is treated as the value not being there.
+     * Read more here: https://pris.ly/d/null-undefined
+     * 
+     */
+    createManyAndReturn<T extends DocScanUsageCreateManyAndReturnArgs>(args?: SelectSubset<T, DocScanUsageCreateManyAndReturnArgs<ExtArgs>>): Prisma.PrismaPromise<$Result.GetResult<Prisma.$DocScanUsagePayload<ExtArgs>, T, "createManyAndReturn">>
+
+    /**
+     * Delete a DocScanUsage.
+     * @param {DocScanUsageDeleteArgs} args - Arguments to delete one DocScanUsage.
+     * @example
+     * // Delete one DocScanUsage
+     * const DocScanUsage = await prisma.docScanUsage.delete({
+     *   where: {
+     *     // ... filter to delete one DocScanUsage
+     *   }
+     * })
+     * 
+     */
+    delete<T extends DocScanUsageDeleteArgs>(args: SelectSubset<T, DocScanUsageDeleteArgs<ExtArgs>>): Prisma__DocScanUsageClient<$Result.GetResult<Prisma.$DocScanUsagePayload<ExtArgs>, T, "delete">, never, ExtArgs>
+
+    /**
+     * Update one DocScanUsage.
+     * @param {DocScanUsageUpdateArgs} args - Arguments to update one DocScanUsage.
+     * @example
+     * // Update one DocScanUsage
+     * const docScanUsage = await prisma.docScanUsage.update({
+     *   where: {
+     *     // ... provide filter here
+     *   },
+     *   data: {
+     *     // ... provide data here
+     *   }
+     * })
+     * 
+     */
+    update<T extends DocScanUsageUpdateArgs>(args: SelectSubset<T, DocScanUsageUpdateArgs<ExtArgs>>): Prisma__DocScanUsageClient<$Result.GetResult<Prisma.$DocScanUsagePayload<ExtArgs>, T, "update">, never, ExtArgs>
+
+    /**
+     * Delete zero or more DocScanUsages.
+     * @param {DocScanUsageDeleteManyArgs} args - Arguments to filter DocScanUsages to delete.
+     * @example
+     * // Delete a few DocScanUsages
+     * const { count } = await prisma.docScanUsage.deleteMany({
+     *   where: {
+     *     // ... provide filter here
+     *   }
+     * })
+     * 
+     */
+    deleteMany<T extends DocScanUsageDeleteManyArgs>(args?: SelectSubset<T, DocScanUsageDeleteManyArgs<ExtArgs>>): Prisma.PrismaPromise<BatchPayload>
+
+    /**
+     * Update zero or more DocScanUsages.
+     * Note, that providing `undefined` is treated as the value not being there.
+     * Read more here: https://pris.ly/d/null-undefined
+     * @param {DocScanUsageUpdateManyArgs} args - Arguments to update one or more rows.
+     * @example
+     * // Update many DocScanUsages
+     * const docScanUsage = await prisma.docScanUsage.updateMany({
+     *   where: {
+     *     // ... provide filter here
+     *   },
+     *   data: {
+     *     // ... provide data here
+     *   }
+     * })
+     * 
+     */
+    updateMany<T extends DocScanUsageUpdateManyArgs>(args: SelectSubset<T, DocScanUsageUpdateManyArgs<ExtArgs>>): Prisma.PrismaPromise<BatchPayload>
+
+    /**
+     * Create or update one DocScanUsage.
+     * @param {DocScanUsageUpsertArgs} args - Arguments to update or create a DocScanUsage.
+     * @example
+     * // Update or create a DocScanUsage
+     * const docScanUsage = await prisma.docScanUsage.upsert({
+     *   create: {
+     *     // ... data to create a DocScanUsage
+     *   },
+     *   update: {
+     *     // ... in case it already exists, update
+     *   },
+     *   where: {
+     *     // ... the filter for the DocScanUsage we want to update
+     *   }
+     * })
+     */
+    upsert<T extends DocScanUsageUpsertArgs>(args: SelectSubset<T, DocScanUsageUpsertArgs<ExtArgs>>): Prisma__DocScanUsageClient<$Result.GetResult<Prisma.$DocScanUsagePayload<ExtArgs>, T, "upsert">, never, ExtArgs>
+
+
+    /**
+     * Count the number of DocScanUsages.
+     * Note, that providing `undefined` is treated as the value not being there.
+     * Read more here: https://pris.ly/d/null-undefined
+     * @param {DocScanUsageCountArgs} args - Arguments to filter DocScanUsages to count.
+     * @example
+     * // Count the number of DocScanUsages
+     * const count = await prisma.docScanUsage.count({
+     *   where: {
+     *     // ... the filter for the DocScanUsages we want to count
+     *   }
+     * })
+    **/
+    count<T extends DocScanUsageCountArgs>(
+      args?: Subset<T, DocScanUsageCountArgs>,
+    ): Prisma.PrismaPromise<
+      T extends $Utils.Record<'select', any>
+        ? T['select'] extends true
+          ? number
+          : GetScalarType<T['select'], DocScanUsageCountAggregateOutputType>
+        : number
+    >
+
+    /**
+     * Allows you to perform aggregations operations on a DocScanUsage.
+     * Note, that providing `undefined` is treated as the value not being there.
+     * Read more here: https://pris.ly/d/null-undefined
+     * @param {DocScanUsageAggregateArgs} args - Select which aggregations you would like to apply and on what fields.
+     * @example
+     * // Ordered by age ascending
+     * // Where email contains prisma.io
+     * // Limited to the 10 users
+     * const aggregations = await prisma.user.aggregate({
+     *   _avg: {
+     *     age: true,
+     *   },
+     *   where: {
+     *     email: {
+     *       contains: "prisma.io",
+     *     },
+     *   },
+     *   orderBy: {
+     *     age: "asc",
+     *   },
+     *   take: 10,
+     * })
+    **/
+    aggregate<T extends DocScanUsageAggregateArgs>(args: Subset<T, DocScanUsageAggregateArgs>): Prisma.PrismaPromise<GetDocScanUsageAggregateType<T>>
+
+    /**
+     * Group by DocScanUsage.
+     * Note, that providing `undefined` is treated as the value not being there.
+     * Read more here: https://pris.ly/d/null-undefined
+     * @param {DocScanUsageGroupByArgs} args - Group by arguments.
+     * @example
+     * // Group by city, order by createdAt, get count
+     * const result = await prisma.user.groupBy({
+     *   by: ['city', 'createdAt'],
+     *   orderBy: {
+     *     createdAt: true
+     *   },
+     *   _count: {
+     *     _all: true
+     *   },
+     * })
+     * 
+    **/
+    groupBy<
+      T extends DocScanUsageGroupByArgs,
+      HasSelectOrTake extends Or<
+        Extends<'skip', Keys<T>>,
+        Extends<'take', Keys<T>>
+      >,
+      OrderByArg extends True extends HasSelectOrTake
+        ? { orderBy: DocScanUsageGroupByArgs['orderBy'] }
+        : { orderBy?: DocScanUsageGroupByArgs['orderBy'] },
+      OrderFields extends ExcludeUnderscoreKeys<Keys<MaybeTupleToUnion<T['orderBy']>>>,
+      ByFields extends MaybeTupleToUnion<T['by']>,
+      ByValid extends Has<ByFields, OrderFields>,
+      HavingFields extends GetHavingFields<T['having']>,
+      HavingValid extends Has<ByFields, HavingFields>,
+      ByEmpty extends T['by'] extends never[] ? True : False,
+      InputErrors extends ByEmpty extends True
+      ? `Error: "by" must not be empty.`
+      : HavingValid extends False
+      ? {
+          [P in HavingFields]: P extends ByFields
+            ? never
+            : P extends string
+            ? `Error: Field "${P}" used in "having" needs to be provided in "by".`
+            : [
+                Error,
+                'Field ',
+                P,
+                ` in "having" needs to be provided in "by"`,
+              ]
+        }[HavingFields]
+      : 'take' extends Keys<T>
+      ? 'orderBy' extends Keys<T>
+        ? ByValid extends True
+          ? {}
+          : {
+              [P in OrderFields]: P extends ByFields
+                ? never
+                : `Error: Field "${P}" in "orderBy" needs to be provided in "by"`
+            }[OrderFields]
+        : 'Error: If you provide "take", you also need to provide "orderBy"'
+      : 'skip' extends Keys<T>
+      ? 'orderBy' extends Keys<T>
+        ? ByValid extends True
+          ? {}
+          : {
+              [P in OrderFields]: P extends ByFields
+                ? never
+                : `Error: Field "${P}" in "orderBy" needs to be provided in "by"`
+            }[OrderFields]
+        : 'Error: If you provide "skip", you also need to provide "orderBy"'
+      : ByValid extends True
+      ? {}
+      : {
+          [P in OrderFields]: P extends ByFields
+            ? never
+            : `Error: Field "${P}" in "orderBy" needs to be provided in "by"`
+        }[OrderFields]
+    >(args: SubsetIntersection<T, DocScanUsageGroupByArgs, OrderByArg> & InputErrors): {} extends InputErrors ? GetDocScanUsageGroupByPayload<T> : Prisma.PrismaPromise<InputErrors>
+  /**
+   * Fields of the DocScanUsage model
+   */
+  readonly fields: DocScanUsageFieldRefs;
+  }
+
+  /**
+   * The delegate class that acts as a "Promise-like" for DocScanUsage.
+   * Why is this prefixed with `Prisma__`?
+   * Because we want to prevent naming conflicts as mentioned in
+   * https://github.com/prisma/prisma-client-js/issues/707
+   */
+  export interface Prisma__DocScanUsageClient<T, Null = never, ExtArgs extends $Extensions.InternalArgs = $Extensions.DefaultArgs> extends Prisma.PrismaPromise<T> {
+    readonly [Symbol.toStringTag]: "PrismaPromise"
+    user<T extends UserDefaultArgs<ExtArgs> = {}>(args?: Subset<T, UserDefaultArgs<ExtArgs>>): Prisma__UserClient<$Result.GetResult<Prisma.$UserPayload<ExtArgs>, T, "findUniqueOrThrow"> | Null, Null, ExtArgs>
+    /**
+     * Attaches callbacks for the resolution and/or rejection of the Promise.
+     * @param onfulfilled The callback to execute when the Promise is resolved.
+     * @param onrejected The callback to execute when the Promise is rejected.
+     * @returns A Promise for the completion of which ever callback is executed.
+     */
+    then<TResult1 = T, TResult2 = never>(onfulfilled?: ((value: T) => TResult1 | PromiseLike<TResult1>) | undefined | null, onrejected?: ((reason: any) => TResult2 | PromiseLike<TResult2>) | undefined | null): $Utils.JsPromise<TResult1 | TResult2>
+    /**
+     * Attaches a callback for only the rejection of the Promise.
+     * @param onrejected The callback to execute when the Promise is rejected.
+     * @returns A Promise for the completion of the callback.
+     */
+    catch<TResult = never>(onrejected?: ((reason: any) => TResult | PromiseLike<TResult>) | undefined | null): $Utils.JsPromise<T | TResult>
+    /**
+     * Attaches a callback that is invoked when the Promise is settled (fulfilled or rejected). The
+     * resolved value cannot be modified from the callback.
+     * @param onfinally The callback to execute when the Promise is settled (fulfilled or rejected).
+     * @returns A Promise for the completion of the callback.
+     */
+    finally(onfinally?: (() => void) | undefined | null): $Utils.JsPromise<T>
+  }
+
+
+
+
+  /**
+   * Fields of the DocScanUsage model
+   */ 
+  interface DocScanUsageFieldRefs {
+    readonly id: FieldRef<"DocScanUsage", 'String'>
+    readonly userId: FieldRef<"DocScanUsage", 'String'>
+    readonly month: FieldRef<"DocScanUsage", 'String'>
+    readonly scanCount: FieldRef<"DocScanUsage", 'Int'>
+    readonly createdAt: FieldRef<"DocScanUsage", 'DateTime'>
+    readonly updatedAt: FieldRef<"DocScanUsage", 'DateTime'>
+  }
+    
+
+  // Custom InputTypes
+  /**
+   * DocScanUsage findUnique
+   */
+  export type DocScanUsageFindUniqueArgs<ExtArgs extends $Extensions.InternalArgs = $Extensions.DefaultArgs> = {
+    /**
+     * Select specific fields to fetch from the DocScanUsage
+     */
+    select?: DocScanUsageSelect<ExtArgs> | null
+    /**
+     * Choose, which related nodes to fetch as well
+     */
+    include?: DocScanUsageInclude<ExtArgs> | null
+    /**
+     * Filter, which DocScanUsage to fetch.
+     */
+    where: DocScanUsageWhereUniqueInput
+  }
+
+  /**
+   * DocScanUsage findUniqueOrThrow
+   */
+  export type DocScanUsageFindUniqueOrThrowArgs<ExtArgs extends $Extensions.InternalArgs = $Extensions.DefaultArgs> = {
+    /**
+     * Select specific fields to fetch from the DocScanUsage
+     */
+    select?: DocScanUsageSelect<ExtArgs> | null
+    /**
+     * Choose, which related nodes to fetch as well
+     */
+    include?: DocScanUsageInclude<ExtArgs> | null
+    /**
+     * Filter, which DocScanUsage to fetch.
+     */
+    where: DocScanUsageWhereUniqueInput
+  }
+
+  /**
+   * DocScanUsage findFirst
+   */
+  export type DocScanUsageFindFirstArgs<ExtArgs extends $Extensions.InternalArgs = $Extensions.DefaultArgs> = {
+    /**
+     * Select specific fields to fetch from the DocScanUsage
+     */
+    select?: DocScanUsageSelect<ExtArgs> | null
+    /**
+     * Choose, which related nodes to fetch as well
+     */
+    include?: DocScanUsageInclude<ExtArgs> | null
+    /**
+     * Filter, which DocScanUsage to fetch.
+     */
+    where?: DocScanUsageWhereInput
+    /**
+     * {@link https://www.prisma.io/docs/concepts/components/prisma-client/sorting Sorting Docs}
+     * 
+     * Determine the order of DocScanUsages to fetch.
+     */
+    orderBy?: DocScanUsageOrderByWithRelationInput | DocScanUsageOrderByWithRelationInput[]
+    /**
+     * {@link https://www.prisma.io/docs/concepts/components/prisma-client/pagination#cursor-based-pagination Cursor Docs}
+     * 
+     * Sets the position for searching for DocScanUsages.
+     */
+    cursor?: DocScanUsageWhereUniqueInput
+    /**
+     * {@link https://www.prisma.io/docs/concepts/components/prisma-client/pagination Pagination Docs}
+     * 
+     * Take `±n` DocScanUsages from the position of the cursor.
+     */
+    take?: number
+    /**
+     * {@link https://www.prisma.io/docs/concepts/components/prisma-client/pagination Pagination Docs}
+     * 
+     * Skip the first `n` DocScanUsages.
+     */
+    skip?: number
+    /**
+     * {@link https://www.prisma.io/docs/concepts/components/prisma-client/distinct Distinct Docs}
+     * 
+     * Filter by unique combinations of DocScanUsages.
+     */
+    distinct?: DocScanUsageScalarFieldEnum | DocScanUsageScalarFieldEnum[]
+  }
+
+  /**
+   * DocScanUsage findFirstOrThrow
+   */
+  export type DocScanUsageFindFirstOrThrowArgs<ExtArgs extends $Extensions.InternalArgs = $Extensions.DefaultArgs> = {
+    /**
+     * Select specific fields to fetch from the DocScanUsage
+     */
+    select?: DocScanUsageSelect<ExtArgs> | null
+    /**
+     * Choose, which related nodes to fetch as well
+     */
+    include?: DocScanUsageInclude<ExtArgs> | null
+    /**
+     * Filter, which DocScanUsage to fetch.
+     */
+    where?: DocScanUsageWhereInput
+    /**
+     * {@link https://www.prisma.io/docs/concepts/components/prisma-client/sorting Sorting Docs}
+     * 
+     * Determine the order of DocScanUsages to fetch.
+     */
+    orderBy?: DocScanUsageOrderByWithRelationInput | DocScanUsageOrderByWithRelationInput[]
+    /**
+     * {@link https://www.prisma.io/docs/concepts/components/prisma-client/pagination#cursor-based-pagination Cursor Docs}
+     * 
+     * Sets the position for searching for DocScanUsages.
+     */
+    cursor?: DocScanUsageWhereUniqueInput
+    /**
+     * {@link https://www.prisma.io/docs/concepts/components/prisma-client/pagination Pagination Docs}
+     * 
+     * Take `±n` DocScanUsages from the position of the cursor.
+     */
+    take?: number
+    /**
+     * {@link https://www.prisma.io/docs/concepts/components/prisma-client/pagination Pagination Docs}
+     * 
+     * Skip the first `n` DocScanUsages.
+     */
+    skip?: number
+    /**
+     * {@link https://www.prisma.io/docs/concepts/components/prisma-client/distinct Distinct Docs}
+     * 
+     * Filter by unique combinations of DocScanUsages.
+     */
+    distinct?: DocScanUsageScalarFieldEnum | DocScanUsageScalarFieldEnum[]
+  }
+
+  /**
+   * DocScanUsage findMany
+   */
+  export type DocScanUsageFindManyArgs<ExtArgs extends $Extensions.InternalArgs = $Extensions.DefaultArgs> = {
+    /**
+     * Select specific fields to fetch from the DocScanUsage
+     */
+    select?: DocScanUsageSelect<ExtArgs> | null
+    /**
+     * Choose, which related nodes to fetch as well
+     */
+    include?: DocScanUsageInclude<ExtArgs> | null
+    /**
+     * Filter, which DocScanUsages to fetch.
+     */
+    where?: DocScanUsageWhereInput
+    /**
+     * {@link https://www.prisma.io/docs/concepts/components/prisma-client/sorting Sorting Docs}
+     * 
+     * Determine the order of DocScanUsages to fetch.
+     */
+    orderBy?: DocScanUsageOrderByWithRelationInput | DocScanUsageOrderByWithRelationInput[]
+    /**
+     * {@link https://www.prisma.io/docs/concepts/components/prisma-client/pagination#cursor-based-pagination Cursor Docs}
+     * 
+     * Sets the position for listing DocScanUsages.
+     */
+    cursor?: DocScanUsageWhereUniqueInput
+    /**
+     * {@link https://www.prisma.io/docs/concepts/components/prisma-client/pagination Pagination Docs}
+     * 
+     * Take `±n` DocScanUsages from the position of the cursor.
+     */
+    take?: number
+    /**
+     * {@link https://www.prisma.io/docs/concepts/components/prisma-client/pagination Pagination Docs}
+     * 
+     * Skip the first `n` DocScanUsages.
+     */
+    skip?: number
+    distinct?: DocScanUsageScalarFieldEnum | DocScanUsageScalarFieldEnum[]
+  }
+
+  /**
+   * DocScanUsage create
+   */
+  export type DocScanUsageCreateArgs<ExtArgs extends $Extensions.InternalArgs = $Extensions.DefaultArgs> = {
+    /**
+     * Select specific fields to fetch from the DocScanUsage
+     */
+    select?: DocScanUsageSelect<ExtArgs> | null
+    /**
+     * Choose, which related nodes to fetch as well
+     */
+    include?: DocScanUsageInclude<ExtArgs> | null
+    /**
+     * The data needed to create a DocScanUsage.
+     */
+    data: XOR<DocScanUsageCreateInput, DocScanUsageUncheckedCreateInput>
+  }
+
+  /**
+   * DocScanUsage createMany
+   */
+  export type DocScanUsageCreateManyArgs<ExtArgs extends $Extensions.InternalArgs = $Extensions.DefaultArgs> = {
+    /**
+     * The data used to create many DocScanUsages.
+     */
+    data: DocScanUsageCreateManyInput | DocScanUsageCreateManyInput[]
+  }
+
+  /**
+   * DocScanUsage createManyAndReturn
+   */
+  export type DocScanUsageCreateManyAndReturnArgs<ExtArgs extends $Extensions.InternalArgs = $Extensions.DefaultArgs> = {
+    /**
+     * Select specific fields to fetch from the DocScanUsage
+     */
+    select?: DocScanUsageSelectCreateManyAndReturn<ExtArgs> | null
+    /**
+     * The data used to create many DocScanUsages.
+     */
+    data: DocScanUsageCreateManyInput | DocScanUsageCreateManyInput[]
+    /**
+     * Choose, which related nodes to fetch as well
+     */
+    include?: DocScanUsageIncludeCreateManyAndReturn<ExtArgs> | null
+  }
+
+  /**
+   * DocScanUsage update
+   */
+  export type DocScanUsageUpdateArgs<ExtArgs extends $Extensions.InternalArgs = $Extensions.DefaultArgs> = {
+    /**
+     * Select specific fields to fetch from the DocScanUsage
+     */
+    select?: DocScanUsageSelect<ExtArgs> | null
+    /**
+     * Choose, which related nodes to fetch as well
+     */
+    include?: DocScanUsageInclude<ExtArgs> | null
+    /**
+     * The data needed to update a DocScanUsage.
+     */
+    data: XOR<DocScanUsageUpdateInput, DocScanUsageUncheckedUpdateInput>
+    /**
+     * Choose, which DocScanUsage to update.
+     */
+    where: DocScanUsageWhereUniqueInput
+  }
+
+  /**
+   * DocScanUsage updateMany
+   */
+  export type DocScanUsageUpdateManyArgs<ExtArgs extends $Extensions.InternalArgs = $Extensions.DefaultArgs> = {
+    /**
+     * The data used to update DocScanUsages.
+     */
+    data: XOR<DocScanUsageUpdateManyMutationInput, DocScanUsageUncheckedUpdateManyInput>
+    /**
+     * Filter which DocScanUsages to update
+     */
+    where?: DocScanUsageWhereInput
+  }
+
+  /**
+   * DocScanUsage upsert
+   */
+  export type DocScanUsageUpsertArgs<ExtArgs extends $Extensions.InternalArgs = $Extensions.DefaultArgs> = {
+    /**
+     * Select specific fields to fetch from the DocScanUsage
+     */
+    select?: DocScanUsageSelect<ExtArgs> | null
+    /**
+     * Choose, which related nodes to fetch as well
+     */
+    include?: DocScanUsageInclude<ExtArgs> | null
+    /**
+     * The filter to search for the DocScanUsage to update in case it exists.
+     */
+    where: DocScanUsageWhereUniqueInput
+    /**
+     * In case the DocScanUsage found by the `where` argument doesn't exist, create a new DocScanUsage with this data.
+     */
+    create: XOR<DocScanUsageCreateInput, DocScanUsageUncheckedCreateInput>
+    /**
+     * In case the DocScanUsage was found with the provided `where` argument, update it with this data.
+     */
+    update: XOR<DocScanUsageUpdateInput, DocScanUsageUncheckedUpdateInput>
+  }
+
+  /**
+   * DocScanUsage delete
+   */
+  export type DocScanUsageDeleteArgs<ExtArgs extends $Extensions.InternalArgs = $Extensions.DefaultArgs> = {
+    /**
+     * Select specific fields to fetch from the DocScanUsage
+     */
+    select?: DocScanUsageSelect<ExtArgs> | null
+    /**
+     * Choose, which related nodes to fetch as well
+     */
+    include?: DocScanUsageInclude<ExtArgs> | null
+    /**
+     * Filter which DocScanUsage to delete.
+     */
+    where: DocScanUsageWhereUniqueInput
+  }
+
+  /**
+   * DocScanUsage deleteMany
+   */
+  export type DocScanUsageDeleteManyArgs<ExtArgs extends $Extensions.InternalArgs = $Extensions.DefaultArgs> = {
+    /**
+     * Filter which DocScanUsages to delete
+     */
+    where?: DocScanUsageWhereInput
+  }
+
+  /**
+   * DocScanUsage without action
+   */
+  export type DocScanUsageDefaultArgs<ExtArgs extends $Extensions.InternalArgs = $Extensions.DefaultArgs> = {
+    /**
+     * Select specific fields to fetch from the DocScanUsage
+     */
+    select?: DocScanUsageSelect<ExtArgs> | null
+    /**
+     * Choose, which related nodes to fetch as well
+     */
+    include?: DocScanUsageInclude<ExtArgs> | null
+  }
+
+
+  /**
    * Enums
    */
 
@@ -15651,6 +16747,18 @@ export namespace Prisma {
   export type UserGrantApplicationScalarFieldEnum = (typeof UserGrantApplicationScalarFieldEnum)[keyof typeof UserGrantApplicationScalarFieldEnum]
 
 
+  export const DocScanUsageScalarFieldEnum: {
+    id: 'id',
+    userId: 'userId',
+    month: 'month',
+    scanCount: 'scanCount',
+    createdAt: 'createdAt',
+    updatedAt: 'updatedAt'
+  };
+
+  export type DocScanUsageScalarFieldEnum = (typeof DocScanUsageScalarFieldEnum)[keyof typeof DocScanUsageScalarFieldEnum]
+
+
   export const SortOrder: {
     asc: 'asc',
     desc: 'desc'
@@ -15735,6 +16843,7 @@ export namespace Prisma {
     payments?: PaymentListRelationFilter
     subscriptions?: SubscriptionListRelationFilter
     userGrantApplications?: UserGrantApplicationListRelationFilter
+    docScanUsage?: DocScanUsageListRelationFilter
   }
 
   export type UserOrderByWithRelationInput = {
@@ -15759,6 +16868,7 @@ export namespace Prisma {
     payments?: PaymentOrderByRelationAggregateInput
     subscriptions?: SubscriptionOrderByRelationAggregateInput
     userGrantApplications?: UserGrantApplicationOrderByRelationAggregateInput
+    docScanUsage?: DocScanUsageOrderByRelationAggregateInput
   }
 
   export type UserWhereUniqueInput = Prisma.AtLeast<{
@@ -15786,6 +16896,7 @@ export namespace Prisma {
     payments?: PaymentListRelationFilter
     subscriptions?: SubscriptionListRelationFilter
     userGrantApplications?: UserGrantApplicationListRelationFilter
+    docScanUsage?: DocScanUsageListRelationFilter
   }, "id" | "email">
 
   export type UserOrderByWithAggregationInput = {
@@ -16806,6 +17917,69 @@ export namespace Prisma {
     updatedAt?: DateTimeWithAggregatesFilter<"UserGrantApplication"> | Date | string
   }
 
+  export type DocScanUsageWhereInput = {
+    AND?: DocScanUsageWhereInput | DocScanUsageWhereInput[]
+    OR?: DocScanUsageWhereInput[]
+    NOT?: DocScanUsageWhereInput | DocScanUsageWhereInput[]
+    id?: StringFilter<"DocScanUsage"> | string
+    userId?: StringFilter<"DocScanUsage"> | string
+    month?: StringFilter<"DocScanUsage"> | string
+    scanCount?: IntFilter<"DocScanUsage"> | number
+    createdAt?: DateTimeFilter<"DocScanUsage"> | Date | string
+    updatedAt?: DateTimeFilter<"DocScanUsage"> | Date | string
+    user?: XOR<UserRelationFilter, UserWhereInput>
+  }
+
+  export type DocScanUsageOrderByWithRelationInput = {
+    id?: SortOrder
+    userId?: SortOrder
+    month?: SortOrder
+    scanCount?: SortOrder
+    createdAt?: SortOrder
+    updatedAt?: SortOrder
+    user?: UserOrderByWithRelationInput
+  }
+
+  export type DocScanUsageWhereUniqueInput = Prisma.AtLeast<{
+    id?: string
+    userId_month?: DocScanUsageUserIdMonthCompoundUniqueInput
+    AND?: DocScanUsageWhereInput | DocScanUsageWhereInput[]
+    OR?: DocScanUsageWhereInput[]
+    NOT?: DocScanUsageWhereInput | DocScanUsageWhereInput[]
+    userId?: StringFilter<"DocScanUsage"> | string
+    month?: StringFilter<"DocScanUsage"> | string
+    scanCount?: IntFilter<"DocScanUsage"> | number
+    createdAt?: DateTimeFilter<"DocScanUsage"> | Date | string
+    updatedAt?: DateTimeFilter<"DocScanUsage"> | Date | string
+    user?: XOR<UserRelationFilter, UserWhereInput>
+  }, "id" | "userId_month">
+
+  export type DocScanUsageOrderByWithAggregationInput = {
+    id?: SortOrder
+    userId?: SortOrder
+    month?: SortOrder
+    scanCount?: SortOrder
+    createdAt?: SortOrder
+    updatedAt?: SortOrder
+    _count?: DocScanUsageCountOrderByAggregateInput
+    _avg?: DocScanUsageAvgOrderByAggregateInput
+    _max?: DocScanUsageMaxOrderByAggregateInput
+    _min?: DocScanUsageMinOrderByAggregateInput
+    _sum?: DocScanUsageSumOrderByAggregateInput
+  }
+
+  export type DocScanUsageScalarWhereWithAggregatesInput = {
+    AND?: DocScanUsageScalarWhereWithAggregatesInput | DocScanUsageScalarWhereWithAggregatesInput[]
+    OR?: DocScanUsageScalarWhereWithAggregatesInput[]
+    NOT?: DocScanUsageScalarWhereWithAggregatesInput | DocScanUsageScalarWhereWithAggregatesInput[]
+    id?: StringWithAggregatesFilter<"DocScanUsage"> | string
+    userId?: StringWithAggregatesFilter<"DocScanUsage"> | string
+    month?: StringWithAggregatesFilter<"DocScanUsage"> | string
+    scanCount?: IntWithAggregatesFilter<"DocScanUsage"> | number
+    createdAt?: DateTimeWithAggregatesFilter<"DocScanUsage"> | Date | string
+    updatedAt?: DateTimeWithAggregatesFilter<"DocScanUsage"> | Date | string
+  }
+
   export type UserCreateInput = {
     id?: string
     email: string
@@ -16828,6 +18002,7 @@ export namespace Prisma {
     payments?: PaymentCreateNestedManyWithoutUserInput
     subscriptions?: SubscriptionCreateNestedManyWithoutUserInput
     userGrantApplications?: UserGrantApplicationCreateNestedManyWithoutUserInput
+    docScanUsage?: DocScanUsageCreateNestedManyWithoutUserInput
   }
 
   export type UserUncheckedCreateInput = {
@@ -16852,6 +18027,7 @@ export namespace Prisma {
     payments?: PaymentUncheckedCreateNestedManyWithoutUserInput
     subscriptions?: SubscriptionUncheckedCreateNestedManyWithoutUserInput
     userGrantApplications?: UserGrantApplicationUncheckedCreateNestedManyWithoutUserInput
+    docScanUsage?: DocScanUsageUncheckedCreateNestedManyWithoutUserInput
   }
 
   export type UserUpdateInput = {
@@ -16876,6 +18052,7 @@ export namespace Prisma {
     payments?: PaymentUpdateManyWithoutUserNestedInput
     subscriptions?: SubscriptionUpdateManyWithoutUserNestedInput
     userGrantApplications?: UserGrantApplicationUpdateManyWithoutUserNestedInput
+    docScanUsage?: DocScanUsageUpdateManyWithoutUserNestedInput
   }
 
   export type UserUncheckedUpdateInput = {
@@ -16900,6 +18077,7 @@ export namespace Prisma {
     payments?: PaymentUncheckedUpdateManyWithoutUserNestedInput
     subscriptions?: SubscriptionUncheckedUpdateManyWithoutUserNestedInput
     userGrantApplications?: UserGrantApplicationUncheckedUpdateManyWithoutUserNestedInput
+    docScanUsage?: DocScanUsageUncheckedUpdateManyWithoutUserNestedInput
   }
 
   export type UserCreateManyInput = {
@@ -18046,6 +19224,68 @@ export namespace Prisma {
     updatedAt?: DateTimeFieldUpdateOperationsInput | Date | string
   }
 
+  export type DocScanUsageCreateInput = {
+    id?: string
+    month: string
+    scanCount?: number
+    createdAt?: Date | string
+    updatedAt?: Date | string
+    user: UserCreateNestedOneWithoutDocScanUsageInput
+  }
+
+  export type DocScanUsageUncheckedCreateInput = {
+    id?: string
+    userId: string
+    month: string
+    scanCount?: number
+    createdAt?: Date | string
+    updatedAt?: Date | string
+  }
+
+  export type DocScanUsageUpdateInput = {
+    id?: StringFieldUpdateOperationsInput | string
+    month?: StringFieldUpdateOperationsInput | string
+    scanCount?: IntFieldUpdateOperationsInput | number
+    createdAt?: DateTimeFieldUpdateOperationsInput | Date | string
+    updatedAt?: DateTimeFieldUpdateOperationsInput | Date | string
+    user?: UserUpdateOneRequiredWithoutDocScanUsageNestedInput
+  }
+
+  export type DocScanUsageUncheckedUpdateInput = {
+    id?: StringFieldUpdateOperationsInput | string
+    userId?: StringFieldUpdateOperationsInput | string
+    month?: StringFieldUpdateOperationsInput | string
+    scanCount?: IntFieldUpdateOperationsInput | number
+    createdAt?: DateTimeFieldUpdateOperationsInput | Date | string
+    updatedAt?: DateTimeFieldUpdateOperationsInput | Date | string
+  }
+
+  export type DocScanUsageCreateManyInput = {
+    id?: string
+    userId: string
+    month: string
+    scanCount?: number
+    createdAt?: Date | string
+    updatedAt?: Date | string
+  }
+
+  export type DocScanUsageUpdateManyMutationInput = {
+    id?: StringFieldUpdateOperationsInput | string
+    month?: StringFieldUpdateOperationsInput | string
+    scanCount?: IntFieldUpdateOperationsInput | number
+    createdAt?: DateTimeFieldUpdateOperationsInput | Date | string
+    updatedAt?: DateTimeFieldUpdateOperationsInput | Date | string
+  }
+
+  export type DocScanUsageUncheckedUpdateManyInput = {
+    id?: StringFieldUpdateOperationsInput | string
+    userId?: StringFieldUpdateOperationsInput | string
+    month?: StringFieldUpdateOperationsInput | string
+    scanCount?: IntFieldUpdateOperationsInput | number
+    createdAt?: DateTimeFieldUpdateOperationsInput | Date | string
+    updatedAt?: DateTimeFieldUpdateOperationsInput | Date | string
+  }
+
   export type StringFilter<$PrismaModel = never> = {
     equals?: string | StringFieldRefInput<$PrismaModel>
     in?: string[]
@@ -18126,6 +19366,12 @@ export namespace Prisma {
     none?: UserGrantApplicationWhereInput
   }
 
+  export type DocScanUsageListRelationFilter = {
+    every?: DocScanUsageWhereInput
+    some?: DocScanUsageWhereInput
+    none?: DocScanUsageWhereInput
+  }
+
   export type SortOrderInput = {
     sort: SortOrder
     nulls?: NullsOrder
@@ -18152,6 +19398,10 @@ export namespace Prisma {
   }
 
   export type UserGrantApplicationOrderByRelationAggregateInput = {
+    _count?: SortOrder
+  }
+
+  export type DocScanUsageOrderByRelationAggregateInput = {
     _count?: SortOrder
   }
 
@@ -18890,6 +20140,46 @@ export namespace Prisma {
     _max?: NestedDateTimeNullableFilter<$PrismaModel>
   }
 
+  export type DocScanUsageUserIdMonthCompoundUniqueInput = {
+    userId: string
+    month: string
+  }
+
+  export type DocScanUsageCountOrderByAggregateInput = {
+    id?: SortOrder
+    userId?: SortOrder
+    month?: SortOrder
+    scanCount?: SortOrder
+    createdAt?: SortOrder
+    updatedAt?: SortOrder
+  }
+
+  export type DocScanUsageAvgOrderByAggregateInput = {
+    scanCount?: SortOrder
+  }
+
+  export type DocScanUsageMaxOrderByAggregateInput = {
+    id?: SortOrder
+    userId?: SortOrder
+    month?: SortOrder
+    scanCount?: SortOrder
+    createdAt?: SortOrder
+    updatedAt?: SortOrder
+  }
+
+  export type DocScanUsageMinOrderByAggregateInput = {
+    id?: SortOrder
+    userId?: SortOrder
+    month?: SortOrder
+    scanCount?: SortOrder
+    createdAt?: SortOrder
+    updatedAt?: SortOrder
+  }
+
+  export type DocScanUsageSumOrderByAggregateInput = {
+    scanCount?: SortOrder
+  }
+
   export type ReminderCreateNestedManyWithoutUserInput = {
     create?: XOR<ReminderCreateWithoutUserInput, ReminderUncheckedCreateWithoutUserInput> | ReminderCreateWithoutUserInput[] | ReminderUncheckedCreateWithoutUserInput[]
     connectOrCreate?: ReminderCreateOrConnectWithoutUserInput | ReminderCreateOrConnectWithoutUserInput[]
@@ -18938,6 +20228,13 @@ export namespace Prisma {
     connect?: UserGrantApplicationWhereUniqueInput | UserGrantApplicationWhereUniqueInput[]
   }
 
+  export type DocScanUsageCreateNestedManyWithoutUserInput = {
+    create?: XOR<DocScanUsageCreateWithoutUserInput, DocScanUsageUncheckedCreateWithoutUserInput> | DocScanUsageCreateWithoutUserInput[] | DocScanUsageUncheckedCreateWithoutUserInput[]
+    connectOrCreate?: DocScanUsageCreateOrConnectWithoutUserInput | DocScanUsageCreateOrConnectWithoutUserInput[]
+    createMany?: DocScanUsageCreateManyUserInputEnvelope
+    connect?: DocScanUsageWhereUniqueInput | DocScanUsageWhereUniqueInput[]
+  }
+
   export type ReminderUncheckedCreateNestedManyWithoutUserInput = {
     create?: XOR<ReminderCreateWithoutUserInput, ReminderUncheckedCreateWithoutUserInput> | ReminderCreateWithoutUserInput[] | ReminderUncheckedCreateWithoutUserInput[]
     connectOrCreate?: ReminderCreateOrConnectWithoutUserInput | ReminderCreateOrConnectWithoutUserInput[]
@@ -18984,6 +20281,13 @@ export namespace Prisma {
     connectOrCreate?: UserGrantApplicationCreateOrConnectWithoutUserInput | UserGrantApplicationCreateOrConnectWithoutUserInput[]
     createMany?: UserGrantApplicationCreateManyUserInputEnvelope
     connect?: UserGrantApplicationWhereUniqueInput | UserGrantApplicationWhereUniqueInput[]
+  }
+
+  export type DocScanUsageUncheckedCreateNestedManyWithoutUserInput = {
+    create?: XOR<DocScanUsageCreateWithoutUserInput, DocScanUsageUncheckedCreateWithoutUserInput> | DocScanUsageCreateWithoutUserInput[] | DocScanUsageUncheckedCreateWithoutUserInput[]
+    connectOrCreate?: DocScanUsageCreateOrConnectWithoutUserInput | DocScanUsageCreateOrConnectWithoutUserInput[]
+    createMany?: DocScanUsageCreateManyUserInputEnvelope
+    connect?: DocScanUsageWhereUniqueInput | DocScanUsageWhereUniqueInput[]
   }
 
   export type StringFieldUpdateOperationsInput = {
@@ -19092,6 +20396,20 @@ export namespace Prisma {
     deleteMany?: UserGrantApplicationScalarWhereInput | UserGrantApplicationScalarWhereInput[]
   }
 
+  export type DocScanUsageUpdateManyWithoutUserNestedInput = {
+    create?: XOR<DocScanUsageCreateWithoutUserInput, DocScanUsageUncheckedCreateWithoutUserInput> | DocScanUsageCreateWithoutUserInput[] | DocScanUsageUncheckedCreateWithoutUserInput[]
+    connectOrCreate?: DocScanUsageCreateOrConnectWithoutUserInput | DocScanUsageCreateOrConnectWithoutUserInput[]
+    upsert?: DocScanUsageUpsertWithWhereUniqueWithoutUserInput | DocScanUsageUpsertWithWhereUniqueWithoutUserInput[]
+    createMany?: DocScanUsageCreateManyUserInputEnvelope
+    set?: DocScanUsageWhereUniqueInput | DocScanUsageWhereUniqueInput[]
+    disconnect?: DocScanUsageWhereUniqueInput | DocScanUsageWhereUniqueInput[]
+    delete?: DocScanUsageWhereUniqueInput | DocScanUsageWhereUniqueInput[]
+    connect?: DocScanUsageWhereUniqueInput | DocScanUsageWhereUniqueInput[]
+    update?: DocScanUsageUpdateWithWhereUniqueWithoutUserInput | DocScanUsageUpdateWithWhereUniqueWithoutUserInput[]
+    updateMany?: DocScanUsageUpdateManyWithWhereWithoutUserInput | DocScanUsageUpdateManyWithWhereWithoutUserInput[]
+    deleteMany?: DocScanUsageScalarWhereInput | DocScanUsageScalarWhereInput[]
+  }
+
   export type ReminderUncheckedUpdateManyWithoutUserNestedInput = {
     create?: XOR<ReminderCreateWithoutUserInput, ReminderUncheckedCreateWithoutUserInput> | ReminderCreateWithoutUserInput[] | ReminderUncheckedCreateWithoutUserInput[]
     connectOrCreate?: ReminderCreateOrConnectWithoutUserInput | ReminderCreateOrConnectWithoutUserInput[]
@@ -19184,6 +20502,20 @@ export namespace Prisma {
     update?: UserGrantApplicationUpdateWithWhereUniqueWithoutUserInput | UserGrantApplicationUpdateWithWhereUniqueWithoutUserInput[]
     updateMany?: UserGrantApplicationUpdateManyWithWhereWithoutUserInput | UserGrantApplicationUpdateManyWithWhereWithoutUserInput[]
     deleteMany?: UserGrantApplicationScalarWhereInput | UserGrantApplicationScalarWhereInput[]
+  }
+
+  export type DocScanUsageUncheckedUpdateManyWithoutUserNestedInput = {
+    create?: XOR<DocScanUsageCreateWithoutUserInput, DocScanUsageUncheckedCreateWithoutUserInput> | DocScanUsageCreateWithoutUserInput[] | DocScanUsageUncheckedCreateWithoutUserInput[]
+    connectOrCreate?: DocScanUsageCreateOrConnectWithoutUserInput | DocScanUsageCreateOrConnectWithoutUserInput[]
+    upsert?: DocScanUsageUpsertWithWhereUniqueWithoutUserInput | DocScanUsageUpsertWithWhereUniqueWithoutUserInput[]
+    createMany?: DocScanUsageCreateManyUserInputEnvelope
+    set?: DocScanUsageWhereUniqueInput | DocScanUsageWhereUniqueInput[]
+    disconnect?: DocScanUsageWhereUniqueInput | DocScanUsageWhereUniqueInput[]
+    delete?: DocScanUsageWhereUniqueInput | DocScanUsageWhereUniqueInput[]
+    connect?: DocScanUsageWhereUniqueInput | DocScanUsageWhereUniqueInput[]
+    update?: DocScanUsageUpdateWithWhereUniqueWithoutUserInput | DocScanUsageUpdateWithWhereUniqueWithoutUserInput[]
+    updateMany?: DocScanUsageUpdateManyWithWhereWithoutUserInput | DocScanUsageUpdateManyWithWhereWithoutUserInput[]
+    deleteMany?: DocScanUsageScalarWhereInput | DocScanUsageScalarWhereInput[]
   }
 
   export type UserCreateNestedOneWithoutProfileInput = {
@@ -19592,6 +20924,20 @@ export namespace Prisma {
     upsert?: GrantUpsertWithoutApplicationsInput
     connect?: GrantWhereUniqueInput
     update?: XOR<XOR<GrantUpdateToOneWithWhereWithoutApplicationsInput, GrantUpdateWithoutApplicationsInput>, GrantUncheckedUpdateWithoutApplicationsInput>
+  }
+
+  export type UserCreateNestedOneWithoutDocScanUsageInput = {
+    create?: XOR<UserCreateWithoutDocScanUsageInput, UserUncheckedCreateWithoutDocScanUsageInput>
+    connectOrCreate?: UserCreateOrConnectWithoutDocScanUsageInput
+    connect?: UserWhereUniqueInput
+  }
+
+  export type UserUpdateOneRequiredWithoutDocScanUsageNestedInput = {
+    create?: XOR<UserCreateWithoutDocScanUsageInput, UserUncheckedCreateWithoutDocScanUsageInput>
+    connectOrCreate?: UserCreateOrConnectWithoutDocScanUsageInput
+    upsert?: UserUpsertWithoutDocScanUsageInput
+    connect?: UserWhereUniqueInput
+    update?: XOR<XOR<UserUpdateToOneWithWhereWithoutDocScanUsageInput, UserUpdateWithoutDocScanUsageInput>, UserUncheckedUpdateWithoutDocScanUsageInput>
   }
 
   export type NestedStringFilter<$PrismaModel = never> = {
@@ -20003,6 +21349,31 @@ export namespace Prisma {
     data: UserGrantApplicationCreateManyUserInput | UserGrantApplicationCreateManyUserInput[]
   }
 
+  export type DocScanUsageCreateWithoutUserInput = {
+    id?: string
+    month: string
+    scanCount?: number
+    createdAt?: Date | string
+    updatedAt?: Date | string
+  }
+
+  export type DocScanUsageUncheckedCreateWithoutUserInput = {
+    id?: string
+    month: string
+    scanCount?: number
+    createdAt?: Date | string
+    updatedAt?: Date | string
+  }
+
+  export type DocScanUsageCreateOrConnectWithoutUserInput = {
+    where: DocScanUsageWhereUniqueInput
+    create: XOR<DocScanUsageCreateWithoutUserInput, DocScanUsageUncheckedCreateWithoutUserInput>
+  }
+
+  export type DocScanUsageCreateManyUserInputEnvelope = {
+    data: DocScanUsageCreateManyUserInput | DocScanUsageCreateManyUserInput[]
+  }
+
   export type ReminderUpsertWithWhereUniqueWithoutUserInput = {
     where: ReminderWhereUniqueInput
     update: XOR<ReminderUpdateWithoutUserInput, ReminderUncheckedUpdateWithoutUserInput>
@@ -20222,6 +21593,34 @@ export namespace Prisma {
     updatedAt?: DateTimeFilter<"UserGrantApplication"> | Date | string
   }
 
+  export type DocScanUsageUpsertWithWhereUniqueWithoutUserInput = {
+    where: DocScanUsageWhereUniqueInput
+    update: XOR<DocScanUsageUpdateWithoutUserInput, DocScanUsageUncheckedUpdateWithoutUserInput>
+    create: XOR<DocScanUsageCreateWithoutUserInput, DocScanUsageUncheckedCreateWithoutUserInput>
+  }
+
+  export type DocScanUsageUpdateWithWhereUniqueWithoutUserInput = {
+    where: DocScanUsageWhereUniqueInput
+    data: XOR<DocScanUsageUpdateWithoutUserInput, DocScanUsageUncheckedUpdateWithoutUserInput>
+  }
+
+  export type DocScanUsageUpdateManyWithWhereWithoutUserInput = {
+    where: DocScanUsageScalarWhereInput
+    data: XOR<DocScanUsageUpdateManyMutationInput, DocScanUsageUncheckedUpdateManyWithoutUserInput>
+  }
+
+  export type DocScanUsageScalarWhereInput = {
+    AND?: DocScanUsageScalarWhereInput | DocScanUsageScalarWhereInput[]
+    OR?: DocScanUsageScalarWhereInput[]
+    NOT?: DocScanUsageScalarWhereInput | DocScanUsageScalarWhereInput[]
+    id?: StringFilter<"DocScanUsage"> | string
+    userId?: StringFilter<"DocScanUsage"> | string
+    month?: StringFilter<"DocScanUsage"> | string
+    scanCount?: IntFilter<"DocScanUsage"> | number
+    createdAt?: DateTimeFilter<"DocScanUsage"> | Date | string
+    updatedAt?: DateTimeFilter<"DocScanUsage"> | Date | string
+  }
+
   export type UserCreateWithoutProfileInput = {
     id?: string
     email: string
@@ -20243,6 +21642,7 @@ export namespace Prisma {
     payments?: PaymentCreateNestedManyWithoutUserInput
     subscriptions?: SubscriptionCreateNestedManyWithoutUserInput
     userGrantApplications?: UserGrantApplicationCreateNestedManyWithoutUserInput
+    docScanUsage?: DocScanUsageCreateNestedManyWithoutUserInput
   }
 
   export type UserUncheckedCreateWithoutProfileInput = {
@@ -20266,6 +21666,7 @@ export namespace Prisma {
     payments?: PaymentUncheckedCreateNestedManyWithoutUserInput
     subscriptions?: SubscriptionUncheckedCreateNestedManyWithoutUserInput
     userGrantApplications?: UserGrantApplicationUncheckedCreateNestedManyWithoutUserInput
+    docScanUsage?: DocScanUsageUncheckedCreateNestedManyWithoutUserInput
   }
 
   export type UserCreateOrConnectWithoutProfileInput = {
@@ -20305,6 +21706,7 @@ export namespace Prisma {
     payments?: PaymentUpdateManyWithoutUserNestedInput
     subscriptions?: SubscriptionUpdateManyWithoutUserNestedInput
     userGrantApplications?: UserGrantApplicationUpdateManyWithoutUserNestedInput
+    docScanUsage?: DocScanUsageUpdateManyWithoutUserNestedInput
   }
 
   export type UserUncheckedUpdateWithoutProfileInput = {
@@ -20328,6 +21730,7 @@ export namespace Prisma {
     payments?: PaymentUncheckedUpdateManyWithoutUserNestedInput
     subscriptions?: SubscriptionUncheckedUpdateManyWithoutUserNestedInput
     userGrantApplications?: UserGrantApplicationUncheckedUpdateManyWithoutUserNestedInput
+    docScanUsage?: DocScanUsageUncheckedUpdateManyWithoutUserNestedInput
   }
 
   export type UserCreateWithoutRemindersInput = {
@@ -20351,6 +21754,7 @@ export namespace Prisma {
     payments?: PaymentCreateNestedManyWithoutUserInput
     subscriptions?: SubscriptionCreateNestedManyWithoutUserInput
     userGrantApplications?: UserGrantApplicationCreateNestedManyWithoutUserInput
+    docScanUsage?: DocScanUsageCreateNestedManyWithoutUserInput
   }
 
   export type UserUncheckedCreateWithoutRemindersInput = {
@@ -20374,6 +21778,7 @@ export namespace Prisma {
     payments?: PaymentUncheckedCreateNestedManyWithoutUserInput
     subscriptions?: SubscriptionUncheckedCreateNestedManyWithoutUserInput
     userGrantApplications?: UserGrantApplicationUncheckedCreateNestedManyWithoutUserInput
+    docScanUsage?: DocScanUsageUncheckedCreateNestedManyWithoutUserInput
   }
 
   export type UserCreateOrConnectWithoutRemindersInput = {
@@ -20413,6 +21818,7 @@ export namespace Prisma {
     payments?: PaymentUpdateManyWithoutUserNestedInput
     subscriptions?: SubscriptionUpdateManyWithoutUserNestedInput
     userGrantApplications?: UserGrantApplicationUpdateManyWithoutUserNestedInput
+    docScanUsage?: DocScanUsageUpdateManyWithoutUserNestedInput
   }
 
   export type UserUncheckedUpdateWithoutRemindersInput = {
@@ -20436,6 +21842,7 @@ export namespace Prisma {
     payments?: PaymentUncheckedUpdateManyWithoutUserNestedInput
     subscriptions?: SubscriptionUncheckedUpdateManyWithoutUserNestedInput
     userGrantApplications?: UserGrantApplicationUncheckedUpdateManyWithoutUserNestedInput
+    docScanUsage?: DocScanUsageUncheckedUpdateManyWithoutUserNestedInput
   }
 
   export type UserCreateWithoutChatMessagesInput = {
@@ -20459,6 +21866,7 @@ export namespace Prisma {
     payments?: PaymentCreateNestedManyWithoutUserInput
     subscriptions?: SubscriptionCreateNestedManyWithoutUserInput
     userGrantApplications?: UserGrantApplicationCreateNestedManyWithoutUserInput
+    docScanUsage?: DocScanUsageCreateNestedManyWithoutUserInput
   }
 
   export type UserUncheckedCreateWithoutChatMessagesInput = {
@@ -20482,6 +21890,7 @@ export namespace Prisma {
     payments?: PaymentUncheckedCreateNestedManyWithoutUserInput
     subscriptions?: SubscriptionUncheckedCreateNestedManyWithoutUserInput
     userGrantApplications?: UserGrantApplicationUncheckedCreateNestedManyWithoutUserInput
+    docScanUsage?: DocScanUsageUncheckedCreateNestedManyWithoutUserInput
   }
 
   export type UserCreateOrConnectWithoutChatMessagesInput = {
@@ -20521,6 +21930,7 @@ export namespace Prisma {
     payments?: PaymentUpdateManyWithoutUserNestedInput
     subscriptions?: SubscriptionUpdateManyWithoutUserNestedInput
     userGrantApplications?: UserGrantApplicationUpdateManyWithoutUserNestedInput
+    docScanUsage?: DocScanUsageUpdateManyWithoutUserNestedInput
   }
 
   export type UserUncheckedUpdateWithoutChatMessagesInput = {
@@ -20544,6 +21954,7 @@ export namespace Prisma {
     payments?: PaymentUncheckedUpdateManyWithoutUserNestedInput
     subscriptions?: SubscriptionUncheckedUpdateManyWithoutUserNestedInput
     userGrantApplications?: UserGrantApplicationUncheckedUpdateManyWithoutUserNestedInput
+    docScanUsage?: DocScanUsageUncheckedUpdateManyWithoutUserNestedInput
   }
 
   export type UserCreateWithoutSupportTicketsInput = {
@@ -20567,6 +21978,7 @@ export namespace Prisma {
     payments?: PaymentCreateNestedManyWithoutUserInput
     subscriptions?: SubscriptionCreateNestedManyWithoutUserInput
     userGrantApplications?: UserGrantApplicationCreateNestedManyWithoutUserInput
+    docScanUsage?: DocScanUsageCreateNestedManyWithoutUserInput
   }
 
   export type UserUncheckedCreateWithoutSupportTicketsInput = {
@@ -20590,6 +22002,7 @@ export namespace Prisma {
     payments?: PaymentUncheckedCreateNestedManyWithoutUserInput
     subscriptions?: SubscriptionUncheckedCreateNestedManyWithoutUserInput
     userGrantApplications?: UserGrantApplicationUncheckedCreateNestedManyWithoutUserInput
+    docScanUsage?: DocScanUsageUncheckedCreateNestedManyWithoutUserInput
   }
 
   export type UserCreateOrConnectWithoutSupportTicketsInput = {
@@ -20654,6 +22067,7 @@ export namespace Prisma {
     payments?: PaymentUpdateManyWithoutUserNestedInput
     subscriptions?: SubscriptionUpdateManyWithoutUserNestedInput
     userGrantApplications?: UserGrantApplicationUpdateManyWithoutUserNestedInput
+    docScanUsage?: DocScanUsageUpdateManyWithoutUserNestedInput
   }
 
   export type UserUncheckedUpdateWithoutSupportTicketsInput = {
@@ -20677,6 +22091,7 @@ export namespace Prisma {
     payments?: PaymentUncheckedUpdateManyWithoutUserNestedInput
     subscriptions?: SubscriptionUncheckedUpdateManyWithoutUserNestedInput
     userGrantApplications?: UserGrantApplicationUncheckedUpdateManyWithoutUserNestedInput
+    docScanUsage?: DocScanUsageUncheckedUpdateManyWithoutUserNestedInput
   }
 
   export type SupportResponseUpsertWithWhereUniqueWithoutTicketInput = {
@@ -20950,6 +22365,7 @@ export namespace Prisma {
     supportTickets?: SupportTicketCreateNestedManyWithoutUserInput
     subscriptions?: SubscriptionCreateNestedManyWithoutUserInput
     userGrantApplications?: UserGrantApplicationCreateNestedManyWithoutUserInput
+    docScanUsage?: DocScanUsageCreateNestedManyWithoutUserInput
   }
 
   export type UserUncheckedCreateWithoutPaymentsInput = {
@@ -20973,6 +22389,7 @@ export namespace Prisma {
     supportTickets?: SupportTicketUncheckedCreateNestedManyWithoutUserInput
     subscriptions?: SubscriptionUncheckedCreateNestedManyWithoutUserInput
     userGrantApplications?: UserGrantApplicationUncheckedCreateNestedManyWithoutUserInput
+    docScanUsage?: DocScanUsageUncheckedCreateNestedManyWithoutUserInput
   }
 
   export type UserCreateOrConnectWithoutPaymentsInput = {
@@ -21045,6 +22462,7 @@ export namespace Prisma {
     supportTickets?: SupportTicketUpdateManyWithoutUserNestedInput
     subscriptions?: SubscriptionUpdateManyWithoutUserNestedInput
     userGrantApplications?: UserGrantApplicationUpdateManyWithoutUserNestedInput
+    docScanUsage?: DocScanUsageUpdateManyWithoutUserNestedInput
   }
 
   export type UserUncheckedUpdateWithoutPaymentsInput = {
@@ -21068,6 +22486,7 @@ export namespace Prisma {
     supportTickets?: SupportTicketUncheckedUpdateManyWithoutUserNestedInput
     subscriptions?: SubscriptionUncheckedUpdateManyWithoutUserNestedInput
     userGrantApplications?: UserGrantApplicationUncheckedUpdateManyWithoutUserNestedInput
+    docScanUsage?: DocScanUsageUncheckedUpdateManyWithoutUserNestedInput
   }
 
   export type SubscriptionUpsertWithWhereUniqueWithoutPaymentInput = {
@@ -21107,6 +22526,7 @@ export namespace Prisma {
     supportTickets?: SupportTicketCreateNestedManyWithoutUserInput
     payments?: PaymentCreateNestedManyWithoutUserInput
     userGrantApplications?: UserGrantApplicationCreateNestedManyWithoutUserInput
+    docScanUsage?: DocScanUsageCreateNestedManyWithoutUserInput
   }
 
   export type UserUncheckedCreateWithoutSubscriptionsInput = {
@@ -21130,6 +22550,7 @@ export namespace Prisma {
     supportTickets?: SupportTicketUncheckedCreateNestedManyWithoutUserInput
     payments?: PaymentUncheckedCreateNestedManyWithoutUserInput
     userGrantApplications?: UserGrantApplicationUncheckedCreateNestedManyWithoutUserInput
+    docScanUsage?: DocScanUsageUncheckedCreateNestedManyWithoutUserInput
   }
 
   export type UserCreateOrConnectWithoutSubscriptionsInput = {
@@ -21229,6 +22650,7 @@ export namespace Prisma {
     supportTickets?: SupportTicketUpdateManyWithoutUserNestedInput
     payments?: PaymentUpdateManyWithoutUserNestedInput
     userGrantApplications?: UserGrantApplicationUpdateManyWithoutUserNestedInput
+    docScanUsage?: DocScanUsageUpdateManyWithoutUserNestedInput
   }
 
   export type UserUncheckedUpdateWithoutSubscriptionsInput = {
@@ -21252,6 +22674,7 @@ export namespace Prisma {
     supportTickets?: SupportTicketUncheckedUpdateManyWithoutUserNestedInput
     payments?: PaymentUncheckedUpdateManyWithoutUserNestedInput
     userGrantApplications?: UserGrantApplicationUncheckedUpdateManyWithoutUserNestedInput
+    docScanUsage?: DocScanUsageUncheckedUpdateManyWithoutUserNestedInput
   }
 
   export type SubscriptionPlanUpsertWithoutSubscriptionsInput = {
@@ -21394,6 +22817,7 @@ export namespace Prisma {
     supportTickets?: SupportTicketCreateNestedManyWithoutUserInput
     payments?: PaymentCreateNestedManyWithoutUserInput
     subscriptions?: SubscriptionCreateNestedManyWithoutUserInput
+    docScanUsage?: DocScanUsageCreateNestedManyWithoutUserInput
   }
 
   export type UserUncheckedCreateWithoutUserGrantApplicationsInput = {
@@ -21417,6 +22841,7 @@ export namespace Prisma {
     supportTickets?: SupportTicketUncheckedCreateNestedManyWithoutUserInput
     payments?: PaymentUncheckedCreateNestedManyWithoutUserInput
     subscriptions?: SubscriptionUncheckedCreateNestedManyWithoutUserInput
+    docScanUsage?: DocScanUsageUncheckedCreateNestedManyWithoutUserInput
   }
 
   export type UserCreateOrConnectWithoutUserGrantApplicationsInput = {
@@ -21505,6 +22930,7 @@ export namespace Prisma {
     supportTickets?: SupportTicketUpdateManyWithoutUserNestedInput
     payments?: PaymentUpdateManyWithoutUserNestedInput
     subscriptions?: SubscriptionUpdateManyWithoutUserNestedInput
+    docScanUsage?: DocScanUsageUpdateManyWithoutUserNestedInput
   }
 
   export type UserUncheckedUpdateWithoutUserGrantApplicationsInput = {
@@ -21528,6 +22954,7 @@ export namespace Prisma {
     supportTickets?: SupportTicketUncheckedUpdateManyWithoutUserNestedInput
     payments?: PaymentUncheckedUpdateManyWithoutUserNestedInput
     subscriptions?: SubscriptionUncheckedUpdateManyWithoutUserNestedInput
+    docScanUsage?: DocScanUsageUncheckedUpdateManyWithoutUserNestedInput
   }
 
   export type GrantUpsertWithoutApplicationsInput = {
@@ -21583,6 +23010,118 @@ export namespace Prisma {
     isFeatured?: BoolFieldUpdateOperationsInput | boolean
     createdAt?: DateTimeFieldUpdateOperationsInput | Date | string
     updatedAt?: DateTimeFieldUpdateOperationsInput | Date | string
+  }
+
+  export type UserCreateWithoutDocScanUsageInput = {
+    id?: string
+    email: string
+    password: string
+    name: string
+    language?: string
+    country: string
+    role?: string
+    registeredAt?: Date | string
+    university?: string | null
+    faculty?: string | null
+    year?: string | null
+    plan?: string
+    phone?: string | null
+    gender?: string | null
+    reminders?: ReminderCreateNestedManyWithoutUserInput
+    chatMessages?: ChatMessageCreateNestedManyWithoutUserInput
+    profile?: ProfileCreateNestedOneWithoutUserInput
+    supportTickets?: SupportTicketCreateNestedManyWithoutUserInput
+    payments?: PaymentCreateNestedManyWithoutUserInput
+    subscriptions?: SubscriptionCreateNestedManyWithoutUserInput
+    userGrantApplications?: UserGrantApplicationCreateNestedManyWithoutUserInput
+  }
+
+  export type UserUncheckedCreateWithoutDocScanUsageInput = {
+    id?: string
+    email: string
+    password: string
+    name: string
+    language?: string
+    country: string
+    role?: string
+    registeredAt?: Date | string
+    university?: string | null
+    faculty?: string | null
+    year?: string | null
+    plan?: string
+    phone?: string | null
+    gender?: string | null
+    reminders?: ReminderUncheckedCreateNestedManyWithoutUserInput
+    chatMessages?: ChatMessageUncheckedCreateNestedManyWithoutUserInput
+    profile?: ProfileUncheckedCreateNestedOneWithoutUserInput
+    supportTickets?: SupportTicketUncheckedCreateNestedManyWithoutUserInput
+    payments?: PaymentUncheckedCreateNestedManyWithoutUserInput
+    subscriptions?: SubscriptionUncheckedCreateNestedManyWithoutUserInput
+    userGrantApplications?: UserGrantApplicationUncheckedCreateNestedManyWithoutUserInput
+  }
+
+  export type UserCreateOrConnectWithoutDocScanUsageInput = {
+    where: UserWhereUniqueInput
+    create: XOR<UserCreateWithoutDocScanUsageInput, UserUncheckedCreateWithoutDocScanUsageInput>
+  }
+
+  export type UserUpsertWithoutDocScanUsageInput = {
+    update: XOR<UserUpdateWithoutDocScanUsageInput, UserUncheckedUpdateWithoutDocScanUsageInput>
+    create: XOR<UserCreateWithoutDocScanUsageInput, UserUncheckedCreateWithoutDocScanUsageInput>
+    where?: UserWhereInput
+  }
+
+  export type UserUpdateToOneWithWhereWithoutDocScanUsageInput = {
+    where?: UserWhereInput
+    data: XOR<UserUpdateWithoutDocScanUsageInput, UserUncheckedUpdateWithoutDocScanUsageInput>
+  }
+
+  export type UserUpdateWithoutDocScanUsageInput = {
+    id?: StringFieldUpdateOperationsInput | string
+    email?: StringFieldUpdateOperationsInput | string
+    password?: StringFieldUpdateOperationsInput | string
+    name?: StringFieldUpdateOperationsInput | string
+    language?: StringFieldUpdateOperationsInput | string
+    country?: StringFieldUpdateOperationsInput | string
+    role?: StringFieldUpdateOperationsInput | string
+    registeredAt?: DateTimeFieldUpdateOperationsInput | Date | string
+    university?: NullableStringFieldUpdateOperationsInput | string | null
+    faculty?: NullableStringFieldUpdateOperationsInput | string | null
+    year?: NullableStringFieldUpdateOperationsInput | string | null
+    plan?: StringFieldUpdateOperationsInput | string
+    phone?: NullableStringFieldUpdateOperationsInput | string | null
+    gender?: NullableStringFieldUpdateOperationsInput | string | null
+    reminders?: ReminderUpdateManyWithoutUserNestedInput
+    chatMessages?: ChatMessageUpdateManyWithoutUserNestedInput
+    profile?: ProfileUpdateOneWithoutUserNestedInput
+    supportTickets?: SupportTicketUpdateManyWithoutUserNestedInput
+    payments?: PaymentUpdateManyWithoutUserNestedInput
+    subscriptions?: SubscriptionUpdateManyWithoutUserNestedInput
+    userGrantApplications?: UserGrantApplicationUpdateManyWithoutUserNestedInput
+  }
+
+  export type UserUncheckedUpdateWithoutDocScanUsageInput = {
+    id?: StringFieldUpdateOperationsInput | string
+    email?: StringFieldUpdateOperationsInput | string
+    password?: StringFieldUpdateOperationsInput | string
+    name?: StringFieldUpdateOperationsInput | string
+    language?: StringFieldUpdateOperationsInput | string
+    country?: StringFieldUpdateOperationsInput | string
+    role?: StringFieldUpdateOperationsInput | string
+    registeredAt?: DateTimeFieldUpdateOperationsInput | Date | string
+    university?: NullableStringFieldUpdateOperationsInput | string | null
+    faculty?: NullableStringFieldUpdateOperationsInput | string | null
+    year?: NullableStringFieldUpdateOperationsInput | string | null
+    plan?: StringFieldUpdateOperationsInput | string
+    phone?: NullableStringFieldUpdateOperationsInput | string | null
+    gender?: NullableStringFieldUpdateOperationsInput | string | null
+    reminders?: ReminderUncheckedUpdateManyWithoutUserNestedInput
+    chatMessages?: ChatMessageUncheckedUpdateManyWithoutUserNestedInput
+    profile?: ProfileUncheckedUpdateOneWithoutUserNestedInput
+    supportTickets?: SupportTicketUncheckedUpdateManyWithoutUserNestedInput
+    payments?: PaymentUncheckedUpdateManyWithoutUserNestedInput
+    subscriptions?: SubscriptionUncheckedUpdateManyWithoutUserNestedInput
+    userGrantApplications?: UserGrantApplicationUncheckedUpdateManyWithoutUserNestedInput
   }
 
   export type ReminderCreateManyUserInput = {
@@ -21649,6 +23188,14 @@ export namespace Prisma {
     documents: string
     notes?: string | null
     submittedAt?: Date | string | null
+    createdAt?: Date | string
+    updatedAt?: Date | string
+  }
+
+  export type DocScanUsageCreateManyUserInput = {
+    id?: string
+    month: string
+    scanCount?: number
     createdAt?: Date | string
     updatedAt?: Date | string
   }
@@ -21857,6 +23404,30 @@ export namespace Prisma {
     documents?: StringFieldUpdateOperationsInput | string
     notes?: NullableStringFieldUpdateOperationsInput | string | null
     submittedAt?: NullableDateTimeFieldUpdateOperationsInput | Date | string | null
+    createdAt?: DateTimeFieldUpdateOperationsInput | Date | string
+    updatedAt?: DateTimeFieldUpdateOperationsInput | Date | string
+  }
+
+  export type DocScanUsageUpdateWithoutUserInput = {
+    id?: StringFieldUpdateOperationsInput | string
+    month?: StringFieldUpdateOperationsInput | string
+    scanCount?: IntFieldUpdateOperationsInput | number
+    createdAt?: DateTimeFieldUpdateOperationsInput | Date | string
+    updatedAt?: DateTimeFieldUpdateOperationsInput | Date | string
+  }
+
+  export type DocScanUsageUncheckedUpdateWithoutUserInput = {
+    id?: StringFieldUpdateOperationsInput | string
+    month?: StringFieldUpdateOperationsInput | string
+    scanCount?: IntFieldUpdateOperationsInput | number
+    createdAt?: DateTimeFieldUpdateOperationsInput | Date | string
+    updatedAt?: DateTimeFieldUpdateOperationsInput | Date | string
+  }
+
+  export type DocScanUsageUncheckedUpdateManyWithoutUserInput = {
+    id?: StringFieldUpdateOperationsInput | string
+    month?: StringFieldUpdateOperationsInput | string
+    scanCount?: IntFieldUpdateOperationsInput | number
     createdAt?: DateTimeFieldUpdateOperationsInput | Date | string
     updatedAt?: DateTimeFieldUpdateOperationsInput | Date | string
   }
@@ -22146,6 +23717,10 @@ export namespace Prisma {
      * @deprecated Use UserGrantApplicationDefaultArgs instead
      */
     export type UserGrantApplicationArgs<ExtArgs extends $Extensions.InternalArgs = $Extensions.DefaultArgs> = UserGrantApplicationDefaultArgs<ExtArgs>
+    /**
+     * @deprecated Use DocScanUsageDefaultArgs instead
+     */
+    export type DocScanUsageArgs<ExtArgs extends $Extensions.InternalArgs = $Extensions.DefaultArgs> = DocScanUsageDefaultArgs<ExtArgs>
 
   /**
    * Batch Payload for updateMany & deleteMany & createMany

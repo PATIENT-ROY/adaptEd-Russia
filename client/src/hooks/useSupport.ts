@@ -40,7 +40,8 @@ export const useSupport = () => {
     setError(null);
 
     try {
-      const response = await fetch('http://localhost:3003/api/support/contact', {
+      const API_BASE_URL = process.env.NEXT_PUBLIC_API_URL || 'http://localhost:3003/api';
+      const response = await fetch(`${API_BASE_URL}/support/contact`, {
         method: 'POST',
         headers: {
           'Content-Type': 'application/json',
@@ -68,7 +69,8 @@ export const useSupport = () => {
     setError(null);
 
     try {
-      const response = await fetch('http://localhost:3003/api/support/faq');
+      const API_BASE_URL = process.env.NEXT_PUBLIC_API_URL || 'http://localhost:3003/api';
+      const response = await fetch(`${API_BASE_URL}/support/faq`);
       const data = await response.json();
 
       if (!response.ok) {
@@ -89,7 +91,8 @@ export const useSupport = () => {
     setError(null);
 
     try {
-      const response = await fetch('http://localhost:3003/api/support/contact-info');
+      const API_BASE_URL = process.env.NEXT_PUBLIC_API_URL || 'http://localhost:3003/api';
+      const response = await fetch(`${API_BASE_URL}/support/contact-info`);
       const data = await response.json();
 
       if (!response.ok) {

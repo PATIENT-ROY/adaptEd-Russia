@@ -13,9 +13,10 @@ export function useChat(userId: string) {
         const data = await apiClient.getChatHistory();
         setMessages(data);
         setError(null);
-      } catch (error: any) {
+      } catch (error: unknown) {
         // Не показываем ошибку, если пользователь не авторизован - он будет перенаправлен
-        if (error.message?.includes('токен') || error.message?.includes('token') || error.message?.includes('авториз')) {
+        const errorMessage = error instanceof Error ? error.message : String(error);
+        if (errorMessage?.includes('токен') || errorMessage?.includes('token') || errorMessage?.includes('авториз')) {
           // Перенаправление уже произошло в apiClient
           return;
         }
@@ -38,6 +39,7 @@ export function useChat(userId: string) {
       // Добавляем сообщение пользователя сразу
       const userMessage: ChatMessage = {
         id: Date.now().toString(),
+        userId: userId,
         content: text,
         isUser: true,
         timestamp: new Date().toISOString(),
@@ -50,18 +52,26 @@ export function useChat(userId: string) {
       
       // Обновляем состояние с ответом AI
       // API возвращает объект с userMessage и aiMessage
+      interface ChatResponse {
+        userMessage?: ChatMessage;
+        aiMessage?: ChatMessage;
+      }
+      
       if (response && typeof response === 'object' && 'aiMessage' in response) {
         // Если ответ в формате { userMessage, aiMessage }
-        setMessages(prev => [...prev, (response as any).aiMessage]);
-      } else {
+        const chatResponse = response as ChatResponse;
+        if (chatResponse.aiMessage) {
+          setMessages(prev => [...prev, chatResponse.aiMessage!]);
+        }
+      } else if (response && typeof response === 'object' && 'id' in response) {
         // Если ответ - обычное сообщение
         setMessages(prev => [...prev, response as ChatMessage]);
       }
 
       return response;
-    } catch (err: any) {
+    } catch (err: unknown) {
       console.error('Send message error:', err);
-      const errorMessage = err.message || 'Ошибка при отправке сообщения';
+      const errorMessage = err instanceof Error ? err.message : 'Ошибка при отправке сообщения';
       setError(errorMessage);
       
       // Убираем последнее сообщение пользователя, если отправка не удалась

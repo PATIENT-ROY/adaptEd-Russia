@@ -34,6 +34,8 @@ import {
   Eye,
   Clock,
   Globe,
+  ScanLine,
+  HelpCircle,
 } from "lucide-react";
 import Link from "next/link";
 import { useState } from "react";
@@ -167,32 +169,39 @@ const getBillingHistory = (userPlan: Plan) => {
 
 const quickActions = [
   {
-    title: "Новый гайд",
-    description: "Изучить новый материал",
+    title: "Образовательный навигатор",
+    description: "Гайды по образовательной системе",
     icon: BookOpen,
     color: "from-blue-500 to-blue-600",
     href: "/education-guide",
   },
   {
-    title: "AI Помощник",
-    description: "Задать вопрос",
-    icon: MessageSquare,
-    color: "from-purple-500 to-purple-600",
-    href: "/ai-helper",
-  },
-  {
-    title: "Напоминания",
-    description: "Управление задачами",
+    title: "Умные напоминания",
+    description: "Управление задачами и сроками",
     icon: Bell,
-    color: "from-orange-500 to-orange-600",
+    color: "from-purple-500 to-purple-600",
     href: "/reminders",
   },
   {
-    title: "Жизненный гайд",
-    description: "Бытовые советы",
-    icon: Home,
+    title: "AI Помощник",
+    description: "Задавайте вопросы на родном языке",
+    icon: MessageSquare,
+    color: "from-orange-500 to-orange-600",
+    href: "/ai-helper",
+  },
+  {
+    title: "DocScan",
+    description: "Сканирование и перевод документов",
+    icon: ScanLine,
+    color: "from-indigo-500 to-indigo-600",
+    href: "/docscan",
+  },
+  {
+    title: "Поддержка",
+    description: "Помощь и консультации",
+    icon: HelpCircle,
     color: "from-green-500 to-green-600",
-    href: "/life-guide",
+    href: "/support",
   },
 ];
 
@@ -233,14 +242,54 @@ export default function ProfilePage() {
   const [isBillingHistoryOpen, setIsBillingHistoryOpen] = useState(false);
   const { user, logout, updateProfile } = useAuth();
 
-  // Если пользователь не загружен, показываем загрузку
+  // Если пользователь не загружен, показываем skeleton
   if (!user) {
     return (
       <Layout>
-        <div className="min-h-screen bg-gradient-to-br from-slate-50 via-blue-50 to-indigo-50 flex items-center justify-center">
-          <div className="text-center">
-            <div className="animate-spin rounded-full h-12 w-12 border-b-2 border-blue-600 mx-auto mb-4"></div>
-            <p className="text-slate-600">Загрузка профиля...</p>
+        <div className="min-h-screen bg-gradient-to-br from-slate-50 via-blue-50 to-indigo-50">
+          {/* Hero Skeleton */}
+          <div className="relative overflow-hidden bg-gradient-to-br from-blue-600 via-purple-600 to-indigo-700 py-8 sm:py-12 md:py-16">
+            <div className="relative max-w-7xl mx-auto px-3 sm:px-4 lg:px-6">
+              <div className="flex flex-col lg:flex-row items-center space-y-4 sm:space-y-6 lg:space-y-0 lg:space-x-8">
+                <div className="w-20 h-20 sm:w-24 sm:h-24 md:w-28 md:h-28 lg:w-32 lg:h-32 rounded-full bg-gray-300 animate-pulse"></div>
+                <div className="flex-1 text-center lg:text-left">
+                  <div className="h-8 w-64 bg-gray-300 rounded animate-pulse mx-auto lg:mx-0 mb-3"></div>
+                  <div className="h-5 w-96 bg-gray-300 rounded animate-pulse mx-auto lg:mx-0"></div>
+                </div>
+              </div>
+            </div>
+          </div>
+
+          {/* Content Skeleton */}
+          <div className="max-w-7xl mx-auto px-3 sm:px-4 lg:px-6 py-8">
+            <div className="grid grid-cols-1 lg:grid-cols-3 gap-6 sm:gap-8">
+              {/* Main Content */}
+              <div className="lg:col-span-2 space-y-6">
+                {[1, 2, 3].map((i) => (
+                  <div key={i} className="bg-white rounded-lg p-6 shadow-sm">
+                    <div className="h-6 w-48 bg-gray-200 rounded animate-pulse mb-4"></div>
+                    <div className="space-y-3">
+                      <div className="h-4 w-full bg-gray-200 rounded animate-pulse"></div>
+                      <div className="h-4 w-5/6 bg-gray-200 rounded animate-pulse"></div>
+                      <div className="h-4 w-4/6 bg-gray-200 rounded animate-pulse"></div>
+                    </div>
+                  </div>
+                ))}
+              </div>
+
+              {/* Sidebar */}
+              <div className="space-y-6">
+                {[1, 2].map((i) => (
+                  <div key={i} className="bg-white rounded-lg p-6 shadow-sm">
+                    <div className="h-6 w-32 bg-gray-200 rounded animate-pulse mb-4"></div>
+                    <div className="space-y-3">
+                      <div className="h-10 w-full bg-gray-200 rounded animate-pulse"></div>
+                      <div className="h-10 w-full bg-gray-200 rounded animate-pulse"></div>
+                    </div>
+                  </div>
+                ))}
+              </div>
+            </div>
           </div>
         </div>
       </Layout>
@@ -355,7 +404,7 @@ export default function ProfilePage() {
             <h2 className="text-xl sm:text-2xl font-bold text-slate-900 mb-4 sm:mb-6">
               Быстрые действия
             </h2>
-            <div className="grid grid-cols-1 sm:grid-cols-2 lg:grid-cols-4 gap-4 sm:gap-6">
+            <div className="grid grid-cols-2 lg:grid-cols-3 gap-1.5 sm:gap-4 lg:gap-6">
               {quickActions.map((action, index) => {
                 const Icon = action.icon;
                 return (
@@ -370,16 +419,16 @@ export default function ProfilePage() {
                       }}
                     >
                       <div className="absolute inset-0 bg-gradient-to-br from-blue-500/5 to-purple-500/5 opacity-0 group-hover:opacity-100 transition-opacity duration-500"></div>
-                      <CardContent className="p-4 sm:p-6 relative z-10">
+                      <CardContent className="p-2.5 sm:p-6 relative z-10 flex flex-col min-h-[160px] sm:min-h-0">
                         <div
-                          className={`w-12 h-12 sm:w-14 sm:h-14 md:w-16 md:h-16 rounded-2xl bg-gradient-to-br ${action.color} flex items-center justify-center mb-4 shadow-lg group-hover:scale-110 transition-transform duration-300`}
+                          className={`w-9 h-9 sm:w-14 sm:h-14 md:w-16 md:h-16 rounded-lg sm:rounded-2xl bg-gradient-to-br ${action.color} flex items-center justify-center mb-1.5 sm:mb-4 shadow-lg group-hover:scale-110 transition-transform duration-300 flex-shrink-0`}
                         >
-                          <Icon className="h-6 w-6 sm:h-7 sm:w-7 md:h-8 md:w-8 text-white" />
+                          <Icon className="h-4 w-4 sm:h-7 sm:w-7 md:h-8 md:w-8 text-white" />
                         </div>
-                        <h3 className="text-lg sm:text-xl font-bold text-slate-900 mb-2">
+                        <h3 className="text-xs sm:text-lg lg:text-xl font-bold text-slate-900 mb-1 sm:mb-2 flex-shrink-0 leading-tight line-clamp-2">
                           {action.title}
                         </h3>
-                        <p className="text-sm sm:text-base text-slate-600">
+                        <p className="text-[11px] sm:text-sm lg:text-base text-slate-600 flex-grow overflow-hidden line-clamp-4 sm:line-clamp-none leading-snug">
                           {action.description}
                         </p>
                       </CardContent>
@@ -395,17 +444,17 @@ export default function ProfilePage() {
             className="animate-fade-in-up"
             style={{ animationDelay: "0.3s" }}
           >
-            <div className="flex items-center justify-between mb-4 sm:mb-6">
+            <div className="flex flex-col sm:flex-row sm:items-center sm:justify-between gap-3 sm:gap-0 mb-4 sm:mb-6">
               <h2 className="text-xl sm:text-2xl font-bold text-slate-900">
                 История платежей
               </h2>
-              <div className="flex items-center space-x-3">
+              <div className="flex flex-col sm:flex-row items-stretch sm:items-center gap-2 sm:gap-3">
                 <Button
                   variant="outline"
-                  className="flex items-center space-x-2 hover:bg-blue-50 hover:border-blue-300 hover:text-blue-700 transition-all duration-300"
+                  className="flex items-center justify-center space-x-2 hover:bg-blue-50 hover:border-blue-300 hover:text-blue-700 transition-all duration-300 text-sm sm:text-base py-2 sm:py-2 px-3 sm:px-4"
                   onClick={() => setIsBillingHistoryOpen(!isBillingHistoryOpen)}
                 >
-                  <Receipt className="h-4 w-4" />
+                  <Receipt className="h-4 w-4 sm:h-4 sm:w-4" />
                   <span>{isBillingHistoryOpen ? "Скрыть" : "Показать"}</span>
                   <ChevronDown
                     className={`h-4 w-4 transition-transform duration-300 ${
@@ -413,13 +462,13 @@ export default function ProfilePage() {
                     }`}
                   />
                 </Button>
-                <Link href="/payment/test">
+                <Link href="/payment/test" className="w-full sm:w-auto">
                   <Button
                     variant="outline"
-                    className="flex items-center space-x-2 hover:bg-green-50 hover:border-green-300 hover:text-green-700 transition-all duration-300"
+                    className="w-full sm:w-auto flex items-center justify-center space-x-2 hover:bg-green-50 hover:border-green-300 hover:text-green-700 transition-all duration-300 text-sm sm:text-base py-2 sm:py-2 px-3 sm:px-4"
                   >
-                    <CreditCard className="h-4 w-4" />
-                    <span>Управление подпиской</span>
+                    <CreditCard className="h-4 w-4 sm:h-4 sm:w-4" />
+                    <span className="whitespace-nowrap">Управление подпиской</span>
                   </Button>
                 </Link>
               </div>
@@ -440,12 +489,12 @@ export default function ProfilePage() {
                     {getBillingHistory(user.plan).map((invoice, index) => (
                       <div
                         key={invoice.id}
-                        className="flex items-center justify-between p-4 rounded-xl bg-slate-50 hover:bg-slate-100 transition-all duration-300 group"
+                        className="flex flex-col sm:flex-row sm:items-center sm:justify-between p-3 sm:p-4 rounded-xl bg-slate-50 hover:bg-slate-100 transition-all duration-300 group gap-3 sm:gap-0"
                         style={{ animationDelay: `${index * 0.1}s` }}
                       >
-                        <div className="flex items-center space-x-4">
+                        <div className="flex items-center space-x-3 sm:space-x-4 flex-1 min-w-0">
                           <div
-                            className={`w-12 h-12 rounded-xl flex items-center justify-center ${
+                            className={`w-10 h-10 sm:w-12 sm:h-12 rounded-xl flex items-center justify-center flex-shrink-0 ${
                               invoice.status === "paid"
                                 ? "bg-green-100 text-green-600"
                                 : invoice.status === "free"
@@ -454,21 +503,21 @@ export default function ProfilePage() {
                             }`}
                           >
                             {invoice.status === "paid" ? (
-                              <CheckCircle className="h-6 w-6" />
+                              <CheckCircle className="h-5 w-5 sm:h-6 sm:w-6" />
                             ) : invoice.status === "free" ? (
-                              <Crown className="h-6 w-6" />
+                              <Crown className="h-5 w-5 sm:h-6 sm:w-6" />
                             ) : (
-                              <Clock className="h-6 w-6" />
+                              <Clock className="h-5 w-5 sm:h-6 sm:w-6" />
                             )}
                           </div>
-                          <div>
-                            <p className="font-semibold text-slate-900">
+                          <div className="flex-1 min-w-0">
+                            <p className="font-semibold text-slate-900 text-sm sm:text-base truncate">
                               {invoice.description}
                             </p>
-                            <div className="flex items-center space-x-4 text-sm text-slate-600">
-                              <span>{invoice.invoiceNumber}</span>
-                              <span>•</span>
-                              <span>
+                            <div className="flex flex-col sm:flex-row sm:items-center gap-1 sm:gap-4 text-xs sm:text-sm text-slate-600">
+                              <span className="truncate">{invoice.invoiceNumber}</span>
+                              <span className="hidden sm:inline">•</span>
+                              <span className="truncate">
                                 {new Date(invoice.date).toLocaleDateString(
                                   "ru-RU"
                                 )}
@@ -477,10 +526,10 @@ export default function ProfilePage() {
                           </div>
                         </div>
 
-                        <div className="flex items-center space-x-3">
-                          <div className="text-right">
+                        <div className="flex items-center justify-between sm:justify-end gap-2 sm:gap-3 sm:flex-shrink-0">
+                          <div className="text-left sm:text-right">
                             <p
-                              className={`font-bold text-lg ${
+                              className={`font-bold text-base sm:text-lg ${
                                 invoice.status === "paid"
                                   ? "text-green-600"
                                   : invoice.status === "free"
@@ -492,7 +541,7 @@ export default function ProfilePage() {
                                 ? "Бесплатно"
                                 : `${invoice.amount} ₽`}
                             </p>
-                            <p className="text-sm text-slate-500 capitalize">
+                            <p className="text-xs sm:text-sm text-slate-500 capitalize">
                               {invoice.status === "paid"
                                 ? "Оплачено"
                                 : invoice.status === "free"
@@ -501,29 +550,29 @@ export default function ProfilePage() {
                             </p>
                           </div>
 
-                          <div className="flex space-x-2">
+                          <div className="flex space-x-1 sm:space-x-2 flex-shrink-0">
                             <Button
                               variant="ghost"
                               size="sm"
-                              className="h-8 w-8 p-0 hover:bg-slate-200"
+                              className="h-7 w-7 sm:h-8 sm:w-8 p-0 hover:bg-slate-200"
                               onClick={() =>
                                 alert(`Просмотр счета ${invoice.invoiceNumber}`)
                               }
                             >
-                              <Eye className="h-4 w-4" />
+                              <Eye className="h-3.5 w-3.5 sm:h-4 sm:w-4" />
                             </Button>
                             {invoice.status === "paid" && (
                               <Button
                                 variant="ghost"
                                 size="sm"
-                                className="h-8 w-8 p-0 hover:bg-slate-200"
+                                className="h-7 w-7 sm:h-8 sm:w-8 p-0 hover:bg-slate-200"
                                 onClick={() =>
                                   alert(
                                     `Скачивание счета ${invoice.invoiceNumber}`
                                   )
                                 }
                               >
-                                <Download className="h-4 w-4" />
+                                <Download className="h-3.5 w-3.5 sm:h-4 sm:w-4" />
                               </Button>
                             )}
                           </div>

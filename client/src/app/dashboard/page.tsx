@@ -12,6 +12,7 @@ import {
   AlertCircle,
   Calendar,
   Target,
+  ScanLine,
 } from "lucide-react";
 import Link from "next/link";
 import { useAuth } from "@/contexts/AuthContext";
@@ -24,21 +25,14 @@ import { DailyQuestsComponent } from "@/components/ui/daily-quests";
 
 const quickActions = [
   {
-    title: "Моя учёба",
+    title: "Образовательный навигатор",
     description: "Гайды по образовательной системе",
     icon: BookOpen,
     href: "/education-guide",
     gradient: "from-blue-500 to-blue-600",
   },
   {
-    title: "Бытовые инструкции",
-    description: "Регистрация, документы, транспорт",
-    icon: Home,
-    href: "/life-guide",
-    gradient: "from-green-500 to-green-600",
-  },
-  {
-    title: "Мои напоминания",
+    title: "Умные напоминания",
     description: "Управление задачами и сроками",
     icon: Bell,
     href: "/reminders",
@@ -46,80 +40,92 @@ const quickActions = [
   },
   {
     title: "AI Помощник",
-    description: "Задать вопрос консультанту",
+    description: "Задавайте вопросы на родном языке",
     icon: MessageSquare,
     href: "/ai-helper",
     gradient: "from-orange-500 to-orange-600",
   },
+  {
+    title: "DocScan",
+    description: "Сканирование и перевод документов",
+    icon: ScanLine,
+    href: "/docscan",
+    gradient: "from-indigo-500 to-indigo-600",
+  },
 ];
 
 export default function DashboardPage() {
-  const { user } = useAuth();
+  const { user, isLoading: authLoading } = useAuth();
   const { reminders, loading } = useReminders(user?.id || "");
   const [upcomingReminders, setUpcomingReminders] = useState<Reminder[]>([]);
   const [userProgress, setUserProgress] = useState<UserProgress | null>(null);
   const [dailyQuests, setDailyQuests] = useState<DailyQuest[]>([]);
+  const [isInitialLoading, setIsInitialLoading] = useState(true);
 
   // Инициализация моковых данных после загрузки пользователя
   useEffect(() => {
-    if (user?.id) {
-      // Моковые данные прогресса пользователя (в реальности из API)
-      setUserProgress({
-        id: "1",
-        userId: user.id,
-        level: UserLevel.ADAPTING,
-        xp: 245,
-        adaptationProgress: 65,
-        streak: 5,
-        lastVisit: new Date().toISOString(),
-        totalGuidesRead: 12,
-        totalAIQuestions: 23,
-        totalRemindersCompleted: 8,
-        createdAt: new Date().toISOString(),
-        updatedAt: new Date().toISOString(),
-      });
-
-      // Моковые ежедневные квесты (в реальности из API)
-      setDailyQuests([
-        {
+    // Если пользователь загружен, инициализируем данные
+    if (!authLoading) {
+      if (user?.id) {
+        // Моковые данные прогресса пользователя (в реальности из API)
+        setUserProgress({
           id: "1",
           userId: user.id,
-          questType: QuestType.READ_GUIDES,
-          title: "Прочитать 3 гайда",
-          description: "Изучите любые 3 гайда на платформе",
-          target: 3,
-          progress: 3,
-          xpReward: 30,
-          date: new Date().toISOString(),
-          completed: true,
-        },
-        {
-          id: "2",
-          userId: user.id,
-          questType: QuestType.ASK_AI,
-          title: "Задать 2 вопроса AI",
-          description: "Воспользуйтесь AI-помощником",
-          target: 2,
-          progress: 1,
-          xpReward: 10,
-          date: new Date().toISOString(),
-          completed: false,
-        },
-        {
-          id: "3",
-          userId: user.id,
-          questType: QuestType.CREATE_REMINDER,
-          title: "Создать напоминание",
-          description: "Добавьте новое напоминание",
-          target: 1,
-          progress: 0,
-          xpReward: 15,
-          date: new Date().toISOString(),
-          completed: false,
-        },
-      ]);
+          level: UserLevel.ADAPTING,
+          xp: 245,
+          adaptationProgress: 65,
+          streak: 5,
+          lastVisit: new Date().toISOString(),
+          totalGuidesRead: 12,
+          totalAIQuestions: 23,
+          totalRemindersCompleted: 8,
+          createdAt: new Date().toISOString(),
+          updatedAt: new Date().toISOString(),
+        });
+
+        // Моковые ежедневные квесты (в реальности из API)
+        setDailyQuests([
+          {
+            id: "1",
+            userId: user.id,
+            questType: QuestType.READ_GUIDES,
+            title: "Прочитать 3 гайда",
+            description: "Изучите любые 3 гайда на платформе",
+            target: 3,
+            progress: 3,
+            xpReward: 30,
+            date: new Date().toISOString(),
+            completed: true,
+          },
+          {
+            id: "2",
+            userId: user.id,
+            questType: QuestType.ASK_AI,
+            title: "Задать 2 вопроса AI",
+            description: "Воспользуйтесь AI-помощником",
+            target: 2,
+            progress: 1,
+            xpReward: 10,
+            date: new Date().toISOString(),
+            completed: false,
+          },
+          {
+            id: "3",
+            userId: user.id,
+            questType: QuestType.CREATE_REMINDER,
+            title: "Создать напоминание",
+            description: "Добавьте новое напоминание",
+            target: 1,
+            progress: 0,
+            xpReward: 15,
+            date: new Date().toISOString(),
+            completed: false,
+          },
+        ]);
+      }
+      setIsInitialLoading(false);
     }
-  }, [user]);
+  }, [user, authLoading]);
 
   useEffect(() => {
     if (reminders.length > 0) {
@@ -135,6 +141,97 @@ export default function DashboardPage() {
       setUpcomingReminders(activeReminders);
     }
   }, [reminders]);
+
+  // Skeleton при загрузке
+  if (authLoading || isInitialLoading) {
+    return (
+      <ProtectedRoute>
+        <Layout>
+          <div className="space-y-6 sm:space-y-8">
+            {/* Header Skeleton */}
+            <div className="bg-gradient-to-r from-blue-50 to-indigo-50 rounded-lg p-4 sm:p-6 lg:p-8 shadow-lg">
+              <div className="flex flex-col sm:flex-row sm:items-center space-y-4 sm:space-y-0 sm:space-x-4">
+                <div className="w-12 h-12 sm:w-16 sm:h-16 rounded-2xl bg-gray-200 animate-pulse"></div>
+                <div className="flex-1">
+                  <div className="h-6 sm:h-8 w-64 bg-gray-200 rounded animate-pulse mb-2"></div>
+                  <div className="h-4 sm:h-5 w-96 bg-gray-200 rounded animate-pulse"></div>
+                </div>
+              </div>
+            </div>
+
+            {/* Progress & Quests Skeleton */}
+            <div className="grid grid-cols-1 xl:grid-cols-3 gap-6 sm:gap-8">
+              <div className="xl:col-span-2">
+                <div className="bg-white rounded-lg p-6 shadow-sm">
+                  <div className="h-6 w-48 bg-gray-200 rounded animate-pulse mb-4"></div>
+                  <div className="space-y-4">
+                    <div className="h-4 w-full bg-gray-200 rounded animate-pulse"></div>
+                    <div className="h-32 bg-gray-200 rounded animate-pulse"></div>
+                    <div className="grid grid-cols-3 gap-4">
+                      <div className="h-20 bg-gray-200 rounded animate-pulse"></div>
+                      <div className="h-20 bg-gray-200 rounded animate-pulse"></div>
+                      <div className="h-20 bg-gray-200 rounded animate-pulse"></div>
+                    </div>
+                  </div>
+                </div>
+              </div>
+              <div>
+                <div className="bg-white rounded-lg p-6 shadow-sm">
+                  <div className="h-6 w-40 bg-gray-200 rounded animate-pulse mb-4"></div>
+                  <div className="space-y-3">
+                    {[1, 2, 3].map((i) => (
+                      <div
+                        key={i}
+                        className="h-20 bg-gray-200 rounded animate-pulse"
+                      ></div>
+                    ))}
+                  </div>
+                </div>
+              </div>
+            </div>
+
+            {/* Quick Actions Skeleton */}
+            <div>
+              <div className="h-6 sm:h-8 w-48 bg-gray-200 rounded animate-pulse mb-4 sm:mb-6"></div>
+              <div className="grid grid-cols-2 gap-1.5 sm:gap-4 lg:gap-6">
+                {[1, 2, 3, 4].map((i) => (
+                  <div
+                    key={i}
+                    className="bg-white rounded-lg p-4 sm:p-6 shadow-sm"
+                  >
+                    <div className="w-12 h-12 sm:w-16 sm:h-16 rounded-2xl bg-gray-200 animate-pulse mx-auto mb-3 sm:mb-4"></div>
+                    <div className="h-5 w-24 bg-gray-200 rounded animate-pulse mx-auto mb-2"></div>
+                    <div className="h-4 w-32 bg-gray-200 rounded animate-pulse mx-auto"></div>
+                  </div>
+                ))}
+              </div>
+            </div>
+
+            {/* Reminders Skeleton */}
+            <div>
+              <div className="h-6 sm:h-8 w-56 bg-gray-200 rounded animate-pulse mb-4 sm:mb-6"></div>
+              <div className="space-y-3 sm:space-y-4">
+                {[1, 2, 3].map((i) => (
+                  <div
+                    key={i}
+                    className="bg-white rounded-lg p-4 sm:p-6 shadow-sm"
+                  >
+                    <div className="flex items-center space-x-3 sm:space-x-4">
+                      <div className="w-10 h-10 sm:w-12 sm:h-12 bg-gray-200 rounded-xl animate-pulse"></div>
+                      <div className="flex-1">
+                        <div className="h-4 bg-gray-200 rounded w-3/4 mb-2 animate-pulse"></div>
+                        <div className="h-3 bg-gray-200 rounded w-1/2 animate-pulse"></div>
+                      </div>
+                    </div>
+                  </div>
+                ))}
+              </div>
+            </div>
+          </div>
+        </Layout>
+      </ProtectedRoute>
+    );
+  }
 
   return (
     <ProtectedRoute>
@@ -162,7 +259,7 @@ export default function DashboardPage() {
           </Card>
 
           {/* User Progress & Daily Quests */}
-          {userProgress && (
+          {userProgress ? (
             <div className="grid grid-cols-1 xl:grid-cols-3 gap-6 sm:gap-8">
               <div className="xl:col-span-2">
                 <UserProgressComponent progress={userProgress} />
@@ -171,6 +268,12 @@ export default function DashboardPage() {
                 <DailyQuestsComponent quests={dailyQuests} />
               </div>
             </div>
+          ) : (
+            <Card>
+              <CardContent className="p-6 text-center">
+                <p className="text-gray-600">Загрузка данных...</p>
+              </CardContent>
+            </Card>
           )}
 
           {/* Quick Actions */}
@@ -178,7 +281,7 @@ export default function DashboardPage() {
             <h2 className="text-xl sm:text-2xl font-bold text-slate-900 mb-4 sm:mb-6">
               Быстрые действия
             </h2>
-            <div className="grid grid-cols-1 sm:grid-cols-2 lg:grid-cols-4 gap-4 sm:gap-6">
+            <div className="grid grid-cols-2 gap-2 sm:gap-4 lg:gap-6">
               {quickActions.map((action, index) => {
                 const Icon = action.icon;
                 return (
@@ -187,17 +290,17 @@ export default function DashboardPage() {
                       className="group hover:scale-105 transition-all duration-300 animate-fade-in-up cursor-pointer h-full"
                       style={{ animationDelay: `${index * 0.1}s` }}
                     >
-                      <CardContent className="p-4 sm:p-6 text-center h-full flex flex-col justify-between">
-                        <div>
+                      <CardContent className="p-2.5 sm:p-6 text-center h-full flex flex-col justify-between min-h-[160px] sm:min-h-0">
+                        <div className="flex-grow flex flex-col">
                           <div
-                            className={`w-12 h-12 sm:w-16 sm:h-16 rounded-2xl bg-gradient-to-br ${action.gradient} flex items-center justify-center mx-auto mb-3 sm:mb-4 shadow-lg group-hover:scale-110 transition-transform duration-300`}
+                            className={`w-9 h-9 sm:w-16 sm:h-16 rounded-lg sm:rounded-2xl bg-gradient-to-br ${action.gradient} flex items-center justify-center mx-auto mb-1.5 sm:mb-4 shadow-lg group-hover:scale-110 transition-transform duration-300 flex-shrink-0`}
                           >
-                            <Icon className="h-6 w-6 sm:h-8 sm:w-8 text-white" />
+                            <Icon className="h-4 w-4 sm:h-8 sm:w-8 text-white" />
                           </div>
-                          <h3 className="text-base sm:text-lg font-semibold text-slate-900 mb-1 sm:mb-2">
+                          <h3 className="text-xs sm:text-base lg:text-lg font-semibold text-slate-900 mb-1 sm:mb-2 flex-shrink-0 leading-tight line-clamp-2">
                             {action.title}
                           </h3>
-                          <p className="text-xs sm:text-sm text-slate-600">
+                          <p className="text-[11px] sm:text-sm text-slate-600 flex-grow overflow-hidden line-clamp-4 sm:line-clamp-none leading-snug">
                             {action.description}
                           </p>
                         </div>

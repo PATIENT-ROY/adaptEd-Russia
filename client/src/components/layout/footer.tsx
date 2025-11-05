@@ -29,18 +29,14 @@ export function Footer() {
       { href: "/dashboard", labelKey: "nav.home" },
       { href: "/education-guide", labelKey: "nav.education" },
       { href: "/life-guide", labelKey: "nav.life" },
-      // AI Помощник и Напоминания только для авторизованных пользователей
-      ...(user
-        ? [
-            { href: "/ai-helper", labelKey: "nav.aiHelper" },
-            { href: "/reminders", labelKey: "nav.reminders" },
-          ]
-        : []),
+      { href: "/reminders", labelKey: "nav.reminders" },
     ],
-    support: [
-      { href: "/support", labelKey: "nav.support" },
-      // Убираем дублирование - "Политика конфиденциальности" только внизу
-    ],
+    features: user
+      ? [
+          { href: "/ai-helper", labelKey: "nav.aiHelper" },
+          { href: "/docscan", labelKey: "nav.docscan" },
+        ]
+      : [],
   };
 
   const socialLinks = [
@@ -120,30 +116,38 @@ export function Footer() {
             </ul>
           </div>
 
-          {/* Support & Contact */}
+          {/* Features & Contact */}
           <div
             className="footer-link-animate"
             style={{ animationDelay: "400ms" }}
           >
-            <h3 className="text-sm sm:text-base lg:text-lg font-semibold text-white mb-3 sm:mb-4 flex items-center">
-              <Shield className="h-4 w-4 sm:h-5 sm:w-5 mr-2 text-blue-400" />
-              {t("footer.support")}
-            </h3>
-            <ul className="space-y-0.5 sm:space-y-1 mb-3 sm:mb-4">
-              {footerLinks.support.map((link, index) => (
-                <li key={link.href}>
-                  <Link
-                    href={link.href}
-                    className="text-xs sm:text-sm text-slate-300 hover:text-blue-400 transition-colors duration-300 hover:translate-x-1 inline-block py-0.5"
-                    style={{ animationDelay: `${(index + 1) * 50}ms` }}
-                  >
-                    {link.label}
-                  </Link>
-                </li>
-              ))}
-            </ul>
+            {user && footerLinks.features.length > 0 ? (
+              <>
+                <h3 className="text-sm sm:text-base lg:text-lg font-semibold text-white mb-3 sm:mb-4 flex items-center">
+                  <Shield className="h-4 w-4 sm:h-5 sm:w-5 mr-2 text-blue-400" />
+                  Возможности
+                </h3>
+                <ul className="space-y-0.5 sm:space-y-1 mb-3 sm:mb-4">
+                  {footerLinks.features.map((link, index) => (
+                    <li key={link.href}>
+                      <Link
+                        href={link.href}
+                        className="text-xs sm:text-sm text-slate-300 hover:text-blue-400 transition-colors duration-300 hover:translate-x-1 inline-block py-0.5"
+                        style={{ animationDelay: `${(index + 1) * 50}ms` }}
+                      >
+                        {t(link.labelKey)}
+                      </Link>
+                    </li>
+                  ))}
+                </ul>
+              </>
+            ) : null}
 
             {/* Contact Info */}
+            <h3 className="text-sm sm:text-base lg:text-lg font-semibold text-white mb-3 sm:mb-4 flex items-center">
+              <Shield className="h-4 w-4 sm:h-5 sm:w-5 mr-2 text-blue-400" />
+              Контакты
+            </h3>
             <div className="space-y-1 sm:space-y-2">
               <div className="flex items-center space-x-2 sm:space-x-3 text-slate-300 text-xs sm:text-sm">
                 <Mail className="h-3 w-3 sm:h-4 sm:w-4 text-blue-400 flex-shrink-0" />

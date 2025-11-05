@@ -35,7 +35,7 @@ export function GuideDetailModal({
 
   return (
     <div
-      className="fixed inset-0 z-50 flex items-start sm:items-center justify-center p-0 sm:p-6 md:p-8"
+      className="fixed inset-0 z-[100] flex items-start justify-center p-0"
       onClick={onClose}
     >
       {/* Overlay with backdrop blur */}
@@ -46,34 +46,34 @@ export function GuideDetailModal({
 
       {/* Modal Content */}
       <Card
-        className="relative z-10 w-full h-full sm:h-auto sm:max-w-[88%] md:max-w-[80%] lg:max-w-4xl xl:max-w-5xl max-h-full sm:max-h-[85vh] md:max-h-[88vh] overflow-y-auto rounded-none sm:rounded-2xl shadow-2xl"
+        className="relative z-10 w-full h-full max-h-full flex flex-col rounded-none shadow-2xl overflow-hidden"
         onClick={(e) => e.stopPropagation()}
       >
-        <CardHeader className="border-b pb-3 pt-4 sm:pt-6 md:pt-8">
-          <div className="flex items-start justify-between gap-3 pr-2 sm:pr-0">
-            <CardTitle className="text-lg sm:text-xl md:text-2xl lg:text-3xl font-bold text-gray-900 pr-2 sm:pr-4 flex-1 break-words">
+        <CardHeader className="border-b pb-3 pt-4 flex-shrink-0 bg-white sticky top-0 z-20">
+          <div className="flex items-start justify-between gap-3 pr-2">
+            <CardTitle className="text-lg font-bold text-gray-900 pr-2 flex-1 break-words">
               {guide.title}
             </CardTitle>
             <Button
               variant="ghost"
               size="icon"
               onClick={onClose}
-              className="h-9 w-9 sm:h-10 sm:w-10 flex-shrink-0 hover:bg-gray-100 active:bg-gray-200 transition-colors"
+              className="h-9 w-9 flex-shrink-0 hover:bg-gray-100 active:bg-gray-200 transition-colors relative z-30"
             >
-              <X className="h-5 w-5 sm:h-6 sm:w-6" />
+              <X className="h-5 w-5" />
             </Button>
           </div>
         </CardHeader>
 
-        <CardContent className="space-y-4 sm:space-y-6 md:space-y-8 p-4 sm:p-6 md:p-8 lg:p-10">
+        <CardContent className="space-y-4 p-4 overflow-y-auto flex-1">
           {/* Meta Info */}
-          <div className="flex flex-wrap items-center gap-3 sm:gap-4 md:gap-6 text-xs sm:text-sm md:text-base text-gray-600">
+          <div className="flex flex-wrap items-center gap-3 text-xs text-gray-600">
             <div className="flex items-center gap-2">
-              <Clock className="h-3 w-3 sm:h-4 sm:w-4 md:h-5 md:w-5" />
+              <Clock className="h-3 w-3" />
               <span>{formatDate(guide.updatedAt)}</span>
             </div>
             <div className="flex items-center gap-2">
-              <BookOpen className="h-3 w-3 sm:h-4 sm:w-4 md:h-5 md:w-5" />
+              <BookOpen className="h-3 w-3" />
               <span>
                 {guide.category === "EDUCATION"
                   ? "Образование"
@@ -83,7 +83,7 @@ export function GuideDetailModal({
               </span>
             </div>
             <div className="flex items-center gap-2">
-              <Tag className="h-3 w-3 sm:h-4 sm:w-4 md:h-5 md:w-5" />
+              <Tag className="h-3 w-3" />
               <span>
                 {guide.difficulty === "BEGINNER"
                   ? "Начальный"
@@ -95,20 +95,20 @@ export function GuideDetailModal({
           </div>
 
           {/* Content */}
-          <div className="prose max-w-none prose-sm sm:prose-base md:prose-lg">
-            <div className="text-sm sm:text-base md:text-lg text-gray-700 leading-relaxed whitespace-pre-line">
+          <div className="prose max-w-none prose-sm">
+            <div className="text-sm text-gray-700 leading-relaxed whitespace-pre-line">
               {guide.content}
             </div>
           </div>
 
           {/* Tags */}
-          <div className="flex flex-wrap gap-2 md:gap-3">
+          <div className="flex flex-wrap gap-2">
             {guide.tags.map((tag) => (
               <span
                 key={tag}
-                className="inline-flex items-center px-2 sm:px-3 md:px-4 py-1 md:py-2 rounded-full bg-blue-50 text-blue-700 text-xs sm:text-sm md:text-base font-medium hover:bg-blue-100 transition-colors cursor-pointer"
+                className="inline-flex items-center px-2 py-1 rounded-full bg-blue-50 text-blue-700 text-xs font-medium hover:bg-blue-100 transition-colors cursor-pointer"
               >
-                <Tag className="h-3 w-3 sm:h-4 sm:w-4 mr-1" />
+                <Tag className="h-3 w-3 mr-1" />
                 {tag}
               </span>
             ))}

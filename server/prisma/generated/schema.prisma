@@ -38,6 +38,7 @@ model User {
   payments              Payment[]
   subscriptions         Subscription[]
   userGrantApplications UserGrantApplication[]
+  docScanUsage          DocScanUsage[]
 
   @@map("users")
 }
@@ -266,4 +267,21 @@ model UserGrantApplication {
   grant Grant @relation(fields: [grantId], references: [id], onDelete: Cascade)
 
   @@map("user_grant_applications")
+}
+
+// Использование DocScan
+model DocScanUsage {
+  id        String   @id @default(cuid())
+  userId    String
+  month     String // Формат: YYYY-MM (например, 2024-01)
+  scanCount Int      @default(0)
+  createdAt DateTime @default(now())
+  updatedAt DateTime @updatedAt
+
+  // Связи
+  user User @relation(fields: [userId], references: [id], onDelete: Cascade)
+
+  // Уникальность: один пользователь - одна запись в месяц
+  @@unique([userId, month])
+  @@map("docscan_usage")
 }

@@ -3,7 +3,7 @@
 import { Card, CardContent } from "@/components/ui/card";
 import { Button } from "@/components/ui/button";
 import { UserLevel, UserProgress } from "@/types";
-import { Award, TrendingUp, Trophy, Crown, Zap } from "lucide-react";
+import { TrendingUp, Trophy, Zap } from "lucide-react";
 import Link from "next/link";
 
 interface UserProgressProps {
@@ -135,8 +135,8 @@ export function UserProgressComponent({ progress }: UserProgressProps) {
             </div>
             {nextLevel && (
               <p className="text-xs text-gray-500 mt-1">
-                {currentLevel.maxXP - progress.xp} XP до уровня "
-                {nextLevel.title}"
+                {currentLevel.maxXP - progress.xp} XP до уровня &ldquo;
+                {nextLevel.title}&rdquo;
               </p>
             )}
           </div>

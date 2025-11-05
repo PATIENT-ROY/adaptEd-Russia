@@ -18,6 +18,12 @@ import {
 
 const API_BASE_URL = process.env.NEXT_PUBLIC_API_URL || 'http://localhost:3003/api';
 
+// Интерфейс для ответа чата
+interface ChatMessageResponse {
+  userMessage?: ChatMessage;
+  aiMessage?: ChatMessage;
+}
+
 class ApiClient {
   private baseURL: string;
   private token: string | null = null;
@@ -63,14 +69,40 @@ class ApiClient {
     }
 
     try {
+      console.log(`API request - ${options.method || 'GET'} ${url}`);
+      console.log('API request - Headers:', headers);
+      console.log('API request - Body:', options.body);
+      
       const response = await fetch(url, {
         ...options,
         headers,
       });
 
-      const data = await response.json();
+      console.log('API request - Response status:', response.status);
+      console.log('API request - Response ok:', response.ok);
+      console.log('API request - Response headers:', Object.fromEntries(response.headers.entries()));
+
+      let data;
+      try {
+        const text = await response.text();
+        console.log('API request - Response text:', text);
+        data = text ? JSON.parse(text) : {};
+      } catch (parseError) {
+        console.error('API request - JSON parse error:', parseError);
+        throw new Error('Не удалось распарсить ответ сервера');
+      }
+
+      console.log('API request - Parsed data:', data);
+      console.log('API request - Data type:', typeof data);
+      console.log('API request - Data keys:', data ? Object.keys(data) : 'null');
 
       if (!response.ok) {
+        console.error('API request - Error response:', {
+          status: response.status,
+          statusText: response.statusText,
+          data: data,
+        });
+        
         // Если недействительный токен, очищаем его
         if (response.status === 401 || data.error?.includes('токен') || data.error?.includes('token')) {
           this.clearToken();
@@ -79,12 +111,16 @@ class ApiClient {
             window.location.href = '/login';
           }
         }
-        throw new Error(data.error || 'Ошибка запроса');
+        throw new Error(data.error || data.message || 'Ошибка запроса');
       }
 
       return data;
     } catch (error) {
       console.error('API request error:', error);
+      if (error instanceof Error) {
+        console.error('API request error message:', error.message);
+        console.error('API request error stack:', error.stack);
+      }
       throw error;
     }
   }
@@ -142,15 +178,73 @@ class ApiClient {
   // Напоминания
   async getReminders(): Promise<Reminder[]> {
     const response = await this.request<Reminder[]>('/reminders');
+    console.log('API getReminders response:', response);
+    console.log('API getReminders data:', response.data);
+    if (response.data && Array.isArray(response.data) && response.data.length > 0) {
+      console.log('First reminder from API:', {
+        id: response.data[0].id,
+        title: response.data[0].title,
+        dueDate: response.data[0].dueDate,
+        dueDateType: typeof response.data[0].dueDate,
+        category: response.data[0].category,
+        allFields: Object.keys(response.data[0]),
+        fullReminder: response.data[0],
+      });
+    }
     return response.data!;
   }
 
-  async createReminder(data: Omit<Reminder, 'id' | 'createdAt' | 'updatedAt'>): Promise<Reminder> {
+  async createReminder(data: Omit<Reminder, 'id' | 'createdAt' | 'updatedAt' | 'userId'>): Promise<Reminder> {
+    console.log('API createReminder - Sending data:', JSON.stringify(data, null, 2));
+    
     const response = await this.request<Reminder>('/reminders', {
       method: 'POST',
       body: JSON.stringify(data),
     });
-    return response.data!;
+    
+    console.log('API createReminder - Full response:', response);
+    console.log('API createReminder - Response type:', typeof response);
+    console.log('API createReminder - Response keys:', response ? Object.keys(response) : 'null');
+    console.log('API createReminder - Response stringified:', JSON.stringify(response, null, 2));
+    console.log('API createReminder - response.success:', response?.success);
+    console.log('API createReminder - response.data:', response?.data);
+    console.log('API createReminder - response.data type:', typeof response?.data);
+    console.log('API createReminder - response.data keys:', response?.data ? Object.keys(response.data) : 'null');
+    
+    // Определяем, где находятся данные: в response.data или в response напрямую
+    let reminder: Reminder | undefined;
+    
+    if (response?.data) {
+      // Стандартный формат: { success: true, data: {...} }
+      reminder = response.data;
+      console.log('API createReminder - Using response.data');
+    } else if (response && typeof response === 'object' && 'id' in response && 'title' in response) {
+      // Если response сам является объектом напоминания
+      reminder = response as unknown as Reminder;
+      console.log('API createReminder - Using response directly (it is the reminder object)');
+    }
+    
+    // Проверяем, что данные есть
+    if (!reminder || !reminder.id) {
+      console.error('⚠️ ERROR: No valid reminder data found!');
+      console.error('⚠️ Full response object:', JSON.stringify(response, null, 2));
+      console.error('⚠️ reminder:', reminder);
+      throw new Error('Сервер вернул некорректные данные. Проверьте логи консоли и сервера.');
+    }
+    
+    console.log('API createReminder - Reminder object:', reminder);
+    console.log('API createReminder - Reminder stringified:', JSON.stringify(reminder, null, 2));
+    console.log('API createReminder - Reminder dueDate:', reminder.dueDate);
+    console.log('API createReminder - Reminder category:', reminder.category);
+    console.log('API createReminder - Reminder keys:', Object.keys(reminder));
+    
+    // Проверяем, что reminder не пустой объект
+    if (Object.keys(reminder).length === 0) {
+      console.error('⚠️ ERROR: reminder is empty object!');
+      throw new Error('Получен пустой объект напоминания от сервера');
+    }
+    
+    return reminder;
   }
 
   async updateReminder(id: string, data: Partial<Reminder>): Promise<Reminder> {
@@ -183,13 +277,14 @@ class ApiClient {
   }
 
   // Чат
-  async sendMessage(content: string): Promise<any> {
-    const response = await this.request<any>('/chat/messages', {
+  async sendMessage(content: string): Promise<ChatMessageResponse | ChatMessage> {
+    const response = await this.request<ChatMessageResponse | ChatMessage>('/chat/messages', {
       method: 'POST',
       body: JSON.stringify({ content }),
     });
-    // API возвращает { userMessage, aiMessage }
-    return response.data || response;
+    // API возвращает { userMessage, aiMessage } или ChatMessage
+    const data = response.data || response;
+    return data as ChatMessageResponse | ChatMessage;
   }
 
   async getChatHistory(): Promise<ChatMessage[]> {
@@ -262,13 +357,30 @@ export const createPayment = async (data: PaymentRequest): Promise<PaymentRespon
 
 export const getPayment = async (paymentId: string): Promise<Payment> => {
   const token = typeof window !== 'undefined' ? localStorage.getItem('token') : null;
+  
+  console.log('Fetching payment:', { paymentId, hasToken: !!token });
+  
   const response = await fetch(`${API_BASE_URL}/payments/payment/${paymentId}`, {
     headers: {
       'Authorization': `Bearer ${token}`,
     },
   });
-  if (!response.ok) throw new Error('Failed to fetch payment');
-  return response.json();
+  
+  console.log('Payment response:', { 
+    status: response.status, 
+    ok: response.ok,
+    statusText: response.statusText 
+  });
+  
+  if (!response.ok) {
+    const errorData = await response.json().catch(() => ({ error: 'Unknown error' }));
+    console.error('Payment fetch error:', errorData);
+    throw new Error(errorData.error || `Failed to fetch payment: ${response.status} ${response.statusText}`);
+  }
+  
+  const payment = await response.json();
+  console.log('Payment fetched:', { id: payment.id, status: payment.status });
+  return payment;
 };
 
 export const cancelPayment = async (paymentId: string): Promise<void> => {

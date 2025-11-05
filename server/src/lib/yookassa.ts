@@ -25,7 +25,7 @@ const createMockPayment = (amount: number, description: string, metadata?: Recor
     },
     confirmation: {
       type: 'redirect',
-      confirmation_url: `${process.env.CLIENT_URL || 'http://localhost:3000'}/payment/test?payment_id=${paymentId}`,
+      confirmation_url: `${process.env.CLIENT_URL || 'http://localhost:3000'}/payment/callback?payment_id=${paymentId}`,
     },
     description,
     metadata: {

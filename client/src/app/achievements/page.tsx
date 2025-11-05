@@ -4,8 +4,7 @@ import { Layout } from "@/components/layout/layout";
 import { ProtectedRoute } from "@/components/auth/ProtectedRoute";
 import { Card, CardContent } from "@/components/ui/card";
 import { Button } from "@/components/ui/button";
-import { Badge } from "@/components/ui/badge";
-import { Achievement, AchievementCategory, UserLevel } from "@/types";
+import { Achievement, AchievementCategory } from "@/types";
 import {
   Trophy,
   Lock,
@@ -62,6 +61,16 @@ const ACHIEVEMENTS: Achievement[] = [
     requirement: "create_1_reminder",
     rarity: "common",
   },
+  {
+    id: "4a",
+    name: "Сканер",
+    description: "Отсканировали первый документ",
+    category: AchievementCategory.GETTING_STARTED,
+    icon: "📄",
+    xpReward: 15,
+    requirement: "scan_1_document",
+    rarity: "common",
+  },
 
   // EDUCATION
   {
@@ -103,6 +112,16 @@ const ACHIEVEMENTS: Achievement[] = [
     xpReward: 30,
     requirement: "explore_scholarships",
     rarity: "common",
+  },
+  {
+    id: "8a",
+    name: "Документалист",
+    description: "Отсканировали 10 документов",
+    category: AchievementCategory.EDUCATION,
+    icon: "📑",
+    xpReward: 50,
+    requirement: "scan_10_documents",
+    rarity: "rare",
   },
 
   // LIFE
@@ -208,6 +227,16 @@ const ACHIEVEMENTS: Achievement[] = [
     icon: "🧠",
     xpReward: 150,
     requirement: "ask_50_ai_questions",
+    rarity: "epic",
+  },
+  {
+    id: "18a",
+    name: "Мастер сканирования",
+    description: "Отсканировали 50 документов",
+    category: AchievementCategory.EXPERT,
+    icon: "📊",
+    xpReward: 200,
+    requirement: "scan_50_documents",
     rarity: "epic",
   },
   {

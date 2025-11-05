@@ -2,6 +2,7 @@ import express from 'express';
 import cors from 'cors';
 import helmet from 'helmet';
 import rateLimit from 'express-rate-limit';
+import cookieParser from 'cookie-parser';
 import dotenv from 'dotenv';
 
 // Импорты API маршрутов
@@ -29,16 +30,20 @@ app.use(helmet());
         origin: [
           'http://localhost:3000',
           'http://localhost:3001',
+          'http://localhost:3002',
           'http://localhost:3007',
           'http://localhost:3008',
           'http://192.168.0.101:3000',
           'http://192.168.0.101:3001',
+          'http://192.168.0.101:3002',
           'http://192.168.0.101:3007',
           'http://192.168.0.101:3008',
           '127.0.4.240:56548',
           ...(process.env.CLIENT_URL ? [process.env.CLIENT_URL] : [])
         ],
         credentials: true,
+        methods: ['GET', 'POST', 'PUT', 'DELETE', 'OPTIONS'],
+        allowedHeaders: ['Content-Type', 'Authorization'],
       }));
 
 // Rate limiting - временно отключено для тестирования
@@ -49,9 +54,10 @@ app.use(helmet());
 // });
 // app.use(limiter);
 
-// Парсинг JSON
+// Парсинг JSON и cookies
 app.use(express.json({ limit: '10mb' }));
 app.use(express.urlencoded({ extended: true }));
+app.use(cookieParser());
 
 // Health check
 app.get('/health', (req, res) => {

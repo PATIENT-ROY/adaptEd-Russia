@@ -387,7 +387,7 @@ export default function StudentSlangPage() {
                   </div>
                   <div className="border-l-4 border-blue-500 pl-3 bg-blue-50 rounded">
                     <p className="text-sm italic text-gray-700">
-                      "{term.example}"
+                      &ldquo;{term.example}&rdquo;
                     </p>
                   </div>
                   <div>

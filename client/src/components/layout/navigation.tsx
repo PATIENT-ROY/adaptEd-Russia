@@ -18,6 +18,7 @@ import {
   X,
   Shield,
   HelpCircle,
+  ScanLine,
 } from "lucide-react";
 import { useState } from "react";
 import type { Language } from "@/types";
@@ -32,12 +33,12 @@ const navigationItemsConfig = [
   { href: "/dashboard", labelKey: "nav.home", icon: Home },
   { href: "/education-guide", labelKey: "nav.education", icon: BookOpen },
   { href: "/life-guide", labelKey: "nav.life", icon: HomeIcon },
-  { href: "/support", labelKey: "nav.support", icon: HelpCircle },
+  { href: "/reminders", labelKey: "nav.reminders", icon: Bell },
 ];
 
 const authenticatedNavigationItemsConfig = [
-  { href: "/reminders", labelKey: "nav.reminders", icon: Bell },
   { href: "/ai-helper", labelKey: "nav.aiHelper", icon: MessageSquare },
+  { href: "/docscan", labelKey: "nav.docscan", icon: ScanLine },
 ];
 
 export function Navigation({

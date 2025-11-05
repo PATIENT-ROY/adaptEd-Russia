@@ -32,7 +32,7 @@ import {
 
 export default function SupportPage() {
   const router = useRouter();
-  const { submitSupportForm, getFAQ, getContactInfo } = useSupport();
+  const { submitSupportForm, getFAQ } = useSupport();
   const [formData, setFormData] = useState({
     name: "",
     email: "",
@@ -43,6 +43,7 @@ export default function SupportPage() {
   const [isSubmitted, setIsSubmitted] = useState(false);
   const [faqItems, setFaqItems] = useState<FAQItem[]>([]);
   const [privacyConsent, setPrivacyConsent] = useState(false);
+  const [isInitialLoading, setIsInitialLoading] = useState(true);
 
   const handleSubmit = async (e: React.FormEvent) => {
     e.preventDefault();
@@ -83,6 +84,8 @@ export default function SupportPage() {
         setFaqItems(faqData);
       } catch (err) {
         console.error("Ошибка при загрузке данных:", err);
+      } finally {
+        setIsInitialLoading(false);
       }
     };
 
@@ -144,6 +147,66 @@ export default function SupportPage() {
       response: "Мгновенный ответ",
     },
   ];
+
+  // Skeleton при начальной загрузке
+  if (isInitialLoading) {
+    return (
+      <div className="min-h-screen bg-gradient-to-br from-blue-50 via-white to-purple-50 py-8">
+        <div className="max-w-6xl mx-auto px-4 sm:px-6 lg:px-8">
+          {/* Back Button Skeleton */}
+          <div className="h-10 w-24 bg-gray-200 rounded animate-pulse mb-6"></div>
+
+          {/* Header Skeleton */}
+          <div className="text-center mb-12">
+            <div className="h-10 w-64 bg-gray-200 rounded animate-pulse mx-auto mb-4"></div>
+            <div className="h-6 w-96 bg-gray-200 rounded animate-pulse mx-auto"></div>
+          </div>
+
+          {/* Contact Methods Skeleton */}
+          <div className="grid grid-cols-1 md:grid-cols-3 gap-6 mb-12">
+            {[1, 2, 3].map((i) => (
+              <div key={i} className="bg-white rounded-lg p-6 shadow-sm">
+                <div className="w-12 h-12 bg-gray-200 rounded-lg animate-pulse mb-4"></div>
+                <div className="h-6 w-40 bg-gray-200 rounded animate-pulse mb-2"></div>
+                <div className="h-4 w-48 bg-gray-200 rounded animate-pulse mb-2"></div>
+                <div className="h-4 w-32 bg-gray-200 rounded animate-pulse"></div>
+              </div>
+            ))}
+          </div>
+
+          {/* Form and FAQ Skeleton */}
+          <div className="grid grid-cols-1 lg:grid-cols-2 gap-8">
+            {/* Form Skeleton */}
+            <div className="bg-white rounded-lg p-6 shadow-sm">
+              <div className="h-6 w-48 bg-gray-200 rounded animate-pulse mb-4"></div>
+              <div className="space-y-4">
+                <div className="grid grid-cols-2 gap-4">
+                  <div className="h-10 bg-gray-200 rounded animate-pulse"></div>
+                  <div className="h-10 bg-gray-200 rounded animate-pulse"></div>
+                </div>
+                <div className="h-10 bg-gray-200 rounded animate-pulse"></div>
+                <div className="h-32 bg-gray-200 rounded animate-pulse"></div>
+                <div className="h-10 bg-gray-200 rounded animate-pulse"></div>
+              </div>
+            </div>
+
+            {/* FAQ Skeleton */}
+            <div className="bg-white rounded-lg p-6 shadow-sm">
+              <div className="h-6 w-32 bg-gray-200 rounded animate-pulse mb-4"></div>
+              <div className="space-y-4">
+                {[1, 2, 3, 4].map((i) => (
+                  <div key={i} className="border-b border-gray-200 pb-4">
+                    <div className="h-5 w-full bg-gray-200 rounded animate-pulse mb-2"></div>
+                    <div className="h-4 w-5/6 bg-gray-200 rounded animate-pulse"></div>
+                  </div>
+                ))}
+              </div>
+            </div>
+          </div>
+        </div>
+      </div>
+    );
+  }
 
   return (
     <div className="min-h-screen bg-gradient-to-br from-blue-50 via-white to-purple-50 py-8">

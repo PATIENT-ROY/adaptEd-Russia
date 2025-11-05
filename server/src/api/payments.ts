@@ -78,31 +78,57 @@ router.post('/create-payment', authMiddleware, async (req, res) => {
 });
 
 // Получить информацию о платеже
+// Поддерживает поиск как по id (UUID из базы), так и по yooKassaPaymentId
 router.get('/payment/:paymentId', authMiddleware, async (req, res) => {
   try {
     const { paymentId } = req.params;
     const userId = (req as any).user.userId;
 
-    const payment = await prisma.payment.findFirst({
+    console.log('Getting payment:', { paymentId, userId });
+
+    // Сначала пытаемся найти по id (UUID из базы данных)
+    let payment = await prisma.payment.findFirst({
       where: { id: paymentId, userId },
     });
 
+    // Если не найдено по id, пытаемся найти по yooKassaPaymentId
     if (!payment) {
+      console.log('Payment not found by id, trying yooKassaPaymentId:', paymentId);
+      payment = await prisma.payment.findFirst({
+        where: { yooKassaPaymentId: paymentId, userId },
+      });
+    }
+
+    if (!payment) {
+      console.log('Payment not found:', paymentId);
       return res.status(404).json({ error: 'Payment not found' });
     }
 
+    console.log('Payment found:', { id: payment.id, yooKassaPaymentId: payment.yooKassaPaymentId, status: payment.status });
+
     // Получаем актуальный статус из YooKassa
     if (payment.yooKassaPaymentId) {
-      const yooKassaStatus = await checkPaymentStatus(payment.yooKassaPaymentId);
-      
-      // Обновляем статус в базе данных если он изменился
-      if (yooKassaStatus.status !== payment.status) {
-        await prisma.payment.update({
-          where: { id: paymentId },
-          data: { status: yooKassaStatus.status },
+      try {
+        const yooKassaStatus = await checkPaymentStatus(payment.yooKassaPaymentId);
+        
+        console.log('YooKassa status:', { 
+          current: payment.status, 
+          yooKassa: yooKassaStatus.status 
         });
         
-        payment.status = yooKassaStatus.status;
+        // Обновляем статус в базе данных если он изменился
+        if (yooKassaStatus.status !== payment.status) {
+          await prisma.payment.update({
+            where: { id: payment.id },
+            data: { status: yooKassaStatus.status },
+          });
+          
+          payment.status = yooKassaStatus.status;
+          console.log('Payment status updated:', payment.status);
+        }
+      } catch (yooKassaError) {
+        console.error('Error checking YooKassa status:', yooKassaError);
+        // Продолжаем, даже если проверка статуса в YooKassa не удалась
       }
     }
 

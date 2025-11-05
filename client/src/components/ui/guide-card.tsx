@@ -70,11 +70,16 @@ export function GuideCard({ guide, onClick, className }: GuideCardProps) {
       >
         <CardHeader className="pb-2 sm:pb-3 p-4 sm:p-6 flex-shrink-0">
           <div className="flex items-start justify-between">
-            <div className="flex items-center gap-2 sm:gap-3">
-              <div className={cn("rounded-lg p-1.5 sm:p-2", colorClass)}>
+            <div className="flex items-start gap-2 sm:gap-3">
+              <div
+                className={cn(
+                  "rounded-lg flex-shrink-0 h-8 w-8 sm:h-10 sm:w-10 flex items-center justify-center",
+                  colorClass
+                )}
+              >
                 <Icon className="h-4 w-4 sm:h-5 sm:w-5" />
               </div>
-              <div>
+              <div className="flex-1 min-w-0">
                 <CardTitle className="text-base sm:text-lg">
                   {guide.title}
                 </CardTitle>
@@ -88,8 +93,10 @@ export function GuideCard({ guide, onClick, className }: GuideCardProps) {
           </div>
         </CardHeader>
 
-        <CardContent className="pt-0 p-4 sm:p-6 flex-1 flex flex-col justify-between">
-          <div className="flex flex-col sm:flex-row sm:items-center justify-between space-y-2 sm:space-y-0">
+        <CardContent className="pt-0 p-4 sm:p-6 flex-1 flex flex-col">
+          <div className="flex-1"></div>
+
+          <div className="flex flex-col sm:flex-row sm:items-center justify-between gap-2 sm:gap-0">
             <div className="flex items-center gap-2 text-xs sm:text-sm text-muted-foreground">
               <Clock className="h-3 w-3 sm:h-4 sm:w-4" />
               <span>{formatDate(guide.updatedAt)}</span>

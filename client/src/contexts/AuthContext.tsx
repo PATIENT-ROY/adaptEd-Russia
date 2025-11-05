@@ -9,6 +9,23 @@ import React, {
 } from "react";
 import type { User } from "@/types";
 
+// Используем тот же API_BASE_URL, что и в api.ts
+// В браузере process.env доступен только для NEXT_PUBLIC_* переменных
+// Если Next.js не перезапущен, переменная может быть undefined
+const API_BASE_URL =
+  (typeof window !== "undefined"
+    ? process.env.NEXT_PUBLIC_API_URL
+    : process.env.NEXT_PUBLIC_API_URL) || "http://localhost:3003/api";
+
+// Логируем для отладки
+if (typeof window !== "undefined") {
+  console.log("API_BASE_URL:", API_BASE_URL);
+  console.log(
+    "process.env.NEXT_PUBLIC_API_URL:",
+    process.env.NEXT_PUBLIC_API_URL
+  );
+}
+
 interface AuthContextType {
   user: User | null;
   login: (email: string, password: string) => Promise<boolean>;
@@ -67,23 +84,60 @@ export function AuthProvider({ children }: { children: React.ReactNode }) {
       setIsLoading(true);
       try {
         // Реальный API запрос
-        const response = await fetch(
-          `${
-            process.env.NEXT_PUBLIC_API_URL || "http://localhost:3003/api"
-          }/auth/login`,
-          {
-            method: "POST",
-            headers: {
-              "Content-Type": "application/json",
-            },
-            body: JSON.stringify({ email, password }),
-          }
-        );
+        const loginUrl = `${API_BASE_URL}/auth/login`;
+        console.log("Attempting login to:", loginUrl);
+        console.log("Full URL:", loginUrl);
+        console.log("API_BASE_URL value:", API_BASE_URL);
 
-        const data = await response.json();
+        const response = await fetch(loginUrl, {
+          method: "POST",
+          headers: {
+            "Content-Type": "application/json",
+          },
+          body: JSON.stringify({ email, password }),
+          // Добавляем mode и credentials для CORS
+          mode: "cors",
+          credentials: "include",
+        });
+
+        // Получаем текст ответа для безопасного парсинга
+        let data;
+        const contentType = response.headers.get("content-type");
+        const isJson = contentType?.includes("application/json");
+
+        try {
+          if (isJson) {
+            const text = await response.text();
+            data = text ? JSON.parse(text) : {};
+          } else {
+            // Если ответ не JSON, выбрасываем ошибку
+            throw new Error(
+              `HTTP error! status: ${response.status}, statusText: ${response.statusText}`
+            );
+          }
+        } catch (parseError) {
+          console.error("Error parsing response:", parseError);
+          throw new Error(
+            `Не удалось обработать ответ сервера. Статус: ${response.status}`
+          );
+        }
+
+        // Проверяем статус ответа
+        if (!response.ok) {
+          const errorMessage =
+            data?.error || data?.message || `Ошибка сервера: ${response.status}`;
+          console.error("Login failed:", errorMessage);
+          return false;
+        }
 
         if (data.success && data.data) {
           const { user, token } = data.data;
+
+          // Проверяем наличие необходимых данных
+          if (!user || !token) {
+            console.error("Login failed: missing user or token in response");
+            return false;
+          }
 
           // Сохраняем пользователя и токен
           setUser(user);
@@ -93,11 +147,18 @@ export function AuthProvider({ children }: { children: React.ReactNode }) {
           console.log("Login successful, token saved:", token);
           return true;
         } else {
-          console.error("Login failed:", data.error);
+          const errorMessage = data?.error || data?.message || "Неверный email или пароль";
+          console.error("Login failed:", errorMessage);
           return false;
         }
       } catch (error) {
         console.error("Login error:", error);
+        if (error instanceof TypeError && error.message === "Failed to fetch") {
+          console.error(
+            "Network error - check if backend is running on:",
+            API_BASE_URL
+          );
+        }
         return false;
       } finally {
         setIsLoading(false);
@@ -117,29 +178,66 @@ export function AuthProvider({ children }: { children: React.ReactNode }) {
       console.log("Register function called with:", userData);
       try {
         // Реальный API запрос
-        const response = await fetch(
-          `${
-            process.env.NEXT_PUBLIC_API_URL || "http://localhost:3003/api"
-          }/auth/register`,
-          {
-            method: "POST",
-            headers: {
-              "Content-Type": "application/json",
-            },
-            body: JSON.stringify({
-              name: userData.name,
-              email: userData.email,
-              password: userData.password,
-              country: userData.country,
-              language: userData.language,
-            }),
-          }
-        );
+        const registerUrl = `${API_BASE_URL}/auth/register`;
+        console.log("Attempting register to:", registerUrl);
+        console.log("Full URL:", registerUrl);
+        console.log("API_BASE_URL value:", API_BASE_URL);
 
-        const data = await response.json();
+        const response = await fetch(registerUrl, {
+          method: "POST",
+          headers: {
+            "Content-Type": "application/json",
+          },
+          body: JSON.stringify({
+            name: userData.name,
+            email: userData.email,
+            password: userData.password,
+            country: userData.country,
+            language: userData.language,
+          }),
+          // Добавляем mode и credentials для CORS
+          mode: "cors",
+          credentials: "include",
+        });
+
+        // Получаем текст ответа для безопасного парсинга
+        let data;
+        const contentType = response.headers.get("content-type");
+        const isJson = contentType?.includes("application/json");
+
+        try {
+          if (isJson) {
+            const text = await response.text();
+            data = text ? JSON.parse(text) : {};
+          } else {
+            // Если ответ не JSON, выбрасываем ошибку
+            throw new Error(
+              `HTTP error! status: ${response.status}, statusText: ${response.statusText}`
+            );
+          }
+        } catch (parseError) {
+          console.error("Error parsing response:", parseError);
+          throw new Error(
+            `Не удалось обработать ответ сервера. Статус: ${response.status}`
+          );
+        }
+
+        // Проверяем статус ответа
+        if (!response.ok) {
+          const errorMessage =
+            data?.error || data?.message || `Ошибка сервера: ${response.status}`;
+          console.error("Registration failed:", errorMessage);
+          return false;
+        }
 
         if (data.success && data.data) {
           const { user, token } = data.data;
+
+          // Проверяем наличие необходимых данных
+          if (!user || !token) {
+            console.error("Registration failed: missing user or token in response");
+            return false;
+          }
 
           // Сохраняем пользователя и токен
           setUser(user);
@@ -153,11 +251,18 @@ export function AuthProvider({ children }: { children: React.ReactNode }) {
           console.log("Registration successful, token saved:", token);
           return true;
         } else {
-          console.error("Registration failed:", data.error);
+          const errorMessage = data?.error || data?.message || "Ошибка при регистрации";
+          console.error("Registration failed:", errorMessage);
           return false;
         }
       } catch (error) {
         console.error("Register error:", error);
+        if (error instanceof TypeError && error.message === "Failed to fetch") {
+          console.error(
+            "Network error - check if backend is running on:",
+            API_BASE_URL
+          );
+        }
         return false;
       } finally {
         setIsLoading(false);

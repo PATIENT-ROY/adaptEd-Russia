@@ -1,6 +1,7 @@
 "use client";
 
-import { useState, useEffect } from "react";
+import { useState, useEffect, Suspense } from "react";
+import { useSearchParams } from "next/navigation";
 import { Layout } from "@/components/layout/layout";
 import { Button } from "@/components/ui/button";
 import {
@@ -43,7 +44,8 @@ import {
   PaymentResponse,
 } from "@/types";
 
-export default function PaymentTestPage() {
+function PaymentTestContent() {
+  const searchParams = useSearchParams();
   const [plans, setPlans] = useState<SubscriptionPlan[]>([]);
   const [testData, setTestData] = useState<TestData | null>(null);
   const [selectedPlan, setSelectedPlan] = useState<SubscriptionPlan | null>(
@@ -74,6 +76,15 @@ export default function PaymentTestPage() {
       setIsAuthenticated(!!token);
     }
   }, []);
+
+  // Обработка payment_id из URL (когда пользователь переходит с callback страницы)
+  useEffect(() => {
+    const paymentId = searchParams.get("payment_id");
+    if (paymentId && !currentPayment) {
+      loadPaymentById(paymentId);
+    }
+    // eslint-disable-next-line react-hooks/exhaustive-deps
+  }, [searchParams]);
 
   const loadData = async () => {
     try {
@@ -187,6 +198,23 @@ export default function PaymentTestPage() {
   const getConfirmationUrl = (payment: PaymentResponse | Payment | null) => {
     if (!payment) return null;
     return "confirmationUrl" in payment ? payment.confirmationUrl : null;
+  };
+
+  const loadPaymentById = async (paymentId: string) => {
+    try {
+      setIsLoading(true);
+      const payment = await getPayment(paymentId);
+      setCurrentPayment(payment);
+
+      // Если платеж успешен, обновляем данные
+      if (payment.status === PaymentStatus.SUCCEEDED) {
+        await loadData();
+      }
+    } catch (error) {
+      console.error("Error loading payment:", error);
+    } finally {
+      setIsLoading(false);
+    }
   };
 
   const handleCheckPayment = async () => {
@@ -737,5 +765,24 @@ export default function PaymentTestPage() {
         </div>
       </div>
     </Layout>
+  );
+}
+
+export default function PaymentTestPage() {
+  return (
+    <Suspense fallback={
+      <Layout>
+        <div className="min-h-screen bg-gradient-to-br from-slate-50 via-blue-50 to-indigo-50 py-8">
+          <div className="max-w-7xl mx-auto px-4 sm:px-6 lg:px-8">
+            <div className="text-center">
+              <div className="animate-spin rounded-full h-12 w-12 border-b-2 border-blue-600 mx-auto mb-4"></div>
+              <p className="text-gray-600">Загрузка...</p>
+            </div>
+          </div>
+        </div>
+      </Layout>
+    }>
+      <PaymentTestContent />
+    </Suspense>
   );
 }

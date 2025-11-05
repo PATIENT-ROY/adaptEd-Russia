@@ -39,11 +39,15 @@ git push origin main
 
 ### 4. Настройка Environment Variables
 
-В **Site settings → Environment variables** добавьте:
+В **Site settings → Environment variables** добавьте переменную:
 
-```
-NEXT_PUBLIC_API_URL=https://your-backend-api.com/api
-```
+**Key (Ключ):** `NEXT_PUBLIC_API_URL`
+
+**Value (Значение):** `https://your-backend-api.com/api`
+
+⚠️ **Важно:** 
+- Если бэкенд еще не задеплоен, используйте: `http://localhost:3003/api` для разработки
+- После деплоя бэкенда обновите на production URL
 
 ⚠️ **Заметьте:** Бекенд должен быть уже задеплоен и доступен по URL!
 

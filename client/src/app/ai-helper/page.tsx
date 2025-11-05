@@ -103,7 +103,52 @@ export default function AiHelperPage() {
   if (!user) {
     return (
       <ProtectedRoute>
-        <div>Loading...</div>
+        <Layout>
+          <div className="space-y-4 sm:space-y-6 lg:space-y-8">
+            {/* Header Skeleton */}
+            <div className="bg-white rounded-lg p-4 sm:p-6 shadow-sm">
+              <div className="flex flex-col sm:flex-row sm:items-center space-y-3 sm:space-y-0 sm:space-x-3">
+                <div className="w-12 h-12 bg-gray-200 rounded-lg animate-pulse"></div>
+                <div className="flex-1">
+                  <div className="h-6 w-48 bg-gray-200 rounded animate-pulse mb-2"></div>
+                  <div className="h-4 w-96 bg-gray-200 rounded animate-pulse"></div>
+                </div>
+              </div>
+            </div>
+
+            {/* Chat Skeleton */}
+            <div className="grid grid-cols-1 xl:grid-cols-4 gap-4 sm:gap-6 lg:gap-8">
+              <div className="xl:col-span-3">
+                <div className="bg-white rounded-lg min-h-[500px] p-6 shadow-sm">
+                  <div className="space-y-4">
+                    {[1, 2, 3].map((i) => (
+                      <div key={i} className="flex space-x-3">
+                        <div className="w-8 h-8 rounded-full bg-gray-200 animate-pulse"></div>
+                        <div className="flex-1">
+                          <div className="h-4 w-20 bg-gray-200 rounded animate-pulse mb-2"></div>
+                          <div className="h-20 bg-gray-200 rounded animate-pulse"></div>
+                        </div>
+                      </div>
+                    ))}
+                  </div>
+                </div>
+              </div>
+              <div>
+                <div className="bg-white rounded-lg p-6 shadow-sm">
+                  <div className="h-6 w-40 bg-gray-200 rounded animate-pulse mb-4"></div>
+                  <div className="space-y-3">
+                    {[1, 2, 3, 4].map((i) => (
+                      <div
+                        key={i}
+                        className="h-12 bg-gray-200 rounded animate-pulse"
+                      ></div>
+                    ))}
+                  </div>
+                </div>
+              </div>
+            </div>
+          </div>
+        </Layout>
       </ProtectedRoute>
     );
   }

@@ -291,6 +291,15 @@ exports.Prisma.UserGrantApplicationScalarFieldEnum = {
   updatedAt: 'updatedAt'
 };
 
+exports.Prisma.DocScanUsageScalarFieldEnum = {
+  id: 'id',
+  userId: 'userId',
+  month: 'month',
+  scanCount: 'scanCount',
+  createdAt: 'createdAt',
+  updatedAt: 'updatedAt'
+};
+
 exports.Prisma.SortOrder = {
   asc: 'asc',
   desc: 'desc'
@@ -315,7 +324,8 @@ exports.Prisma.ModelName = {
   Payment: 'Payment',
   Subscription: 'Subscription',
   Grant: 'Grant',
-  UserGrantApplication: 'UserGrantApplication'
+  UserGrantApplication: 'UserGrantApplication',
+  DocScanUsage: 'DocScanUsage'
 };
 
 /**
