@@ -9,14 +9,11 @@ import {
   BookOpen,
   MessageSquare,
   Bell,
-  Settings,
   Shield,
   Activity,
   Edit,
   Eye,
   ScanLine,
-  Sparkles,
-  GraduationCap,
 } from "lucide-react";
 import Link from "next/link";
 import { useAuth } from "@/contexts/AuthContext";

@@ -33,6 +33,7 @@ import {
   Clock,
   ScanLine,
   AlertCircle,
+  HelpCircle,
 } from "lucide-react";
 import Link from "next/link";
 import { useEffect, useMemo, useState } from "react";

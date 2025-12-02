@@ -325,7 +325,7 @@ class ApiClient {
 export const apiClient = new ApiClient(API_BASE_URL);
 
 export const fetchProfileOverview = async (): Promise<ProfileOverview> => {
-  if (typeof (apiClient as any).getProfileOverview === "function") {
+  if (typeof (apiClient as unknown as { getProfileOverview?: () => Promise<ProfileOverview> }).getProfileOverview === "function") {
     return apiClient.getProfileOverview();
   }
 
@@ -356,7 +356,7 @@ export const fetchProfileOverview = async (): Promise<ProfileOverview> => {
 };
 
 export const fetchDashboardOverview = async (): Promise<DashboardOverview> => {
-  if (typeof (apiClient as any).getDashboardOverview === "function") {
+  if (typeof (apiClient as unknown as { getDashboardOverview?: () => Promise<DashboardOverview> }).getDashboardOverview === "function") {
     return apiClient.getDashboardOverview();
   }
 
@@ -387,7 +387,7 @@ export const fetchDashboardOverview = async (): Promise<DashboardOverview> => {
 };
 
 export const fetchAchievementsOverview = async (): Promise<AchievementsOverview> => {
-  if (typeof (apiClient as any).getAchievementsOverview === "function") {
+  if (typeof (apiClient as unknown as { getAchievementsOverview?: () => Promise<AchievementsOverview> }).getAchievementsOverview === "function") {
     return apiClient.getAchievementsOverview();
   }
 

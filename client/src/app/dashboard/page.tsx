@@ -18,7 +18,6 @@ import { useAuth } from "@/contexts/AuthContext";
 import { useReminders } from "@/hooks/useReminders";
 import { useState, useEffect, useCallback } from "react";
 import type { Reminder, UserProgress, DailyQuest } from "@/types";
-import { UserLevel } from "@/types";
 import { UserProgressComponent } from "@/components/ui/user-progress";
 import { DailyQuestsComponent } from "@/components/ui/daily-quests";
 import { fetchDashboardOverview } from "@/lib/api";
