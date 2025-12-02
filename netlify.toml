@@ -9,4 +9,7 @@
   NPM_FLAGS = "--legacy-peer-deps"
   
 [[plugins]]
-  package = "@netlify/plugin-nextjs@5.14.5"
+  package = "@netlify/plugin-nextjs"
+  [plugins.inputs]
+    # Используем последнюю версию плагина для поддержки Next.js 15
+    skipBuild = false
