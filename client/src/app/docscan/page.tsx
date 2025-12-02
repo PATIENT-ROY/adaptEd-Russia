@@ -641,7 +641,7 @@ export default function DocScanPage() {
 
               {/* File Upload Area */}
               <Card
-                {...getRootProps()}
+                {...(getRootProps() as React.HTMLAttributes<HTMLDivElement>)}
                 className={`border-2 border-dashed transition-all duration-300 cursor-pointer rounded-2xl ${
                   isDragActive
                     ? "border-[#6A5AE0] bg-gradient-to-br from-[#6A5AE0]/10 to-[#3B82F6]/10"
@@ -651,7 +651,7 @@ export default function DocScanPage() {
                 }`}
               >
                 <CardContent className="p-8 sm:p-12">
-                  <input {...getInputProps()} />
+                  <input {...(getInputProps() as React.InputHTMLAttributes<HTMLInputElement>)} />
                   <div className="flex flex-col items-center justify-center space-y-4">
                     <div
                       className={`p-4 rounded-full transition-colors duration-300 ${
