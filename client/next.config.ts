@@ -1,8 +1,8 @@
 import type { NextConfig } from 'next'
 
 const nextConfig: NextConfig = {
-  // Для Netlify не используем standalone output
-  ...(process.env.NETLIFY ? {} : { output: 'standalone' }),
+  // Для Netlify плагин сам управляет output
+  output: process.env.NETLIFY ? undefined : 'standalone',
   experimental: {
     optimizePackageImports: ['lucide-react'],
   },
