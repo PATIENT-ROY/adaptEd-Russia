@@ -1,5 +1,6 @@
-/** @type {import('next').NextConfig} */
-const nextConfig = {
+import type { NextConfig } from 'next'
+
+const nextConfig: NextConfig = {
   // Для Netlify плагин сам управляет output
   output: process.env.NETLIFY ? undefined : 'standalone',
   experimental: {
@@ -12,7 +13,7 @@ const nextConfig = {
   env: {
     NEXT_PUBLIC_API_URL: process.env.NEXT_PUBLIC_API_URL || 'http://localhost:3003/api',
   },
-  poweredByHeader: false,
+    poweredByHeader: false,
   webpack: (config, { isServer }) => {
     // Правильная обработка pdfjs-dist
     if (!isServer) {
@@ -26,5 +27,5 @@ const nextConfig = {
   },
 }
 
-module.exports = nextConfig
+export default nextConfig
 
