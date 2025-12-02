@@ -179,25 +179,25 @@ export default function AdminUsersPage() {
     );
   }
 
-  const handleStatusChange = (userId: string, newStatus: string) => {
-    setUsers(
-      users.map((user) =>
-        user.id === userId
-          ? { ...user, status: newStatus as "active" | "pending" | "blocked" }
-          : user
-      )
-    );
-  };
+  // const handleStatusChange = (userId: string, newStatus: string) => {
+  //   setUsers(
+  //     users.map((user) =>
+  //       user.id === userId
+  //         ? { ...user, status: newStatus as "active" | "pending" | "blocked" }
+  //         : user
+  //     )
+  //   );
+  // };
 
-  const handleRoleChange = (userId: string, newRole: string) => {
-    setUsers(
-      users.map((user) =>
-        user.id === userId
-          ? { ...user, role: newRole as "student" | "admin" | "guest" }
-          : user
-      )
-    );
-  };
+  // const handleRoleChange = (userId: string, newRole: string) => {
+  //   setUsers(
+  //     users.map((user) =>
+  //       user.id === userId
+  //         ? { ...user, role: newRole as "student" | "admin" | "guest" }
+  //         : user
+  //     )
+  //   );
+  // };
 
   const handleDeleteUser = (userId: string) => {
     setUsers(users.filter((user) => user.id !== userId));
