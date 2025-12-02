@@ -13,7 +13,7 @@ import {
   Languages,
 } from "lucide-react";
 import { useState, useCallback, useEffect } from "react";
-import { useDropzone } from "react-dropzone";
+import { useDropzone, type DropzoneOptions } from "react-dropzone";
 import { createWorker } from "tesseract.js";
 import { motion, AnimatePresence } from "framer-motion";
 
@@ -50,14 +50,16 @@ export default function DocScanPage() {
     }
   }, []);
 
-  const { getRootProps, getInputProps, isDragActive } = useDropzone({
+  const dropzoneOptions: DropzoneOptions = {
     onDrop,
     accept: {
-      "image/*": [".png", ".jpg", ".jpeg"],
+      "image/*": [".png", ".jpg", ".jpeg", ".gif", ".webp"],
       "application/pdf": [".pdf"],
     },
     multiple: false,
-  });
+  };
+  
+  const { getRootProps, getInputProps, isDragActive } = useDropzone(dropzoneOptions);
 
   // Загрузка PDF.js библиотеки
   async function loadPdfjs() {
@@ -611,10 +613,10 @@ export default function DocScanPage() {
               </div>
               <div>
                 <h1 className="text-xl sm:text-2xl font-bold text-gray-900">
-                  DocScan - Умное сканирование
+                  DocScan - Умное сканирование документов
                 </h1>
                 <p className="text-sm sm:text-base text-gray-600">
-                  Сканируйте, переводите и храните документы
+                  Drag & Drop загрузка файлов и фото • OCR с поддержкой русского и английского • Экспорт в PDF, TXT, DOCX • Интеграция с AI-помощником
                 </p>
               </div>
             </div>
