@@ -177,18 +177,18 @@ export default function AdminGuidesPage() {
     return matchesSearch && matchesStatus && matchesCategory;
   });
 
-  const handleStatusChange = (guideId: string, newStatus: string) => {
-    setGuides(
-      guides.map((guide) =>
-        guide.id === guideId
-          ? {
-              ...guide,
-              status: newStatus as "published" | "draft" | "archived",
-            }
-          : guide
-      )
-    );
-  };
+  // const handleStatusChange = (guideId: string, newStatus: string) => {
+  //   setGuides(
+  //     guides.map((guide) =>
+  //       guide.id === guideId
+  //         ? {
+  //             ...guide,
+  //             status: newStatus as "published" | "draft" | "archived",
+  //           }
+  //         : guide
+  //     )
+  //   );
+  // };
 
   const handleDeleteGuide = (guideId: string) => {
     setGuides(guides.filter((guide) => guide.id !== guideId));
