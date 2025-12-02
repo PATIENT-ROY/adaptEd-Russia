@@ -57,7 +57,7 @@ export default function DocScanPage() {
       "application/pdf": [".pdf"],
     },
     multiple: false,
-  } as Parameters<typeof useDropzone>[0]);
+  } as unknown as Parameters<typeof useDropzone>[0]);
 
   // Загрузка PDF.js библиотеки
   async function loadPdfjs() {
