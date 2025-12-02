@@ -1,7 +1,7 @@
 [build]
   base = "client"
   publish = ".next"
-  command = "npm ci --legacy-peer-deps && npm run build"
+  command = "npm install --legacy-peer-deps --force && CI=false npm run build"
   
 [build.environment]
   NODE_VERSION = "20.18.0"
