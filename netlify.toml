@@ -9,4 +9,4 @@
   NPM_FLAGS = "--legacy-peer-deps"
   
 [[plugins]]
-  package = "@netlify/plugin-nextjs"
+  package = "@netlify/plugin-nextjs@5.14.5"
