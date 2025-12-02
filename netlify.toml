@@ -1,10 +1,12 @@
 [build]
   base = "client"
-  command = "npm run build"
+  command = "npm ci && npm run build"
   
 [build.environment]
   NODE_VERSION = "20"
   NETLIFY = "true"
+  NEXT_TELEMETRY_DISABLED = "1"
+  NPM_FLAGS = "--legacy-peer-deps"
   
 [[plugins]]
   package = "@netlify/plugin-nextjs"

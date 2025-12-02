@@ -1,8 +1,8 @@
 import type { NextConfig } from 'next'
 
 const nextConfig: NextConfig = {
-  // Для Netlify используем export вместо standalone
-  output: process.env.NETLIFY ? undefined : 'standalone',
+  // Для Netlify не используем standalone output
+  ...(process.env.NETLIFY ? {} : { output: 'standalone' }),
   experimental: {
     optimizePackageImports: ['lucide-react'],
   },
@@ -13,6 +13,7 @@ const nextConfig: NextConfig = {
   env: {
     NEXT_PUBLIC_API_URL: process.env.NEXT_PUBLIC_API_URL || 'http://localhost:3003/api',
   },
+  poweredByHeader: false,
   webpack: (config, { isServer }) => {
     // Правильная обработка pdfjs-dist
     if (!isServer) {
