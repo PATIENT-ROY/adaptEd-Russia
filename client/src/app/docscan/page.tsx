@@ -13,7 +13,7 @@ import {
   Languages,
 } from "lucide-react";
 import { useState, useCallback, useEffect } from "react";
-import { useDropzone, type DropzoneOptions } from "react-dropzone";
+import { useDropzone } from "react-dropzone";
 import { createWorker } from "tesseract.js";
 import { motion, AnimatePresence } from "framer-motion";
 
@@ -50,16 +50,14 @@ export default function DocScanPage() {
     }
   }, []);
 
-  const dropzoneOptions: DropzoneOptions = {
+  const { getRootProps, getInputProps, isDragActive } = useDropzone({
     onDrop,
     accept: {
       "image/*": [".png", ".jpg", ".jpeg", ".gif", ".webp"],
       "application/pdf": [".pdf"],
     },
     multiple: false,
-  };
-  
-  const { getRootProps, getInputProps, isDragActive } = useDropzone(dropzoneOptions);
+  } as Parameters<typeof useDropzone>[0]);
 
   // Загрузка PDF.js библиотеки
   async function loadPdfjs() {
