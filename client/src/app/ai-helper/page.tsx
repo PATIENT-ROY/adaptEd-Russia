@@ -26,8 +26,55 @@ import {
   Clock,
   AlertCircle,
   Trash2,
+  Mic,
+  MicOff,
 } from "lucide-react";
 import ReactMarkdown from "react-markdown";
+
+interface ISpeechRecognition extends EventTarget {
+  lang: string;
+  interimResults: boolean;
+  maxAlternatives: number;
+  start(): void;
+  stop(): void;
+  onstart: ((this: ISpeechRecognition, ev: Event) => void) | null;
+  onend: ((this: ISpeechRecognition, ev: Event) => void) | null;
+  onerror:
+    | ((this: ISpeechRecognition, ev: SpeechRecognitionErrorEvent) => void)
+    | null;
+  onresult:
+    | ((this: ISpeechRecognition, ev: SpeechRecognitionEvent) => void)
+    | null;
+}
+
+interface SpeechRecognitionErrorEvent extends Event {
+  error: string;
+}
+
+interface SpeechRecognitionEvent extends Event {
+  resultIndex: number;
+  results: SpeechRecognitionResultList;
+}
+
+interface SpeechRecognitionResultList {
+  length: number;
+  [index: number]: SpeechRecognitionResult;
+}
+
+interface SpeechRecognitionResult {
+  isFinal: boolean;
+  [index: number]: SpeechRecognitionAlternative;
+}
+
+interface SpeechRecognitionAlternative {
+  transcript: string;
+  confidence: number;
+}
+
+interface WindowWithSpeechRecognition extends Window {
+  SpeechRecognition?: new () => ISpeechRecognition;
+  webkitSpeechRecognition?: new () => ISpeechRecognition;
+}
 
 const quickQuestions = [
   {
@@ -64,6 +111,10 @@ export default function AiHelperPage() {
   const [inputMessage, setInputMessage] = useState("");
   const messagesEndRef = useRef<HTMLDivElement>(null);
   const chatContainerRef = useRef<HTMLDivElement>(null);
+  const recognitionRef = useRef<ISpeechRecognition | null>(null);
+  const [isSpeechSupported, setIsSpeechSupported] = useState(false);
+  const [isListening, setIsListening] = useState(false);
+  const [speechError, setSpeechError] = useState<string | null>(null);
 
   // Автоматическая прокрутка к новым сообщениям
   const scrollToBottom = () => {
@@ -74,7 +125,109 @@ export default function AiHelperPage() {
     scrollToBottom();
   }, [messages, loading]);
 
+  useEffect(() => {
+    if (typeof window === "undefined") return;
+
+    const SpeechRecognition =
+      (window as WindowWithSpeechRecognition).SpeechRecognition ||
+      (window as WindowWithSpeechRecognition).webkitSpeechRecognition;
+
+    if (!SpeechRecognition) {
+      setIsSpeechSupported(false);
+      setSpeechError("Ваш браузер не поддерживает голосовой ввод");
+      return;
+    }
+
+    const localeMap: Record<string, string> = {
+      RU: "ru-RU",
+      EN: "en-US",
+      FR: "fr-FR",
+      AR: "ar-SA",
+      ZH: "zh-CN",
+    };
+
+    const recognition = new SpeechRecognition();
+    recognition.lang = localeMap[(user?.language as string) ?? "RU"] || "ru-RU";
+    recognition.interimResults = true;
+    recognition.maxAlternatives = 1;
+
+    recognition.onstart = () => {
+      setIsListening(true);
+      setSpeechError(null);
+    };
+
+    recognition.onend = () => {
+      setIsListening(false);
+    };
+
+    recognition.onerror = (event: SpeechRecognitionErrorEvent) => {
+      console.error("Speech recognition error:", event);
+      let message: string | null = null;
+      switch (event?.error) {
+        case "not-allowed":
+        case "service-not-allowed":
+          message =
+            "Доступ к микрофону запрещён. Разрешите использование микрофона в браузере";
+          break;
+        case "network":
+          message = "Проблема с сетью. Попробуйте позже";
+          break;
+        case "no-speech":
+          message = "Не удалось распознать речь. Попробуйте ещё раз";
+          break;
+        case "aborted":
+          message = null;
+          break;
+        default:
+          message = "Не удалось включить голосовой ввод";
+          break;
+      }
+      if (message) {
+        setSpeechError(message);
+      }
+      setIsListening(false);
+    };
+
+    recognition.onresult = (event: SpeechRecognitionEvent) => {
+      let finalTranscript = "";
+      for (let i = event.resultIndex; i < event.results.length; i++) {
+        const result = event.results[i];
+        if (result.isFinal) {
+          finalTranscript += result[0].transcript;
+        }
+      }
+
+      if (finalTranscript.trim()) {
+        setInputMessage((prev) => {
+          const separator = prev.trim() ? " " : "";
+          return `${prev}${separator}${finalTranscript.trim()}`;
+        });
+      }
+    };
+
+    recognitionRef.current = recognition;
+    setIsSpeechSupported(true);
+
+    return () => {
+      try {
+        recognition.stop();
+      } catch (err) {
+        // ignore stop errors
+      }
+      recognitionRef.current = null;
+      setIsListening(false);
+    };
+  }, [user?.language]);
+
   const handleSendMessage = async () => {
+    if (isListening && recognitionRef.current) {
+      try {
+        recognitionRef.current.stop();
+      } catch (err) {
+        console.error("Error stopping speech recognition:", err);
+      }
+    }
+
     if (!inputMessage.trim()) return;
 
     try {
@@ -82,6 +235,22 @@ export default function AiHelperPage() {
       setInputMessage("");
     } catch (err) {
       console.error("Error sending message:", err);
+    }
+  };
+
+  const toggleSpeechRecognition = () => {
+    if (!isSpeechSupported || !recognitionRef.current || loading) return;
+
+    try {
+      setSpeechError(null);
+      if (isListening) {
+        recognitionRef.current.stop();
+      } else {
+        recognitionRef.current.start();
+      }
+    } catch (err) {
+      console.error("Speech recognition start/stop error:", err);
+      setIsListening(false);
     }
   };
 
@@ -248,18 +417,23 @@ export default function AiHelperPage() {
                                   <Bot className="h-3 w-3 sm:h-4 sm:w-4 text-gray-500 flex-shrink-0" />
                                 )}
                                 <span className="text-xs opacity-70 flex-shrink-0">
-                                  {new Date(
-                                    message.timestamp
-                                  ).toLocaleTimeString("ru-RU", {
-                                    hour: "2-digit",
-                                    minute: "2-digit",
-                                  })}
+                                  {message.timestamp
+                                    ? new Date(
+                                        message.timestamp
+                                      ).toLocaleTimeString("ru-RU", {
+                                        hour: "2-digit",
+                                        minute: "2-digit",
+                                      })
+                                    : new Date().toLocaleTimeString("ru-RU", {
+                                        hour: "2-digit",
+                                        minute: "2-digit",
+                                      })}
                                 </span>
                               </div>
                               <div className="prose prose-sm max-w-none text-sm sm:text-base">
                                 <ReactMarkdown
                                   components={{
-                                    p: ({ children, ...props }) => (
+                                    p: ({ children, ...props }: { children?: React.ReactNode; [key: string]: any }) => (
                                       <p
                                         className="mb-1 sm:mb-2 last:mb-0"
                                         {...props}
@@ -267,7 +441,7 @@ export default function AiHelperPage() {
                                         {children}
                                       </p>
                                     ),
-                                    ul: ({ children, ...props }) => (
+                                    ul: ({ children, ...props }: { children?: React.ReactNode; [key: string]: any }) => (
                                       <ul
                                         className="list-disc list-inside mb-1 sm:mb-2 space-y-0.5 sm:space-y-1"
                                         {...props}
@@ -275,7 +449,7 @@ export default function AiHelperPage() {
                                         {children}
                                       </ul>
                                     ),
-                                    ol: ({ children, ...props }) => (
+                                    ol: ({ children, ...props }: { children?: React.ReactNode; [key: string]: any }) => (
                                       <ol
                                         className="list-decimal list-inside mb-1 sm:mb-2 space-y-0.5 sm:space-y-1"
                                         {...props}
@@ -283,7 +457,7 @@ export default function AiHelperPage() {
                                         {children}
                                       </ol>
                                     ),
-                                    li: ({ children, ...props }) => (
+                                    li: ({ children, ...props }: { children?: React.ReactNode; [key: string]: any }) => (
                                       <li
                                         className="text-xs sm:text-sm"
                                         {...props}
@@ -291,7 +465,7 @@ export default function AiHelperPage() {
                                         {children}
                                       </li>
                                     ),
-                                    strong: ({ children, ...props }) => (
+                                    strong: ({ children, ...props }: { children?: React.ReactNode; [key: string]: any }) => (
                                       <strong
                                         className="font-semibold"
                                         {...props}
@@ -322,7 +496,7 @@ export default function AiHelperPage() {
 
                   {/* Input */}
                   <div className="border-t p-3 sm:p-4 flex-shrink-0">
-                    <div className="flex space-x-2">
+                    <div className="flex items-center space-x-2">
                       <Input
                         value={inputMessage}
                         onChange={(e) => setInputMessage(e.target.value)}
@@ -331,16 +505,64 @@ export default function AiHelperPage() {
                         className="flex-1 text-sm sm:text-base"
                         disabled={loading}
                       />
+                      {isSpeechSupported ? (
+                        <Button
+                          type="button"
+                          variant="outline"
+                          size="icon"
+                          onClick={toggleSpeechRecognition}
+                          disabled={loading}
+                          className={`h-10 w-10 rounded-full border-slate-200 transition-colors flex-shrink-0 ${
+                            isListening
+                              ? "bg-red-500 border-red-500 text-white hover:bg-red-600"
+                              : "text-slate-600 hover:bg-slate-100"
+                          }`}
+                          aria-label={
+                            isListening
+                              ? "Остановить запись"
+                              : "Продиктовать вопрос"
+                          }
+                          title={
+                            isListening
+                              ? "Остановить запись"
+                              : "Продиктовать вопрос"
+                          }
+                        >
+                          {isListening ? (
+                            <MicOff className="h-4 w-4" />
+                          ) : (
+                            <Mic className="h-4 w-4" />
+                          )}
+                        </Button>
+                      ) : (
+                        <Button
+                          type="button"
+                          variant="outline"
+                          size="icon"
+                          disabled
+                          className="h-10 w-10 rounded-full border-slate-200 text-slate-400 flex-shrink-0"
+                          aria-label="Голосовой ввод недоступен"
+                          title="Голосовой ввод недоступен в этом браузере"
+                        >
+                          <Mic className="h-4 w-4" />
+                        </Button>
+                      )}
                       <Button
                         onClick={handleSendMessage}
                         disabled={loading || !inputMessage.trim()}
                         className="bg-gradient-to-r from-blue-500 to-purple-600 hover:from-blue-600 hover:to-purple-700 flex-shrink-0"
                         size="sm"
+                        aria-label="Отправить сообщение"
                       >
                         <Send className="h-4 w-4" />
                       </Button>
                     </div>
                   </div>
+                  {speechError && (
+                    <p className="mt-2 text-xs text-red-500 text-center">
+                      {speechError}
+                    </p>
+                  )}
                 </CardContent>
               </Card>
             </div>
