@@ -1,6 +1,7 @@
 "use client";
 
 import { useState, useEffect } from "react";
+import Link from "next/link";
 import { Layout } from "@/components/layout/layout";
 import { ProtectedRoute } from "@/components/auth/ProtectedRoute";
 import { Card, CardContent, CardHeader, CardTitle } from "@/components/ui/card";
@@ -19,6 +20,8 @@ import {
   Reply,
   Search,
   RefreshCw,
+  ChevronDown,
+  ArrowLeft,
 } from "lucide-react";
 import { useAuth } from "@/contexts/AuthContext";
 
@@ -208,12 +211,22 @@ export default function AdminSupportPage() {
         <div className="max-w-7xl mx-auto px-4 sm:px-6 lg:px-8 py-8">
           {/* Заголовок */}
           <div className="mb-8">
-            <h1 className="text-3xl font-bold text-gray-900 mb-2">
+            <div className="flex items-center space-x-3 mb-4">
+              <Link
+                href="/admin"
+                className="inline-flex items-center justify-center h-10 w-10 rounded-lg bg-slate-100 text-slate-600 hover:text-slate-900 hover:bg-slate-200 transition-colors"
+              >
+                <ArrowLeft className="h-5 w-5" />
+              </Link>
+              <div>
+                <h1 className="text-3xl font-bold text-gray-900">
               Управление обращениями в поддержку
             </h1>
             <p className="text-gray-600">
               Просмотр и управление обращениями пользователей
             </p>
+              </div>
+            </div>
           </div>
 
           {/* Фильтры и поиск */}
@@ -230,10 +243,11 @@ export default function AdminSupportPage() {
                   />
                 </div>
 
+                <div className="relative">
                 <select
                   value={statusFilter}
                   onChange={(e) => setStatusFilter(e.target.value)}
-                  className="px-3 py-2 border border-gray-300 rounded-lg focus:ring-2 focus:ring-blue-500 focus:border-transparent"
+                    className="w-full appearance-none px-3 py-2 pr-9 border border-slate-300 rounded-lg focus:ring-2 focus:ring-blue-500 focus:border-blue-500"
                 >
                   <option value="all">Все статусы</option>
                   <option value="OPEN">Открытые</option>
@@ -241,11 +255,14 @@ export default function AdminSupportPage() {
                   <option value="RESOLVED">Решено</option>
                   <option value="CLOSED">Закрыто</option>
                 </select>
+                  <ChevronDown className="h-4 w-4 text-gray-400 pointer-events-none absolute right-3 top-1/2 -translate-y-1/2" />
+                </div>
 
+                <div className="relative">
                 <select
                   value={priorityFilter}
                   onChange={(e) => setPriorityFilter(e.target.value)}
-                  className="px-3 py-2 border border-gray-300 rounded-lg focus:ring-2 focus:ring-blue-500 focus:border-transparent"
+                    className="w-full appearance-none px-3 py-2 pr-9 border border-slate-300 rounded-lg focus:ring-2 focus:ring-blue-500 focus:border-blue-500"
                 >
                   <option value="all">Все приоритеты</option>
                   <option value="URGENT">Срочно</option>
@@ -253,6 +270,8 @@ export default function AdminSupportPage() {
                   <option value="MEDIUM">Средний</option>
                   <option value="LOW">Низкий</option>
                 </select>
+                  <ChevronDown className="h-4 w-4 text-gray-400 pointer-events-none absolute right-3 top-1/2 -translate-y-1/2" />
+                </div>
 
                 <Button
                   onClick={loadTickets}
@@ -396,6 +415,8 @@ export default function AdminSupportPage() {
                             size="sm"
                             onClick={() => setSelectedTicket(ticket)}
                             className="flex items-center gap-1"
+                            title="Просмотр"
+                            aria-label="Просмотр обращения"
                           >
                             <Eye className="h-4 w-4" />
                             Просмотр
@@ -408,6 +429,8 @@ export default function AdminSupportPage() {
                               onClick={() =>
                                 updateTicketStatus(ticket.id, "IN_PROGRESS")
                               }
+                              title="Взять в работу"
+                              aria-label="Взять в работу"
                             >
                               Взять в работу
                             </Button>
@@ -420,6 +443,8 @@ export default function AdminSupportPage() {
                               onClick={() =>
                                 updateTicketStatus(ticket.id, "RESOLVED")
                               }
+                              title="Отметить как решённое"
+                              aria-label="Отметить как решённое"
                             >
                               Решено
                             </Button>
@@ -458,6 +483,8 @@ export default function AdminSupportPage() {
                       variant="outline"
                       size="sm"
                       onClick={() => setSelectedTicket(null)}
+                      title="Закрыть"
+                      aria-label="Закрыть"
                     >
                       ✕
                     </Button>

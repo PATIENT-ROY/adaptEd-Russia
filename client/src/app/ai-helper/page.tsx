@@ -211,7 +211,7 @@ export default function AiHelperPage() {
     return () => {
       try {
         recognition.stop();
-      } catch (err) {
+      } catch {
         // ignore stop errors
       }
       recognitionRef.current = null;
@@ -433,7 +433,7 @@ export default function AiHelperPage() {
                               <div className="prose prose-sm max-w-none text-sm sm:text-base">
                                 <ReactMarkdown
                                   components={{
-                                    p: ({ children, ...props }: { children?: React.ReactNode; [key: string]: any }) => (
+                                    p: ({ children, ...props }: { children?: React.ReactNode; [key: string]: unknown }) => (
                                       <p
                                         className="mb-1 sm:mb-2 last:mb-0"
                                         {...props}
@@ -441,7 +441,7 @@ export default function AiHelperPage() {
                                         {children}
                                       </p>
                                     ),
-                                    ul: ({ children, ...props }: { children?: React.ReactNode; [key: string]: any }) => (
+                                    ul: ({ children, ...props }: { children?: React.ReactNode; [key: string]: unknown }) => (
                                       <ul
                                         className="list-disc list-inside mb-1 sm:mb-2 space-y-0.5 sm:space-y-1"
                                         {...props}
@@ -449,7 +449,7 @@ export default function AiHelperPage() {
                                         {children}
                                       </ul>
                                     ),
-                                    ol: ({ children, ...props }: { children?: React.ReactNode; [key: string]: any }) => (
+                                    ol: ({ children, ...props }: { children?: React.ReactNode; [key: string]: unknown }) => (
                                       <ol
                                         className="list-decimal list-inside mb-1 sm:mb-2 space-y-0.5 sm:space-y-1"
                                         {...props}
@@ -457,7 +457,7 @@ export default function AiHelperPage() {
                                         {children}
                                       </ol>
                                     ),
-                                    li: ({ children, ...props }: { children?: React.ReactNode; [key: string]: any }) => (
+                                    li: ({ children, ...props }: { children?: React.ReactNode; [key: string]: unknown }) => (
                                       <li
                                         className="text-xs sm:text-sm"
                                         {...props}
@@ -465,7 +465,7 @@ export default function AiHelperPage() {
                                         {children}
                                       </li>
                                     ),
-                                    strong: ({ children, ...props }: { children?: React.ReactNode; [key: string]: any }) => (
+                                    strong: ({ children, ...props }: { children?: React.ReactNode; [key: string]: unknown }) => (
                                       <strong
                                         className="font-semibold"
                                         {...props}

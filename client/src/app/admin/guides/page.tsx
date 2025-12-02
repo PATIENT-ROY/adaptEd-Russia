@@ -20,6 +20,8 @@ import {
   Globe,
   CheckCircle,
   Clock,
+  ChevronDown,
+  ArrowLeft,
 } from "lucide-react";
 import Link from "next/link";
 import { useAuth } from "@/contexts/AuthContext";
@@ -115,6 +117,12 @@ export default function AdminGuidesPage() {
   const [statusFilter, setStatusFilter] = useState("all");
   const [categoryFilter, setCategoryFilter] = useState("all");
   const [selectedGuides, setSelectedGuides] = useState<string[]>([]);
+  const [isCreateOpen, setIsCreateOpen] = useState(false);
+  const [newGuide, setNewGuide] = useState({
+    title: "",
+    category: "education",
+    status: "draft",
+  });
 
   useEffect(() => {
     if (user?.role === Role.ADMIN) {
@@ -209,6 +217,12 @@ export default function AdminGuidesPage() {
         <div className="bg-white rounded-lg p-4 sm:p-6 shadow-sm">
           <div className="flex flex-col sm:flex-row sm:items-center justify-between space-y-4 sm:space-y-0">
             <div className="flex items-center space-x-3">
+              <Link
+                href="/admin"
+                className="inline-flex items-center justify-center h-10 w-10 rounded-lg bg-slate-100 text-slate-600 hover:text-slate-900 hover:bg-slate-200 transition-colors"
+              >
+                <ArrowLeft className="h-5 w-5" />
+              </Link>
               <div className="rounded-lg bg-green-50 p-3">
                 <BookOpen className="h-6 w-6 text-green-600" />
               </div>
@@ -226,7 +240,10 @@ export default function AdminGuidesPage() {
                 <Download className="h-4 w-4" />
                 <span>Экспорт</span>
               </Button>
-              <Button className="flex items-center space-x-2">
+              <Button
+                className="flex items-center space-x-2"
+                onClick={() => setIsCreateOpen(true)}
+              >
                 <Plus className="h-4 w-4" />
                 <span>Создать гайд</span>
               </Button>
@@ -248,25 +265,31 @@ export default function AdminGuidesPage() {
                   className="pl-10"
                 />
               </div>
+              <div className="relative w-full sm:w-48">
               <select
                 value={statusFilter}
                 onChange={(e) => setStatusFilter(e.target.value)}
-                className="px-3 py-2 border border-gray-300 rounded-md focus:ring-2 focus:ring-green-500 focus:border-transparent"
+                  className="w-full appearance-none px-3 py-2 pr-9 border border-slate-300 rounded-lg focus:ring-2 focus:ring-green-500 focus:border-green-500"
               >
                 <option value="all">Все статусы</option>
                 <option value="published">Опубликованные</option>
                 <option value="draft">Черновики</option>
                 <option value="archived">Архивные</option>
               </select>
+                <ChevronDown className="h-4 w-4 text-gray-400 pointer-events-none absolute right-3 top-1/2 -translate-y-1/2" />
+              </div>
+              <div className="relative w-full sm:w-48">
               <select
                 value={categoryFilter}
                 onChange={(e) => setCategoryFilter(e.target.value)}
-                className="px-3 py-2 border border-gray-300 rounded-md focus:ring-2 focus:ring-green-500 focus:border-transparent"
+                  className="w-full appearance-none px-3 py-2 pr-9 border border-slate-300 rounded-lg focus:ring-2 focus:ring-green-500 focus:border-green-500"
               >
                 <option value="all">Все категории</option>
                 <option value="education">Образование</option>
                 <option value="life">Быт</option>
               </select>
+                <ChevronDown className="h-4 w-4 text-gray-400 pointer-events-none absolute right-3 top-1/2 -translate-y-1/2" />
+              </div>
             </div>
           </CardContent>
         </Card>
@@ -372,29 +395,16 @@ export default function AdminGuidesPage() {
                       </td>
                       <td className="py-3 px-4">
                         <span
-                          className={`px-2 py-1 rounded-full text-xs font-medium ${
-                            categoryColors[guide.category]
-                          }`}
-                        >
-                          {guide.category === "education"
-                            ? "Образование"
-                            : "Быт"}
-                        </span>
-                      </td>
-                      <td className="py-3 px-4">
-                        <select
-                          value={guide.status}
-                          onChange={(e) =>
-                            handleStatusChange(guide.id, e.target.value)
-                          }
-                          className={`px-2 py-1 rounded-full text-xs font-medium border-0 ${
+                          className={`inline-flex items-center px-3 py-1 rounded-full text-xs font-semibold ${
                             statusColors[guide.status]
                           }`}
                         >
-                          <option value="published">Опубликован</option>
-                          <option value="draft">Черновик</option>
-                          <option value="archived">Архивный</option>
-                        </select>
+                          {guide.status === "published"
+                            ? "Опубликован"
+                            : guide.status === "draft"
+                            ? "Черновик"
+                            : "Архивный"}
+                        </span>
                       </td>
                       <td className="py-3 px-4">
                         <div className="text-sm">
@@ -409,10 +419,20 @@ export default function AdminGuidesPage() {
                       </td>
                       <td className="py-3 px-4">
                         <div className="flex items-center space-x-2">
-                          <Button variant="outline" size="sm">
+                          <Button
+                            variant="outline"
+                            size="sm"
+                            title="Просмотр"
+                            aria-label="Просмотр гайда"
+                          >
                             <Eye className="h-4 w-4" />
                           </Button>
-                          <Button variant="outline" size="sm">
+                          <Button
+                            variant="outline"
+                            size="sm"
+                            title="Редактировать"
+                            aria-label="Редактировать гайд"
+                          >
                             <Edit className="h-4 w-4" />
                           </Button>
                           <Button
@@ -420,6 +440,8 @@ export default function AdminGuidesPage() {
                             size="sm"
                             onClick={() => handleDeleteGuide(guide.id)}
                             className="text-red-600 hover:text-red-700"
+                            title="Удалить"
+                            aria-label="Удалить гайд"
                           >
                             <Trash2 className="h-4 w-4" />
                           </Button>
@@ -504,6 +526,119 @@ export default function AdminGuidesPage() {
           </Card>
         </div>
       </div>
+      {isCreateOpen && (
+        <div className="fixed inset-0 z-50 flex items-center justify-center bg-black/40 backdrop-blur-sm p-4">
+          <Card className="w-full max-w-xl">
+            <CardHeader>
+              <CardTitle className="flex items-center space-x-2">
+                <Plus className="h-5 w-5" />
+                <span>Новый гайд</span>
+              </CardTitle>
+            </CardHeader>
+            <CardContent>
+              <form
+                className="space-y-4"
+                onSubmit={(event) => {
+                  event.preventDefault();
+                  setGuides([
+                    {
+                      id: Date.now().toString(),
+                      title: newGuide.title || "Новый гайд",
+                      category: newGuide.category as "education" | "life",
+                      content: "Новый гайд...",
+                      language: "ru",
+                      tags: [],
+                      status: newGuide.status as "published" | "draft" | "archived",
+                      views: 0,
+                      createdAt: new Date().toISOString().split("T")[0],
+                      updatedAt: new Date().toISOString().split("T")[0],
+                      author: user?.name || "Администратор",
+                    },
+                    ...guides,
+                  ]);
+                  setIsCreateOpen(false);
+                  setNewGuide({ title: "", category: "education", status: "draft" });
+                }}
+              >
+                <div className="space-y-2">
+                  <label className="text-sm font-medium text-gray-700">
+                    Название
+                  </label>
+                  <Input
+                    value={newGuide.title}
+                    onChange={(e) =>
+                      setNewGuide((prev) => ({
+                        ...prev,
+                        title: e.target.value,
+                      }))
+                    }
+                    placeholder="Название гайда"
+                    required
+                  />
+                </div>
+                <div className="grid grid-cols-1 sm:grid-cols-2 gap-3">
+                  <div className="space-y-1">
+                    <label className="text-sm font-medium text-gray-700">
+                      Категория
+                    </label>
+                    <div className="relative">
+                      <select
+                        value={newGuide.category}
+                        onChange={(e) =>
+                          setNewGuide((prev) => ({
+                            ...prev,
+                            category: e.target.value,
+                          }))
+                        }
+                        className="w-full appearance-none px-3 py-2 pr-9 border border-slate-300 rounded-lg focus:ring-2 focus:ring-green-500 focus:border-green-500"
+                      >
+                        <option value="education">Образование</option>
+                        <option value="life">Быт</option>
+                      </select>
+                      <ChevronDown className="h-4 w-4 text-gray-400 pointer-events-none absolute right-3 top-1/2 -translate-y-1/2" />
+                    </div>
+                  </div>
+                  <div className="space-y-1">
+                    <label className="text-sm font-medium text-gray-700">
+                      Статус
+                    </label>
+                    <div className="relative">
+                      <select
+                        value={newGuide.status}
+                        onChange={(e) =>
+                          setNewGuide((prev) => ({
+                            ...prev,
+                            status: e.target.value,
+                          }))
+                        }
+                        className="w-full appearance-none px-3 py-2 pr-9 border border-slate-300 rounded-lg focus:ring-2 focus:ring-green-500 focus:border-green-500"
+                      >
+                        <option value="draft">Черновик</option>
+                        <option value="published">Опубликован</option>
+                        <option value="archived">Архивный</option>
+                      </select>
+                      <ChevronDown className="h-4 w-4 text-gray-400 pointer-events-none absolute right-3 top-1/2 -translate-y-1/2" />
+                    </div>
+                  </div>
+                </div>
+                <div className="flex items-center justify-end space-x-2">
+                  <Button
+                    type="button"
+                    variant="outline"
+                    onClick={() => setIsCreateOpen(false)}
+                  >
+                    Отмена
+                  </Button>
+                  <Button type="submit" className="flex items-center space-x-2">
+                    <Plus className="h-4 w-4" />
+                    <span>Создать</span>
+                  </Button>
+                </div>
+              </form>
+            </CardContent>
+          </Card>
+        </div>
+      )}
     </Layout>
   );
 }

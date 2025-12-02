@@ -32,10 +32,10 @@ export function Footer() {
       { href: "/reminders", labelKey: "nav.reminders" },
     ],
     features: user
-      ? [
-          { href: "/ai-helper", labelKey: "nav.aiHelper" },
+        ? [
+            { href: "/ai-helper", labelKey: "nav.aiHelper" },
           { href: "/docscan", labelKey: "nav.docscan" },
-        ]
+          ]
       : [],
   };
 
@@ -123,23 +123,23 @@ export function Footer() {
           >
             {user && footerLinks.features.length > 0 ? (
               <>
-                <h3 className="text-sm sm:text-base lg:text-lg font-semibold text-white mb-3 sm:mb-4 flex items-center">
-                  <Shield className="h-4 w-4 sm:h-5 sm:w-5 mr-2 text-blue-400" />
+            <h3 className="text-sm sm:text-base lg:text-lg font-semibold text-white mb-3 sm:mb-4 flex items-center">
+              <Shield className="h-4 w-4 sm:h-5 sm:w-5 mr-2 text-blue-400" />
                   Возможности
-                </h3>
-                <ul className="space-y-0.5 sm:space-y-1 mb-3 sm:mb-4">
+            </h3>
+            <ul className="space-y-0.5 sm:space-y-1 mb-3 sm:mb-4">
                   {footerLinks.features.map((link, index) => (
-                    <li key={link.href}>
-                      <Link
-                        href={link.href}
-                        className="text-xs sm:text-sm text-slate-300 hover:text-blue-400 transition-colors duration-300 hover:translate-x-1 inline-block py-0.5"
-                        style={{ animationDelay: `${(index + 1) * 50}ms` }}
-                      >
-                        {t(link.labelKey)}
-                      </Link>
-                    </li>
-                  ))}
-                </ul>
+                <li key={link.href}>
+                  <Link
+                    href={link.href}
+                    className="text-xs sm:text-sm text-slate-300 hover:text-blue-400 transition-colors duration-300 hover:translate-x-1 inline-block py-0.5"
+                    style={{ animationDelay: `${(index + 1) * 50}ms` }}
+                  >
+                    {t(link.labelKey)}
+                  </Link>
+                </li>
+              ))}
+            </ul>
               </>
             ) : null}
 

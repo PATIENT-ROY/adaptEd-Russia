@@ -91,10 +91,10 @@ export default function ForgotPasswordPage() {
                     Отправить еще раз
                   </Button>
 
-                  <Link href="/login">
+                  <Link href="/login" className="block">
                     <Button
                       variant="outline"
-                      className="w-full h-12 border-slate-200 hover:border-blue-500 hover:bg-blue-50"
+                      className="mt-2 w-full h-12 border-slate-200 hover:border-blue-500 hover:bg-blue-50"
                     >
                       <ArrowLeft className="mr-2 h-4 w-4" />
                       Вернуться к входу

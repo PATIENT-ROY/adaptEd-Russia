@@ -1,8 +1,9 @@
 "use client";
 
-import { useState } from "react";
+import { useEffect, useRef, useState } from "react";
 import { useRouter } from "next/navigation";
 import Link from "next/link";
+import { AnimatePresence, motion } from "framer-motion";
 import { useAuth } from "@/contexts/AuthContext";
 import { Button } from "@/components/ui/button";
 import { Input } from "@/components/ui/input";
@@ -29,6 +30,9 @@ import {
   ArrowLeft,
 } from "lucide-react";
 import { Role, Plan, Language } from "@/types";
+
+const STEP_TRANSITION_DURATION = 0.35; // seconds
+const STEP_TRANSITION_MS = STEP_TRANSITION_DURATION * 1000;
 
 // Список стран
 const countries = [
@@ -106,7 +110,11 @@ export default function RegisterPage() {
   const [showPassword, setShowPassword] = useState(false);
   const [showConfirmPassword, setShowConfirmPassword] = useState(false);
   const [error, setError] = useState("");
+  const [detailsError, setDetailsError] = useState("");
   const [isLoading, setIsLoading] = useState(false);
+  const [step, setStep] = useState<"details" | "security">("details");
+  const [isTransitioning, setIsTransitioning] = useState(false);
+  const stepTimeoutRef = useRef<NodeJS.Timeout | null>(null);
 
   const { register } = useAuth();
   const router = useRouter();
@@ -120,17 +128,46 @@ export default function RegisterPage() {
     }));
   };
 
-  const handleSubmit = async (e: React.FormEvent) => {
+  const handleDetailsSubmit = (e: React.FormEvent) => {
+    e.preventDefault();
+    setDetailsError("");
+
+    const isValidEmail = /^[^\s@]+@[^\s@]+\.[^\s@]+$/.test(
+      formData.email.trim()
+    );
+    if (!formData.name.trim() || !isValidEmail || !formData.country) {
+      setDetailsError("Заполните имя, корректный email и страну");
+      return;
+    }
+
+    setIsTransitioning(true);
+    stepTimeoutRef.current = setTimeout(() => {
+      setStep("security");
+      setIsTransitioning(false);
+    }, STEP_TRANSITION_MS);
+  };
+
+  const handleSecuritySubmit = async (e: React.FormEvent) => {
     e.preventDefault();
     setError("");
 
     if (formData.password !== formData.confirmPassword) {
       setError("Пароли не совпадают");
+      setFormData((prev) => ({
+        ...prev,
+        password: "",
+        confirmPassword: "",
+      }));
       return;
     }
 
     if (formData.password.length < 6) {
       setError("Пароль должен содержать минимум 6 символов");
+      setFormData((prev) => ({
+        ...prev,
+        password: "",
+        confirmPassword: "",
+      }));
       return;
     }
 
@@ -150,14 +187,39 @@ export default function RegisterPage() {
       if (success) {
         router.push("/dashboard");
       } else {
-        setError("Ошибка при регистрации");
+        setError("Аккаунт с таким email уже существует");
       }
-    } catch {
-      setError("Произошла ошибка при регистрации");
+    } catch (err) {
+      if (
+        err instanceof Error &&
+        err.message.toLowerCase().includes("network")
+      ) {
+        setError("Проверьте подключение к интернету");
+      } else {
+        setError("Произошла ошибка при регистрации");
+      }
     } finally {
       setIsLoading(false);
     }
   };
+
+  const handleBackToDetails = () => {
+    if (stepTimeoutRef.current) {
+      clearTimeout(stepTimeoutRef.current);
+    }
+    setStep("details");
+    setIsTransitioning(false);
+    setError("");
+    setDetailsError("");
+  };
+
+  useEffect(() => {
+    return () => {
+      if (stepTimeoutRef.current) {
+        clearTimeout(stepTimeoutRef.current);
+      }
+    };
+  }, []);
 
   return (
     <div className="min-h-screen bg-gradient-to-br from-slate-50 via-blue-50 to-indigo-50 flex items-center justify-center p-4">
@@ -198,177 +260,309 @@ export default function RegisterPage() {
             </CardDescription>
           </CardHeader>
 
-          <CardContent className="space-y-6">
-            <form onSubmit={handleSubmit} className="space-y-4">
-              {/* Name */}
-              <div className="space-y-2">
-                <label
-                  htmlFor="name"
-                  className="text-sm font-medium text-slate-700"
+          <CardContent className="space-y-6 relative overflow-hidden min-h-[360px]">
+            <AnimatePresence mode="wait">
+              {step === "details" ? (
+                <motion.form
+                  key="details-step"
+                  onSubmit={handleDetailsSubmit}
+                  className="space-y-4"
+                  initial={{ opacity: 0, y: 24 }}
+                  animate={{ opacity: 1, y: 0 }}
+                  exit={{ opacity: 0, y: -16 }}
+                  transition={{
+                    duration: STEP_TRANSITION_DURATION,
+                    ease: [0.16, 1, 0.3, 1],
+                  }}
+                  layout
                 >
-                  Полное имя
-                </label>
-                <div className="relative">
-                  <User className="absolute left-3 top-1/2 transform -translate-y-1/2 h-4 w-4 text-slate-400" />
-                  <Input
-                    id="name"
-                    name="name"
-                    type="text"
-                    placeholder="Ваше полное имя"
-                    value={formData.name}
-                    onChange={handleChange}
-                    className="pl-10 h-12 border-slate-200 focus:border-blue-500 focus:ring-blue-500"
-                    required
-                  />
-                </div>
-              </div>
+                  <div className="space-y-2">
+                    <label
+                      htmlFor="name"
+                      className="text-sm font-medium text-slate-700"
+                    >
+                      Полное имя
+                    </label>
+                    <div className="relative">
+                      <User className="absolute left-3 top-1/2 transform -translate-y-1/2 h-4 w-4 text-slate-400" />
+                      <Input
+                        id="name"
+                        name="name"
+                        type="text"
+                        placeholder="Ваше полное имя"
+                        value={formData.name}
+                        onChange={handleChange}
+                        className="pl-10 h-12 border-slate-200 focus:border-blue-500 focus:ring-blue-500"
+                        autoFocus
+                        required
+                      />
+                    </div>
+                  </div>
 
-              {/* Email */}
-              <div className="space-y-2">
-                <label
-                  htmlFor="email"
-                  className="text-sm font-medium text-slate-700"
-                >
-                  Email
-                </label>
-                <div className="relative">
-                  <Mail className="absolute left-3 top-1/2 transform -translate-y-1/2 h-4 w-4 text-slate-400" />
-                  <Input
-                    id="email"
-                    name="email"
-                    type="email"
-                    placeholder="your@email.com"
-                    value={formData.email}
-                    onChange={handleChange}
-                    className="pl-10 h-12 border-slate-200 focus:border-blue-500 focus:ring-blue-500"
-                    required
-                  />
-                </div>
-              </div>
+                  <div className="space-y-2">
+                    <label
+                      htmlFor="email"
+                      className="text-sm font-medium text-slate-700"
+                    >
+                      Email
+                    </label>
+                    <div className="relative">
+                      <Mail className="absolute left-3 top-1/2 transform -translate-y-1/2 h-4 w-4 text-slate-400" />
+                      <Input
+                        id="email"
+                        name="email"
+                        type="email"
+                        placeholder="your@email.com"
+                        value={formData.email}
+                        onChange={handleChange}
+                        className="pl-10 h-12 border-slate-200 focus:border-blue-500 focus:ring-blue-500"
+                        required
+                      />
+                    </div>
+                  </div>
 
-              {/* Country */}
-              <div className="space-y-2">
-                <label
-                  htmlFor="country"
-                  className="text-sm font-medium text-slate-700"
-                >
-                  Страна
-                </label>
-                <div className="relative">
-                  <Globe className="absolute left-3 top-1/2 transform -translate-y-1/2 h-4 w-4 text-slate-400 pointer-events-none" />
-                  <select
-                    id="country"
-                    name="country"
-                    value={formData.country}
-                    onChange={handleChange}
-                    className="w-full pl-10 h-12 border border-slate-200 rounded-lg focus:border-blue-500 focus:ring-2 focus:ring-blue-500 bg-white text-slate-900 appearance-none"
-                    required
+                  <div className="space-y-2">
+                    <label
+                      htmlFor="country"
+                      className="text-sm font-medium text-slate-700"
+                    >
+                      Страна
+                    </label>
+                    <div className="relative">
+                      <Globe className="absolute left-3 top-1/2 transform -translate-y-1/2 h-4 w-4 text-slate-400 pointer-events-none" />
+                      <select
+                        id="country"
+                        name="country"
+                        value={formData.country}
+                        onChange={handleChange}
+                        className="w-full pl-10 h-12 border border-slate-200 rounded-lg focus:border-blue-500 focus:ring-2 focus:ring-blue-500 bg-white text-slate-900 appearance-none"
+                        required
+                      >
+                        <option value="">Выберите страну</option>
+                        {countries.map((country) => (
+                          <option key={country} value={country}>
+                            {country}
+                          </option>
+                        ))}
+                      </select>
+                    </div>
+                  </div>
+
+                  {detailsError && (
+                    <motion.div
+                      className="flex items-center space-x-2 p-3 rounded-lg bg-amber-50 border border-amber-200 text-amber-700"
+                      initial={{ opacity: 0, y: 10 }}
+                      animate={{ opacity: 1, y: 0 }}
+                      exit={{ opacity: 0, y: -6 }}
+                      transition={{ duration: 0.25 }}
+                    >
+                      <AlertCircle className="h-4 w-4" />
+                      <span className="text-sm">{detailsError}</span>
+                    </motion.div>
+                  )}
+
+                  <Button
+                    type="submit"
+                    className="w-full h-12 bg-gradient-to-r from-green-500 to-emerald-600 hover:from-green-600 hover:to-emerald-700 text-white shadow-lg"
                   >
-                    <option value="">Выберите страну</option>
-                    {countries.map((country) => (
-                      <option key={country} value={country}>
-                        {country}
-                      </option>
-                    ))}
-                  </select>
-                </div>
-              </div>
-
-              {/* Password */}
-              <div className="space-y-2">
-                <label
-                  htmlFor="password"
-                  className="text-sm font-medium text-slate-700"
+                    Продолжить
+                  </Button>
+                </motion.form>
+              ) : (
+                <motion.div
+                  key="security-step"
+                  className="space-y-5"
+                  initial={{ opacity: 0, y: 24 }}
+                  animate={{ opacity: 1, y: 0 }}
+                  exit={{ opacity: 0, y: -16 }}
+                  transition={{
+                    duration: STEP_TRANSITION_DURATION,
+                    ease: [0.16, 1, 0.3, 1],
+                  }}
+                  layout
+                  style={{ minHeight: "220px" }}
                 >
-                  Пароль
-                </label>
-                <div className="relative">
-                  <Lock className="absolute left-3 top-1/2 transform -translate-y-1/2 h-4 w-4 text-slate-400" />
-                  <Input
-                    id="password"
-                    name="password"
-                    type={showPassword ? "text" : "password"}
-                    placeholder="Минимум 6 символов"
-                    value={formData.password}
-                    onChange={handleChange}
-                    className="pl-10 pr-10 h-12 border-slate-200 focus:border-blue-500 focus:ring-blue-500"
-                    required
-                  />
-                  <button
-                    type="button"
-                    onClick={() => setShowPassword(!showPassword)}
-                    className="absolute right-3 top-1/2 transform -translate-y-1/2 text-slate-400 hover:text-slate-600"
+                  <motion.div
+                    className="rounded-xl border border-slate-200 bg-slate-50 p-4 text-left"
+                    initial={{ opacity: 0, scale: 0.97 }}
+                    animate={{ opacity: 1, scale: 1 }}
+                    transition={{ duration: 0.3, ease: [0.16, 1, 0.3, 1] }}
+                    layout
                   >
-                    {showPassword ? (
-                      <EyeOff className="h-4 w-4" />
-                    ) : (
-                      <Eye className="h-4 w-4" />
-                    )}
-                  </button>
-                </div>
-              </div>
+                    <div className="flex items-center justify-between">
+                      <div>
+                        <p className="text-xs uppercase tracking-wide text-slate-400">
+                          Шаг 1 заполнен
+                        </p>
+                        <p className="text-sm font-semibold text-slate-900">
+                          {formData.name ? formData.name : "Имя не указано"}
+                        </p>
+                        <p className="text-xs text-slate-500">
+                          {formData.email}
+                        </p>
+                      </div>
+                      <button
+                        type="button"
+                        onClick={handleBackToDetails}
+                        className="text-sm font-medium text-blue-600 hover:text-blue-700"
+                      >
+                        Изменить
+                      </button>
+                    </div>
+                  </motion.div>
 
-              {/* Confirm Password */}
-              <div className="space-y-2">
-                <label
-                  htmlFor="confirmPassword"
-                  className="text-sm font-medium text-slate-700"
-                >
-                  Подтвердите пароль
-                </label>
-                <div className="relative">
-                  <Lock className="absolute left-3 top-1/2 transform -translate-y-1/2 h-4 w-4 text-slate-400" />
-                  <Input
-                    id="confirmPassword"
-                    name="confirmPassword"
-                    type={showConfirmPassword ? "text" : "password"}
-                    placeholder="Повторите пароль"
-                    value={formData.confirmPassword}
-                    onChange={handleChange}
-                    className="pl-10 pr-10 h-12 border-slate-200 focus:border-blue-500 focus:ring-blue-500"
-                    required
-                  />
-                  <button
-                    type="button"
-                    onClick={() => setShowConfirmPassword(!showConfirmPassword)}
-                    className="absolute right-3 top-1/2 transform -translate-y-1/2 text-slate-400 hover:text-slate-600"
+                  <motion.form
+                    onSubmit={handleSecuritySubmit}
+                    className="space-y-4"
+                    initial={{ opacity: 0, y: 12 }}
+                    animate={{ opacity: 1, y: 0 }}
+                    transition={{
+                      duration: 0.3,
+                      delay: 0.05,
+                      ease: [0.16, 1, 0.3, 1],
+                    }}
+                    layout
                   >
-                    {showConfirmPassword ? (
-                      <EyeOff className="h-4 w-4" />
-                    ) : (
-                      <Eye className="h-4 w-4" />
-                    )}
-                  </button>
-                </div>
-              </div>
+                    <div className="space-y-2">
+                      <label
+                        htmlFor="password"
+                        className="text-sm font-medium text-slate-700"
+                      >
+                        Пароль
+                      </label>
+                      <div className="relative">
+                        <Lock className="absolute left-3 top-1/2 transform -translate-y-1/2 h-4 w-4 text-slate-400" />
+                        <Input
+                          id="password"
+                          name="password"
+                          type={showPassword ? "text" : "password"}
+                          placeholder="Минимум 6 символов"
+                          value={formData.password}
+                          onChange={handleChange}
+                          className="pl-10 pr-10 h-12 border-slate-200 focus:border-blue-500 focus:ring-blue-500"
+                          autoFocus={!isTransitioning}
+                          required
+                        />
+                        <button
+                          type="button"
+                          onClick={() => setShowPassword(!showPassword)}
+                          className="absolute right-3 top-1/2 transform -translate-y-1/2 text-slate-400 hover:text-slate-600"
+                          aria-label={
+                            showPassword ? "Скрыть пароль" : "Показать пароль"
+                          }
+                        >
+                          {showPassword ? (
+                            <EyeOff className="h-4 w-4" />
+                          ) : (
+                            <Eye className="h-4 w-4" />
+                          )}
+                        </button>
+                      </div>
+                    </div>
 
-              {/* Error Message */}
-              {error && (
-                <div className="flex items-center space-x-2 p-3 rounded-lg bg-red-50 border border-red-200">
-                  <AlertCircle className="h-4 w-4 text-red-500" />
-                  <span className="text-sm text-red-600">{error}</span>
-                </div>
+                    <div className="space-y-2">
+                      <label
+                        htmlFor="confirmPassword"
+                        className="text-sm font-medium text-slate-700"
+                      >
+                        Подтвердите пароль
+                      </label>
+                      <div className="relative">
+                        <Lock className="absolute left-3 top-1/2 transform -translate-y-1/2 h-4 w-4 text-slate-400" />
+                        <Input
+                          id="confirmPassword"
+                          name="confirmPassword"
+                          type={showConfirmPassword ? "text" : "password"}
+                          placeholder="Повторите пароль"
+                          value={formData.confirmPassword}
+                          onChange={handleChange}
+                          className="pl-10 pr-10 h-12 border-slate-200 focus:border-blue-500 focus:ring-blue-500"
+                          required
+                        />
+                        <button
+                          type="button"
+                          onClick={() =>
+                            setShowConfirmPassword(!showConfirmPassword)
+                          }
+                          className="absolute right-3 top-1/2 transform -translate-y-1/2 text-slate-400 hover:text-slate-600"
+                          aria-label={
+                            showConfirmPassword
+                              ? "Скрыть подтверждение пароля"
+                              : "Показать подтверждение пароля"
+                          }
+                        >
+                          {showConfirmPassword ? (
+                            <EyeOff className="h-4 w-4" />
+                          ) : (
+                            <Eye className="h-4 w-4" />
+                          )}
+                        </button>
+                      </div>
+                    </div>
+
+                    <AnimatePresence>
+                      {error && (
+                        <motion.div
+                          className="flex items-center space-x-2 p-3 rounded-lg bg-red-50 border border-red-200"
+                          initial={{ opacity: 0, y: 8 }}
+                          animate={{ opacity: 1, y: 0 }}
+                          exit={{ opacity: 0, y: -6 }}
+                          transition={{ duration: 0.2 }}
+                        >
+                          <AlertCircle className="h-4 w-4 text-red-500" />
+                          <span className="text-sm text-red-600">{error}</span>
+                        </motion.div>
+                      )}
+                    </AnimatePresence>
+
+                    <motion.div layout>
+                      <Button
+                        type="submit"
+                        disabled={isLoading}
+                        className="w-full h-12 bg-gradient-to-r from-green-500 to-emerald-600 hover:from-green-600 hover:to-emerald-700 text-white shadow-lg"
+                      >
+                        {isLoading ? (
+                          <>
+                            <Loader2 className="mr-2 h-4 w-4 animate-spin" />
+                            Регистрация...
+                          </>
+                        ) : (
+                          <>
+                            <UserPlus className="mr-2 h-4 w-4" />
+                            Зарегистрироваться
+                          </>
+                        )}
+                      </Button>
+                    </motion.div>
+                  </motion.form>
+                </motion.div>
               )}
+            </AnimatePresence>
 
-              {/* Submit Button */}
-              <Button
-                type="submit"
-                disabled={isLoading}
-                className="w-full h-12 bg-gradient-to-r from-green-500 to-emerald-600 hover:from-green-600 hover:to-emerald-700 text-white shadow-lg hover:shadow-xl transform hover:scale-105 transition-all duration-300"
-              >
-                {isLoading ? (
-                  <>
-                    <Loader2 className="mr-2 h-4 w-4 animate-spin" />
-                    Регистрация...
-                  </>
-                ) : (
-                  <>
-                    <UserPlus className="mr-2 h-4 w-4" />
-                    Зарегистрироваться
-                  </>
-                )}
-              </Button>
-            </form>
+            <AnimatePresence>
+              {isTransitioning && (
+                <motion.div
+                  className="absolute inset-0 flex items-center justify-center bg-white/70 backdrop-blur-[2px]"
+                  initial={{ opacity: 0 }}
+                  animate={{ opacity: 1 }}
+                  exit={{ opacity: 0 }}
+                  transition={{ duration: 0.2 }}
+                >
+                  <motion.div
+                    className="flex items-center space-x-2 text-emerald-600"
+                    initial={{ opacity: 0, scale: 0.92 }}
+                    animate={{ opacity: 1, scale: 1 }}
+                    exit={{ opacity: 0, scale: 0.95 }}
+                    transition={{ duration: 0.25 }}
+                  >
+                    <Loader2 className="h-4 w-4 animate-spin" />
+                    <span className="text-sm font-medium">
+                      Готовим следующий шаг...
+                    </span>
+                  </motion.div>
+                </motion.div>
+              )}
+            </AnimatePresence>
 
             {/* Divider */}
             <div className="relative">
@@ -395,15 +589,15 @@ export default function RegisterPage() {
           </CardContent>
         </Card>
 
-        {/* Features */}
-        <div className="mt-8 grid grid-cols-3 gap-4">
+        {/* Features (скрыто чтобы избежать прокрутки) */}
+        <div className="hidden">
           <div className="text-center p-4 rounded-xl bg-white/50 backdrop-blur-sm border border-white/20">
             <BookOpen className="h-6 w-6 text-blue-600 mx-auto mb-2" />
             <p className="text-xs text-slate-600">Образовательные гайды</p>
           </div>
           <div className="text-center p-4 rounded-xl bg-white/50 backdrop-blur-sm border border-white/20">
             <Home className="h-6 w-6 text-green-600 mx-auto mb-2" />
-            <p className="text-xs text-slate-600">Бытовые советы</p>
+            <p className="text-xs text-сlate-600">Бытовые советы</p>
           </div>
           <div className="text-center p-4 rounded-xl bg-white/50 backdrop-blur-sm border border-white/20">
             <Bell className="h-6 w-6 text-purple-600 mx-auto mb-2" />

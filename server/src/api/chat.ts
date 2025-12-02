@@ -3,6 +3,7 @@ import { z } from 'zod';
 import { prisma } from '../lib/database';
 import { authMiddleware } from '../lib/auth';
 import { ApiResponse } from '@/types';
+import { getNextApiKey, markKeyAsFailed, resetKey } from '../lib/deepseek-keys';
 
 const router = Router();
 
@@ -21,9 +22,18 @@ router.get('/messages', authMiddleware, async (req: Request, res: Response) => {
       orderBy: { createdAt: 'asc' },
     });
 
+    // Преобразуем формат для клиента (createdAt -> timestamp)
+    const formattedMessages = messages.map(msg => ({
+      id: msg.id,
+      userId: msg.userId,
+      content: msg.content,
+      isUser: msg.isUser,
+      timestamp: msg.createdAt.toISOString(),
+    }));
+
     res.json({
       success: true,
-      data: messages,
+      data: formattedMessages,
       message: 'История чата получена успешно'
     } as ApiResponse);
 
@@ -63,11 +73,28 @@ router.post('/messages', authMiddleware, async (req: Request, res: Response) => 
       },
     });
 
+    // Преобразуем формат для клиента (createdAt -> timestamp)
+    const formattedUserMessage = {
+      id: userMessage.id,
+      userId: userMessage.userId,
+      content: userMessage.content,
+      isUser: userMessage.isUser,
+      timestamp: userMessage.createdAt.toISOString(),
+    };
+
+    const formattedAiMessage = {
+      id: aiMessage.id,
+      userId: aiMessage.userId,
+      content: aiMessage.content,
+      isUser: aiMessage.isUser,
+      timestamp: aiMessage.createdAt.toISOString(),
+    };
+
     res.status(201).json({
       success: true,
       data: {
-        userMessage,
-        aiMessage,
+        userMessage: formattedUserMessage,
+        aiMessage: formattedAiMessage,
       },
       message: 'Сообщение отправлено успешно'
     } as ApiResponse);
@@ -89,53 +116,126 @@ router.post('/messages', authMiddleware, async (req: Request, res: Response) => 
   }
 });
 
-// Функция для генерации ответа AI через DeepSeek API
+// Функция для генерации ответа AI через DeepSeek API с ротацией ключей
 async function generateAIResponse(userMessage: string): Promise<string> {
-  try {
-    // Используем DeepSeek API (бесплатный вариант)
-    const DEEPSEEK_API_URL = 'https://api.deepseek.com/v1/chat/completions';
-    const DEEPSEEK_API_KEY = process.env.DEEPSEEK_API_KEY || '';
+  const DEEPSEEK_API_URL = 'https://api.deepseek.com/v1/chat/completions';
+  const MAX_RETRIES = 3; // Максимальное количество попыток с разными ключами
+  
+  console.log('[AI] Генерация ответа для сообщения:', userMessage.substring(0, 50) + '...');
+  let lastError: Error | null = null;
+  
+  for (let attempt = 0; attempt < MAX_RETRIES; attempt++) {
+    const apiKey = getNextApiKey();
     
-    // Если нет API ключа, возвращаем моковый ответ
-    if (!DEEPSEEK_API_KEY) {
-      return generateMockResponse(userMessage);
+    if (!apiKey) {
+      console.error('[AI] Нет доступных DeepSeek API ключей. Добавьте ключи в server/src/lib/deepseek-keys.ts');
+      break;
     }
 
-    const response = await fetch(DEEPSEEK_API_URL, {
-      method: 'POST',
-      headers: {
-        'Content-Type': 'application/json',
-        'Authorization': `Bearer ${DEEPSEEK_API_KEY}`,
-      },
-      body: JSON.stringify({
-        model: 'deepseek-chat',
-        messages: [
-          {
-            role: 'system',
-            content: 'Ты AI-помощник для иностранных студентов в России. Помогаешь с адаптацией, учёбой и бытовыми вопросами. Отвечай кратко, понятно и дружелюбно на русском языке.'
-          },
-          {
-            role: 'user',
-            content: userMessage
-          }
-        ],
-        temperature: 0.7,
-        max_tokens: 500,
-      }),
-    });
+    console.log(`[AI] Попытка ${attempt + 1}/${MAX_RETRIES} с DeepSeek ключом: ${apiKey.substring(0, 10)}...`);
 
-    if (!response.ok) {
-      throw new Error(`DeepSeek API error: ${response.statusText}`);
+    try {
+      const response = await fetch(DEEPSEEK_API_URL, {
+        method: 'POST',
+        headers: {
+          'Content-Type': 'application/json',
+          'Authorization': `Bearer ${apiKey}`,
+        },
+        body: JSON.stringify({
+          model: 'deepseek-chat',
+          messages: [
+            {
+              role: 'system',
+              content: 'Ты AI-помощник для иностранных студентов в России. Помогаешь с адаптацией, учёбой и бытовыми вопросами. Отвечай кратко, понятно и дружелюбно на русском языке. Если вопрос задан на другом языке, отвечай на том же языке, но можешь добавить перевод на русский.'
+            },
+            {
+              role: 'user',
+              content: userMessage
+            }
+          ],
+          temperature: 0.7,
+          max_tokens: 1000,
+        }),
+      });
+
+      if (!response.ok) {
+        const statusText = response.statusText;
+        const status = response.status;
+        
+        // Если ошибка связана с API ключом (401, 403), помечаем ключ как нерабочий
+        if (status === 401 || status === 403) {
+          markKeyAsFailed(apiKey);
+          lastError = new Error(`DeepSeek API authentication error (${status}): ${statusText}`);
+          console.warn(`DeepSeek API ключ не прошел аутентификацию, пробуем следующий...`);
+          continue; // Пробуем следующий ключ
+        }
+        
+        // Ошибка 402 - Payment Required (недостаточно средств на балансе)
+        if (status === 402) {
+          console.warn(`⚠️ DeepSeek API: Недостаточно средств на балансе (402). Нужно пополнить баланс на https://platform.deepseek.com`);
+          // Не помечаем как failed, так как это можно исправить пополнением баланса
+          lastError = new Error(`DeepSeek API payment required (402): Недостаточно средств на балансе. Пополните баланс на https://platform.deepseek.com`);
+          continue; // Пробуем следующий ключ (если есть)
+        }
+        
+        // Для других ошибок (429 - rate limit, 500 и т.д.) тоже пробуем следующий ключ
+        if (status === 429) {
+          console.warn(`Rate limit для DeepSeek ключа, пробуем следующий...`);
+          // Не помечаем как failed, так как это временная проблема
+          lastError = new Error(`DeepSeek API rate limit error: ${statusText}`);
+          continue;
+        }
+        
+        // Для других ошибок помечаем ключ как нерабочий и пробуем следующий
+        markKeyAsFailed(apiKey);
+        lastError = new Error(`DeepSeek API error (${status}): ${statusText}`);
+        continue;
+      }
+
+      const data = await response.json() as {
+        choices?: Array<{
+          message?: {
+            content?: string;
+          };
+        }>;
+      };
+      
+      // Если успешно, сбрасываем статус ключа (если он был помечен как failed)
+      resetKey(apiKey);
+      
+      if (!data.choices || !data.choices[0] || !data.choices[0].message || !data.choices[0].message.content) {
+        throw new Error('Неверный формат ответа от DeepSeek API');
+      }
+      
+      const aiResponse = data.choices[0].message.content;
+      console.log('[AI] ✅ Успешно получен ответ от DeepSeek:', aiResponse.substring(0, 100) + '...');
+      return aiResponse;
+
+    } catch (error) {
+      // Ошибки сети или парсинга - помечаем ключ и пробуем следующий
+      if (error instanceof Error) {
+        lastError = error;
+        // Для сетевых ошибок не помечаем ключ как failed сразу
+        if (!error.message.includes('fetch')) {
+          markKeyAsFailed(apiKey);
+        }
+      } else {
+        lastError = new Error(String(error));
+      }
+      
+      console.warn(`Ошибка при использовании API ключа (попытка ${attempt + 1}/${MAX_RETRIES}):`, error);
+      
+      // Если это последняя попытка, выходим из цикла
+      if (attempt === MAX_RETRIES - 1) {
+        break;
+      }
     }
-
-    const data = await response.json();
-    return data.choices[0].message.content;
-
-  } catch (error) {
-    console.error('AI Response error:', error);
-    // В случае ошибки возвращаем моковый ответ
-    return generateMockResponse(userMessage);
   }
+
+  // Если все попытки не удались, возвращаем моковый ответ
+  console.error('[AI] ❌ Не удалось получить ответ от DeepSeek API после всех попыток:', lastError);
+  console.log('[AI] ⚠️ Используется моковый ответ');
+  return generateMockResponse(userMessage);
 }
 
 // Резервная функция для моковых ответов

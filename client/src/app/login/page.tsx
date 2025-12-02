@@ -1,8 +1,9 @@
 "use client";
 
-import { useState } from "react";
+import { useEffect, useRef, useState } from "react";
 import { useRouter } from "next/navigation";
 import Link from "next/link";
+import { AnimatePresence, motion } from "framer-motion";
 import { useAuth } from "@/contexts/AuthContext";
 import { Button } from "@/components/ui/button";
 import { Input } from "@/components/ui/input";
@@ -32,12 +33,41 @@ export default function LoginPage() {
   const [password, setPassword] = useState("");
   const [showPassword, setShowPassword] = useState(false);
   const [error, setError] = useState("");
+  const [emailError, setEmailError] = useState("");
   const [isLoading, setIsLoading] = useState(false);
+  const [step, setStep] = useState<"email" | "password">("email");
+  const [isTransitioning, setIsTransitioning] = useState(false);
+  const stepTimeoutRef = useRef<NodeJS.Timeout | null>(null);
 
   const { login } = useAuth();
   const router = useRouter();
 
-  const handleSubmit = async (e: React.FormEvent) => {
+  const handleEmailSubmit = (e: React.FormEvent) => {
+    e.preventDefault();
+
+    if (!email.trim()) {
+      setEmailError("Введите email");
+      return;
+    }
+
+    const emailPattern = /^[\w.!#$%&'*+/=?^`{|}~-]+@[\w-]+(?:\.[\w-]+)+$/;
+    if (!emailPattern.test(email.trim())) {
+      setEmailError("Введите корректный email");
+      return;
+    }
+
+    setEmailError("");
+    setIsTransitioning(true);
+    const transitionDuration = 320;
+    stepTimeoutRef.current = setTimeout(() => {
+      setStep("password");
+      requestAnimationFrame(() => {
+        setIsTransitioning(false);
+      });
+    }, transitionDuration);
+  };
+
+  const handlePasswordSubmit = async (e: React.FormEvent) => {
     e.preventDefault();
     setError("");
     setIsLoading(true);
@@ -48,6 +78,7 @@ export default function LoginPage() {
         router.push("/dashboard");
       } else {
         setError("Неверный email или пароль");
+        setPassword("");
       }
     } catch {
       setError("Произошла ошибка при входе");
@@ -55,6 +86,24 @@ export default function LoginPage() {
       setIsLoading(false);
     }
   };
+
+  const handleBackToEmail = () => {
+    setPassword("");
+    setError("");
+    if (stepTimeoutRef.current) {
+      clearTimeout(stepTimeoutRef.current);
+    }
+    setStep("email");
+    setIsTransitioning(false);
+  };
+
+  useEffect(() => {
+    return () => {
+      if (stepTimeoutRef.current) {
+        clearTimeout(stepTimeoutRef.current);
+      }
+    };
+  }, []);
 
   return (
     <div className="min-h-screen bg-gradient-to-br from-slate-50 via-blue-50 to-indigo-50 flex items-center justify-center p-4">
@@ -73,11 +122,12 @@ export default function LoginPage() {
 
         {/* Login Card */}
         <Card className="border-0 shadow-2xl animate-fade-in-up relative">
-          {/* Go Back Button - positioned in top-left corner */}
+          {/* Go Back Button */}
           <div className="absolute top-4 left-4 z-10">
             <Link
               href="/"
               className="inline-flex items-center justify-center w-10 h-10 rounded-full bg-slate-100 hover:bg-slate-200 text-slate-600 hover:text-slate-900 transition-all duration-200 group"
+              aria-label="На главную"
             >
               <ArrowLeft className="h-5 w-5 group-hover:-translate-x-1 transition-transform duration-200" />
             </Link>
@@ -91,13 +141,25 @@ export default function LoginPage() {
               Добро пожаловать!
             </CardTitle>
             <CardDescription className="text-slate-600">
-              Войдите в свой аккаунт для доступа к платформе
+              {step === "email"
+                ? "Войдите в свой аккаунт — начнём с подтверждения email"
+                : "Введите пароль, чтобы завершить вход"}
             </CardDescription>
           </CardHeader>
 
-          <CardContent className="space-y-6">
-            <form onSubmit={handleSubmit} className="space-y-4">
-              {/* Email */}
+          <CardContent className="space-y-6 relative overflow-hidden min-h-[360px]">
+            <AnimatePresence mode="wait">
+              {step === "email" ? (
+                <motion.form
+                  key="email-step"
+                  onSubmit={handleEmailSubmit}
+                  className="space-y-4"
+                  initial={{ opacity: 0, y: 24 }}
+                  animate={{ opacity: 1, y: 0 }}
+                  exit={{ opacity: 0, y: -16 }}
+                  transition={{ duration: 0.35, ease: [0.16, 1, 0.3, 1] }}
+                  style={{ minHeight: "240px" }}
+                >
               <div className="space-y-2">
                 <label
                   htmlFor="email"
@@ -114,12 +176,69 @@ export default function LoginPage() {
                     value={email}
                     onChange={(e) => setEmail(e.target.value)}
                     className="pl-10 h-12 border-slate-200 focus:border-blue-500 focus:ring-blue-500"
+                        autoFocus
                     required
                   />
                 </div>
+                    {emailError && (
+                      <p className="text-sm text-red-600">{emailError}</p>
+                    )}
               </div>
 
-              {/* Password */}
+                  <Button
+                    type="submit"
+                    className="w-full h-12 bg-gradient-to-r from-blue-500 to-purple-600 hover:from-blue-600 hover:to-purple-700 text-white shadow-lg"
+                  >
+                    Продолжить
+                  </Button>
+                </motion.form>
+              ) : (
+                <motion.div
+                  key="password-step"
+                  className="space-y-5"
+                  initial={{ opacity: 0, y: 24 }}
+                  animate={{ opacity: 1, y: 0 }}
+                  exit={{ opacity: 0, y: -16 }}
+                  transition={{ duration: 0.35, ease: [0.16, 1, 0.3, 1] }}
+                  style={{ minHeight: "240px" }}
+                >
+                  <motion.div
+                    className="rounded-xl border border-slate-200 bg-slate-50 p-4 text-left"
+                    initial={{ opacity: 0, scale: 0.97 }}
+                    animate={{ opacity: 1, scale: 1 }}
+                    transition={{ duration: 0.3, ease: [0.16, 1, 0.3, 1] }}
+                  >
+                    <div className="flex items-center justify-between">
+                      <div>
+                        <p className="text-xs uppercase tracking-wide text-slate-400">
+                          Подтверждённый email
+                        </p>
+                        <p className="text-sm font-semibold text-slate-900">
+                          {email}
+                        </p>
+                      </div>
+                      <button
+                        type="button"
+                        onClick={handleBackToEmail}
+                        className="text-sm font-medium text-blue-600 hover:text-blue-700"
+                        aria-label="Изменить email"
+                      >
+                        Изменить
+                      </button>
+                    </div>
+                  </motion.div>
+
+                  <motion.form
+                    onSubmit={handlePasswordSubmit}
+                    className="space-y-4"
+                    initial={{ opacity: 0, y: 12 }}
+                    animate={{ opacity: 1, y: 0 }}
+                    transition={{
+                      duration: 0.3,
+                      delay: 0.05,
+                      ease: [0.16, 1, 0.3, 1],
+                    }}
+                  >
               <div className="space-y-2">
                 <label
                   htmlFor="password"
@@ -136,12 +255,16 @@ export default function LoginPage() {
                     value={password}
                     onChange={(e) => setPassword(e.target.value)}
                     className="pl-10 pr-10 h-12 border-slate-200 focus:border-blue-500 focus:ring-blue-500"
+                          autoFocus={false}
                     required
                   />
                   <button
                     type="button"
                     onClick={() => setShowPassword(!showPassword)}
                     className="absolute right-3 top-1/2 transform -translate-y-1/2 text-slate-400 hover:text-slate-600"
+                          aria-label={
+                            showPassword ? "Скрыть пароль" : "Показать пароль"
+                          }
                   >
                     {showPassword ? (
                       <EyeOff className="h-4 w-4" />
@@ -160,19 +283,26 @@ export default function LoginPage() {
                 </div>
               </div>
 
-              {/* Error Message */}
+                    <AnimatePresence>
               {error && (
-                <div className="flex items-center space-x-2 p-3 rounded-lg bg-red-50 border border-red-200">
+                        <motion.div
+                          className="flex items-center space-x-2 p-3 rounded-lg bg-red-50 border border-red-200"
+                          initial={{ opacity: 0, y: 8 }}
+                          animate={{ opacity: 1, y: 0 }}
+                          exit={{ opacity: 0, y: -6 }}
+                          transition={{ duration: 0.2 }}
+                        >
                   <AlertCircle className="h-4 w-4 text-red-500" />
                   <span className="text-sm text-red-600">{error}</span>
-                </div>
+                        </motion.div>
               )}
+                    </AnimatePresence>
 
-              {/* Submit Button */}
+                    <motion.div>
               <Button
                 type="submit"
                 disabled={isLoading}
-                className="w-full h-12 bg-gradient-to-r from-blue-500 to-purple-600 hover:from-blue-600 hover:to-purple-700 text-white shadow-lg hover:shadow-xl transform hover:scale-105 transition-all duration-300"
+                        className="w-full h-12 bg-gradient-to-r from-blue-500 to-purple-600 hover:from-blue-600 hover:to-purple-700 text-white shadow-lg"
               >
                 {isLoading ? (
                   <>
@@ -186,7 +316,36 @@ export default function LoginPage() {
                   </>
                 )}
               </Button>
-            </form>
+                    </motion.div>
+                  </motion.form>
+                </motion.div>
+              )}
+            </AnimatePresence>
+
+            <AnimatePresence>
+              {isTransitioning && (
+                <motion.div
+                  className="absolute inset-0 flex items-center justify-center bg-white/70 backdrop-blur-[2px]"
+                  initial={{ opacity: 0 }}
+                  animate={{ opacity: 1 }}
+                  exit={{ opacity: 0 }}
+                  transition={{ duration: 0.2 }}
+                >
+                  <motion.div
+                    className="flex items-center space-x-2 text-blue-600"
+                    initial={{ opacity: 0, scale: 0.92 }}
+                    animate={{ opacity: 1, scale: 1 }}
+                    exit={{ opacity: 0, scale: 0.95 }}
+                    transition={{ duration: 0.25 }}
+                  >
+                    <Loader2 className="h-4 w-4 animate-spin" />
+                    <span className="text-sm font-medium">
+                      Переходим к паролю...
+                    </span>
+                  </motion.div>
+                </motion.div>
+              )}
+            </AnimatePresence>
 
             {/* Divider */}
             <div className="relative">

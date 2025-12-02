@@ -11,7 +11,6 @@ import {
 } from "@/components/ui/card";
 import {
   BookOpen,
-  Home,
   Bell,
   MessageSquare,
   Globe,
@@ -261,7 +260,7 @@ export default function HomePage() {
               {/* Main Features - Compact Version */}
               <div className="mt-8 sm:mt-12 max-w-5xl mx-auto px-2 sm:px-4">
                 <div className="grid grid-cols-2 lg:grid-cols-4 gap-2 sm:gap-3 lg:gap-4">
-                  {features.map((feature, index) => {
+                  {features.map((feature) => {
                     const Icon = feature.icon;
                     return (
                       <Link

@@ -17,7 +17,6 @@ import {
   Menu,
   X,
   Shield,
-  HelpCircle,
   ScanLine,
 } from "lucide-react";
 import { useState } from "react";

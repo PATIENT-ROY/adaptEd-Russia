@@ -3,7 +3,6 @@
 import { Layout } from "@/components/layout/layout";
 import { GuideCard } from "@/components/ui/guide-card";
 import { Button } from "@/components/ui/button";
-import { Card, CardContent } from "@/components/ui/card";
 import {
   ScheduleFilter,
   ScheduleFilters,
@@ -28,7 +27,6 @@ import {
   Users,
 } from "lucide-react";
 import { useState, useMemo, useEffect } from "react";
-import { useRouter } from "next/navigation";
 import {
   Guide,
   GuideCategory,
@@ -1163,7 +1161,6 @@ const categories = [
 ];
 
 export default function EducationGuidePage() {
-  const router = useRouter();
   const [searchQuery, setSearchQuery] = useState("");
   const [selectedCategory, setSelectedCategory] = useState("all");
   const [showSchedule, setShowSchedule] = useState(false);

@@ -17,11 +17,14 @@ import {
   Calendar,
   Plus,
   Download,
+  ChevronDown,
+  ArrowLeft,
 } from "lucide-react";
 import Link from "next/link";
 import { useAuth } from "@/contexts/AuthContext";
-import { useState, useEffect } from "react";
-import { Role } from "@/types";
+import { useState, useEffect, useMemo } from "react";
+import { Language, Role } from "@/types";
+import { useTranslation } from "@/hooks/useTranslation";
 
 // Моковые данные пользователей
 const mockUsers = [
@@ -112,12 +115,38 @@ export default function AdminUsersPage() {
   const [statusFilter, setStatusFilter] = useState("all");
   const [roleFilter, setRoleFilter] = useState("all");
   const [selectedUsers, setSelectedUsers] = useState<string[]>([]);
+  const [isAddUserOpen, setIsAddUserOpen] = useState(false);
+  const [newUser, setNewUser] = useState({
+    name: "",
+    email: "",
+    country: "",
+    language: Language.RU,
+    role: "student",
+    status: "active",
+  });
+  const [formError, setFormError] = useState<string>("");
+  const { t } = useTranslation();
 
   useEffect(() => {
     if (user?.role === Role.ADMIN) {
       setIsAdmin(true);
     }
   }, [user]);
+
+  const filteredUsers = useMemo(() => {
+    return users.filter((user) => {
+      const matchesSearch =
+        user.name.toLowerCase().includes(searchTerm.toLowerCase()) ||
+        user.email.toLowerCase().includes(searchTerm.toLowerCase()) ||
+        user.country.toLowerCase().includes(searchTerm.toLowerCase());
+
+      const matchesStatus =
+        statusFilter === "all" || user.status === statusFilter;
+      const matchesRole = roleFilter === "all" || user.role === roleFilter;
+
+      return matchesSearch && matchesStatus && matchesRole;
+    });
+  }, [users, searchTerm, statusFilter, roleFilter]);
 
   if (!user) {
     return (
@@ -135,13 +164,13 @@ export default function AdminUsersPage() {
             <CardContent className="p-8 text-center">
               <Shield className="h-16 w-16 text-red-500 mx-auto mb-4" />
               <h2 className="text-2xl font-bold text-slate-900 mb-2">
-                Доступ запрещен
+                {t("admin.accessDenied.title")}
               </h2>
               <p className="text-slate-600 mb-6">
-                У вас нет прав для доступа к админ-панели
+                {t("admin.accessDenied.description")}
               </p>
               <Link href="/dashboard">
-                <Button>Вернуться на главную</Button>
+                <Button>{t("admin.accessDenied.action")}</Button>
               </Link>
             </CardContent>
           </Card>
@@ -149,19 +178,6 @@ export default function AdminUsersPage() {
       </Layout>
     );
   }
-
-  const filteredUsers = users.filter((user) => {
-    const matchesSearch =
-      user.name.toLowerCase().includes(searchTerm.toLowerCase()) ||
-      user.email.toLowerCase().includes(searchTerm.toLowerCase()) ||
-      user.country.toLowerCase().includes(searchTerm.toLowerCase());
-
-    const matchesStatus =
-      statusFilter === "all" || user.status === statusFilter;
-    const matchesRole = roleFilter === "all" || user.role === roleFilter;
-
-    return matchesSearch && matchesStatus && matchesRole;
-  });
 
   const handleStatusChange = (userId: string, newStatus: string) => {
     setUsers(
@@ -203,6 +219,57 @@ export default function AdminUsersPage() {
     );
   };
 
+  const resetNewUserForm = () => {
+    setNewUser({
+      name: "",
+      email: "",
+      country: "",
+      language: Language.RU,
+      role: "student",
+      status: "active",
+    });
+    setFormError("");
+  };
+
+  const handleAddUserSubmit = (event: React.FormEvent) => {
+    event.preventDefault();
+    setFormError("");
+
+    if (!newUser.name.trim() || !newUser.email.trim() || !newUser.country) {
+      setFormError(t("admin.users.formError"));
+      return;
+    }
+
+    const emailPattern = /^[^\s@]+@[^\s@]+\.[^\s@]+$/;
+    if (!emailPattern.test(newUser.email.trim())) {
+      setFormError(t("admin.users.formEmailError"));
+      return;
+    }
+
+    const createdUser = {
+      id: Date.now().toString(),
+      name: newUser.name,
+      email: newUser.email,
+      country: newUser.country,
+      language: newUser.language,
+      role: newUser.role,
+      status: newUser.status,
+      registeredAt: new Date().toISOString().split("T")[0],
+      lastLogin: new Date().toISOString().split("T")[0],
+      guidesRead: 0,
+      aiQuestions: 0,
+    } as typeof mockUsers[number];
+
+    setUsers([createdUser, ...users]);
+    setIsAddUserOpen(false);
+    resetNewUserForm();
+  };
+
+  const closeAddUserModal = () => {
+    setIsAddUserOpen(false);
+    resetNewUserForm();
+  };
+
   return (
     <Layout>
       <div className="space-y-6 sm:space-y-8">
@@ -210,6 +277,12 @@ export default function AdminUsersPage() {
         <div className="bg-white rounded-lg p-4 sm:p-6 shadow-sm">
           <div className="flex flex-col sm:flex-row sm:items-center justify-between space-y-4 sm:space-y-0">
             <div className="flex items-center space-x-3">
+              <Link
+                href="/admin"
+                className="inline-flex items-center justify-center h-10 w-10 rounded-lg bg-slate-100 text-slate-600 hover:text-slate-900 hover:bg-slate-200 transition-colors"
+              >
+                <ArrowLeft className="h-5 w-5" />
+              </Link>
               <div className="rounded-lg bg-blue-50 p-3">
                 <Users className="h-6 w-6 text-blue-600" />
               </div>
@@ -227,7 +300,10 @@ export default function AdminUsersPage() {
                 <Download className="h-4 w-4" />
                 <span>Экспорт</span>
               </Button>
-              <Button className="flex items-center space-x-2">
+              <Button
+                className="flex items-center space-x-2"
+                onClick={() => setIsAddUserOpen(true)}
+              >
                 <Plus className="h-4 w-4" />
                 <span>Добавить пользователя</span>
               </Button>
@@ -249,26 +325,32 @@ export default function AdminUsersPage() {
                   className="pl-10"
                 />
               </div>
+              <div className="relative w-full sm:w-48">
               <select
                 value={statusFilter}
                 onChange={(e) => setStatusFilter(e.target.value)}
-                className="px-3 py-2 border border-gray-300 rounded-md focus:ring-2 focus:ring-blue-500 focus:border-transparent"
+                  className="w-full appearance-none px-3 py-2 pr-9 border border-slate-300 rounded-lg focus:ring-2 focus:ring-blue-500 focus:border-blue-500"
               >
                 <option value="all">Все статусы</option>
                 <option value="active">Активные</option>
                 <option value="pending">Ожидающие</option>
                 <option value="blocked">Заблокированные</option>
               </select>
+                <ChevronDown className="h-4 w-4 text-gray-400 pointer-events-none absolute right-3 top-1/2 -translate-y-1/2" />
+              </div>
+              <div className="relative w-full sm:w-48">
               <select
                 value={roleFilter}
                 onChange={(e) => setRoleFilter(e.target.value)}
-                className="px-3 py-2 border border-gray-300 rounded-md focus:ring-2 focus:ring-blue-500 focus:border-transparent"
+                  className="w-full appearance-none px-3 py-2 pr-9 border border-slate-300 rounded-lg focus:ring-2 focus:ring-blue-500 focus:border-blue-500"
               >
                 <option value="all">Все роли</option>
                 <option value="student">Студенты</option>
                 <option value="admin">Администраторы</option>
                 <option value="guest">Гости</option>
               </select>
+                <ChevronDown className="h-4 w-4 text-gray-400 pointer-events-none absolute right-3 top-1/2 -translate-y-1/2" />
+              </div>
             </div>
           </CardContent>
         </Card>
@@ -361,34 +443,30 @@ export default function AdminUsersPage() {
                         </div>
                       </td>
                       <td className="py-3 px-4">
-                        <select
-                          value={user.role}
-                          onChange={(e) =>
-                            handleRoleChange(user.id, e.target.value)
-                          }
-                          className={`px-2 py-1 rounded-full text-xs font-medium border-0 ${
+                        <span
+                          className={`inline-flex items-center px-3 py-1 rounded-full text-xs font-semibold ${
                             roleColors[user.role]
                           }`}
                         >
-                          <option value="student">Студент</option>
-                          <option value="admin">Администратор</option>
-                          <option value="guest">Гость</option>
-                        </select>
+                          {user.role === "student"
+                            ? "Студент"
+                            : user.role === "admin"
+                            ? "Администратор"
+                            : "Гость"}
+                        </span>
                       </td>
                       <td className="py-3 px-4">
-                        <select
-                          value={user.status}
-                          onChange={(e) =>
-                            handleStatusChange(user.id, e.target.value)
-                          }
-                          className={`px-2 py-1 rounded-full text-xs font-medium border-0 ${
+                        <span
+                          className={`inline-flex items-center px-3 py-1 rounded-full text-xs font-semibold ${
                             statusColors[user.status]
                           }`}
                         >
-                          <option value="active">Активен</option>
-                          <option value="pending">Ожидает</option>
-                          <option value="blocked">Заблокирован</option>
-                        </select>
+                          {user.status === "active"
+                            ? "Активен"
+                            : user.status === "pending"
+                            ? "Ожидает"
+                            : "Заблокирован"}
+                        </span>
                       </td>
                       <td className="py-3 px-4">
                         <div className="text-sm">
@@ -405,10 +483,20 @@ export default function AdminUsersPage() {
                       </td>
                       <td className="py-3 px-4">
                         <div className="flex items-center space-x-2">
-                          <Button variant="outline" size="sm">
+                          <Button
+                            variant="outline"
+                            size="sm"
+                            title="Просмотр"
+                            aria-label="Просмотр пользователя"
+                          >
                             <Eye className="h-4 w-4" />
                           </Button>
-                          <Button variant="outline" size="sm">
+                          <Button
+                            variant="outline"
+                            size="sm"
+                            title="Редактировать"
+                            aria-label="Редактировать пользователя"
+                          >
                             <Edit className="h-4 w-4" />
                           </Button>
                           <Button
@@ -416,6 +504,8 @@ export default function AdminUsersPage() {
                             size="sm"
                             onClick={() => handleDeleteUser(user.id)}
                             className="text-red-600 hover:text-red-700"
+                            title="Удалить"
+                            aria-label="Удалить пользователя"
                           >
                             <Trash2 className="h-4 w-4" />
                           </Button>
@@ -500,6 +590,128 @@ export default function AdminUsersPage() {
           </Card>
         </div>
       </div>
+      {isAddUserOpen && (
+        <div className="fixed inset-0 z-50 flex items-center justify-center bg-black/40 backdrop-blur-sm p-4">
+          <Card className="w-full max-w-md">
+            <CardHeader>
+              <CardTitle className="flex items-center space-x-2">
+                <Plus className="h-5 w-5" />
+                <span>Новый пользователь</span>
+              </CardTitle>
+            </CardHeader>
+            <CardContent>
+              <form className="space-y-4" onSubmit={handleAddUserSubmit}>
+                <div className="space-y-2">
+                  <label className="text-sm font-medium text-gray-700">
+                    Имя
+                  </label>
+                  <Input
+                    value={newUser.name}
+                    onChange={(e) =>
+                      setNewUser((prev) => ({ ...prev, name: e.target.value }))
+                    }
+                    placeholder="Имя и фамилия"
+                    required
+                  />
+                </div>
+                <div className="space-y-2">
+                  <label className="text-sm font-medium text-gray-700">
+                    Email
+                  </label>
+                  <Input
+                    type="email"
+                    value={newUser.email}
+                    onChange={(e) =>
+                      setNewUser((prev) => ({
+                        ...prev,
+                        email: e.target.value,
+                      }))
+                    }
+                    placeholder="user@example.com"
+                    required
+                  />
+                </div>
+                <div className="space-y-2">
+                  <label className="text-sm font-medium text-gray-700">
+                    Страна
+                  </label>
+                  <Input
+                    value={newUser.country}
+                    onChange={(e) =>
+                      setNewUser((prev) => ({
+                        ...prev,
+                        country: e.target.value,
+                      }))
+                    }
+                    placeholder="Страна проживания"
+                    required
+                  />
+                </div>
+                <div className="grid grid-cols-1 sm:grid-cols-2 gap-3">
+                  <div className="space-y-1">
+                    <label className="text-sm font-medium text-gray-700">
+                      Роль
+                    </label>
+                    <div className="relative">
+                      <select
+                        value={newUser.role}
+                        onChange={(e) =>
+                          setNewUser((prev) => ({
+                            ...prev,
+                            role: e.target.value,
+                          }))
+                        }
+                        className="w-full appearance-none px-3 py-2 pr-9 border border-slate-300 rounded-lg focus:ring-2 focus:ring-blue-500 focus:border-blue-500"
+                      >
+                        <option value="student">Студент</option>
+                        <option value="admin">Администратор</option>
+                        <option value="guest">Гость</option>
+                      </select>
+                      <ChevronDown className="h-4 w-4 text-gray-400 pointer-events-none absolute right-3 top-1/2 -translate-y-1/2" />
+                    </div>
+                  </div>
+                  <div className="space-y-1">
+                    <label className="text-sm font-medium text-gray-700">
+                      Статус
+                    </label>
+                    <div className="relative">
+                      <select
+                        value={newUser.status}
+                        onChange={(e) =>
+                          setNewUser((prev) => ({
+                            ...prev,
+                            status: e.target.value,
+                          }))
+                        }
+                        className="w-full appearance-none px-3 py-2 pr-9 border border-slate-300 rounded-lg focus:ring-2 focus:ring-blue-500 focus:border-blue-500"
+                      >
+                        <option value="active">Активен</option>
+                        <option value="pending">Ожидает</option>
+                        <option value="blocked">Заблокирован</option>
+                      </select>
+                      <ChevronDown className="h-4 w-4 text-gray-400 pointer-events-none absolute right-3 top-1/2 -translate-y-1/2" />
+                    </div>
+                  </div>
+                </div>
+                {formError && (
+                  <p className="text-sm text-red-600 bg-red-50 border border-red-200 rounded-md px-3 py-2">
+                    {formError}
+                  </p>
+                )}
+                <div className="flex items-center justify-end space-x-2">
+                  <Button type="button" variant="outline" onClick={closeAddUserModal}>
+                    Отмена
+                  </Button>
+                  <Button type="submit" className="flex items-center space-x-2">
+                    <Plus className="h-4 w-4" />
+                    <span>Создать</span>
+                  </Button>
+                </div>
+              </form>
+            </CardContent>
+          </Card>
+        </div>
+      )}
     </Layout>
   );
 }

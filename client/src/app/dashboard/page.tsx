@@ -6,7 +6,6 @@ import { Card, CardContent } from "@/components/ui/card";
 import { Button } from "@/components/ui/button";
 import {
   BookOpen,
-  Home,
   Bell,
   MessageSquare,
   AlertCircle,
@@ -17,11 +16,12 @@ import {
 import Link from "next/link";
 import { useAuth } from "@/contexts/AuthContext";
 import { useReminders } from "@/hooks/useReminders";
-import { useState, useEffect } from "react";
+import { useState, useEffect, useCallback } from "react";
 import type { Reminder, UserProgress, DailyQuest } from "@/types";
-import { UserLevel, QuestType } from "@/types";
+import { UserLevel } from "@/types";
 import { UserProgressComponent } from "@/components/ui/user-progress";
 import { DailyQuestsComponent } from "@/components/ui/daily-quests";
+import { fetchDashboardOverview } from "@/lib/api";
 
 const quickActions = [
   {
@@ -47,7 +47,7 @@ const quickActions = [
   },
   {
     title: "DocScan",
-    description: "Сканирование и перевод документов",
+    description: "OCR из PDF и фото, перевод и экспорт",
     icon: ScanLine,
     href: "/docscan",
     gradient: "from-indigo-500 to-indigo-600",
@@ -61,71 +61,41 @@ export default function DashboardPage() {
   const [userProgress, setUserProgress] = useState<UserProgress | null>(null);
   const [dailyQuests, setDailyQuests] = useState<DailyQuest[]>([]);
   const [isInitialLoading, setIsInitialLoading] = useState(true);
+  const [dashboardError, setDashboardError] = useState<string | null>(null);
 
-  // Инициализация моковых данных после загрузки пользователя
-  useEffect(() => {
-    // Если пользователь загружен, инициализируем данные
-    if (!authLoading) {
-      if (user?.id) {
-        // Моковые данные прогресса пользователя (в реальности из API)
-        setUserProgress({
-          id: "1",
-          userId: user.id,
-          level: UserLevel.ADAPTING,
-          xp: 245,
-          adaptationProgress: 65,
-          streak: 5,
-          lastVisit: new Date().toISOString(),
-          totalGuidesRead: 12,
-          totalAIQuestions: 23,
-          totalRemindersCompleted: 8,
-          createdAt: new Date().toISOString(),
-          updatedAt: new Date().toISOString(),
-        });
+  const fetchDashboardData = useCallback(async () => {
+    if (!user) {
+      setUserProgress(null);
+      setDailyQuests([]);
+      setIsInitialLoading(false);
+      return;
+    }
 
-        // Моковые ежедневные квесты (в реальности из API)
-        setDailyQuests([
-          {
-            id: "1",
-            userId: user.id,
-            questType: QuestType.READ_GUIDES,
-            title: "Прочитать 3 гайда",
-            description: "Изучите любые 3 гайда на платформе",
-            target: 3,
-            progress: 3,
-            xpReward: 30,
-            date: new Date().toISOString(),
-            completed: true,
-          },
-          {
-            id: "2",
-            userId: user.id,
-            questType: QuestType.ASK_AI,
-            title: "Задать 2 вопроса AI",
-            description: "Воспользуйтесь AI-помощником",
-            target: 2,
-            progress: 1,
-            xpReward: 10,
-            date: new Date().toISOString(),
-            completed: false,
-          },
-          {
-            id: "3",
-            userId: user.id,
-            questType: QuestType.CREATE_REMINDER,
-            title: "Создать напоминание",
-            description: "Добавьте новое напоминание",
-            target: 1,
-            progress: 0,
-            xpReward: 15,
-            date: new Date().toISOString(),
-            completed: false,
-          },
-        ]);
-      }
+    setIsInitialLoading(true);
+    setDashboardError(null);
+
+    try {
+      const data = await fetchDashboardOverview();
+      setUserProgress(data.userProgress);
+      setDailyQuests(data.dailyQuests);
+    } catch (error) {
+      console.error("Failed to load dashboard overview:", error);
+      const message =
+        error instanceof Error
+          ? error.message
+          : "Не удалось загрузить данные дашборда";
+      setDashboardError(message);
+      setUserProgress(null);
+      setDailyQuests([]);
+    } finally {
       setIsInitialLoading(false);
     }
-  }, [user, authLoading]);
+  }, [user]);
+
+  useEffect(() => {
+    if (authLoading) return;
+    fetchDashboardData();
+  }, [authLoading, fetchDashboardData]);
 
   useEffect(() => {
     if (reminders.length > 0) {
@@ -243,7 +213,7 @@ export default function DashboardPage() {
               <div className="flex flex-col sm:flex-row sm:items-center space-y-4 sm:space-y-0 sm:space-x-4">
                 <div className="w-12 h-12 sm:w-16 sm:h-16 rounded-2xl bg-gradient-to-br from-blue-500 to-indigo-600 flex items-center justify-center shadow-lg">
                   <span className="text-white text-lg sm:text-2xl font-bold">
-                    А
+                    {user?.name.charAt(0).toUpperCase() || "А"}
                   </span>
                 </div>
                 <div>
@@ -258,6 +228,31 @@ export default function DashboardPage() {
             </CardContent>
           </Card>
 
+          {dashboardError && (
+            <Card className="border-red-200 bg-red-50 shadow-none">
+              <CardContent className="p-4 sm:p-6">
+                <div className="flex flex-col sm:flex-row sm:items-center sm:justify-between gap-3 sm:gap-4">
+                  <div className="flex items-start space-x-3">
+                    <div className="rounded-full bg-red-100 p-2">
+                      <AlertCircle className="h-5 w-5 text-red-600" />
+                    </div>
+                    <div>
+                      <h2 className="text-sm sm:text-base font-semibold text-red-700">
+                        Не удалось загрузить данные дашборда
+                      </h2>
+                      <p className="text-sm text-red-600/80">
+                        {dashboardError}
+                      </p>
+                    </div>
+                  </div>
+                  <Button variant="outline" onClick={fetchDashboardData}>
+                    Повторить попытку
+                  </Button>
+                </div>
+              </CardContent>
+            </Card>
+          )}
+
           {/* User Progress & Daily Quests */}
           {userProgress ? (
             <div className="grid grid-cols-1 xl:grid-cols-3 gap-6 sm:gap-8">
@@ -271,7 +266,13 @@ export default function DashboardPage() {
           ) : (
             <Card>
               <CardContent className="p-6 text-center">
+                {dashboardError ? (
+                  <p className="text-red-600">
+                    Попробуйте обновить страницу или повторить попытку позже.
+                  </p>
+                ) : (
                 <p className="text-gray-600">Загрузка данных...</p>
+                )}
               </CardContent>
             </Card>
           )}

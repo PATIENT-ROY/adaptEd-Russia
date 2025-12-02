@@ -7,7 +7,8 @@ import React, {
   useEffect,
   useCallback,
 } from "react";
-import type { User } from "@/types";
+import type { User, UpdateProfileRequest } from "@/types";
+import { apiClient } from "@/lib/api";
 
 // Используем тот же API_BASE_URL, что и в api.ts
 // В браузере process.env доступен только для NEXT_PUBLIC_* переменных
@@ -303,16 +304,45 @@ export function AuthProvider({ children }: { children: React.ReactNode }) {
       if (!user) return false;
 
       try {
-        // Имитация API запроса
-        await new Promise((resolve) => setTimeout(resolve, 1000));
+        const payload: UpdateProfileRequest = {};
 
-        const updatedUser: User = {
+        if (userData.university !== undefined) {
+          payload.university = userData.university || undefined;
+        }
+        if (userData.faculty !== undefined) {
+          payload.faculty = userData.faculty || undefined;
+        }
+        if (userData.year !== undefined) {
+          payload.year = userData.year || undefined;
+        }
+        if (userData.phone !== undefined) {
+          payload.phone = userData.phone || undefined;
+        }
+        if (userData.language !== undefined) {
+          payload.language = userData.language;
+        }
+        if (userData.gender !== undefined) {
+          const normalizedGender =
+            userData.gender === "male"
+              ? "MALE"
+              : userData.gender === "female"
+              ? "FEMALE"
+              : undefined;
+          if (normalizedGender) {
+            payload.gender = normalizedGender;
+          }
+        }
+
+        const updatedUser = await apiClient.updateProfile(payload);
+
+        const mergedUser: User = {
           ...user,
-          ...userData,
+          ...updatedUser,
+          city: userData.city ?? user.city,
         };
 
-        setUser(updatedUser);
-        localStorage.setItem("user", JSON.stringify(updatedUser));
+        setUser(mergedUser);
+        localStorage.setItem("user", JSON.stringify(mergedUser));
         return true;
       } catch (error) {
         console.error("Update profile error:", error);

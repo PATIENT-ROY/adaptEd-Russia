@@ -1,6 +1,6 @@
 "use client";
 
-import { useState } from "react";
+import { useEffect, useRef, useState } from "react";
 import { Globe, ChevronDown } from "lucide-react";
 import { Button } from "./button";
 import { cn } from "@/lib/utils";
@@ -27,9 +27,37 @@ export function LanguageSwitcher({
 }: LanguageSwitcherProps) {
   const [isOpen, setIsOpen] = useState(false);
   const currentLang = languages.find((lang) => lang.code === currentLanguage);
+  const containerRef = useRef<HTMLDivElement | null>(null);
+
+  useEffect(() => {
+    if (!isOpen) return;
+
+    const handleClickOutside = (event: MouseEvent) => {
+      if (
+        containerRef.current &&
+        !containerRef.current.contains(event.target as Node)
+      ) {
+        setIsOpen(false);
+      }
+    };
+
+    const handleEsc = (event: KeyboardEvent) => {
+      if (event.key === "Escape") {
+        setIsOpen(false);
+      }
+    };
+
+    document.addEventListener("mousedown", handleClickOutside);
+    document.addEventListener("keydown", handleEsc);
+
+    return () => {
+      document.removeEventListener("mousedown", handleClickOutside);
+      document.removeEventListener("keydown", handleEsc);
+    };
+  }, [isOpen]);
 
   return (
-    <div className={cn("relative", className)}>
+    <div ref={containerRef} className={cn("relative inline-flex", className)}>
       <Button
         variant="outline"
         size="sm"
@@ -50,7 +78,7 @@ export function LanguageSwitcher({
       </Button>
 
       {isOpen && (
-        <div className="absolute right-0 top-full z-50 mt-2 min-w-[140px] sm:min-w-[160px] rounded-lg sm:rounded-xl border border-slate-200 bg-white shadow-lg">
+        <div className="absolute left-1/2 top-full z-50 mt-2 min-w-[140px] sm:min-w-[160px] -translate-x-1/2 overflow-hidden rounded-lg sm:rounded-xl border border-slate-200 bg-white shadow-lg p-1 sm:p-1.5">
           {languages.map((language) => (
             <button
               key={language.code}
@@ -59,7 +87,7 @@ export function LanguageSwitcher({
                 setIsOpen(false);
               }}
               className={cn(
-                "flex w-full items-center gap-2 sm:gap-3 px-3 sm:px-4 py-2 sm:py-2.5 text-left hover:bg-slate-50 transition-colors duration-200 text-sm sm:text-base rounded-lg sm:rounded-xl mx-1 sm:mx-2 my-1",
+                "flex w-full items-center gap-2 sm:gap-3 px-3 sm:px-4 py-2 sm:py-2.5 text-left hover:bg-slate-50 transition-colors duration-200 text-sm sm:text-base rounded-md",
                 currentLanguage === language.code &&
                   "bg-blue-50 text-blue-600 font-medium"
               )}

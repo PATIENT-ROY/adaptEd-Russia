@@ -13,7 +13,10 @@ import {
   PaymentResponse,
   Payment,
   Subscription,
-  TestData
+  TestData,
+  ProfileOverview,
+  DashboardOverview,
+  AchievementsOverview
 } from '@/types';
 
 const API_BASE_URL = process.env.NEXT_PUBLIC_API_URL || 'http://localhost:3003/api';
@@ -57,6 +60,10 @@ class ApiClient {
     endpoint: string,
     options: RequestInit = {}
   ): Promise<ApiResponse<T>> {
+    if (!this.token && typeof window !== 'undefined') {
+      this.loadToken();
+    }
+
     const url = `${this.baseURL}${endpoint}`;
     
     const headers: Record<string, string> = {
@@ -172,6 +179,21 @@ class ApiClient {
 
   async getUserProfile(): Promise<User> {
     const response = await this.request<User>('/user/profile');
+    return response.data!;
+  }
+
+  async getProfileOverview(): Promise<ProfileOverview> {
+    const response = await this.request<ProfileOverview>('/user/profile/overview');
+    return response.data!;
+  }
+
+  async getDashboardOverview(): Promise<DashboardOverview> {
+    const response = await this.request<DashboardOverview>('/user/dashboard');
+    return response.data!;
+  }
+
+  async getAchievementsOverview(): Promise<AchievementsOverview> {
+    const response = await this.request<AchievementsOverview>('/user/achievements');
     return response.data!;
   }
 
@@ -301,6 +323,99 @@ class ApiClient {
 
 // Создаем единственный экземпляр API клиента
 export const apiClient = new ApiClient(API_BASE_URL);
+
+export const fetchProfileOverview = async (): Promise<ProfileOverview> => {
+  if (typeof (apiClient as any).getProfileOverview === "function") {
+    return apiClient.getProfileOverview();
+  }
+
+  const token =
+    typeof window !== "undefined" ? localStorage.getItem("token") : null;
+
+  const response = await fetch(`${API_BASE_URL}/user/profile/overview`, {
+    headers: {
+      "Content-Type": "application/json",
+      ...(token ? { Authorization: `Bearer ${token}` } : {}),
+    },
+  });
+
+  if (!response.ok) {
+    const errorText = await response.text();
+    throw new Error(
+      errorText || `Failed to fetch profile overview: ${response.status}`
+    );
+  }
+
+  const payload: ApiResponse<ProfileOverview> = await response.json();
+
+  if (!payload.success || !payload.data) {
+    throw new Error(payload.error || "Не удалось получить профиль");
+  }
+
+  return payload.data;
+};
+
+export const fetchDashboardOverview = async (): Promise<DashboardOverview> => {
+  if (typeof (apiClient as any).getDashboardOverview === "function") {
+    return apiClient.getDashboardOverview();
+  }
+
+  const token =
+    typeof window !== "undefined" ? localStorage.getItem("token") : null;
+
+  const response = await fetch(`${API_BASE_URL}/user/dashboard`, {
+    headers: {
+      "Content-Type": "application/json",
+      ...(token ? { Authorization: `Bearer ${token}` } : {}),
+    },
+  });
+
+  if (!response.ok) {
+    const errorText = await response.text();
+    throw new Error(
+      errorText || `Failed to fetch dashboard overview: ${response.status}`
+    );
+  }
+
+  const payload: ApiResponse<DashboardOverview> = await response.json();
+
+  if (!payload.success || !payload.data) {
+    throw new Error(payload.error || "Не удалось получить данные дашборда");
+  }
+
+  return payload.data;
+};
+
+export const fetchAchievementsOverview = async (): Promise<AchievementsOverview> => {
+  if (typeof (apiClient as any).getAchievementsOverview === "function") {
+    return apiClient.getAchievementsOverview();
+  }
+
+  const token =
+    typeof window !== "undefined" ? localStorage.getItem("token") : null;
+
+  const response = await fetch(`${API_BASE_URL}/user/achievements`, {
+    headers: {
+      "Content-Type": "application/json",
+      ...(token ? { Authorization: `Bearer ${token}` } : {}),
+    },
+  });
+
+  if (!response.ok) {
+    const errorText = await response.text();
+    throw new Error(
+      errorText || `Failed to fetch achievements overview: ${response.status}`
+    );
+  }
+
+  const payload: ApiResponse<AchievementsOverview> = await response.json();
+
+  if (!payload.success || !payload.data) {
+    throw new Error(payload.error || "Не удалось получить достижения");
+  }
+
+  return payload.data;
+};
 
 // Экспортируем типы для удобства
 export type { ApiResponse, AuthResponse, LoginRequest, RegisterRequest, User, UpdateProfileRequest }; 

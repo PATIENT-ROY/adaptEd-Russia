@@ -4,7 +4,7 @@ import { Layout } from "@/components/layout/layout";
 import { ProtectedRoute } from "@/components/auth/ProtectedRoute";
 import { Card, CardContent } from "@/components/ui/card";
 import { Button } from "@/components/ui/button";
-import { Achievement, AchievementCategory } from "@/types";
+import { AchievementCategory, AchievementStatus, AchievementsOverview } from "@/types";
 import {
   Trophy,
   Lock,
@@ -15,251 +15,9 @@ import {
   Award,
   ArrowLeft,
 } from "lucide-react";
-import { useState } from "react";
+import { useCallback, useEffect, useMemo, useState } from "react";
 import Link from "next/link";
-
-// Моковые данные достижений
-const ACHIEVEMENTS: Achievement[] = [
-  // GETTING_STARTED
-  {
-    id: "1",
-    name: "Первые шаги",
-    description: "Зарегистрировались на платформе",
-    category: AchievementCategory.GETTING_STARTED,
-    icon: "👋",
-    xpReward: 10,
-    requirement: "register",
-    rarity: "common",
-  },
-  {
-    id: "2",
-    name: "Любознательный",
-    description: "Прочитали первый гайд",
-    category: AchievementCategory.GETTING_STARTED,
-    icon: "📖",
-    xpReward: 10,
-    requirement: "read_1_guide",
-    rarity: "common",
-  },
-  {
-    id: "3",
-    name: "Общительный",
-    description: "Задали первый вопрос AI",
-    category: AchievementCategory.GETTING_STARTED,
-    icon: "💬",
-    xpReward: 10,
-    requirement: "ask_1_ai_question",
-    rarity: "common",
-  },
-  {
-    id: "4",
-    name: "Организованный",
-    description: "Создали первое напоминание",
-    category: AchievementCategory.GETTING_STARTED,
-    icon: "🔔",
-    xpReward: 15,
-    requirement: "create_1_reminder",
-    rarity: "common",
-  },
-  {
-    id: "4a",
-    name: "Сканер",
-    description: "Отсканировали первый документ",
-    category: AchievementCategory.GETTING_STARTED,
-    icon: "📄",
-    xpReward: 15,
-    requirement: "scan_1_document",
-    rarity: "common",
-  },
-
-  // EDUCATION
-  {
-    id: "5",
-    name: "Книжный червь",
-    description: "Прочитали 10 гайдов по учёбе",
-    category: AchievementCategory.EDUCATION,
-    icon: "📚",
-    xpReward: 50,
-    requirement: "read_10_education_guides",
-    rarity: "rare",
-  },
-  {
-    id: "6",
-    name: "Отличник",
-    description: "Изучили все гайды про сессию",
-    category: AchievementCategory.EDUCATION,
-    icon: "🎓",
-    xpReward: 75,
-    requirement: "read_all_exam_guides",
-    rarity: "rare",
-  },
-  {
-    id: "7",
-    name: "Исследователь",
-    description: "Прочитали гайд про курсовую работу",
-    category: AchievementCategory.EDUCATION,
-    icon: "📝",
-    xpReward: 20,
-    requirement: "read_coursework_guide",
-    rarity: "common",
-  },
-  {
-    id: "8",
-    name: "Стипендиат",
-    description: "Изучили раздел стипендий",
-    category: AchievementCategory.EDUCATION,
-    icon: "💰",
-    xpReward: 30,
-    requirement: "explore_scholarships",
-    rarity: "common",
-  },
-  {
-    id: "8a",
-    name: "Документалист",
-    description: "Отсканировали 10 документов",
-    category: AchievementCategory.EDUCATION,
-    icon: "📑",
-    xpReward: 50,
-    requirement: "scan_10_documents",
-    rarity: "rare",
-  },
-
-  // LIFE
-  {
-    id: "9",
-    name: "Житель",
-    description: "Прочитали 5 бытовых гайдов",
-    category: AchievementCategory.LIFE,
-    icon: "🏠",
-    xpReward: 40,
-    requirement: "read_5_life_guides",
-    rarity: "common",
-  },
-  {
-    id: "10",
-    name: "Здоровяк",
-    description: "Изучили все медицинские гайды",
-    category: AchievementCategory.LIFE,
-    icon: "🏥",
-    xpReward: 60,
-    requirement: "read_all_health_guides",
-    rarity: "rare",
-  },
-  {
-    id: "11",
-    name: "Документовед",
-    description: "Изучили все гайды про документы",
-    category: AchievementCategory.LIFE,
-    icon: "📄",
-    xpReward: 50,
-    requirement: "read_all_document_guides",
-    rarity: "rare",
-  },
-  {
-    id: "12",
-    name: "Путешественник",
-    description: "Прочитали гайд про транспорт",
-    category: AchievementCategory.LIFE,
-    icon: "🚇",
-    xpReward: 25,
-    requirement: "read_transport_guide",
-    rarity: "common",
-  },
-
-  // ACTIVITY
-  {
-    id: "13",
-    name: "Неделька",
-    description: "Заходили 7 дней подряд",
-    category: AchievementCategory.ACTIVITY,
-    icon: "🔥",
-    xpReward: 100,
-    requirement: "streak_7_days",
-    rarity: "epic",
-  },
-  {
-    id: "14",
-    name: "Месячник",
-    description: "Заходили 30 дней подряд",
-    category: AchievementCategory.ACTIVITY,
-    icon: "⚡",
-    xpReward: 300,
-    requirement: "streak_30_days",
-    rarity: "legendary",
-  },
-  {
-    id: "15",
-    name: "Супер активный",
-    description: "Выполнили 20 напоминаний",
-    category: AchievementCategory.ACTIVITY,
-    icon: "🌟",
-    xpReward: 80,
-    requirement: "complete_20_reminders",
-    rarity: "rare",
-  },
-  {
-    id: "16",
-    name: "Целеустремлённый",
-    description: "Выполнили 50 напоминаний",
-    category: AchievementCategory.ACTIVITY,
-    icon: "💪",
-    xpReward: 150,
-    requirement: "complete_50_reminders",
-    rarity: "epic",
-  },
-
-  // EXPERT
-  {
-    id: "17",
-    name: "Мудрец",
-    description: "Прочитали 50 гайдов",
-    category: AchievementCategory.EXPERT,
-    icon: "🦉",
-    xpReward: 200,
-    requirement: "read_50_guides",
-    rarity: "epic",
-  },
-  {
-    id: "18",
-    name: "Знаток",
-    description: "Задали 50 вопросов AI",
-    category: AchievementCategory.EXPERT,
-    icon: "🧠",
-    xpReward: 150,
-    requirement: "ask_50_ai_questions",
-    rarity: "epic",
-  },
-  {
-    id: "18a",
-    name: "Мастер сканирования",
-    description: "Отсканировали 50 документов",
-    category: AchievementCategory.EXPERT,
-    icon: "📊",
-    xpReward: 200,
-    requirement: "scan_50_documents",
-    rarity: "epic",
-  },
-  {
-    id: "19",
-    name: "Наставник",
-    description: "Достигли уровня 'Местный'",
-    category: AchievementCategory.EXPERT,
-    icon: "👨‍🏫",
-    xpReward: 500,
-    requirement: "reach_local_level",
-    rarity: "legendary",
-  },
-  {
-    id: "20",
-    name: "Легенда",
-    description: "Получили все достижения",
-    category: AchievementCategory.EXPERT,
-    icon: "🏅",
-    xpReward: 1000,
-    requirement: "earn_all_achievements",
-    rarity: "legendary",
-  },
-];
+import { fetchAchievementsOverview } from "@/lib/api";
 
 const CATEGORY_INFO = {
   [AchievementCategory.GETTING_STARTED]: {
@@ -306,22 +64,114 @@ const RARITY_CONFIG = {
 };
 
 export default function AchievementsPage() {
-  // Моковые данные о полученных достижениях (в реальности из API)
-  const [earnedAchievements] = useState<string[]>(["1", "2", "3", "4", "9"]);
-  const [selectedCategory, setSelectedCategory] = useState<
-    AchievementCategory | "all"
-  >("all");
+  const [overview, setOverview] = useState<AchievementsOverview | null>(null);
+  const [selectedCategory, setSelectedCategory] = useState<AchievementCategory | "all">("all");
+  const [isLoading, setIsLoading] = useState(true);
+  const [error, setError] = useState<string | null>(null);
 
-  const filteredAchievements =
-    selectedCategory === "all"
-      ? ACHIEVEMENTS
-      : ACHIEVEMENTS.filter((a) => a.category === selectedCategory);
+  const loadAchievements = useCallback(
+    async (controller?: { cancelled: boolean }) => {
+      if (!controller?.cancelled) {
+        setIsLoading(true);
+        setError(null);
+      }
 
-  const earnedCount = ACHIEVEMENTS.filter((a) =>
-    earnedAchievements.includes(a.id)
-  ).length;
-  const totalCount = ACHIEVEMENTS.length;
-  const completionPercentage = Math.round((earnedCount / totalCount) * 100);
+      try {
+        const data = await fetchAchievementsOverview();
+        if (controller?.cancelled) return;
+        setOverview(data);
+      } catch (err) {
+        if (controller?.cancelled) return;
+        setError(
+          err instanceof Error ? err.message : "Не удалось загрузить достижения"
+        );
+      } finally {
+        if (!controller?.cancelled) {
+          setIsLoading(false);
+        }
+      }
+    },
+    []
+  );
+
+  useEffect(() => {
+    const controller = { cancelled: false };
+    loadAchievements(controller);
+    return () => {
+      controller.cancelled = true;
+    };
+  }, [loadAchievements]);
+
+  const achievements = overview?.achievements ?? [];
+  const totalCount = overview?.totalCount ?? achievements.length;
+  const earnedCount =
+    overview?.unlockedCount ?? achievements.filter((achievement) => achievement.unlocked).length;
+  const completionPercentage =
+    totalCount === 0 ? 0 : Math.round((earnedCount / totalCount) * 100);
+
+  const filteredAchievements = useMemo(() => {
+    if (selectedCategory === "all") {
+      return achievements;
+    }
+
+    return achievements.filter((achievement) => achievement.category === selectedCategory);
+  }, [achievements, selectedCategory]);
+
+  const categoryCounts = useMemo(() => {
+    const counts: Record<AchievementCategory, number> = {
+      [AchievementCategory.GETTING_STARTED]: 0,
+      [AchievementCategory.EDUCATION]: 0,
+      [AchievementCategory.LIFE]: 0,
+      [AchievementCategory.ACTIVITY]: 0,
+      [AchievementCategory.EXPERT]: 0,
+    };
+
+    achievements.forEach((achievement) => {
+      counts[achievement.category as AchievementCategory] =
+        (counts[achievement.category as AchievementCategory] ?? 0) + 1;
+    });
+
+    return counts;
+  }, [achievements]);
+
+  const metrics = overview?.metrics;
+  const metricItems = metrics
+    ? [
+        { label: "Гайды", value: metrics.guidesRead },
+        { label: "Вопросы AI", value: metrics.aiQuestions },
+        { label: "Создано напоминаний", value: metrics.remindersCreated },
+        { label: "Завершено напоминаний", value: metrics.remindersCompleted },
+        { label: "DocScan", value: metrics.docScanCount },
+        { label: "Серия дней", value: metrics.streak },
+      ]
+    : [];
+
+  if (isLoading) {
+    return (
+      <ProtectedRoute>
+        <Layout>
+          <div className="space-y-6 sm:space-y-8">
+            <div className="bg-white rounded-lg p-4 sm:p-6 shadow-sm">
+              <div className="h-6 w-40 bg-gray-200 rounded animate-pulse mb-4" />
+              <div className="h-4 w-64 bg-gray-200 rounded animate-pulse" />
+            </div>
+            <div className="grid grid-cols-1 sm:grid-cols-2 lg:grid-cols-3 gap-4">
+              {Array.from({ length: 6 }).map((_, index) => (
+                <Card key={index} className="animate-pulse">
+                  <CardContent className="p-6 space-y-4">
+                    <div className="w-16 h-16 bg-gray-200 rounded-2xl mx-auto" />
+                    <div className="h-4 bg-gray-200 rounded w-3/4 mx-auto" />
+                    <div className="h-3 bg-gray-200 rounded w-full" />
+                    <div className="h-3 bg-gray-200 rounded w-5/6 mx-auto" />
+                  </CardContent>
+                </Card>
+              ))}
+            </div>
+          </div>
+        </Layout>
+      </ProtectedRoute>
+    );
+  }
 
   return (
     <ProtectedRoute>
@@ -354,6 +204,29 @@ export default function AchievementsPage() {
             </div>
           </div>
 
+          {error && (
+            <Card className="border-red-200 bg-red-50">
+              <CardContent className="p-4 sm:p-6">
+                <div className="flex flex-col sm:flex-row sm:items-center sm:justify-between gap-3">
+                  <div className="flex items-start space-x-3">
+                    <div className="rounded-full bg-red-100 p-2">
+                      <Lock className="h-5 w-5 text-red-600" />
+                    </div>
+                    <div>
+                      <h2 className="text-sm sm:text-base font-semibold text-red-700">
+                        Не удалось загрузить достижения
+                      </h2>
+                      <p className="text-sm text-red-600/80">{error}</p>
+                    </div>
+                  </div>
+                  <Button variant="outline" onClick={() => loadAchievements()}>
+                    Повторить попытку
+                  </Button>
+                </div>
+              </CardContent>
+            </Card>
+          )}
+
           {/* Stats Overview */}
           <Card className="bg-gradient-to-br from-yellow-50 via-orange-50 to-red-50 border-0 shadow-lg">
             <CardContent className="p-4 sm:p-6">
@@ -384,6 +257,31 @@ export default function AchievementsPage() {
                   </div>
                 </div>
               </div>
+              {overview && (
+                <div className="mt-4 text-sm text-gray-600">
+                  Всего получено XP{" "}
+                  <span className="font-semibold text-gray-900">
+                    {overview.totalXP}
+                  </span>
+                </div>
+              )}
+              {metricItems.length > 0 && (
+                <div className="mt-6 grid grid-cols-2 sm:grid-cols-3 gap-3">
+                  {metricItems.map((item) => (
+                    <div
+                      key={item.label}
+                      className="rounded-xl bg-white/80 border border-white/60 p-3 text-center shadow-sm"
+                    >
+                      <div className="text-lg sm:text-xl font-bold text-gray-900">
+                        {item.value}
+                      </div>
+                      <div className="text-xs text-gray-500 uppercase tracking-wide">
+                        {item.label}
+                      </div>
+                    </div>
+                  ))}
+                </div>
+              )}
             </CardContent>
           </Card>
 
@@ -400,9 +298,7 @@ export default function AchievementsPage() {
               Все ({totalCount})
             </button>
             {Object.entries(CATEGORY_INFO).map(([key, info]) => {
-              const count = ACHIEVEMENTS.filter(
-                (a) => a.category === key
-              ).length;
+              const count = categoryCounts[key as AchievementCategory] ?? 0;
               const Icon = info.icon;
               return (
                 <button
@@ -426,9 +322,17 @@ export default function AchievementsPage() {
 
           {/* Achievements Grid */}
           <div className="grid grid-cols-1 sm:grid-cols-2 lg:grid-cols-3 xl:grid-cols-4 gap-4 sm:gap-6">
-            {filteredAchievements.map((achievement) => {
-              const isEarned = earnedAchievements.includes(achievement.id);
+            {filteredAchievements.map((achievement: AchievementStatus) => {
+              const isEarned = achievement.unlocked;
               const rarityConfig = RARITY_CONFIG[achievement.rarity];
+              const progressPercent = Math.round(achievement.progress * 100);
+              const showProgress = !isEarned && achievement.progressTarget > 0;
+              const displayCurrent = showProgress
+                ? Math.min(
+                    Math.round(achievement.progressCurrent),
+                    achievement.progressTarget
+                  )
+                : 0;
 
               return (
                 <Card
@@ -441,7 +345,6 @@ export default function AchievementsPage() {
                 >
                   <CardContent className="p-4 sm:p-6">
                     <div className="flex flex-col items-center text-center space-y-3">
-                      {/* Icon */}
                       <div
                         className={`w-16 h-16 sm:w-20 sm:h-20 rounded-2xl flex items-center justify-center text-4xl sm:text-5xl ${
                           isEarned
@@ -455,8 +358,6 @@ export default function AchievementsPage() {
                           <Lock className="h-8 w-8 text-gray-400" />
                         )}
                       </div>
-
-                      {/* Name */}
                       <h3
                         className={`font-bold text-base sm:text-lg ${
                           isEarned ? "text-gray-900" : "text-gray-500"
@@ -464,8 +365,6 @@ export default function AchievementsPage() {
                       >
                         {achievement.name}
                       </h3>
-
-                      {/* Description */}
                       <p
                         className={`text-xs sm:text-sm ${
                           isEarned ? "text-gray-600" : "text-gray-400"
@@ -473,29 +372,38 @@ export default function AchievementsPage() {
                       >
                         {achievement.description}
                       </p>
-
-                      {/* Rarity Badge */}
                       <span
                         className={`px-3 py-1 rounded-full text-xs font-medium border ${rarityConfig.color}`}
                       >
                         {rarityConfig.label}
                       </span>
-
-                      {/* XP Reward */}
                       <div className="flex items-center space-x-1 text-sm font-bold text-yellow-600">
                         <Zap className="h-4 w-4" />
                         <span>+{achievement.xpReward} XP</span>
                       </div>
-
-                      {/* Earned Status */}
-                      {isEarned && (
+                      {isEarned ? (
                         <div className="w-full pt-2 border-t border-gray-200">
                           <div className="flex items-center justify-center space-x-1 text-xs text-green-600 font-medium">
                             <Trophy className="h-3 w-3" />
                             <span>Получено!</span>
                           </div>
                         </div>
-                      )}
+                      ) : showProgress ? (
+                        <div className="w-full pt-2 border-t border-gray-200">
+                          <div className="flex items-center justify-between text-xs text-gray-500 mb-1">
+                            <span>Прогресс</span>
+                            <span>
+                              {displayCurrent}/{achievement.progressTarget}
+                            </span>
+                          </div>
+                          <div className="w-full bg-gray-200 rounded-full h-2 overflow-hidden">
+                            <div
+                              className="h-full bg-gradient-to-r from-yellow-500 to-orange-500 transition-all duration-300"
+                              style={{ width: `${progressPercent}%` }}
+                            />
+                          </div>
+                        </div>
+                      ) : null}
                     </div>
                   </CardContent>
                 </Card>

@@ -65,8 +65,16 @@ export interface User {
   role: Role;
   language: Language;
   plan: Plan;
-  createdAt: string;
-  updatedAt: string;
+  country?: string;
+  university?: string;
+  faculty?: string;
+  year?: string;
+  phone?: string;
+  gender?: string;
+  registeredAt?: string;
+  createdAt?: string;
+  updatedAt?: string;
+  city?: string;
 }
 
 export interface Profile {
@@ -185,7 +193,99 @@ export interface UpdateProfileRequest {
   faculty?: string;
   year?: string;
   phone?: string;
-  gender?: string;
+  gender?: "MALE" | "FEMALE";
+}
+
+export interface ProfileStat {
+  id: string;
+  title: string;
+  value: string;
+  change?: string;
+  period?: string;
+  icon: string;
+  color: string;
+}
+
+export interface ProfileQuickAction {
+  id: string;
+  title: string;
+  description: string;
+  href: string;
+  icon: string;
+  color: string;
+}
+
+export interface ProfileAchievement {
+  id: string;
+  title: string;
+  description: string;
+  icon: string;
+  color: string;
+  unlocked: boolean;
+}
+
+export type ProfileActivityType = "guide" | "reminder" | "ai" | "task" | "payment";
+
+export interface ProfileActivityItem {
+  id: string;
+  type: ProfileActivityType;
+  title: string;
+  timestamp: string;
+  icon: string;
+  color: string;
+  meta?: Record<string, unknown>;
+}
+
+export interface ProfileBillingItem {
+  id: string;
+  date: string;
+  amount: number;
+  currency: string;
+  status: string;
+  description: string;
+  invoiceNumber: string;
+  paymentMethod?: string;
+}
+
+export interface ProfileOverview {
+  user: User;
+  stats: ProfileStat[];
+  quickActions: ProfileQuickAction[];
+  achievements: ProfileAchievement[];
+  recentActivity: ProfileActivityItem[];
+  billingHistory: ProfileBillingItem[];
+}
+
+export interface AchievementStatus extends Achievement {
+  unlocked: boolean;
+  progress: number;
+  progressCurrent: number;
+  progressTarget: number;
+}
+
+export interface AchievementsOverview {
+  achievements: AchievementStatus[];
+  unlockedCount: number;
+  totalCount: number;
+  totalXP: number;
+  metrics: {
+    guidesRead: number;
+    aiQuestions: number;
+    remindersCreated: number;
+    remindersCompleted: number;
+    docScanCount: number;
+    streak: number;
+    daysSinceRegistration: number;
+    grantApplications: number;
+    level: UserLevel;
+    xp: number;
+  };
+}
+
+export interface DashboardOverview {
+  userProgress: UserProgress;
+  dailyQuests: DailyQuest[];
+  lastUpdated: string;
 }
 
 // Grant and Scholarship Types

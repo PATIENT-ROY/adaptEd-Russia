@@ -14,45 +14,49 @@ import {
   Activity,
   Edit,
   Eye,
+  ScanLine,
+  Sparkles,
+  GraduationCap,
 } from "lucide-react";
 import Link from "next/link";
 import { useAuth } from "@/contexts/AuthContext";
 import { useState, useEffect } from "react";
 import { Role } from "@/types";
+import { useTranslation } from "@/hooks/useTranslation";
 
-// Моковые данные для админ-панели
+// Актуальные данные для админ-панели (моковые значения)
 const adminStats = [
   {
-    title: "Всего пользователей",
-    value: "1,247",
-    change: "+12%",
+    title: "Пользователей",
+    value: "12 480",
+    change: "+4%",
     period: "за месяц",
     icon: Users,
     color: "from-blue-500 to-blue-600",
   },
   {
-    title: "Активных гайдов",
-    value: "156",
-    change: "+8%",
-    period: "за месяц",
+    title: "Гайдов",
+    value: "512",
+    change: "+12%",
+    period: "обновлено",
     icon: BookOpen,
     color: "from-green-500 to-green-600",
   },
   {
-    title: "AI запросов",
-    value: "3,421",
-    change: "+23%",
+    title: "AI консультаций",
+    value: "8 642",
+    change: "+19%",
     period: "за неделю",
     icon: MessageSquare,
     color: "from-purple-500 to-purple-600",
   },
   {
-    title: "Обращений в поддержку",
-    value: "23",
-    change: "+15%",
+    title: "DocScan документов",
+    value: "1 204",
+    change: "+27%",
     period: "за неделю",
-    icon: Bell,
-    color: "from-red-500 to-red-600",
+    icon: ScanLine,
+    color: "from-indigo-500 to-indigo-600",
   },
 ];
 
@@ -113,44 +117,45 @@ const recentGuides = [
 const adminActions = [
   {
     title: "Управление пользователями",
-    description: "Просмотр, редактирование и блокировка пользователей",
+    description: "Профили, роли, статусы и рост аудитории",
     icon: Users,
     href: "/admin/users",
     color: "from-blue-500 to-blue-600",
   },
   {
-    title: "Управление гайдами",
-    description: "Создание, редактирование и публикация гайдов",
+    title: "Контент и гайды",
+    description: "Библиотека гайдов, модерация и новые материалы",
     icon: BookOpen,
     href: "/admin/guides",
     color: "from-green-500 to-green-600",
   },
   {
-    title: "Обращения в поддержку",
-    description: "Просмотр и ответы на обращения пользователей",
-    icon: MessageSquare,
+    title: "Поддержка и тикеты",
+    description: "Обращения студентов и SLA службы заботы",
+    icon: Bell,
     href: "/admin/support",
     color: "from-red-500 to-red-600",
   },
   {
-    title: "AI аналитика",
-    description: "Статистика запросов и популярные вопросы",
+    title: "AI консалтинг",
+    description: "Популярные вопросы и новые сценарии",
     icon: Activity,
     href: "/admin/ai-analytics",
     color: "from-purple-500 to-purple-600",
   },
   {
-    title: "Системные настройки",
-    description: "Настройки платформы и уведомлений",
-    icon: Settings,
-    href: "/admin/settings",
-    color: "from-gray-500 to-gray-600",
+    title: "DocScan",
+    description: "Статистика сканирования, квоты и тарифы",
+    icon: ScanLine,
+    href: "/admin/docscan",
+    color: "from-indigo-500 to-indigo-600",
   },
 ];
 
 export default function AdminPage() {
   const { user } = useAuth();
   const [isAdmin, setIsAdmin] = useState(false);
+  const { t } = useTranslation();
 
   useEffect(() => {
     // Проверяем, является ли пользователь админом
@@ -175,13 +180,13 @@ export default function AdminPage() {
             <CardContent className="p-8 text-center">
               <Shield className="h-16 w-16 text-red-500 mx-auto mb-4" />
               <h2 className="text-2xl font-bold text-slate-900 mb-2">
-                Доступ запрещен
+                {t("admin.accessDenied.title")}
               </h2>
               <p className="text-slate-600 mb-6">
-                У вас нет прав для доступа к админ-панели
+                {t("admin.accessDenied.description")}
               </p>
               <Link href="/dashboard">
-                <Button>Вернуться на главную</Button>
+                <Button>{t("admin.accessDenied.action")}</Button>
               </Link>
             </CardContent>
           </Card>
@@ -202,15 +207,17 @@ export default function AdminPage() {
               </div>
               <div>
                 <h1 className="text-xl sm:text-2xl font-bold text-gray-900">
-                  Админ-панель
+                  {t("admin.dashboard.title")}
                 </h1>
                 <p className="text-sm sm:text-base text-gray-600">
-                  Управление платформой AdaptEd Russia
+                  {t("admin.dashboard.subtitle")}
                 </p>
               </div>
             </div>
             <div className="flex items-center space-x-2">
-              <span className="text-sm text-gray-500">Администратор:</span>
+              <span className="text-sm text-gray-500">
+                {t("admin.dashboard.adminLabel")}
+              </span>
               <span className="font-medium text-gray-900">{user.name}</span>
             </div>
           </div>
@@ -254,7 +261,7 @@ export default function AdminPage() {
         {/* Admin Actions */}
         <div>
           <h2 className="text-lg sm:text-xl font-semibold text-gray-900 mb-4 sm:mb-6">
-            Быстрые действия
+            {t("admin.dashboard.quickActions")}
           </h2>
           <div className="grid grid-cols-1 sm:grid-cols-2 lg:grid-cols-4 gap-4 sm:gap-6">
             {adminActions.map((action, index) => {
@@ -295,7 +302,7 @@ export default function AdminPage() {
             <CardHeader>
               <CardTitle className="flex items-center space-x-2">
                 <Users className="h-5 w-5" />
-                <span>Последние пользователи</span>
+                <span>{t("admin.dashboard.recentUsersTitle")}</span>
               </CardTitle>
             </CardHeader>
             <CardContent>
@@ -322,7 +329,9 @@ export default function AdminPage() {
                             : "bg-yellow-100 text-yellow-700"
                         }`}
                       >
-                        {user.status === "active" ? "Активен" : "Ожидает"}
+                        {user.status === "active"
+                          ? t("admin.dashboard.userActive")
+                          : t("admin.dashboard.userPending")}
                       </span>
                       <Button variant="outline" size="sm">
                         <Eye className="h-4 w-4" />
@@ -334,7 +343,7 @@ export default function AdminPage() {
               <div className="mt-4">
                 <Link href="/admin/users">
                   <Button variant="outline" className="w-full">
-                    Просмотреть всех пользователей
+                    {t("admin.dashboard.viewAllUsers")}
                   </Button>
                 </Link>
               </div>
@@ -346,7 +355,7 @@ export default function AdminPage() {
             <CardHeader>
               <CardTitle className="flex items-center space-x-2">
                 <BookOpen className="h-5 w-5" />
-                <span>Последние гайды</span>
+                <span>{t("admin.dashboard.recentGuidesTitle")}</span>
               </CardTitle>
             </CardHeader>
             <CardContent>
@@ -369,11 +378,11 @@ export default function AdminPage() {
                           }`}
                         >
                           {guide.category === "education"
-                            ? "Образование"
-                            : "Быт"}
+                            ? t("admin.dashboard.categoryEducation")
+                            : t("admin.dashboard.categoryLife")}
                         </span>
                         <span className="text-xs text-gray-500">
-                          {guide.views} просмотров
+                          {guide.views} {t("admin.dashboard.viewsLabel")}
                         </span>
                       </div>
                     </div>
@@ -386,8 +395,8 @@ export default function AdminPage() {
                         }`}
                       >
                         {guide.status === "published"
-                          ? "Опубликован"
-                          : "Черновик"}
+                          ? t("admin.dashboard.guidePublished")
+                          : t("admin.dashboard.guideDraft")}
                       </span>
                       <Button variant="outline" size="sm">
                         <Edit className="h-4 w-4" />
@@ -399,7 +408,7 @@ export default function AdminPage() {
               <div className="mt-4">
                 <Link href="/admin/guides">
                   <Button variant="outline" className="w-full">
-                    Управление гайдами
+                    {t("admin.dashboard.manageGuides")}
                   </Button>
                 </Link>
               </div>
@@ -412,7 +421,7 @@ export default function AdminPage() {
           <CardHeader>
             <CardTitle className="flex items-center space-x-2">
               <Activity className="h-5 w-5" />
-              <span>Статус системы</span>
+              <span>{t("admin.dashboard.systemStatusTitle")}</span>
             </CardTitle>
           </CardHeader>
           <CardContent>
@@ -420,29 +429,45 @@ export default function AdminPage() {
               <div className="flex items-center space-x-3 p-3 rounded-lg bg-green-50">
                 <div className="w-3 h-3 bg-green-500 rounded-full"></div>
                 <div>
-                  <p className="font-medium text-gray-900">Сервер</p>
-                  <p className="text-sm text-gray-600">Работает</p>
+                  <p className="font-medium text-gray-900">
+                    {t("admin.dashboard.statusServer")}
+                  </p>
+                  <p className="text-sm text-gray-600">
+                    {t("admin.dashboard.statusOperational")}
+                  </p>
                 </div>
               </div>
               <div className="flex items-center space-x-3 p-3 rounded-lg bg-green-50">
                 <div className="w-3 h-3 bg-green-500 rounded-full"></div>
                 <div>
-                  <p className="font-medium text-gray-900">База данных</p>
-                  <p className="text-sm text-gray-600">Подключена</p>
+                  <p className="font-medium text-gray-900">
+                    {t("admin.dashboard.statusDatabase")}
+                  </p>
+                  <p className="text-sm text-gray-600">
+                    {t("admin.dashboard.statusOperational")}
+                  </p>
                 </div>
               </div>
               <div className="flex items-center space-x-3 p-3 rounded-lg bg-green-50">
                 <div className="w-3 h-3 bg-green-500 rounded-full"></div>
                 <div>
-                  <p className="font-medium text-gray-900">AI сервис</p>
-                  <p className="text-sm text-gray-600">Активен</p>
+                  <p className="font-medium text-gray-900">
+                    {t("admin.dashboard.statusAI")}
+                  </p>
+                  <p className="text-sm text-gray-600">
+                    {t("admin.dashboard.statusOperational")}
+                  </p>
                 </div>
               </div>
               <div className="flex items-center space-x-3 p-3 rounded-lg bg-green-50">
                 <div className="w-3 h-3 bg-green-500 rounded-full"></div>
                 <div>
-                  <p className="font-medium text-gray-900">Уведомления</p>
-                  <p className="text-sm text-gray-600">Работают</p>
+                  <p className="font-medium text-gray-900">
+                    {t("admin.dashboard.statusNotifications")}
+                  </p>
+                  <p className="text-sm text-gray-600">
+                    {t("admin.dashboard.statusOperational")}
+                  </p>
                 </div>
               </div>
             </div>

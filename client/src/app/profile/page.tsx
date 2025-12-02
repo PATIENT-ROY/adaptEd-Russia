@@ -18,7 +18,6 @@ import {
   Target,
   Edit,
   Trash2,
-  Languages,
   Activity,
   CheckCircle,
   ChevronRight,
@@ -27,105 +26,115 @@ import {
   BookOpen,
   Phone,
   GraduationCap,
-  Home,
   CreditCard,
   Receipt,
   Download,
   Eye,
   Clock,
-  Globe,
   ScanLine,
-  HelpCircle,
+  AlertCircle,
 } from "lucide-react";
 import Link from "next/link";
-import { useState } from "react";
+import { useEffect, useMemo, useState } from "react";
 import { useAuth } from "@/contexts/AuthContext";
 import { ProfileEditForm } from "@/components/ui/profile-edit-form";
-import { Plan } from "@/types";
+import { fetchProfileOverview } from "@/lib/api";
+import {
+  User as UserType,
+  Plan,
+  ProfileOverview,
+  ProfileStat,
+  ProfileQuickAction,
+  ProfileAchievement,
+  ProfileActivityItem,
+  ProfileBillingItem,
+  Role,
+} from "@/types";
 
 // Расширенный тип для пользователя с дополнительными полями
-interface ExtendedUser {
-  id: string;
-  email: string;
-  name: string;
-  language: string;
-  role: string;
-  country?: string;
+interface ExtendedUser extends UserType {
   university?: string;
   faculty?: string;
   year?: string;
-  plan?: string;
   phone?: string;
   gender?: string;
   city?: string;
+  country?: string;
 }
 
-const stats = [
+const fallbackStats: ProfileStat[] = [
   {
+    id: "guides-viewed",
     title: "Изучено гайдов",
     value: "12",
-    icon: FileText,
+    icon: "FileText",
     color: "from-blue-500 to-blue-600",
     change: "+3",
     period: "за месяц",
   },
   {
+    id: "active-reminders",
     title: "Активных задач",
     value: "8",
-    icon: Target,
+    icon: "Target",
     color: "from-purple-500 to-purple-600",
     change: "-2",
     period: "за неделю",
   },
   {
+    id: "ai-questions",
     title: "Вопросов к AI",
     value: "23",
-    icon: MessageSquare,
+    icon: "MessageSquare",
     color: "from-orange-500 to-orange-600",
     change: "+7",
     period: "за неделю",
   },
 ];
 
-const recentActivity = [
+const fallbackRecentActivity: ProfileActivityItem[] = [
   {
+    id: "fallback-guide-1",
     type: "guide",
     title: "Изучен гайд по регистрации",
-    time: "2 часа назад",
-    icon: FileText,
+    timestamp: new Date(Date.now() - 2 * 60 * 60 * 1000).toISOString(),
+    icon: "FileText",
     color: "text-blue-600",
   },
   {
+    id: "fallback-reminder-1",
     type: "reminder",
     title: "Напоминание о медосмотре",
-    time: "1 день назад",
-    icon: Bell,
+    timestamp: new Date(Date.now() - 24 * 60 * 60 * 1000).toISOString(),
+    icon: "Bell",
     color: "text-purple-600",
   },
   {
+    id: "fallback-ai-1",
     type: "ai",
     title: "Вопрос к AI о транспорте",
-    time: "2 дня назад",
-    icon: MessageSquare,
+    timestamp: new Date(Date.now() - 2 * 24 * 60 * 60 * 1000).toISOString(),
+    icon: "MessageSquare",
     color: "text-orange-600",
   },
   {
+    id: "fallback-task-1",
     type: "task",
     title: "Завершена задача по документам",
-    time: "3 дня назад",
-    icon: CheckCircle,
+    timestamp: new Date(Date.now() - 3 * 24 * 60 * 60 * 1000).toISOString(),
+    icon: "CheckCircle",
     color: "text-green-600",
   },
 ];
 
 // Функция для получения истории платежей на основе плана пользователя
-const getBillingHistory = (userPlan: Plan) => {
+const getBillingHistory = (userPlan: Plan): ProfileBillingItem[] => {
   if (userPlan === Plan.PREMIUM) {
     // Для Premium пользователей показываем реальные платежи
     return [
       {
         id: "inv_001",
-        date: "2024-01-15",
+        date: "2024-01-15T10:00:00.000Z",
         amount: 2990,
         currency: "RUB",
         status: "paid",
@@ -134,7 +143,7 @@ const getBillingHistory = (userPlan: Plan) => {
       },
       {
         id: "inv_002",
-        date: "2024-01-01",
+        date: "2024-01-01T10:00:00.000Z",
         amount: 2990,
         currency: "RUB",
         status: "paid",
@@ -143,7 +152,7 @@ const getBillingHistory = (userPlan: Plan) => {
       },
       {
         id: "inv_003",
-        date: "2023-12-15",
+        date: "2023-12-15T10:00:00.000Z",
         amount: 2990,
         currency: "RUB",
         status: "paid",
@@ -156,7 +165,7 @@ const getBillingHistory = (userPlan: Plan) => {
     return [
       {
         id: "inv_001",
-        date: "2024-01-01",
+        date: "2024-01-01T10:00:00.000Z",
         amount: 0,
         currency: "RUB",
         status: "free",
@@ -167,83 +176,230 @@ const getBillingHistory = (userPlan: Plan) => {
   }
 };
 
-const quickActions = [
+const fallbackQuickActions: ProfileQuickAction[] = [
   {
+    id: "education-guide",
     title: "Образовательный навигатор",
     description: "Гайды по образовательной системе",
-    icon: BookOpen,
+    icon: "BookOpen",
     color: "from-blue-500 to-blue-600",
     href: "/education-guide",
   },
   {
+    id: "smart-reminders",
     title: "Умные напоминания",
     description: "Управление задачами и сроками",
-    icon: Bell,
+    icon: "Bell",
     color: "from-purple-500 to-purple-600",
     href: "/reminders",
   },
   {
+    id: "ai-assistant",
     title: "AI Помощник",
     description: "Задавайте вопросы на родном языке",
-    icon: MessageSquare,
+    icon: "MessageSquare",
     color: "from-orange-500 to-orange-600",
     href: "/ai-helper",
   },
   {
+    id: "docscan",
     title: "DocScan",
-    description: "Сканирование и перевод документов",
-    icon: ScanLine,
+    description: "OCR из PDF и фото, перевод и экспорт",
+    icon: "ScanLine",
     color: "from-indigo-500 to-indigo-600",
     href: "/docscan",
   },
   {
+    id: "support",
     title: "Поддержка",
     description: "Помощь и консультации",
-    icon: HelpCircle,
+    icon: "HelpCircle",
     color: "from-green-500 to-green-600",
     href: "/support",
   },
 ];
 
-const achievements = [
+const fallbackAchievements: ProfileAchievement[] = [
   {
+    id: "first-steps",
     title: "Первые шаги",
     description: "Завершил 5 гайдов",
-    icon: Award,
+    icon: "Award",
     color: "from-yellow-400 to-orange-500",
     unlocked: true,
   },
   {
+    id: "active-student",
     title: "Активный студент",
     description: "30 дней в России",
-    icon: GraduationCap,
+    icon: "GraduationCap",
     color: "from-blue-400 to-blue-600",
     unlocked: true,
   },
   {
+    id: "ai-expert",
     title: "AI Эксперт",
     description: "50 вопросов к AI",
-    icon: MessageSquare,
+    icon: "MessageSquare",
     color: "from-purple-400 to-purple-600",
     unlocked: false,
   },
   {
+    id: "adaptation-master",
     title: "Мастер адаптации",
     description: "100 дней в России",
-    icon: Crown,
+    icon: "Crown",
     color: "from-yellow-500 to-orange-600",
     unlocked: false,
   },
 ];
 
+const iconMap = {
+  FileText,
+  Target,
+  MessageSquare,
+  BookOpen,
+  Bell,
+  ScanLine,
+  HelpCircle,
+  Award,
+  GraduationCap,
+  Crown,
+  CheckCircle,
+  CreditCard,
+  Clock,
+  Activity,
+};
+
+const getIconByName = (iconName: string) =>
+  iconMap[iconName as keyof typeof iconMap] ?? Activity;
+
+const relativeTimeFormatter = new Intl.RelativeTimeFormat("ru", {
+  numeric: "auto",
+});
+
+const formatRelativeTime = (timestamp: string) => {
+  const date = new Date(timestamp);
+  const now = new Date();
+  const diffInSeconds = Math.round((date.getTime() - now.getTime()) / 1000);
+  const diffInMinutes = Math.round(diffInSeconds / 60);
+  const diffInHours = Math.round(diffInMinutes / 60);
+  const diffInDays = Math.round(diffInHours / 24);
+
+  if (Math.abs(diffInSeconds) < 60) {
+    return relativeTimeFormatter.format(diffInSeconds, "second");
+  }
+  if (Math.abs(diffInMinutes) < 60) {
+    return relativeTimeFormatter.format(diffInMinutes, "minute");
+  }
+  if (Math.abs(diffInHours) < 24) {
+    return relativeTimeFormatter.format(diffInHours, "hour");
+  }
+  if (Math.abs(diffInDays) < 7) {
+    return relativeTimeFormatter.format(diffInDays, "day");
+  }
+
+  return date.toLocaleString("ru-RU", {
+    day: "2-digit",
+    month: "long",
+    hour: "2-digit",
+    minute: "2-digit",
+  });
+};
+
+const normalizeRole = (role?: string): Role => {
+  switch ((role ?? "").toUpperCase()) {
+    case "ADMIN":
+      return Role.ADMIN;
+    case "GUEST":
+      return Role.GUEST;
+    default:
+      return Role.STUDENT;
+  }
+};
+
+const normalizePlan = (plan?: string): Plan =>
+  plan === Plan.PREMIUM ? Plan.PREMIUM : Plan.FREEMIUM;
+
 export default function ProfilePage() {
   const [isSettingsOpen, setIsSettingsOpen] = useState(false);
   const [isEditFormVisible, setIsEditFormVisible] = useState(false);
   const [isBillingHistoryOpen, setIsBillingHistoryOpen] = useState(false);
+  const [profileOverview, setProfileOverview] =
+    useState<ProfileOverview | null>(null);
+  const [isProfileLoading, setIsProfileLoading] = useState(false);
+  const [profileError, setProfileError] = useState<string | null>(null);
   const { user, logout, updateProfile } = useAuth();
 
-  // Если пользователь не загружен, показываем skeleton
+  useEffect(() => {
+    let isMounted = true;
+
+    const loadProfileOverview = async () => {
+      if (!user) return;
+
+      setIsProfileLoading(true);
+      setProfileError(null);
+
+      try {
+        const data = await fetchProfileOverview();
+        if (!isMounted) return;
+        setProfileOverview(data);
+      } catch (error) {
+        console.error("Failed to load profile overview:", error);
+        if (!isMounted) return;
+        setProfileError(
+          "Не удалось загрузить данные профиля. Попробуйте обновить страницу."
+        );
+      } finally {
+        if (isMounted) {
+          setIsProfileLoading(false);
+        }
+      }
+    };
+
+    loadProfileOverview();
+
+    return () => {
+      isMounted = false;
+    };
+  }, [user]);
+
+  const mergedUser = useMemo<ExtendedUser | null>(() => {
   if (!user) {
+      return null;
+    }
+
+    const baseUser = user as ExtendedUser;
+    const overviewUser = (profileOverview?.user ?? {}) as Partial<ExtendedUser>;
+
+    const genderSource = overviewUser.gender ?? baseUser.gender;
+    const normalizedGender =
+      genderSource === "MALE"
+        ? "male"
+        : genderSource === "FEMALE"
+        ? "female"
+        : genderSource;
+
+    const normalizedRole = normalizeRole(
+      (overviewUser.role ?? baseUser.role) as string | undefined
+    );
+
+    const normalizedPlan = normalizePlan(
+      (overviewUser.plan ?? baseUser.plan) as string | undefined
+    );
+
+    return {
+      ...baseUser,
+      ...overviewUser,
+      role: normalizedRole,
+      plan: normalizedPlan,
+      gender: normalizedGender,
+      city: overviewUser.city ?? baseUser.city,
+    };
+  }, [user, profileOverview]);
+
+  // Если пользователь не загружен, показываем skeleton
+  if (!user || !mergedUser) {
     return (
       <Layout>
         <div className="min-h-screen bg-gradient-to-br from-slate-50 via-blue-50 to-indigo-50">
@@ -296,10 +452,27 @@ export default function ProfilePage() {
     );
   }
 
-  // Получаем первую букву имени для аватара
-  const avatar = user.name.charAt(0).toUpperCase();
+  const avatar = mergedUser.name?.charAt(0)?.toUpperCase?.() ?? "A";
 
-  const extendedUser = user as ExtendedUser;
+  const extendedUser = mergedUser;
+
+  const statsToRender = (profileOverview?.stats ?? fallbackStats).slice(0, 3);
+  const quickActionsToRender =
+    profileOverview?.quickActions ?? fallbackQuickActions;
+  const achievementsToRender =
+    profileOverview?.achievements ?? fallbackAchievements;
+  const recentActivityToRender = (
+    profileOverview?.recentActivity?.length
+      ? profileOverview.recentActivity
+      : fallbackRecentActivity
+  ).slice(0, 6);
+
+  const userPlan = normalizePlan(extendedUser.plan as string | undefined);
+
+  const billingHistoryData =
+    profileOverview?.billingHistory && profileOverview.billingHistory.length > 0
+      ? profileOverview.billingHistory
+      : getBillingHistory(userPlan);
 
   return (
     <Layout>
@@ -369,12 +542,14 @@ export default function ProfilePage() {
 
               {/* Quick Stats */}
               <div className="w-full lg:w-auto grid grid-cols-2 lg:grid-cols-4 gap-2 sm:gap-3 md:gap-4 max-w-md lg:max-w-none">
-                {stats.map((stat) => {
-                  const Icon = stat.icon;
+                {statsToRender.map((stat) => {
+                  const Icon = getIconByName(stat.icon);
                   return (
                     <div
-                      key={stat.title}
-                      className="text-center p-2 sm:p-3 md:p-4 rounded-2xl bg-white/10 backdrop-blur-sm border border-white/20"
+                      key={stat.id}
+                      className={`text-center p-2 sm:p-3 md:p-4 rounded-2xl bg-white/10 backdrop-blur-sm border border-white/20 ${
+                        isProfileLoading ? "animate-pulse" : ""
+                      }`}
                     >
                       <div
                         className={`w-8 h-8 sm:w-10 sm:h-10 md:w-12 md:h-12 rounded-2xl bg-gradient-to-br ${stat.color} flex items-center justify-center mx-auto mb-1 sm:mb-2 shadow-lg`}
@@ -396,6 +571,15 @@ export default function ProfilePage() {
         </div>
 
         <div className="max-w-7xl mx-auto px-3 sm:px-4 lg:px-6 py-6 sm:py-8 space-y-6 sm:space-y-8">
+          {profileError && (
+            <div className="flex items-start gap-3 p-4 rounded-xl border border-red-200 bg-red-50 text-red-700">
+              <AlertCircle className="h-5 w-5 mt-0.5 flex-shrink-0" />
+              <div className="text-sm sm:text-base leading-relaxed">
+                {profileError}
+              </div>
+            </div>
+          )}
+
           {/* Quick Actions */}
           <div
             className="animate-fade-in-up"
@@ -405,12 +589,14 @@ export default function ProfilePage() {
               Быстрые действия
             </h2>
             <div className="grid grid-cols-2 lg:grid-cols-3 gap-1.5 sm:gap-4 lg:gap-6">
-              {quickActions.map((action, index) => {
-                const Icon = action.icon;
+              {quickActionsToRender.map((action, index) => {
+                const Icon = getIconByName(action.icon);
                 return (
-                  <Link key={action.title} href={action.href}>
+                  <Link key={action.id} href={action.href}>
                     <Card
-                      className="group hover:scale-105 transition-all duration-500 animate-fade-in-up border-0 shadow-xl hover:shadow-2xl overflow-hidden cursor-pointer"
+                      className={`group hover:scale-105 transition-all duration-500 animate-fade-in-up border-0 shadow-xl hover:shadow-2xl overflow-hidden cursor-pointer ${
+                        isProfileLoading ? "animate-pulse" : ""
+                      }`}
                       style={{
                         animationDelay: `${index * 0.1}s`,
                         background:
@@ -468,7 +654,9 @@ export default function ProfilePage() {
                     className="w-full sm:w-auto flex items-center justify-center space-x-2 hover:bg-green-50 hover:border-green-300 hover:text-green-700 transition-all duration-300 text-sm sm:text-base py-2 sm:py-2 px-3 sm:px-4"
                   >
                     <CreditCard className="h-4 w-4 sm:h-4 sm:w-4" />
-                    <span className="whitespace-nowrap">Управление подпиской</span>
+                    <span className="whitespace-nowrap">
+                      Управление подпиской
+                    </span>
                   </Button>
                 </Link>
               </div>
@@ -486,7 +674,7 @@ export default function ProfilePage() {
                 </CardHeader>
                 <CardContent>
                   <div className="space-y-4">
-                    {getBillingHistory(user.plan).map((invoice, index) => (
+                    {billingHistoryData.map((invoice, index) => (
                       <div
                         key={invoice.id}
                         className="flex flex-col sm:flex-row sm:items-center sm:justify-between p-3 sm:p-4 rounded-xl bg-slate-50 hover:bg-slate-100 transition-all duration-300 group gap-3 sm:gap-0"
@@ -515,7 +703,9 @@ export default function ProfilePage() {
                               {invoice.description}
                             </p>
                             <div className="flex flex-col sm:flex-row sm:items-center gap-1 sm:gap-4 text-xs sm:text-sm text-slate-600">
-                              <span className="truncate">{invoice.invoiceNumber}</span>
+                              <span className="truncate">
+                                {invoice.invoiceNumber}
+                              </span>
                               <span className="hidden sm:inline">•</span>
                               <span className="truncate">
                                 {new Date(invoice.date).toLocaleDateString(
@@ -645,32 +835,6 @@ export default function ProfilePage() {
                     </div>
 
                     <div className="flex items-center space-x-3 p-3 rounded-xl bg-slate-50">
-                      <Languages className="h-5 w-5 text-slate-500" />
-                      <div>
-                        <p className="text-sm text-slate-500">Язык</p>
-                        <p className="font-medium text-slate-900">
-                          {user.language === "RU"
-                            ? "Русский"
-                            : user.language === "EN"
-                            ? "English"
-                            : user.language === "FR"
-                            ? "Français"
-                            : user.language === "AR"
-                            ? "العربية"
-                            : user.language}
-                        </p>
-                      </div>
-                    </div>
-                    <div className="flex items-center space-x-3 p-3 rounded-xl bg-slate-50">
-                      <Globe className="h-5 w-5 text-slate-500" />
-                      <div>
-                        <p className="text-sm text-slate-500">Страна</p>
-                        <p className="font-medium text-slate-900">
-                          {extendedUser.country || "Страна не указана"}
-                        </p>
-                      </div>
-                    </div>
-                    <div className="flex items-center space-x-3 p-3 rounded-xl bg-slate-50">
                       <User className="h-5 w-5 text-slate-500" />
                       <div>
                         <p className="text-sm text-slate-500">Пол</p>
@@ -759,17 +923,6 @@ export default function ProfilePage() {
                       </Button>
                       <Button
                         variant="outline"
-                        className="w-full justify-start h-12 hover:bg-slate-50 hover:scale-105 transition-all duration-300"
-                        onClick={() =>
-                          alert("Функция языка и региона в разработке")
-                        }
-                      >
-                        <Languages className="mr-3 h-5 w-5" />
-                        Язык и регион
-                        <ChevronRight className="ml-auto h-4 w-4" />
-                      </Button>
-                      <Button
-                        variant="outline"
                         className="w-full justify-start h-12 hover:bg-red-50 hover:text-red-700 hover:scale-105 transition-all duration-300 border-red-200 text-red-600"
                         onClick={() => {
                           if (
@@ -828,12 +981,16 @@ export default function ProfilePage() {
                 </CardHeader>
                 <CardContent className="relative z-10">
                   <div className="space-y-4">
-                    {recentActivity.map((activity) => {
-                      const Icon = activity.icon;
+                    {recentActivityToRender.map((activity, index) => {
+                      const Icon = getIconByName(activity.icon);
+                      const activityTime = formatRelativeTime(
+                        activity.timestamp
+                      );
                       return (
                         <div
-                          key={activity.title}
+                          key={activity.id}
                           className="flex items-center space-x-4 p-4 rounded-xl bg-slate-50 hover:bg-slate-100 transition-colors duration-200"
+                          style={{ animationDelay: `${index * 0.05}s` }}
                         >
                           <div
                             className={`w-10 h-10 rounded-2xl bg-gradient-to-br ${activity.color
@@ -852,7 +1009,7 @@ export default function ProfilePage() {
                               {activity.title}
                             </p>
                             <p className="text-sm text-slate-500">
-                              {activity.time}
+                              {activityTime}
                             </p>
                           </div>
                           <ChevronRight className="h-4 w-4 text-slate-400" />
@@ -884,11 +1041,11 @@ export default function ProfilePage() {
                 </CardHeader>
                 <CardContent className="relative z-10">
                   <div className="grid grid-cols-1 sm:grid-cols-2 lg:grid-cols-2 gap-4">
-                    {achievements.map((achievement) => {
-                      const Icon = achievement.icon;
+                    {achievementsToRender.map((achievement) => {
+                      const Icon = getIconByName(achievement.icon);
                       return (
                         <div
-                          key={achievement.title}
+                          key={achievement.id}
                           className={`p-4 rounded-2xl border-2 transition-all duration-300 ${
                             achievement.unlocked
                               ? "border-green-200 bg-green-50 hover:bg-green-100"
@@ -1000,17 +1157,6 @@ export default function ProfilePage() {
                       </Button>
                       <Button
                         variant="outline"
-                        className="w-full justify-start h-12 hover:bg-slate-50 hover:scale-105 transition-all duration-300"
-                        onClick={() =>
-                          alert("Функция языка и региона в разработке")
-                        }
-                      >
-                        <Languages className="mr-3 h-5 w-5" />
-                        Язык и регион
-                        <ChevronRight className="ml-auto h-4 w-4" />
-                      </Button>
-                      <Button
-                        variant="outline"
                         className="w-full justify-start h-12 hover:bg-red-50 hover:text-red-700 hover:scale-105 transition-all duration-300 border-red-200 text-red-600"
                         onClick={() => {
                           if (
@@ -1047,9 +1193,9 @@ export default function ProfilePage() {
         </div>
 
         {/* Profile Edit Form */}
-        {user && (
+        {extendedUser && (
           <ProfileEditForm
-            user={user}
+            user={extendedUser}
             onSave={updateProfile}
             onCancel={() => setIsEditFormVisible(false)}
             isVisible={isEditFormVisible}
