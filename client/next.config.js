@@ -1,6 +1,5 @@
-import type { NextConfig } from 'next'
-
-const nextConfig: NextConfig = {
+/** @type {import('next').NextConfig} */
+const nextConfig = {
   // Для Netlify плагин сам управляет output
   output: process.env.NETLIFY ? undefined : 'standalone',
   experimental: {
@@ -27,4 +26,5 @@ const nextConfig: NextConfig = {
   },
 }
 
-export default nextConfig
+module.exports = nextConfig
+
