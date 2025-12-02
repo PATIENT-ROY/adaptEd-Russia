@@ -104,10 +104,6 @@ const statusColors: Record<string, string> = {
   archived: "bg-gray-100 text-gray-700",
 };
 
-// const categoryColors: Record<string, string> = {
-//   education: "bg-blue-100 text-blue-700",
-//   life: "bg-green-100 text-green-700",
-};
 
 export default function AdminGuidesPage() {
   const { user } = useAuth();
