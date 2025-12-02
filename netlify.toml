@@ -1,10 +1,10 @@
 [build]
   base = "client"
   command = "npm run build"
-  publish = "client/.next"
   
 [build.environment]
   NODE_VERSION = "20"
+  NETLIFY = "true"
   
 [[plugins]]
   package = "@netlify/plugin-nextjs"
