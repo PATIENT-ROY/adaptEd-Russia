@@ -11,4 +11,4 @@
   NEXT_PRIVATE_STANDALONE = "false"
   
 [[plugins]]
-  package = "@netlify/plugin-nextjs@5.15.0"
+  package = "@netlify/plugin-nextjs"
