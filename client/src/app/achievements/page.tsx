@@ -102,10 +102,14 @@ export default function AchievementsPage() {
     };
   }, [loadAchievements]);
 
-  const achievements = overview?.achievements ?? [];
+  const achievements = useMemo(
+    () => overview?.achievements ?? [],
+    [overview?.achievements]
+  );
   const totalCount = overview?.totalCount ?? achievements.length;
   const earnedCount =
-    overview?.unlockedCount ?? achievements.filter((achievement) => achievement.unlocked).length;
+    overview?.unlockedCount ??
+    achievements.filter((achievement) => achievement.unlocked).length;
   const completionPercentage =
     totalCount === 0 ? 0 : Math.round((earnedCount / totalCount) * 100);
 
