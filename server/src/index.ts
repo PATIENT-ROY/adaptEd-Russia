@@ -39,6 +39,7 @@ app.use(helmet());
           'http://192.168.0.101:3007',
           'http://192.168.0.101:3008',
           '127.0.4.240:56548',
+          'https://adaptedrussia.netlify.app', // Netlify production
           ...(process.env.CLIENT_URL ? [process.env.CLIENT_URL] : [])
         ],
         credentials: true,
