@@ -1,6 +1,7 @@
 "use client";
 
 import Link from "next/link";
+import Image from "next/image";
 import { useAuth } from "@/contexts/AuthContext";
 import { useTranslation } from "@/hooks/useTranslation";
 import { getCurrentYear } from "@/lib/date-utils";
@@ -17,6 +18,7 @@ import {
   Shield,
   BookOpen,
   Globe,
+  FileText,
 } from "lucide-react";
 
 export function Footer() {
@@ -55,10 +57,14 @@ export function Footer() {
           {/* Brand Section */}
           <div className="sm:col-span-2 lg:col-span-1 footer-link-animate">
             <div className="flex items-center space-x-2 sm:space-x-3 mb-3 sm:mb-4">
-              <div className="h-7 w-7 sm:h-8 sm:w-8 lg:h-10 lg:w-10 rounded-xl bg-gradient-to-br from-blue-600 to-indigo-600 flex items-center justify-center shadow-lg">
-                <span className="text-white font-bold text-sm sm:text-base lg:text-lg">
-                  A
-                </span>
+              <div className="relative h-7 w-7 sm:h-8 sm:w-8 lg:h-10 lg:w-10 rounded-xl overflow-hidden shadow-lg">
+                <Image
+                  src="/AdaptEd.png"
+                  alt="AdaptEd Russia Logo"
+                  fill
+                  className="object-contain"
+                  sizes="(max-width: 640px) 28px, (max-width: 1024px) 32px, 40px"
+                />
               </div>
               <div className="flex flex-col">
                 <span className="text-sm sm:text-base lg:text-lg font-bold text-white">
@@ -148,7 +154,7 @@ export function Footer() {
               <Shield className="h-4 w-4 sm:h-5 sm:w-5 mr-2 text-blue-400" />
               Контакты
             </h3>
-            <div className="space-y-1 sm:space-y-2">
+            <div className="space-y-1 sm:space-y-2 mb-4 sm:mb-6">
               <div className="flex items-center space-x-2 sm:space-x-3 text-slate-300 text-xs sm:text-sm">
                 <Mail className="h-3 w-3 sm:h-4 sm:w-4 text-blue-400 flex-shrink-0" />
                 <span className="break-all">support@adapted-russia.com</span>
@@ -160,6 +166,20 @@ export function Footer() {
               <div className="flex items-center space-x-2 sm:space-x-3 text-slate-300 text-xs sm:text-sm">
                 <MapPin className="h-3 w-3 sm:h-4 sm:w-4 text-blue-400 flex-shrink-0" />
                 <span>Екатеринбург, Россия</span>
+              </div>
+            </div>
+
+            {/* Requisites */}
+            <h3 className="text-sm sm:text-base lg:text-lg font-semibold text-white mb-3 sm:mb-4 flex items-center">
+              <FileText className="h-4 w-4 sm:h-5 sm:w-5 mr-2 text-blue-400" />
+              Реквизиты
+            </h3>
+            <div className="space-y-1 sm:space-y-2">
+              <div className="text-slate-300 text-xs sm:text-sm">
+                ИП Рой Мбая
+              </div>
+              <div className="text-slate-300 text-xs sm:text-sm">
+                ИНН 773373765379
               </div>
             </div>
           </div>

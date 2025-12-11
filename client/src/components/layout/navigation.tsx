@@ -1,6 +1,7 @@
 "use client";
 
 import Link from "next/link";
+import Image from "next/image";
 import { usePathname } from "next/navigation";
 import { cn } from "@/lib/utils";
 import { Button } from "@/components/ui/button";
@@ -67,10 +68,15 @@ export function Navigation({
               href="/"
               className="flex items-center space-x-2 sm:space-x-3 group"
             >
-              <div className="h-7 w-7 sm:h-9 sm:w-9 lg:h-11 lg:w-11 rounded-lg sm:rounded-xl bg-gradient-to-br from-blue-600 to-indigo-600 flex items-center justify-center shadow-lg group-hover:shadow-xl transition-all duration-300 group-hover:scale-105">
-                <span className="text-white font-bold text-xs sm:text-base lg:text-lg">
-                  A
-                </span>
+              <div className="relative h-7 w-7 sm:h-9 sm:w-9 lg:h-11 lg:w-11 rounded-lg sm:rounded-xl overflow-hidden shadow-lg group-hover:shadow-xl transition-all duration-300 group-hover:scale-105">
+                <Image
+                  src="/AdaptEd.png"
+                  alt="AdaptEd Russia Logo"
+                  fill
+                  className="object-contain"
+                  sizes="(max-width: 640px) 28px, (max-width: 1024px) 36px, 44px"
+                  priority
+                />
               </div>
               <div className="flex flex-col sm:flex-row sm:items-center sm:space-x-1">
                 <span className="text-xs sm:text-base lg:text-lg font-bold text-slate-900 group-hover:text-blue-600 transition-colors duration-200 leading-tight">
