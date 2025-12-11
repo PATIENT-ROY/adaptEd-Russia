@@ -3,7 +3,7 @@ nixPkgs = ["nodejs_20", "npm"]
 
 [phases.install]
 cmds = [
-  "npm install",
+  "npm install --legacy-peer-deps",
   "npx prisma generate"
 ]
 
@@ -14,4 +14,7 @@ cmds = [
 
 [start]
 cmd = "npm start"
+
+[variables]
+NODE_ENV = "production"
 
