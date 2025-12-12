@@ -1,6 +1,7 @@
 "use client";
 
-import { useState, useMemo } from "react";
+import { useState, useMemo, useEffect } from "react";
+import { useRouter } from "next/navigation";
 import { Layout } from "@/components/layout/layout";
 import { Button } from "@/components/ui/button";
 import { Card, CardContent } from "@/components/ui/card";
@@ -337,8 +338,16 @@ const CalendarView = ({ reminders }: { reminders: Reminder[] }) => {
 
 export default function RemindersPage() {
   const { user, isLoading: authLoading } = useAuth();
+  const router = useRouter();
   const { reminders, loading, createReminder, updateReminder, deleteReminder } =
     useReminders(user?.id || "");
+
+  // Автоматическое перенаправление на /login если не авторизован
+  useEffect(() => {
+    if (!authLoading && !user) {
+      router.push("/login");
+    }
+  }, [user, authLoading, router]);
   const [showAddForm, setShowAddForm] = useState(false);
   const [searchTerm, setSearchTerm] = useState("");
   const [newReminder, setNewReminder] = useState({
@@ -619,18 +628,14 @@ export default function RemindersPage() {
     );
   }
 
-  // Показываем сообщение об авторизации только если загрузка завершена и пользователь не авторизован
-  if (!user) {
+  // Показываем загрузку пока проверяем авторизацию или перенаправляем
+  if (authLoading || !user) {
     return (
       <Layout>
         <div className="flex items-center justify-center min-h-screen">
           <div className="text-center">
-            <h2 className="text-xl font-semibold text-gray-900 mb-2">
-              Необходима авторизация
-            </h2>
-            <p className="text-gray-600">
-              Войдите в аккаунт для управления напоминаниями
-            </p>
+            <div className="animate-spin rounded-full h-8 w-8 border-b-2 border-blue-600 mx-auto mb-4"></div>
+            <p className="text-gray-600">Проверка авторизации...</p>
           </div>
         </div>
       </Layout>
