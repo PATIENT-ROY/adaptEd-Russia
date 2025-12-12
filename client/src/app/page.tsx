@@ -581,11 +581,13 @@ export default function HomePage() {
             <p className="text-sm sm:text-base md:text-lg lg:text-xl xl:text-2xl text-white/90 mb-8 sm:mb-12 max-w-3xl mx-auto px-2">
               {t("home.cta.subtitle")}
             </p>
-            <div className="flex flex-col sm:flex-row gap-4 sm:gap-6 justify-center">
+            <div className="flex flex-col sm:flex-row gap-4 sm:gap-6 justify-center relative">
+              <div className="absolute -top-8 left-1/4 text-4xl animate-float">🚀</div>
+              <div className="absolute -top-8 right-1/4 text-4xl animate-float" style={{ animationDelay: '0.5s' }}>⚡</div>
               <Link href="/register">
                 <Button
                   size="lg"
-                  className="group text-sm sm:text-base lg:text-lg px-4 sm:px-6 lg:px-8 py-3 sm:py-4 bg-gradient-to-r from-blue-500 to-purple-600 hover:from-blue-600 hover:to-purple-700 text-white shadow-2xl hover:shadow-3xl transform hover:scale-105 transition-all duration-300"
+                  className="group text-sm sm:text-base lg:text-lg px-4 sm:px-6 lg:px-8 py-3 sm:py-4 bg-gradient-to-r from-blue-500 to-purple-600 hover:from-blue-600 hover:to-purple-700 text-white shadow-2xl hover:shadow-3xl transform hover:scale-105 transition-all duration-300 relative"
                 >
                   <Rocket className="mr-2 h-4 w-4 sm:h-5 sm:w-5 group-hover:translate-x-1 transition-transform duration-200" />
                   <span className="group-hover:translate-x-1 transition-transform duration-200">

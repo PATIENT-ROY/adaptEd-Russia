@@ -209,9 +209,12 @@ export function UserProgressComponent({ progress }: UserProgressProps) {
 
           {/* Call to Action */}
           {progress.adaptationProgress < 100 && (
-            <div className="pt-2 border-t border-gray-200">
-              <p className="text-xs text-gray-600 text-center mb-2">
-                💡 Продолжайте изучать гайды и выполнять задачи для повышения
+            <div className="pt-2 border-t border-gray-200 relative">
+              <div className="absolute -left-2 top-0 text-2xl animate-float">
+                💡
+              </div>
+              <p className="text-xs text-gray-600 text-center mb-2 pl-6">
+                Продолжайте изучать гайды и выполнять задачи для повышения
                 уровня!
               </p>
             </div>

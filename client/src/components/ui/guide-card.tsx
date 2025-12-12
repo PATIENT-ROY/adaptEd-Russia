@@ -42,7 +42,6 @@ export function GuideCard({ guide, onClick, className }: GuideCardProps) {
   const router = useRouter();
   const [showModal, setShowModal] = React.useState(false);
   const Icon = categoryIcons[guide.category];
-  const colorClass = categoryColors[guide.category];
 
   const handleReadMore = (e: React.MouseEvent) => {
     e.stopPropagation();
@@ -59,76 +58,86 @@ export function GuideCard({ guide, onClick, className }: GuideCardProps) {
     }
   };
 
+  // Обрезаем контент для превью (как на эскизе "Тут будет подсказка что в нутри...")
+  const previewText = guide.content 
+    ? guide.content.length > 100 
+      ? guide.content.substring(0, 100) + "..." 
+      : guide.content
+    : "Тут будет подсказка что в нутри...";
+
+  const categoryLabel = guide.category === GuideCategory.EDUCATION
+    ? "Образование"
+    : guide.category === GuideCategory.LIFE
+    ? "Быт"
+    : guide.category === GuideCategory.DOCUMENTS
+    ? "Документы"
+    : guide.category === GuideCategory.CULTURE
+    ? "Культура"
+    : guide.category === GuideCategory.LEGAL
+    ? "Право"
+    : "Другое";
+
   return (
     <>
       <Card
         className={cn(
-          "cursor-pointer transition-all duration-300 hover:shadow-lg h-full flex flex-col",
+          "cursor-pointer transition-all duration-300 hover:shadow-md h-full flex flex-col bg-white",
           className
         )}
         onClick={onClick}
       >
-        <CardHeader className="pb-2 sm:pb-3 p-4 sm:p-6 flex-shrink-0">
-          <div className="flex items-start justify-between">
-            <div className="flex items-start gap-2 sm:gap-3">
-              <div
-                className={cn(
-                  "rounded-lg flex-shrink-0 h-8 w-8 sm:h-10 sm:w-10 flex items-center justify-center",
-                  colorClass
-                )}
-              >
-                <Icon className="h-4 w-4 sm:h-5 sm:w-5" />
-              </div>
-              <div className="flex-1 min-w-0">
-                <CardTitle className="text-base sm:text-lg">
-                  {guide.title}
-                </CardTitle>
-                <CardDescription className="mt-1 text-xs sm:text-sm">
-                  {guide.category === GuideCategory.EDUCATION
-                    ? "Образование"
-                    : "Быт и право"}
-                </CardDescription>
-              </div>
+        <CardHeader className="pb-3 p-4 sm:p-6">
+          <div className="flex items-start gap-3 sm:gap-4">
+            {/* Квадратная иконка с закругленными углами - цвет зависит от категории */}
+            <div className={cn(
+              "rounded-xl flex-shrink-0 h-12 w-12 sm:h-14 sm:w-14 flex items-center justify-center shadow-sm",
+              guide.category === GuideCategory.EDUCATION && "bg-blue-600",
+              guide.category === GuideCategory.LIFE && "bg-green-600",
+              guide.category === GuideCategory.DOCUMENTS && "bg-red-600",
+              guide.category === GuideCategory.CULTURE && "bg-purple-600",
+              guide.category === GuideCategory.LEGAL && "bg-orange-600",
+              (!guide.category || guide.category === GuideCategory.OTHER) && "bg-gray-600"
+            )}>
+              <Icon className="h-6 w-6 sm:h-7 sm:w-7 text-white" />
+            </div>
+            
+            {/* Заголовок и категория */}
+            <div className="flex-1 min-w-0">
+              <CardTitle className="text-base sm:text-lg font-bold leading-tight mb-1">
+                {guide.title}
+              </CardTitle>
+              <CardDescription className="text-xs sm:text-sm text-gray-500">
+                {categoryLabel}
+              </CardDescription>
             </div>
           </div>
         </CardHeader>
 
-        <CardContent className="pt-0 p-4 sm:p-6 flex-1 flex flex-col">
-          <div className="flex-1"></div>
+        <CardContent className="pt-0 px-4 sm:px-6 pb-4 sm:pb-6 flex-1 flex flex-col">
+          {/* Превью контента (как на эскизе) */}
+          <div className="flex-1 mb-4">
+            <p className="text-sm text-gray-600 leading-relaxed">
+              {previewText}
+            </p>
+          </div>
 
-          <div className="flex flex-col sm:flex-row sm:items-center justify-between gap-2 sm:gap-0">
-            <div className="flex items-center gap-2 text-xs sm:text-sm text-muted-foreground">
-              <Clock className="h-3 w-3 sm:h-4 sm:w-4" />
+          {/* Нижняя часть: дата слева, кнопка справа */}
+          <div className="flex items-center justify-between pt-3 border-t border-gray-100">
+            {/* Дата слева */}
+            <div className="flex items-center gap-1.5 text-xs text-gray-500">
+              <span>©</span>
               <span>{formatDate(guide.updatedAt)}</span>
             </div>
 
-            <div className="flex items-center gap-1 flex-wrap">
-              {guide.tags.slice(0, 2).map((tag) => (
-                <span
-                  key={tag}
-                  className="inline-flex items-center rounded-full bg-gray-100 px-1.5 sm:px-2 py-0.5 sm:py-1 text-xs text-gray-600"
-                >
-                  <Tag className="mr-1 h-2.5 w-2.5 sm:h-3 sm:w-3" />
-                  {tag}
-                </span>
-              ))}
-              {guide.tags.length > 2 && (
-                <span className="text-xs text-muted-foreground">
-                  +{guide.tags.length - 2}
-                </span>
-              )}
-            </div>
-          </div>
-
-          <div className="mt-3 sm:mt-4">
+            {/* Кнопка "Читать далее->" */}
             <Button
               variant="ghost"
               size="sm"
               onClick={handleReadMore}
-              className="h-auto p-0 text-blue-600 hover:text-blue-700 text-sm sm:text-base"
+              className="h-auto p-0 text-blue-600 hover:text-blue-700 text-sm font-medium"
             >
               Читать далее
-              <ArrowRight className="ml-1 h-3 w-3 sm:h-4 sm:w-4" />
+              <ArrowRight className="ml-1 h-3.5 w-3.5" />
             </Button>
           </div>
         </CardContent>

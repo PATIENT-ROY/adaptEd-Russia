@@ -386,7 +386,8 @@ export default function AchievementsPage() {
                         <span>+{achievement.xpReward} XP</span>
                       </div>
                       {isEarned ? (
-                        <div className="w-full pt-2 border-t border-gray-200">
+                        <div className="w-full pt-2 border-t border-gray-200 relative">
+                          <div className="absolute -top-1 -right-1 text-lg animate-bounce">🎉</div>
                           <div className="flex items-center justify-center space-x-1 text-xs text-green-600 font-medium">
                             <Trophy className="h-3 w-3" />
                             <span>Получено!</span>

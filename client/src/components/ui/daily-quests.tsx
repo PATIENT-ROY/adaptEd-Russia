@@ -114,12 +114,16 @@ export function DailyQuestsComponent({ quests }: DailyQuestsProps) {
 
             {/* Completion Bonus */}
             {completedQuests === totalQuests && totalQuests > 0 && (
-              <div className="bg-gradient-to-r from-yellow-500 to-orange-500 text-white p-4 rounded-xl text-center">
-                <div className="text-2xl mb-1">🎉</div>
-                <p className="font-bold text-sm sm:text-base">
+              <div className="bg-gradient-to-r from-yellow-500 to-orange-500 text-white p-4 rounded-xl text-center relative overflow-hidden">
+                <div className="absolute top-2 left-2 text-2xl animate-bounce delay-100">✨</div>
+                <div className="absolute top-2 right-2 text-2xl animate-bounce delay-200">⭐</div>
+                <div className="absolute bottom-2 left-4 text-2xl animate-bounce delay-300">🎊</div>
+                <div className="absolute bottom-2 right-4 text-2xl animate-bounce delay-400">💫</div>
+                <div className="text-4xl sm:text-5xl mb-2 animate-bounce relative z-10">🎉</div>
+                <p className="font-bold text-sm sm:text-base relative z-10">
                   Все квесты выполнены!
                 </p>
-                <p className="text-xs sm:text-sm opacity-90">
+                <p className="text-xs sm:text-sm opacity-90 relative z-10">
                   Возвращайтесь завтра за новыми заданиями
                 </p>
               </div>

@@ -1310,13 +1310,14 @@ export default function RemindersPage() {
                               ? "Важно"
                               : "Обычно"}
                           </span>
-                          <div className="flex space-x-2">
+                          <div className="flex space-x-2 relative">
                             <Button
                               variant="outline"
                               size="sm"
                               onClick={() => handleMarkCompleted(reminder.id)}
-                              className="text-xs sm:text-sm"
+                              className="text-xs sm:text-sm relative group"
                             >
+                              <span className="absolute -top-1 -right-1 text-sm opacity-0 group-hover:opacity-100 transition-opacity animate-bounce">✅</span>
                               Выполнить
                             </Button>
                             <Button

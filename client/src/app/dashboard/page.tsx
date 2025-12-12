@@ -215,9 +215,12 @@ export default function DashboardPage() {
                     {user?.name.charAt(0).toUpperCase() || "А"}
                   </span>
                 </div>
-                <div>
+                <div className="relative">
+                  <div className="absolute -top-2 -right-2 sm:-top-4 sm:-right-4 text-3xl sm:text-4xl animate-float">
+                    ✨
+                  </div>
                   <h1 className="text-xl sm:text-2xl lg:text-3xl font-bold text-slate-900 mb-1 sm:mb-2">
-                    Добро пожаловать, {user?.name.split(" ")[0]}! 👋
+                    Добро пожаловать, {user?.name.split(" ")[0]}! <span className="animate-wave inline-block">👋</span>
                   </h1>
                   <p className="text-sm sm:text-base lg:text-lg text-slate-600">
                     Вот что происходит с вашей учёбой и бытом в России
