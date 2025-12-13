@@ -1085,7 +1085,7 @@ export default function ProfilePage() {
                             </div>
                             {achievement.unlocked && (
                               <div className="relative">
-                                <CheckCircle className="h-4 w-4 sm:h-5 sm:w-5 text-green-500" />
+                              <CheckCircle className="h-4 w-4 sm:h-5 sm:w-5 text-green-500" />
                                 <span className="absolute -top-2 -right-2 text-xs animate-bounce">⭐</span>
                               </div>
                             )}

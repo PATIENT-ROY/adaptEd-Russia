@@ -86,7 +86,7 @@ export function GuideCard({ guide, onClick, className }: GuideCardProps) {
         )}
         onClick={onClick}
       >
-        <CardHeader className="pb-3 p-4 sm:p-6">
+        <CardHeader className="pb-3 p-4 sm:p-6 flex-shrink-0">
           <div className="flex items-start gap-3 sm:gap-4">
             {/* Квадратная иконка с закругленными углами - цвет зависит от категории */}
             <div className={cn(
@@ -103,7 +103,7 @@ export function GuideCard({ guide, onClick, className }: GuideCardProps) {
             
             {/* Заголовок и категория */}
             <div className="flex-1 min-w-0">
-              <CardTitle className="text-base sm:text-lg font-bold leading-tight mb-1">
+              <CardTitle className="text-base sm:text-lg font-bold leading-tight mb-1 line-clamp-2">
                 {guide.title}
               </CardTitle>
               <CardDescription className="text-xs sm:text-sm text-gray-500">
@@ -113,16 +113,16 @@ export function GuideCard({ guide, onClick, className }: GuideCardProps) {
           </div>
         </CardHeader>
 
-        <CardContent className="pt-0 px-4 sm:px-6 pb-4 sm:pb-6 flex-1 flex flex-col">
-          {/* Превью контента (как на эскизе) */}
-          <div className="flex-1 mb-4">
-            <p className="text-sm text-gray-600 leading-relaxed">
+        <CardContent className="pt-0 px-4 sm:px-6 pb-4 sm:pb-6 flex-1 flex flex-col min-h-0">
+          {/* Превью контента (как на эскизе) - фиксированная высота */}
+          <div className="flex-1 mb-4 min-h-0 overflow-hidden">
+            <p className="text-sm text-gray-600 leading-relaxed line-clamp-3">
               {previewText}
             </p>
           </div>
 
-          {/* Нижняя часть: дата слева, кнопка справа */}
-          <div className="flex items-center justify-between pt-3 border-t border-gray-100">
+          {/* Нижняя часть: дата слева, кнопка справа - всегда внизу */}
+          <div className="flex items-center justify-between pt-3 border-t border-gray-100 flex-shrink-0 mt-auto">
             {/* Дата слева */}
             <div className="flex items-center gap-1.5 text-xs text-gray-500">
               <span>©</span>
@@ -134,10 +134,10 @@ export function GuideCard({ guide, onClick, className }: GuideCardProps) {
               variant="ghost"
               size="sm"
               onClick={handleReadMore}
-              className="h-auto p-0 text-blue-600 hover:text-blue-700 text-sm font-medium"
+              className="h-auto p-0 text-blue-600 hover:text-blue-700 text-sm font-medium group transition-all duration-300"
             >
               Читать далее
-              <ArrowRight className="ml-1 h-3.5 w-3.5" />
+              <ArrowRight className="ml-1 h-3.5 w-3.5 group-hover:translate-x-1 transition-transform duration-300" />
             </Button>
           </div>
         </CardContent>
