@@ -29,7 +29,7 @@ export function CookieConsent() {
     <div className="fixed bottom-4 left-4 right-4 sm:left-auto sm:right-4 z-50 animate-slide-in-from-bottom">
       <div
         className="bg-white rounded-lg shadow-2xl border border-gray-200 p-4"
-        style={{ width: "259px", height: "159px" }}
+        style={{ width: "auto", height: "159px" }}
       >
         <div className="flex flex-col h-full">
           <div className="flex-1 flex flex-col justify-center mb-3">
