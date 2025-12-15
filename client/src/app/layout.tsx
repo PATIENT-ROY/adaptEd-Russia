@@ -6,6 +6,7 @@ import { LanguageProvider } from "@/contexts/LanguageContext";
 import { NotificationsWrapper } from "@/components/ui/notifications-wrapper";
 import { ConditionalFooter } from "@/components/layout/conditional-footer";
 import { HtmlLang } from "@/components/language/html-lang";
+import { CookieConsent } from "@/components/ui/cookie-consent";
 
 const inter = Inter({ subsets: ["latin"] });
 
@@ -113,6 +114,7 @@ export default function RootLayout({
             <NotificationsWrapper>
               {children}
               <ConditionalFooter />
+              <CookieConsent />
             </NotificationsWrapper>
           </LanguageProvider>
         </AuthProvider>
