@@ -412,6 +412,33 @@ export default function HomePage() {
           </div>
         </section>
 
+        {/* About Section */}
+        <section className="py-12 sm:py-16 md:py-24 bg-white">
+          <div className="mx-auto max-w-4xl px-3 sm:px-4 lg:px-6">
+            <div className="text-center mb-8 sm:mb-10">
+              <h2 className="text-2xl sm:text-3xl md:text-4xl font-bold tracking-tight text-slate-900 mb-3 sm:mb-4">
+                {t("home.section.about.title")}
+              </h2>
+            </div>
+            <div className="relative rounded-2xl sm:rounded-3xl border border-slate-200 bg-slate-50/80 p-4 sm:p-6 md:p-8 shadow-sm sm:shadow-md">
+              <div className="absolute -top-4 left-6 text-3xl sm:text-4xl select-none">
+                ✍️
+              </div>
+              <div className="absolute -bottom-4 right-6 text-3xl sm:text-4xl rotate-3 select-none">
+                🇷🇺
+              </div>
+              <div className="relative space-y-3 sm:space-y-4 text-slate-800 text-sm sm:text-base leading-relaxed">
+                <p>{t("home.section.about.p1")}</p>
+                <p>{t("home.section.about.p2")}</p>
+                <p>{t("home.section.about.p3")}</p>
+                <p className="font-semibold italic">
+                  {t("home.section.about.p4")}
+                </p>
+              </div>
+            </div>
+          </div>
+        </section>
+
         {/* Testimonials Section */}
         <section className="py-12 sm:py-16 md:py-24 bg-white">
           <div className="mx-auto max-w-6xl px-3 sm:px-4 lg:px-6">

@@ -131,6 +131,13 @@ const translations: Record<Language, Record<string, string>> = {
     "home.pricing.button.freemium": "Начать бесплатно",
     "home.pricing.button.premium": "Выбрать Премиум",
     
+    // Home - About
+    "home.section.about.title": "О нас",
+    "home.section.about.p1": "Я — бывший иностранный студент, который прошёл весь путь: от первого прилёта в Россию до защиты диплома. Помню, как терялся в терминах вроде «зачётка», «ГОСТ», «миграционный учёт»… Как искал, где продлить страховку, как писать заявление на РВП, как просто понять, что от тебя хотят на кафедре.",
+    "home.section.about.p2": "Именно тогда родилась идея AdaptEd Russia — не просто информационного сайта, а надёжного помощника, который всегда под рукой: отвечает на вопросы на твоём языке, напоминает о сроках, помогает с документами — и делает всё это понятно, без бюрократического жаргона.",
+    "home.section.about.p3": "Сейчас проект веду я лично — но с поддержкой менторов, выпускников и экспертов в сфере международного образования. В планах — расширить команду, включая координаторов по регионам и партнёров среди вузов. Потому что каждый студент заслуживает спокойного старта в новой стране.",
+    "home.section.about.p4": "Вместе — адаптация без стресса.",
+    
     "home.stats.students.value": "10,000+",
     "home.stats.success.value": "95%",
     "home.stats.support.value": "24/7",
@@ -298,6 +305,13 @@ const translations: Record<Language, Record<string, string>> = {
     "home.pricing.button.freemium": "Start for free",
     "home.pricing.button.premium": "Choose Premium",
     
+    // Home - About
+    "home.section.about.title": "About AdaptEd Russia",
+    "home.section.about.p1": "I’m a former international student who went through the whole journey: from the first flight to Russia to defending my diploma. I remember being lost in terms like “zachyotka”, “GOST”, “migration registration”... Searching where to extend my insurance, how to write applications for residence permits, and simply trying to understand what the department expected from me.",
+    "home.section.about.p2": "That’s when the idea of AdaptEd Russia was born — not just an informational website, but a reliable assistant that’s always at hand: answering questions in your language, reminding you about deadlines, helping with documents — and doing all this clearly, without bureaucratic jargon.",
+    "home.section.about.p3": "Right now I run the project personally — with support from mentors, alumni and experts in international education. The plan is to grow the team, including regional coordinators and university partners. Because every student deserves a calm start in a new country.",
+    "home.section.about.p4": "Together — adaptation without stress.",
+    
     "home.stats.students.value": "10,000+",
     "home.stats.success.value": "95%",
     "home.stats.support.value": "24/7",
@@ -464,6 +478,13 @@ const translations: Record<Language, Record<string, string>> = {
     "home.pricing.feature.premium.docscan.noWatermark": "DocScan Pro: Sans filigrane",
     "home.pricing.button.freemium": "Commencer gratuitement",
     "home.pricing.button.premium": "Choisir Premium",
+    
+    // Home - About
+    "home.section.about.title": "À propos d’AdaptEd Russia",
+    "home.section.about.p1": "Je suis un ancien étudiant étranger qui a vécu tout le parcours : du premier vol vers la Russie jusqu’à la soutenance du diplôme. Je me souviens comment je me perdais dans des termes comme « zachotka », « GOST », « enregistrement migratoire »… Comment je cherchais où prolonger l’assurance, comment écrire les demandes pour le séjour, comment simplement comprendre ce que la faculté attendait de moi.",
+    "home.section.about.p2": "C’est à ce moment-là qu’est née l’idée d’AdaptEd Russia — pas juste un site d’information, mais un véritable assistant fiable, toujours à portée de main : il répond à tes questions dans ta langue, rappelle les échéances, aide avec les documents — et fait tout cela de façon claire, sans jargon bureaucratique.",
+    "home.section.about.p3": "Aujourd’hui, je porte le projet moi-même — avec le soutien de mentors, d’anciens étudiants et d’experts de l’éducation internationale. À terme, l’objectif est d’élargir l’équipe avec des coordinateurs régionaux et des partenaires parmi les universités. Parce que chaque étudiant mérite un départ serein dans un nouveau pays.",
+    "home.section.about.p4": "Ensemble — une adaptation sans stress.",
     
     "home.stats.students.value": "10,000+",
     "home.stats.success.value": "95%",
