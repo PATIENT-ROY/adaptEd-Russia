@@ -138,6 +138,11 @@ const translations: Record<Language, Record<string, string>> = {
     "home.section.about.p3": "Сейчас проект веду я лично — но с поддержкой менторов, выпускников и экспертов в сфере международного образования. В планах — расширить команду, включая координаторов по регионам и партнёров среди вузов. Потому что каждый студент заслуживает спокойного старта в новой стране.",
     "home.section.about.p4": "Вместе — адаптация без стресса.",
     
+    // Home - Partners
+    "home.section.partners.title": "Наши партнёры",
+    "home.section.partners.subtitle": "Мы сотрудничаем с ведущими вузами и организациями",
+    "home.section.partners.placeholder": "Скоро здесь появятся наши партнёры",
+    
     "home.stats.students.value": "10,000+",
     "home.stats.success.value": "95%",
     "home.stats.support.value": "24/7",
@@ -268,6 +273,11 @@ const translations: Record<Language, Record<string, string>> = {
     
     "home.section.testimonials.title": "What our students say",
     "home.section.testimonials.subtitle": "Real reviews from international students who are already using our platform",
+    
+    // Home - Partners
+    "home.section.partners.title": "Our Partners",
+    "home.section.partners.subtitle": "We collaborate with leading universities and organizations",
+    "home.section.partners.placeholder": "Our partners will appear here soon",
     "home.testimonial.1.name": "Ahmed Al-Mahmoud",
     "home.testimonial.1.country": "Egypt",
     "home.testimonial.1.text": "Thanks to AdaptEd Russia, I easily adapted to life in Russia. All guides are very clear!",
@@ -442,6 +452,11 @@ const translations: Record<Language, Record<string, string>> = {
     
     "home.section.testimonials.title": "Ce que disent nos étudiants",
     "home.section.testimonials.subtitle": "Avis réels d'étudiants internationaux qui utilisent déjà notre plateforme",
+    
+    // Home - Partners
+    "home.section.partners.title": "Nos partenaires",
+    "home.section.partners.subtitle": "Nous collaborons avec les universités et organisations de premier plan",
+    "home.section.partners.placeholder": "Nos partenaires apparaîtront ici bientôt",
     "home.testimonial.1.name": "Ahmed Al-Mahmoud",
     "home.testimonial.1.country": "Égypte",
     "home.testimonial.1.text": "Grâce à AdaptEd Russia, je me suis facilement adapté à la vie en Russie. Tous les guides sont très clairs!",
@@ -616,6 +631,12 @@ const translations: Record<Language, Record<string, string>> = {
     
     "home.section.testimonials.title": "ماذا يقول طلابنا",
     "home.section.testimonials.subtitle": "آراء حقيقية من الطلاب الدوليين الذين يستخدمون بالفعل منصتنا",
+    
+    // Home - Partners
+    "home.section.partners.title": "شركاؤنا",
+    "home.section.partners.subtitle": "نحن نتعاون مع الجامعات والمنظمات الرائدة",
+    "home.section.partners.placeholder": "سيظهر شركاؤنا هنا قريباً",
+    
     "home.testimonial.1.name": "أحمد المحمود",
     "home.testimonial.1.country": "مصر",
     "home.testimonial.1.text": "بفضل AdaptEd Russia، تكيفت بسهولة مع الحياة في روسيا. جميع الأدلة واضحة جداً!",
@@ -783,6 +804,12 @@ const translations: Record<Language, Record<string, string>> = {
     
     "home.section.testimonials.title": "我们的学生怎么说",
     "home.section.testimonials.subtitle": "来自已经在使用我们平台的外国学生的真实评价",
+    
+    // Home - Partners
+    "home.section.partners.title": "我们的合作伙伴",
+    "home.section.partners.subtitle": "我们与领先的大学和组织合作",
+    "home.section.partners.placeholder": "我们的合作伙伴将很快出现在这里",
+    
     "home.testimonial.1.name": "艾哈迈德·马哈茂德",
     "home.testimonial.1.country": "埃及",
     "home.testimonial.1.text": "多亏了 AdaptEd Russia，我轻松适应了在俄罗斯的生活。所有指南都非常清晰！",

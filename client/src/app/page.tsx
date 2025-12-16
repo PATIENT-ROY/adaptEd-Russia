@@ -439,6 +439,45 @@ export default function HomePage() {
           </div>
         </section>
 
+        {/* Partners Section */}
+        <section className="py-12 sm:py-16 md:py-24 bg-gradient-to-br from-slate-50 via-white to-blue-50">
+          <div className="mx-auto max-w-6xl px-3 sm:px-4 lg:px-6">
+            <div className="text-center mb-8 sm:mb-12">
+              <h2 className="text-2xl sm:text-3xl md:text-4xl font-bold tracking-tight text-slate-900 mb-3 sm:mb-4">
+                {t("home.section.partners.title")}
+              </h2>
+              <p className="text-sm sm:text-base md:text-lg text-slate-600 max-w-2xl mx-auto">
+                {t("home.section.partners.subtitle")}
+              </p>
+            </div>
+
+            {/* Partners Grid - можно добавить логотипы позже */}
+            <div className="grid grid-cols-2 sm:grid-cols-3 lg:grid-cols-4 gap-4 sm:gap-6 lg:gap-8">
+              {/* Пример: когда будут партнёры, замени на реальные логотипы */}
+              {/* 
+              {partners.map((partner) => (
+                <div key={partner.id} className="flex items-center justify-center p-4 sm:p-6 bg-white rounded-xl sm:rounded-2xl border border-slate-200 hover:border-blue-300 hover:shadow-lg transition-all duration-300">
+                  <Image
+                    src={partner.logo}
+                    alt={partner.name}
+                    width={120}
+                    height={60}
+                    className="object-contain opacity-70 hover:opacity-100 transition-opacity"
+                  />
+                </div>
+              ))}
+              */}
+
+              {/* Placeholder - убрать когда появятся реальные партнёры */}
+              <div className="flex items-center justify-center p-4 sm:p-6 bg-white/50 rounded-xl sm:rounded-2xl border-2 border-dashed border-slate-300">
+                <p className="text-xs sm:text-sm text-slate-400 text-center">
+                  {t("home.section.partners.placeholder")}
+                </p>
+              </div>
+            </div>
+          </div>
+        </section>
+
         {/* Testimonials Section */}
         <section className="py-12 sm:py-16 md:py-24 bg-white">
           <div className="mx-auto max-w-6xl px-3 sm:px-4 lg:px-6">
@@ -609,8 +648,15 @@ export default function HomePage() {
               {t("home.cta.subtitle")}
             </p>
             <div className="flex flex-col sm:flex-row gap-4 sm:gap-6 justify-center relative">
-              <div className="absolute -top-8 left-1/4 text-4xl animate-float">🚀</div>
-              <div className="absolute -top-8 right-1/4 text-4xl animate-float" style={{ animationDelay: '0.5s' }}>⚡</div>
+              <div className="absolute -top-8 left-1/4 text-4xl animate-float">
+                🚀
+              </div>
+              <div
+                className="absolute -top-8 right-1/4 text-4xl animate-float"
+                style={{ animationDelay: "0.5s" }}
+              >
+                ⚡
+              </div>
               <Link href="/register">
                 <Button
                   size="lg"
