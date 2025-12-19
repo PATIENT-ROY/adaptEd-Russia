@@ -25,8 +25,10 @@ import {
   Eye,
   TrendingUp,
   Users,
+  Languages,
 } from "lucide-react";
 import { useState, useMemo, useEffect } from "react";
+import Link from "next/link";
 import {
   Guide,
   GuideCategory,
@@ -1158,6 +1160,7 @@ const categories = [
   { id: "papers", name: "Работы", icon: FileText },
   { id: "structure", name: "Структура вуза", icon: Calendar },
   { id: "dictionary", name: "Словарь сленга", icon: BookOpen },
+  { id: "translation-centers", name: "Центры перевода", icon: Languages, isLink: true, href: "/education/translation-centers" },
 ];
 
 export default function EducationGuidePage() {
@@ -1463,6 +1466,23 @@ export default function EducationGuidePage() {
             {categories.map((category) => {
               const Icon = category.icon;
               const isActive = selectedCategory === category.id;
+              const isLink = (category as any).isLink;
+              const href = (category as any).href;
+              
+              if (isLink && href) {
+                return (
+                  <Link key={category.id} href={href}>
+                    <Button
+                      variant="outline"
+                      className="flex flex-col items-center space-y-2 h-auto p-3 sm:p-4 text-sm sm:text-base transition-all duration-300 ease-out hover:bg-gray-50 hover:shadow-md w-full"
+                    >
+                      <Icon className="h-5 w-5 sm:h-6 sm:w-6 transition-all duration-300 text-gray-600" />
+                      <span className="font-medium">{category.name}</span>
+                    </Button>
+                  </Link>
+                );
+              }
+              
               return (
                 <Button
                   key={category.id}

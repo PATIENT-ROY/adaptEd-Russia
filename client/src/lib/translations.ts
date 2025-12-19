@@ -191,6 +191,17 @@ const translations: Record<Language, Record<string, string>> = {
     "admin.dashboard.statusAI": "AI сервис",
     "admin.dashboard.statusNotifications": "Уведомления",
     "admin.dashboard.statusOperational": "Работает",
+
+    // Translation Centers
+    "translationCenters.title": "Центры перевода в вашем городе",
+    "translationCenters.subtitle": "Найдите ближайший центр перевода документов",
+    "translationCenters.back": "Назад к гайдам",
+    "translationCenters.changeCity": "Изменить город",
+    "translationCenters.showOnMap": "Показать на карте",
+    "translationCenters.empty.title": "В вашем городе пока нет добавленных центров перевода",
+    "translationCenters.empty.description": "Попробуйте изменить город или воспользуйтесь онлайн-переводом документов",
+    "translationCenters.empty.changeCity": "Изменить город",
+    "translationCenters.empty.useDocScan": "Использовать DocScan",
   },
   
   [Language.EN]: {
@@ -370,6 +381,17 @@ const translations: Record<Language, Record<string, string>> = {
     "admin.dashboard.statusAI": "AI service",
     "admin.dashboard.statusNotifications": "Notifications",
     "admin.dashboard.statusOperational": "Operational",
+
+    // Translation Centers
+    "translationCenters.title": "Translation Centers in Your City",
+    "translationCenters.subtitle": "Find the nearest document translation center",
+    "translationCenters.back": "Back to guides",
+    "translationCenters.changeCity": "Change city",
+    "translationCenters.showOnMap": "Show on map",
+    "translationCenters.empty.title": "No translation centers added in your city yet",
+    "translationCenters.empty.description": "Try changing the city or use online document translation",
+    "translationCenters.empty.changeCity": "Change city",
+    "translationCenters.empty.useDocScan": "Use DocScan",
   },
   
   [Language.FR]: {
@@ -549,6 +571,17 @@ const translations: Record<Language, Record<string, string>> = {
     "admin.dashboard.statusAI": "Service IA",
     "admin.dashboard.statusNotifications": "Notifications",
     "admin.dashboard.statusOperational": "Opérationnel",
+
+    // Translation Centers
+    "translationCenters.title": "Centres de traduction dans votre ville",
+    "translationCenters.subtitle": "Trouvez le centre de traduction de documents le plus proche",
+    "translationCenters.back": "Retour aux guides",
+    "translationCenters.changeCity": "Changer de ville",
+    "translationCenters.showOnMap": "Afficher sur la carte",
+    "translationCenters.empty.title": "Aucun centre de traduction ajouté dans votre ville pour le moment",
+    "translationCenters.empty.description": "Essayez de changer de ville ou utilisez la traduction de documents en ligne",
+    "translationCenters.empty.changeCity": "Changer de ville",
+    "translationCenters.empty.useDocScan": "Utiliser DocScan",
   },
   
   [Language.AR]: {
@@ -722,6 +755,17 @@ const translations: Record<Language, Record<string, string>> = {
     "admin.dashboard.statusAI": "خدمة الذكاء الاصطناعي",
     "admin.dashboard.statusNotifications": "الإشعارات",
     "admin.dashboard.statusOperational": "يعمل",
+
+    // Translation Centers
+    "translationCenters.title": "مراكز الترجمة في مدينتك",
+    "translationCenters.subtitle": "ابحث عن أقرب مركز ترجمة المستندات",
+    "translationCenters.back": "العودة إلى الأدلة",
+    "translationCenters.changeCity": "تغيير المدينة",
+    "translationCenters.showOnMap": "عرض على الخريطة",
+    "translationCenters.empty.title": "لا توجد مراكز ترجمة مضافة في مدينتك بعد",
+    "translationCenters.empty.description": "حاول تغيير المدينة أو استخدم الترجمة الإلكترونية للمستندات",
+    "translationCenters.empty.changeCity": "تغيير المدينة",
+    "translationCenters.empty.useDocScan": "استخدام DocScan",
   },
   
   [Language.ZH]: {
@@ -895,6 +939,17 @@ const translations: Record<Language, Record<string, string>> = {
     "admin.dashboard.statusAI": "AI 服务",
     "admin.dashboard.statusNotifications": "通知",
     "admin.dashboard.statusOperational": "运行正常",
+
+    // Translation Centers
+    "translationCenters.title": "您所在城市的翻译中心",
+    "translationCenters.subtitle": "查找最近的文档翻译中心",
+    "translationCenters.back": "返回指南",
+    "translationCenters.changeCity": "更改城市",
+    "translationCenters.showOnMap": "在地图上显示",
+    "translationCenters.empty.title": "您所在城市尚未添加翻译中心",
+    "translationCenters.empty.description": "尝试更改城市或使用在线文档翻译",
+    "translationCenters.empty.changeCity": "更改城市",
+    "translationCenters.empty.useDocScan": "使用 DocScan",
   },
 };
 
