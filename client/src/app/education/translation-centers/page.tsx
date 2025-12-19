@@ -345,14 +345,14 @@ export default function TranslationCentersPage() {
             </div>
             <div className="flex-1">
               <h1 className="text-xl sm:text-2xl font-bold text-gray-900">
-                {isUsingProfileCity && user?.city
-                  ? `${t("translationCenters.title")} (${user.city})`
-                  : t("translationCenters.title")}
+                {user
+                  ? `Центры нотариального перевода в городе ${selectedCity}`
+                  : "Найдите ближайший центр нотариального перевода документов"}
               </h1>
               <p className="text-sm sm:text-base text-gray-600">
-                {isUsingProfileCity && user?.city
-                  ? `Центры перевода в вашем городе ${user.city}`
-                  : t("translationCenters.subtitle")}
+                {user
+                  ? "Мы подобрали центры нотариального перевода документов рядом с вами на основе указанного города."
+                  : "Подбор проверенных центров нотариального перевода в вашем городе. Удобно для поступления, визы и официальных документов."}
               </p>
             </div>
           </div>
