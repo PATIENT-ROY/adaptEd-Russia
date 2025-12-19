@@ -10,7 +10,6 @@ import {
   Phone,
   Map,
   ArrowLeft,
-  Globe,
   ChevronDown,
   Star,
   CheckCircle,

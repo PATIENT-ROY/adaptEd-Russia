@@ -1152,7 +1152,15 @@ const mockGrants: Grant[] = [
   },
 ];
 
-const categories = [
+type Category = {
+  id: string;
+  name: string;
+  icon: React.ComponentType<{ className?: string }>;
+  isLink?: boolean;
+  href?: string;
+};
+
+const categories: Category[] = [
   { id: "all", name: "Все", icon: BookOpen },
   { id: "grants", name: "Стипендия", icon: Award },
   { id: "schedule", name: "Расписание", icon: Clock },
@@ -1466,8 +1474,8 @@ export default function EducationGuidePage() {
             {categories.map((category) => {
               const Icon = category.icon;
               const isActive = selectedCategory === category.id;
-              const isLink = (category as any).isLink;
-              const href = (category as any).href;
+              const isLink = category.isLink;
+              const href = category.href;
               
               if (isLink && href) {
                 return (
