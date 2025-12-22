@@ -238,7 +238,15 @@ export function useReminders(userId: string) {
       console.log('=== FETCH REMINDERS END ===');
     } catch (err) {
       console.error('Error fetching reminders:', err);
-      setError('Ошибка при загрузке напоминаний');
+      if (err instanceof Error && err.name === 'ConnectionError') {
+        setError('Сервер недоступен. Проверьте подключение.');
+      } else {
+        setError('Ошибка при загрузке напоминаний');
+      }
+      // В режиме разработки не показываем ошибки подключения как критичные
+      if (process.env.NODE_ENV === 'development') {
+        console.warn('Development mode: API server may not be running');
+      }
     } finally {
       setLoading(false);
     }

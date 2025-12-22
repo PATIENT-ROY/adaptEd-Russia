@@ -79,10 +79,19 @@ export default function DashboardPage() {
       setDailyQuests(data.dailyQuests);
     } catch (error) {
       console.error("Failed to load dashboard overview:", error);
-      const message =
-        error instanceof Error
-          ? error.message
-          : "Не удалось загрузить данные дашборда";
+      let message = "Не удалось загрузить данные дашборда";
+      
+      if (error instanceof Error) {
+        if (error.name === 'ConnectionError' || error.message.includes('Failed to fetch')) {
+          message = "Сервер недоступен. Проверьте подключение.";
+          if (process.env.NODE_ENV === 'development') {
+            console.warn('Development mode: API server may not be running on port 3003');
+          }
+        } else {
+          message = error.message;
+        }
+      }
+      
       setDashboardError(message);
       setUserProgress(null);
       setDailyQuests([]);

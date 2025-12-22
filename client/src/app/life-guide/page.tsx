@@ -1281,7 +1281,6 @@ const lifeGuides: Guide[] = [
 
 const categories = [
   { id: "all", name: "Все", icon: Home },
-  { id: "documents", name: "Документы", icon: FileText },
   { id: "housing", name: "Жильё", icon: Building },
   { id: "transport", name: "Транспорт", icon: Bus },
   { id: "health", name: "Здоровье", icon: Shield },
@@ -1332,19 +1331,6 @@ export default function LifeGuidePage() {
     if (selectedCategory !== "all") {
       filtered = filtered.filter((guide) => {
         switch (selectedCategory) {
-          case "documents":
-            return guide.tags.some((tag) =>
-              [
-                "ИНН",
-                "СНИЛС",
-                "документы",
-                "паспорт",
-                "потеря",
-                "замена",
-                "миграция",
-                "карта",
-              ].includes(tag)
-            );
           case "housing":
             return guide.tags.some((tag) =>
               [

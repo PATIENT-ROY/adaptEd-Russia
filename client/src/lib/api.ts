@@ -124,6 +124,15 @@ class ApiClient {
       return data;
     } catch (error) {
       console.error('API request error:', error);
+      
+      // Обработка ошибок подключения
+      if (error instanceof TypeError && error.message === 'Failed to fetch') {
+        const connectionError = new Error('Сервер недоступен. Убедитесь, что бэкенд запущен на порту 3003.');
+        connectionError.name = 'ConnectionError';
+        console.warn('API connection error - server may be down:', connectionError.message);
+        throw connectionError;
+      }
+      
       if (error instanceof Error) {
         console.error('API request error message:', error.message);
         console.error('API request error stack:', error.stack);
