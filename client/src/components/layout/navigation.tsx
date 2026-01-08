@@ -52,7 +52,7 @@ export function Navigation({
 
   return (
     <nav
-      className="modern-nav sticky top-0 z-50"
+      className="modern-nav sticky top-0 z-50 relative"
       style={{
         background: "rgba(255, 255, 255, 0.75)",
         backdropFilter: "blur(15px)",
@@ -230,6 +230,7 @@ export function Navigation({
               variant="outline"
               className="lg:hidden rounded-lg sm:rounded-xl p-1.5 sm:p-2 h-7 sm:h-8 w-7 sm:w-8"
               onClick={() => setIsMobileMenuOpen(!isMobileMenuOpen)}
+              aria-label="Toggle menu"
             >
               {isMobileMenuOpen ? (
                 <X className="h-3.5 w-3.5 sm:h-4 sm:w-4" />
@@ -242,37 +243,40 @@ export function Navigation({
 
         {/* Mobile Navigation */}
         {isMobileMenuOpen && (
-          <div className="lg:hidden py-4 border-t border-slate-200 bg-white animate-slide-in-from-top">
-            <div className="space-y-2">
+          <div className="absolute top-full left-0 right-0 bg-white shadow-lg border-t border-slate-200 lg:hidden z-50 animate-slide-down">
+            <ul className="flex flex-col space-y-2 p-4">
               {/* Основная навигация для всех */}
               {navigationItemsConfig.map((item, index) => {
                 const Icon = item.icon;
                 const isActive = pathname === item.href;
 
                 return (
-                  <Link
+                  <li
                     key={item.href}
-                    href={item.href}
-                    className={cn(
-                      "flex items-center space-x-3 px-4 py-3 rounded-xl text-sm font-medium transition-all duration-300 transform hover:scale-105",
-                      isActive
-                        ? "bg-blue-50 text-blue-700 shadow-sm"
-                        : "text-slate-600 hover:bg-slate-50"
-                    )}
-                    style={{
-                      animationDelay: `${index * 100}ms`,
-                      animationFillMode: "both",
-                    }}
-                    onClick={() => setIsMobileMenuOpen(false)}
+                    className="animate-fade-in"
+                    style={{ animationDelay: `${index * 0.1}s` }}
                   >
-                    <Icon
+                    <Link
+                      href={item.href}
+                      onClick={() => setIsMobileMenuOpen(false)}
                       className={cn(
-                        "h-5 w-5",
-                        isActive ? "text-blue-600" : "text-slate-500"
+                        "block w-full text-left p-3 rounded-lg transition-all duration-300 hover:translate-x-2",
+                        isActive
+                          ? "bg-blue-50 text-blue-700 shadow-sm hover:bg-blue-100"
+                          : "text-slate-600 hover:bg-slate-100 hover:text-slate-900"
                       )}
-                    />
-                    <span>{t(item.labelKey)}</span>
-                  </Link>
+                    >
+                      <div className="flex items-center space-x-3">
+                        <Icon
+                          className={cn(
+                            "h-5 w-5",
+                            isActive ? "text-blue-600" : "text-slate-500"
+                          )}
+                        />
+                        <span>{t(item.labelKey)}</span>
+                      </div>
+                    </Link>
+                  </li>
                 );
               })}
 
@@ -283,56 +287,66 @@ export function Navigation({
                   const isActive = pathname === item.href;
 
                   return (
-                    <Link
+                    <li
                       key={item.href}
-                      href={item.href}
-                      className={cn(
-                        "flex items-center space-x-3 px-4 py-3 rounded-xl text-sm font-medium transition-all duration-300 transform hover:scale-105",
-                        isActive
-                          ? "bg-blue-50 text-blue-700 shadow-sm"
-                          : "text-slate-600 hover:bg-slate-50"
-                      )}
+                      className="animate-fade-in"
                       style={{
                         animationDelay: `${
-                          (navigationItemsConfig.length + index) * 100
-                        }ms`,
-                        animationFillMode: "both",
+                          (navigationItemsConfig.length + index) * 0.1
+                        }s`,
                       }}
-                      onClick={() => setIsMobileMenuOpen(false)}
                     >
-                      <Icon
+                      <Link
+                        href={item.href}
+                        onClick={() => setIsMobileMenuOpen(false)}
                         className={cn(
-                          "h-5 w-5",
-                          isActive ? "text-blue-600" : "text-slate-500"
+                          "block w-full text-left p-3 rounded-lg transition-all duration-300 hover:translate-x-2",
+                          isActive
+                            ? "bg-blue-50 text-blue-700 shadow-sm hover:bg-blue-100"
+                            : "text-slate-600 hover:bg-slate-100 hover:text-slate-900"
                         )}
-                      />
-                      <span>{t(item.labelKey)}</span>
-                    </Link>
+                      >
+                        <div className="flex items-center space-x-3">
+                          <Icon
+                            className={cn(
+                              "h-5 w-5",
+                              isActive ? "text-blue-600" : "text-slate-500"
+                            )}
+                          />
+                          <span>{t(item.labelKey)}</span>
+                        </div>
+                      </Link>
+                    </li>
                   );
                 })}
 
               {/* Admin Panel Link for Mobile */}
               {user?.role === Role.ADMIN && (
-                <Link
-                  href="/admin"
-                  className="flex items-center space-x-3 px-4 py-3 rounded-xl text-sm font-medium bg-gradient-to-r from-red-500 to-red-600 text-white hover:from-red-600 hover:to-red-700 transition-all duration-300 transform hover:scale-105"
+                <li
+                  className="animate-fade-in"
                   style={{
                     animationDelay: `${
                       (navigationItemsConfig.length +
                         (user
                           ? authenticatedNavigationItemsConfig.length
                           : 0)) *
-                      100
-                    }ms`,
-                    animationFillMode: "both",
+                      0.1
+                    }s`,
                   }}
-                  onClick={() => setIsMobileMenuOpen(false)}
                 >
-                  <Shield className="h-5 w-5" />
-                  <span>{t("nav.admin")}</span>
-                </Link>
+                  <Link
+                    href="/admin"
+                    onClick={() => setIsMobileMenuOpen(false)}
+                    className="block w-full text-left p-3 rounded-lg bg-gradient-to-r from-red-500 to-red-600 text-white hover:from-red-600 hover:to-red-700 transition-all duration-300 hover:translate-x-2"
+                  >
+                    <div className="flex items-center space-x-3">
+                      <Shield className="h-5 w-5" />
+                      <span>{t("nav.admin")}</span>
+                    </div>
+                  </Link>
+                </li>
               )}
-            </div>
+            </ul>
           </div>
         )}
       </div>
