@@ -107,7 +107,7 @@ export function Footer() {
               <BookOpen className="h-4 w-4 sm:h-5 sm:w-5 mr-2 text-blue-400" />
               {t("footer.platform")}
             </h3>
-            <ul className="space-y-0.5 sm:space-y-1">
+            <ul className="space-y-0.5 sm:space-y-1 mb-3 sm:mb-4">
               {footerLinks.platform.map((link, index) => (
                 <li key={link.href}>
                   <Link
@@ -154,7 +154,7 @@ export function Footer() {
               <Shield className="h-4 w-4 sm:h-5 sm:w-5 mr-2 text-blue-400" />
               Контакты
             </h3>
-            <div className="space-y-1 sm:space-y-2 mb-4 sm:mb-6">
+            <div className="space-y-0.5 sm:space-y-1 mb-3 sm:mb-4">
               <div className="flex items-center space-x-2 sm:space-x-3 text-slate-300 text-xs sm:text-sm">
                 <Mail className="h-3 w-3 sm:h-4 sm:w-4 text-blue-400 flex-shrink-0" />
                 <span className="break-all">support@adapted-russia.com</span>
@@ -174,7 +174,7 @@ export function Footer() {
               <FileText className="h-4 w-4 sm:h-5 sm:w-5 mr-2 text-blue-400" />
               Реквизиты
             </h3>
-            <div className="space-y-1 sm:space-y-2">
+            <div className="space-y-0.5 sm:space-y-1">
               <div className="text-slate-300 text-xs sm:text-sm">
                 ИП Рой Мбая
               </div>

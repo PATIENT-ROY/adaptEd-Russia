@@ -127,7 +127,7 @@ export default function DashboardPage() {
         <Layout>
           <div className="space-y-6 sm:space-y-8">
             {/* Header Skeleton */}
-            <div className="bg-gradient-to-r from-blue-50 to-indigo-50 rounded-lg p-4 sm:p-6 lg:p-8 shadow-lg">
+            <div className="bg-gradient-to-r from-blue-50 to-indigo-50 rounded-2xl sm:rounded-3xl p-4 sm:p-6 lg:p-8 shadow-lg">
               <div className="flex flex-col sm:flex-row sm:items-center space-y-4 sm:space-y-0 sm:space-x-4">
                 <div className="w-12 h-12 sm:w-16 sm:h-16 rounded-2xl bg-gray-200 animate-pulse"></div>
                 <div className="flex-1">
@@ -140,7 +140,7 @@ export default function DashboardPage() {
             {/* Progress & Quests Skeleton */}
             <div className="grid grid-cols-1 xl:grid-cols-3 gap-6 sm:gap-8">
               <div className="xl:col-span-2">
-                <div className="bg-white rounded-lg p-6 shadow-sm">
+                <div className="bg-white rounded-2xl sm:rounded-3xl p-6">
                   <div className="h-6 w-48 bg-gray-200 rounded animate-pulse mb-4"></div>
                   <div className="space-y-4">
                     <div className="h-4 w-full bg-gray-200 rounded animate-pulse"></div>
@@ -154,7 +154,7 @@ export default function DashboardPage() {
                 </div>
               </div>
               <div>
-                <div className="bg-white rounded-lg p-6 shadow-sm">
+                <div className="bg-white rounded-2xl sm:rounded-3xl p-6">
                   <div className="h-6 w-40 bg-gray-200 rounded animate-pulse mb-4"></div>
                   <div className="space-y-3">
                     {[1, 2, 3].map((i) => (
@@ -175,7 +175,7 @@ export default function DashboardPage() {
                 {[1, 2, 3, 4].map((i) => (
                   <div
                     key={i}
-                    className="bg-white rounded-lg p-4 sm:p-6 shadow-sm"
+                    className="bg-white rounded-2xl sm:rounded-3xl p-4 sm:p-6"
                   >
                     <div className="w-12 h-12 sm:w-16 sm:h-16 rounded-2xl bg-gray-200 animate-pulse mx-auto mb-3 sm:mb-4"></div>
                     <div className="h-5 w-24 bg-gray-200 rounded animate-pulse mx-auto mb-2"></div>
@@ -192,7 +192,7 @@ export default function DashboardPage() {
                 {[1, 2, 3].map((i) => (
                   <div
                     key={i}
-                    className="bg-white rounded-lg p-4 sm:p-6 shadow-sm"
+                    className="bg-white rounded-2xl sm:rounded-3xl p-4 sm:p-6"
                   >
                     <div className="flex items-center space-x-3 sm:space-x-4">
                       <div className="w-10 h-10 sm:w-12 sm:h-12 bg-gray-200 rounded-xl animate-pulse"></div>

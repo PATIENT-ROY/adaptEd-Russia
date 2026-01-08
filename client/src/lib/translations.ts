@@ -66,7 +66,7 @@ const translations: Record<Language, Record<string, string>> = {
     "home.benefits.support": "Поддержка 24/7",
     "home.benefits.support.desc": "AI-помощник всегда готов ответить на ваши вопросы",
     
-    "home.pricing.freemium": "Freemium",
+    "home.pricing.freemium": "Базовый",
     "home.pricing.freemium.price": "Бесплатно",
     "home.pricing.premium": "Премиум",
     "home.pricing.premium.price": "299₽/мес",
@@ -446,7 +446,7 @@ const translations: Record<Language, Record<string, string>> = {
     "home.benefits.support": "Support 24/7",
     "home.benefits.support.desc": "L'assistant IA est toujours prêt à répondre à vos questions",
     
-    "home.pricing.freemium": "Freemium",
+    "home.pricing.freemium": "Basique",
     "home.pricing.freemium.price": "Gratuit",
     "home.pricing.premium": "Premium",
     "home.pricing.premium.price": "299₽/mois",

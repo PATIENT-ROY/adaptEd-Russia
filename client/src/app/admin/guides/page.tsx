@@ -210,7 +210,7 @@ export default function AdminGuidesPage() {
     <Layout>
       <div className="space-y-6 sm:space-y-8">
         {/* Header */}
-        <div className="bg-white rounded-lg p-4 sm:p-6 shadow-sm">
+        <div className="bg-white rounded-2xl sm:rounded-3xl p-4 sm:p-6 shadow-sm">
           <div className="flex flex-col sm:flex-row sm:items-center justify-between space-y-4 sm:space-y-0">
             <div className="flex items-center space-x-3">
               <Link

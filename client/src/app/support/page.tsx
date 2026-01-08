@@ -165,7 +165,7 @@ export default function SupportPage() {
           {/* Contact Methods Skeleton */}
           <div className="grid grid-cols-1 md:grid-cols-3 gap-6 mb-12">
             {[1, 2, 3].map((i) => (
-              <div key={i} className="bg-white rounded-lg p-6 shadow-sm">
+              <div key={i} className="bg-white rounded-2xl sm:rounded-3xl p-6 shadow-sm">
                 <div className="w-12 h-12 bg-gray-200 rounded-lg animate-pulse mb-4"></div>
                 <div className="h-6 w-40 bg-gray-200 rounded animate-pulse mb-2"></div>
                 <div className="h-4 w-48 bg-gray-200 rounded animate-pulse mb-2"></div>
@@ -177,7 +177,7 @@ export default function SupportPage() {
           {/* Form and FAQ Skeleton */}
           <div className="grid grid-cols-1 lg:grid-cols-2 gap-8">
             {/* Form Skeleton */}
-            <div className="bg-white rounded-lg p-6 shadow-sm">
+            <div className="bg-white rounded-2xl sm:rounded-3xl p-6 shadow-sm">
               <div className="h-6 w-48 bg-gray-200 rounded animate-pulse mb-4"></div>
               <div className="space-y-4">
                 <div className="grid grid-cols-2 gap-4">
@@ -191,7 +191,7 @@ export default function SupportPage() {
             </div>
 
             {/* FAQ Skeleton */}
-            <div className="bg-white rounded-lg p-6 shadow-sm">
+            <div className="bg-white rounded-2xl sm:rounded-3xl p-6 shadow-sm">
               <div className="h-6 w-32 bg-gray-200 rounded animate-pulse mb-4"></div>
               <div className="space-y-4">
                 {[1, 2, 3, 4].map((i) => (

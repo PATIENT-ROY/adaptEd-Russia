@@ -3,6 +3,7 @@
 import { Layout } from "@/components/layout/layout";
 import { Card, CardContent, CardHeader, CardTitle } from "@/components/ui/card";
 import { Button } from "@/components/ui/button";
+import { useTranslation } from "@/hooks/useTranslation";
 import {
   User,
   Mail,
@@ -331,6 +332,7 @@ export default function ProfilePage() {
   const [isProfileLoading, setIsProfileLoading] = useState(false);
   const [profileError, setProfileError] = useState<string | null>(null);
   const { user, logout, updateProfile } = useAuth();
+  const { t } = useTranslation();
 
   useEffect(() => {
     let isMounted = true;
@@ -403,9 +405,9 @@ export default function ProfilePage() {
   if (!user || !mergedUser) {
     return (
       <Layout>
-        <div className="min-h-screen bg-gradient-to-br from-slate-50 via-blue-50 to-indigo-50">
+        <div className="min-h-screen bg-gradient-to-br from-slate-50 via-blue-50 to-indigo-50 rounded-2xl sm:rounded-3xl mx-4 sm:mx-6 lg:mx-8 my-4 sm:my-6 lg:my-8 overflow-hidden">
           {/* Hero Skeleton */}
-          <div className="relative overflow-hidden bg-gradient-to-br from-blue-600 via-purple-600 to-indigo-700 py-8 sm:py-12 md:py-16">
+          <div className="relative overflow-hidden bg-gradient-to-br from-blue-600 via-purple-600 to-indigo-700 py-8 sm:py-12 md:py-16 rounded-2xl sm:rounded-3xl mx-4 sm:mx-6 lg:mx-8 mt-4 sm:mt-6 mb-6 sm:mb-8 lg:mb-10">
             <div className="relative max-w-7xl mx-auto px-3 sm:px-4 lg:px-6">
               <div className="flex flex-col lg:flex-row items-center space-y-4 sm:space-y-6 lg:space-y-0 lg:space-x-8">
                 <div className="w-20 h-20 sm:w-24 sm:h-24 md:w-28 md:h-28 lg:w-32 lg:h-32 rounded-full bg-gray-300 animate-pulse"></div>
@@ -423,7 +425,7 @@ export default function ProfilePage() {
               {/* Main Content */}
               <div className="lg:col-span-2 space-y-6">
                 {[1, 2, 3].map((i) => (
-                  <div key={i} className="bg-white rounded-lg p-6 shadow-sm">
+                  <div key={i} className="bg-white rounded-2xl sm:rounded-3xl p-6">
                     <div className="h-6 w-48 bg-gray-200 rounded animate-pulse mb-4"></div>
                     <div className="space-y-3">
                       <div className="h-4 w-full bg-gray-200 rounded animate-pulse"></div>
@@ -437,7 +439,7 @@ export default function ProfilePage() {
               {/* Sidebar */}
               <div className="space-y-6">
                 {[1, 2].map((i) => (
-                  <div key={i} className="bg-white rounded-lg p-6 shadow-sm">
+                  <div key={i} className="bg-white rounded-2xl sm:rounded-3xl p-6">
                     <div className="h-6 w-32 bg-gray-200 rounded animate-pulse mb-4"></div>
                     <div className="space-y-3">
                       <div className="h-10 w-full bg-gray-200 rounded animate-pulse"></div>
@@ -477,9 +479,9 @@ export default function ProfilePage() {
 
   return (
     <Layout>
-      <div className="min-h-screen bg-gradient-to-br from-slate-50 via-blue-50 to-indigo-50">
+      <div className="min-h-screen bg-gradient-to-br from-slate-50 via-blue-50 to-indigo-50 rounded-2xl sm:rounded-3xl mx-4 sm:mx-6 lg:mx-8 my-4 sm:my-6 lg:my-8 overflow-hidden">
         {/* Hero Section */}
-        <div className="relative overflow-hidden bg-gradient-to-br from-blue-600 via-purple-600 to-indigo-700 py-8 sm:py-12 md:py-16">
+        <div className="relative overflow-hidden bg-gradient-to-br from-blue-600 via-purple-600 to-indigo-700 py-8 sm:py-12 md:py-16 rounded-2xl sm:rounded-3xl mx-4 sm:mx-6 lg:mx-8 mt-4 sm:mt-6 mb-6 sm:mb-8 lg:mb-10">
           <div className="absolute inset-0 bg-black/10"></div>
           <div
             className="absolute inset-0"
@@ -530,12 +532,12 @@ export default function ProfilePage() {
                   {user.plan === Plan.PREMIUM ? (
                     <span className="inline-flex items-center px-2 sm:px-3 md:px-4 py-1 md:py-2 rounded-full bg-gradient-to-r from-yellow-400 to-orange-500">
                       <Crown className="mr-1 sm:mr-2 h-3 w-3 sm:h-4 sm:w-4 md:h-5 md:w-5" />
-                      Премиум
+                      {t("home.pricing.premium")}
                     </span>
                   ) : (
                     <span className="inline-flex items-center px-2 sm:px-3 md:px-4 py-1 md:py-2 rounded-full bg-red-500 text-white border-2 border-red-600">
                       <Zap className="mr-1 sm:mr-2 h-3 w-3 sm:h-4 sm:w-4 md:h-5 md:w-5" />
-                      Freemium
+                      {t("home.pricing.freemium")}
                     </span>
                   )}
                 </div>

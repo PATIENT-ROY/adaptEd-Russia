@@ -604,7 +604,7 @@ export default function DocScanPage() {
       <Layout>
         <div className="space-y-6 sm:space-y-8">
           {/* Header */}
-          <div className="bg-white rounded-lg p-4 sm:p-6 shadow-sm">
+          <div className="bg-white rounded-2xl sm:rounded-3xl p-4 sm:p-6 shadow-sm">
             <div className="flex flex-col sm:flex-row sm:items-center space-y-3 sm:space-y-0 sm:space-x-3">
               <div className="rounded-lg bg-gradient-to-br from-[#6A5AE0] to-[#3B82F6] p-3 w-fit">
                 <FileText className="h-6 w-6 text-white" />
@@ -621,7 +621,7 @@ export default function DocScanPage() {
           </div>
 
           {/* Main Content */}
-          <div className="bg-white rounded-lg p-4 sm:p-6 lg:p-8 shadow-sm">
+          <div className="bg-white rounded-2xl sm:rounded-3xl p-4 sm:p-6 lg:p-8 shadow-sm">
             <h2 className="text-center text-xl sm:text-2xl font-bold text-gray-900 mb-6 sm:mb-8">
               Сканировать документ
             </h2>

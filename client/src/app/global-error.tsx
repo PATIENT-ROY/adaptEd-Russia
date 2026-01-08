@@ -18,7 +18,7 @@ export default function GlobalError({ error, reset }: GlobalErrorProps) {
     <html>
       <body>
         <div className="flex items-center justify-center min-h-screen bg-gray-50">
-          <div className="text-center p-8 bg-white rounded-lg shadow-lg max-w-md mx-4">
+          <div className="text-center p-8 bg-white rounded-2xl sm:rounded-3xl shadow-lg max-w-md mx-4">
             <div className="mb-6">
               <AlertTriangle className="h-16 w-16 text-red-600 mx-auto mb-4" />
               <h1 className="text-2xl font-bold text-gray-900 mb-2">

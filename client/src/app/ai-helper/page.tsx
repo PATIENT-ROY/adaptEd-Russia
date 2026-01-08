@@ -275,7 +275,7 @@ export default function AiHelperPage() {
         <Layout>
           <div className="space-y-4 sm:space-y-6 lg:space-y-8">
             {/* Header Skeleton */}
-            <div className="bg-white rounded-lg p-4 sm:p-6 shadow-sm">
+            <div className="bg-white rounded-2xl sm:rounded-3xl p-4 sm:p-6 shadow-sm">
               <div className="flex flex-col sm:flex-row sm:items-center space-y-3 sm:space-y-0 sm:space-x-3">
                 <div className="w-12 h-12 bg-gray-200 rounded-lg animate-pulse"></div>
                 <div className="flex-1">
@@ -288,7 +288,7 @@ export default function AiHelperPage() {
             {/* Chat Skeleton */}
             <div className="grid grid-cols-1 xl:grid-cols-4 gap-4 sm:gap-6 lg:gap-8">
               <div className="xl:col-span-3">
-                <div className="bg-white rounded-lg min-h-[500px] p-6 shadow-sm">
+                <div className="bg-white rounded-2xl sm:rounded-3xl min-h-[500px] p-6 shadow-sm">
                   <div className="space-y-4">
                     {[1, 2, 3].map((i) => (
                       <div key={i} className="flex space-x-3">
@@ -303,7 +303,7 @@ export default function AiHelperPage() {
                 </div>
               </div>
               <div>
-                <div className="bg-white rounded-lg p-6 shadow-sm">
+                <div className="bg-white rounded-2xl sm:rounded-3xl p-6 shadow-sm">
                   <div className="h-6 w-40 bg-gray-200 rounded animate-pulse mb-4"></div>
                   <div className="space-y-3">
                     {[1, 2, 3, 4].map((i) => (
@@ -327,7 +327,7 @@ export default function AiHelperPage() {
       <Layout>
         <div className="space-y-4 sm:space-y-6 lg:space-y-8">
           {/* Header */}
-          <div className="bg-white rounded-lg p-4 sm:p-6 shadow-sm">
+          <div className="bg-white rounded-2xl sm:rounded-3xl p-4 sm:p-6 shadow-sm">
             <div className="flex flex-col sm:flex-row sm:items-center space-y-3 sm:space-y-0 sm:space-x-3">
               <div className="rounded-lg bg-orange-50 p-3 w-fit">
                 <MessageSquare className="h-6 w-6 text-orange-600" />

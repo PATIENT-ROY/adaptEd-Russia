@@ -204,7 +204,7 @@ export default function HomePage() {
       <StructuredData data={organizationStructuredData} />
       <Layout>
         {/* Hero Section */}
-        <div className="relative overflow-hidden bg-gradient-to-br from-blue-600 via-purple-600 to-indigo-700 py-8 sm:py-12 md:py-24 rounded-2xl sm:rounded-3xl mx-4 sm:mx-6 lg:mx-8 mt-4 sm:mt-6 mb-6 sm:mb-8 lg:mb-10">
+        <div className="relative overflow-hidden bg-gradient-to-br from-blue-600 via-purple-600 to-indigo-700 py-8 sm:py-12 md:py-24 rounded-2xl sm:rounded-3xl mt-4 sm:mt-6 mb-6 sm:mb-8 lg:mb-10">
           <div className="absolute inset-0 bg-black/10"></div>
           <div
             className="absolute inset-0"
@@ -288,7 +288,7 @@ export default function HomePage() {
                             {feature.title}
                           </h3>
                           {feature.stats && (
-                            <div className="text-[10px] sm:text-xs text-white/70 font-medium mt-auto flex-shrink-0">
+                            <div className="text-[11px] sm:text-xs text-white/80 font-medium mt-auto flex-shrink-0 leading-tight">
                               {feature.stats}
                             </div>
                           )}
@@ -310,7 +310,7 @@ export default function HomePage() {
         </div>
 
         {/* Features Section - Detailed */}
-        <section className="py-12 sm:py-16 md:py-24 bg-gradient-to-br from-slate-50 via-white to-blue-50 rounded-2xl sm:rounded-3xl mx-4 sm:mx-6 lg:mx-8 my-6 sm:my-8 lg:my-10">
+        <section className="py-12 sm:py-16 md:py-24 bg-gradient-to-br from-slate-50 via-white to-blue-50 rounded-2xl sm:rounded-3xl my-6 sm:my-8 lg:my-10">
           <div className="max-w-7xl mx-auto px-2.5 sm:px-6 lg:px-8">
             <div className="text-center mb-8 sm:mb-12">
               <div className="inline-flex items-center rounded-full bg-blue-100 px-4 py-2 text-xs sm:text-sm font-semibold text-blue-700 mb-4">
@@ -367,7 +367,7 @@ export default function HomePage() {
 
         {/* Benefits Section */}
         <section
-          className="py-12 sm:py-16 md:py-24 relative overflow-hidden rounded-2xl sm:rounded-3xl mx-4 sm:mx-6 lg:mx-8 my-6 sm:my-8 lg:my-10"
+          className="py-12 sm:py-16 md:py-24 relative overflow-hidden rounded-2xl sm:rounded-3xl my-6 sm:my-8 lg:my-10"
           style={{
             backgroundImage: `url("data:image/svg+xml,%3Csvg width='60' height='60' viewBox='0 0 60 60' xmlns='http://www.w3.org/2000/svg'%3E%3Cg fill='none' fill-rule='evenodd'%3E%3Cg fill='%23ffffff' fill-opacity='0.05'%3E%3Ccircle cx='30' cy='30' r='4'/%3E%3C/g%3E%3C/g%3E%3C/svg%3E")`,
           }}
@@ -413,7 +413,7 @@ export default function HomePage() {
         </section>
 
         {/* About Section */}
-        <section className="py-12 sm:py-16 md:py-24 bg-white rounded-2xl sm:rounded-3xl mx-4 sm:mx-6 lg:mx-8 my-6 sm:my-8 lg:my-10">
+        <section className="py-12 sm:py-16 md:py-24 bg-white rounded-2xl sm:rounded-3xl my-6 sm:my-8 lg:my-10">
           <div className="mx-auto max-w-4xl px-3 sm:px-4 lg:px-6">
             <div className="text-center mb-8 sm:mb-10">
               <h2 className="text-2xl sm:text-3xl md:text-4xl font-bold tracking-tight text-slate-900 mb-3 sm:mb-4">
@@ -442,7 +442,7 @@ export default function HomePage() {
         {/* Partners Section - временно скрыто */}
 
         {/* Testimonials Section */}
-        <section className="py-12 sm:py-16 md:py-24 bg-white rounded-2xl sm:rounded-3xl mx-4 sm:mx-6 lg:mx-8 my-6 sm:my-8 lg:my-10">
+        <section className="py-12 sm:py-16 md:py-24 bg-white rounded-2xl sm:rounded-3xl my-6 sm:my-8 lg:my-10">
           <div className="mx-auto max-w-6xl px-3 sm:px-4 lg:px-6">
             <div className="text-center mb-12 sm:mb-16 lg:mb-20">
               <h2 className="text-2xl sm:text-3xl md:text-4xl lg:text-5xl xl:text-6xl font-bold tracking-tight text-slate-900 mb-4 sm:mb-6">
@@ -498,7 +498,7 @@ export default function HomePage() {
         </section>
 
         {/* Pricing Section */}
-        <section className="py-12 sm:py-16 md:py-24 bg-gradient-to-br from-slate-50 via-blue-50 to-indigo-50 rounded-2xl sm:rounded-3xl mx-4 sm:mx-6 lg:mx-8 my-6 sm:my-8 lg:my-10">
+        <section className="py-12 sm:py-16 md:py-24 bg-gradient-to-br from-slate-50 via-blue-50 to-indigo-50 rounded-2xl sm:rounded-3xl my-6 sm:my-8 lg:my-10">
           <div className="mx-auto max-w-6xl px-3 sm:px-4 lg:px-6">
             <div className="text-center mb-12 sm:mb-16 lg:mb-20">
               <h2 className="text-2xl sm:text-3xl md:text-4xl lg:text-5xl xl:text-6xl font-bold tracking-tight text-slate-900 mb-4 sm:mb-6">
@@ -593,7 +593,7 @@ export default function HomePage() {
         </section>
 
         {/* CTA Section */}
-        <section className="py-12 sm:py-16 md:py-24 bg-gradient-to-br from-slate-900 via-purple-900 to-blue-900 relative overflow-hidden rounded-2xl sm:rounded-3xl mx-4 sm:mx-6 lg:mx-8 mt-4 sm:mt-6 mb-8 sm:mb-12 lg:mb-16">
+        <section className="py-12 sm:py-16 md:py-24 bg-gradient-to-br from-slate-900 via-purple-900 to-blue-900 relative overflow-hidden rounded-2xl sm:rounded-3xl mt-4 sm:mt-6 mb-8 sm:mb-12 lg:mb-16">
           <div className="absolute inset-0">
             <div
               className="absolute top-0 left-0 w-full h-full opacity-30"

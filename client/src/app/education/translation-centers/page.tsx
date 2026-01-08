@@ -332,7 +332,7 @@ export default function TranslationCentersPage() {
     <Layout>
       <div className="space-y-6 sm:space-y-8">
         {/* Header */}
-        <div className="bg-white rounded-lg p-4 sm:p-6 shadow-sm">
+        <div className="bg-white rounded-2xl sm:rounded-3xl p-4 sm:p-6 shadow-sm">
           <div className="flex flex-col sm:flex-row sm:items-center space-y-3 sm:space-y-0 sm:space-x-3">
             <Link href="/education-guide">
               <Button variant="ghost" size="sm" className="mb-2 sm:mb-0">
@@ -359,7 +359,7 @@ export default function TranslationCentersPage() {
         </div>
 
         {/* City Selector */}
-        <div className="bg-white rounded-lg p-4 sm:p-6 shadow-sm">
+        <div className="bg-white rounded-2xl sm:rounded-3xl p-4 sm:p-6 shadow-sm">
           <div className="flex flex-col sm:flex-row sm:items-center gap-3 sm:gap-4">
             <div className="flex items-center gap-2">
               <MapPin className="h-5 w-5 text-blue-600" />

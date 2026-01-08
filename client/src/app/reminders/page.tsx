@@ -530,7 +530,7 @@ export default function RemindersPage() {
       <Layout>
         <div className="space-y-8">
           {/* Header Skeleton */}
-          <div className="bg-white rounded-lg p-4 sm:p-6 shadow-sm">
+          <div className="bg-white rounded-2xl sm:rounded-3xl p-4 sm:p-6 shadow-sm">
             <div className="flex flex-col sm:flex-row sm:items-center justify-between space-y-4 sm:space-y-0">
               <div className="flex items-center space-x-3">
                 <div className="w-12 h-12 bg-gray-200 rounded-lg animate-pulse"></div>
@@ -544,7 +544,7 @@ export default function RemindersPage() {
           </div>
 
           {/* Search and Filters Skeleton */}
-          <div className="bg-white rounded-lg p-4 sm:p-6 shadow-sm">
+          <div className="bg-white rounded-2xl sm:rounded-3xl p-4 sm:p-6 shadow-sm">
             <div className="flex flex-col sm:flex-row gap-4">
               <div className="h-10 flex-1 bg-gray-200 rounded animate-pulse"></div>
               <div className="h-10 w-32 bg-gray-200 rounded animate-pulse"></div>
@@ -554,7 +554,7 @@ export default function RemindersPage() {
           {/* Statistics Skeleton */}
           <div className="grid grid-cols-1 sm:grid-cols-2 lg:grid-cols-3 gap-4">
             {[1, 2, 3].map((i) => (
-              <div key={i} className="bg-white rounded-lg p-4 sm:p-6 shadow-sm">
+              <div key={i} className="bg-white rounded-2xl sm:rounded-3xl p-4 sm:p-6 shadow-sm">
                 <div className="flex items-center space-x-3">
                   <div className="w-12 h-12 bg-gray-200 rounded-lg animate-pulse"></div>
                   <div className="flex-1">
@@ -573,7 +573,7 @@ export default function RemindersPage() {
               {[1, 2, 3].map((i) => (
                 <div
                   key={i}
-                  className="bg-white rounded-lg p-4 shadow-sm border-l-4 border-l-blue-500"
+                  className="bg-white rounded-2xl sm:rounded-3xl p-4 shadow-sm border-l-4 border-l-blue-500"
                 >
                   <div className="flex items-start space-x-3">
                     <div className="w-4 h-4 bg-gray-200 rounded animate-pulse"></div>
@@ -597,7 +597,7 @@ export default function RemindersPage() {
           {/* Calendar Skeleton */}
           <div>
             <div className="h-6 w-32 bg-gray-200 rounded animate-pulse mb-4"></div>
-            <div className="bg-white rounded-lg p-4 sm:p-6 shadow-sm">
+            <div className="bg-white rounded-2xl sm:rounded-3xl p-4 sm:p-6 shadow-sm">
               <div className="space-y-4">
                 <div className="flex items-center justify-between mb-4">
                   <div className="h-8 w-8 bg-gray-200 rounded animate-pulse"></div>
@@ -646,7 +646,7 @@ export default function RemindersPage() {
     <Layout>
       <div className="space-y-8">
         {/* Header */}
-        <div className="bg-white rounded-lg p-4 sm:p-6 shadow-sm">
+        <div className="bg-white rounded-2xl sm:rounded-3xl p-4 sm:p-6 shadow-sm">
           <div className="flex flex-col sm:flex-row sm:items-center justify-between space-y-4 sm:space-y-0">
             <div className="flex items-center space-x-3">
               <div className="rounded-lg bg-purple-50 p-3">
@@ -949,7 +949,7 @@ export default function RemindersPage() {
         )}
 
         {/* Search and Filters */}
-        <div className="bg-white rounded-lg p-4 sm:p-6 shadow-sm">
+        <div className="bg-white rounded-2xl sm:rounded-3xl p-4 sm:p-6 shadow-sm">
           <div className="flex flex-col sm:flex-row gap-4">
             <div className="flex-1 relative">
               <Search className="absolute left-3 top-1/2 transform -translate-y-1/2 h-4 w-4 text-gray-400" />

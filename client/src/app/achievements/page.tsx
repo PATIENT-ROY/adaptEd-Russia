@@ -155,7 +155,7 @@ export default function AchievementsPage() {
       <ProtectedRoute>
         <Layout>
           <div className="space-y-6 sm:space-y-8">
-            <div className="bg-white rounded-lg p-4 sm:p-6 shadow-sm">
+            <div className="bg-white rounded-2xl sm:rounded-3xl p-4 sm:p-6 shadow-sm">
               <div className="h-6 w-40 bg-gray-200 rounded animate-pulse mb-4" />
               <div className="h-4 w-64 bg-gray-200 rounded animate-pulse" />
             </div>
@@ -182,7 +182,7 @@ export default function AchievementsPage() {
       <Layout>
         <div className="space-y-6 sm:space-y-8">
           {/* Header */}
-          <div className="bg-white rounded-lg p-4 sm:p-6 shadow-sm">
+          <div className="bg-white rounded-2xl sm:rounded-3xl p-4 sm:p-6 shadow-sm">
             <div className="flex flex-col sm:flex-row sm:items-center space-y-3 sm:space-y-0 sm:space-x-3">
               <Link href="/dashboard">
                 <Button

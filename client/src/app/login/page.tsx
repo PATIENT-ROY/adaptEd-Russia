@@ -106,10 +106,10 @@ export default function LoginPage() {
   }, []);
 
   return (
-    <div className="min-h-screen bg-gradient-to-br from-slate-50 via-blue-50 to-indigo-50 flex items-center justify-center p-4">
-      <div className="w-full max-w-md">
+    <div className="min-h-screen bg-gradient-to-br from-slate-50 via-blue-50 to-indigo-50 flex items-start sm:items-center justify-center p-4 py-6 sm:py-8 overflow-y-auto">
+      <div className="w-full max-w-md my-auto">
         {/* Logo */}
-        <div className="text-center mb-8">
+        <div className="text-center mb-6 sm:mb-8">
           <Link href="/" className="inline-flex items-center space-x-3 group">
             <div className="h-12 w-12 rounded-2xl bg-gradient-to-br from-blue-600 to-indigo-600 flex items-center justify-center shadow-lg group-hover:shadow-xl transition-all duration-300 group-hover:scale-105">
               <span className="text-white font-bold text-xl">A</span>
@@ -147,7 +147,7 @@ export default function LoginPage() {
             </CardDescription>
           </CardHeader>
 
-          <CardContent className="space-y-6 relative overflow-hidden min-h-[360px]">
+          <CardContent className="space-y-4 sm:space-y-6 relative overflow-hidden min-h-[320px] sm:min-h-[360px]">
             <AnimatePresence mode="wait">
               {step === "email" ? (
                 <motion.form
@@ -158,7 +158,7 @@ export default function LoginPage() {
                   animate={{ opacity: 1, y: 0 }}
                   exit={{ opacity: 0, y: -16 }}
                   transition={{ duration: 0.35, ease: [0.16, 1, 0.3, 1] }}
-                  style={{ minHeight: "240px" }}
+                  style={{ minHeight: "200px" }}
                 >
               <div className="space-y-2">
                 <label
@@ -200,7 +200,7 @@ export default function LoginPage() {
                   animate={{ opacity: 1, y: 0 }}
                   exit={{ opacity: 0, y: -16 }}
                   transition={{ duration: 0.35, ease: [0.16, 1, 0.3, 1] }}
-                  style={{ minHeight: "240px" }}
+                  style={{ minHeight: "200px" }}
                 >
                   <motion.div
                     className="rounded-xl border border-slate-200 bg-slate-50 p-4 text-left"
@@ -373,7 +373,7 @@ export default function LoginPage() {
         </Card>
 
         {/* Features */}
-        <div className="mt-8 grid grid-cols-3 gap-4">
+        <div className="mt-6 sm:mt-8 grid grid-cols-3 gap-3 sm:gap-4">
           <div className="text-center p-4 rounded-xl bg-white/50 backdrop-blur-sm border border-white/20">
             <BookOpen className="h-6 w-6 text-blue-600 mx-auto mb-2" />
             <p className="text-xs text-slate-600">Образовательные гайды</p>

@@ -59,10 +59,14 @@ export function GuideCard({ guide, onClick, className }: GuideCardProps) {
   };
 
   // Обрезаем контент для превью (как на эскизе "Тут будет подсказка что в нутри...")
-  const previewText = guide.content 
-    ? guide.content.length > 100 
-      ? guide.content.substring(0, 100) + "..." 
-      : guide.content
+  // Убираем markdown синтаксис из превью
+  const cleanContent = guide.content 
+    ? guide.content.replace(/\*\*(.*?)\*\*/g, '$1').replace(/^#+\s+/gm, '').replace(/^•\s+/gm, '')
+    : "";
+  const previewText = cleanContent
+    ? cleanContent.length > 100 
+      ? cleanContent.substring(0, 100) + "..." 
+      : cleanContent
     : "Тут будет подсказка что в нутри...";
 
   const categoryLabel = guide.category === GuideCategory.EDUCATION

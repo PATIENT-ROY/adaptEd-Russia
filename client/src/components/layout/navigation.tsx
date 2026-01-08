@@ -52,7 +52,7 @@ export function Navigation({
 
   return (
     <nav
-      className="modern-nav sticky top-0 z-50 relative"
+      className="modern-nav sticky top-0 z-50"
       style={{
         background: "rgba(255, 255, 255, 0.75)",
         backdropFilter: "blur(15px)",
@@ -60,7 +60,7 @@ export function Navigation({
         boxShadow: "0 4px 6px -1px rgba(0, 0, 0, 0.1)",
       }}
     >
-      <div className="mx-auto max-w-screen-2xl w-full px-4 sm:px-6 lg:px-8">
+      <div className="mx-auto max-w-screen-2xl w-full px-4 sm:px-6 lg:px-8 relative">
         <div className="flex h-14 sm:h-16 items-center justify-between">
           {/* Logo */}
           <div className="flex items-center">

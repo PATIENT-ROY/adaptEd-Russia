@@ -2050,7 +2050,7 @@ export default function EducationGuidePage() {
       <Layout>
         <div className="space-y-6 sm:space-y-8">
           {/* Header Skeleton */}
-          <div className="bg-white rounded-lg p-4 sm:p-6 shadow-sm">
+          <div className="bg-white rounded-2xl sm:rounded-3xl p-4 sm:p-6">
             <div className="flex flex-col sm:flex-row sm:items-center space-y-3 sm:space-y-0 sm:space-x-3">
               <div className="w-12 h-12 bg-gray-200 rounded-lg animate-pulse"></div>
               <div className="flex-1">
@@ -2061,7 +2061,7 @@ export default function EducationGuidePage() {
           </div>
 
           {/* Search Skeleton */}
-          <div className="bg-white rounded-lg p-4 sm:p-6 shadow-sm">
+          <div className="bg-white rounded-2xl sm:rounded-3xl p-4 sm:p-6">
             <div className="flex flex-col sm:flex-row gap-4">
               <div className="h-10 flex-1 bg-gray-200 rounded animate-pulse"></div>
               <div className="h-10 w-32 bg-gray-200 rounded animate-pulse"></div>
@@ -2075,7 +2075,7 @@ export default function EducationGuidePage() {
               {[1, 2, 3, 4, 5, 6].map((i) => (
                 <div
                   key={i}
-                  className="bg-white rounded-lg p-6 shadow-sm h-[280px]"
+                  className="bg-white rounded-2xl sm:rounded-3xl p-6 h-[280px]"
                 >
                   <div className="flex items-start space-x-4">
                     <div className="w-12 h-12 bg-gray-200 rounded-lg animate-pulse"></div>
@@ -2102,7 +2102,7 @@ export default function EducationGuidePage() {
     <Layout>
       <div className="space-y-6 sm:space-y-8">
         {/* Header */}
-        <div className="bg-white rounded-lg p-4 sm:p-6 shadow-sm">
+        <div className="bg-white rounded-2xl sm:rounded-3xl p-4 sm:p-6">
           <div className="flex flex-col sm:flex-row sm:items-center space-y-3 sm:space-y-0 sm:space-x-3">
             <div className="rounded-lg bg-blue-50 p-3 w-fit">
               <BookOpen className="h-6 w-6 text-blue-600" />
@@ -2119,7 +2119,7 @@ export default function EducationGuidePage() {
         </div>
 
         {/* Search and Filters */}
-        <div className="bg-white rounded-lg p-4 sm:p-6 shadow-sm transition-all duration-300 hover:shadow-md">
+        <div className="bg-white rounded-2xl sm:rounded-3xl p-4 sm:p-6 transition-all duration-300">
           <div className="flex flex-col sm:flex-row gap-4">
             <div className="flex-1 relative">
               <Search className="absolute left-3 top-1/2 transform -translate-y-1/2 h-4 w-4 text-gray-400 transition-colors duration-300" />
@@ -2146,8 +2146,8 @@ export default function EducationGuidePage() {
         </div>
 
         {/* Categories */}
-        <div className="bg-white rounded-lg p-4 sm:p-6 shadow-sm">
-          <h2 className="text-lg sm:text-xl font-semibold text-gray-900 mb-4">
+        <div className="bg-white rounded-2xl sm:rounded-3xl p-4 sm:p-6">
+          <h2 className="text-base sm:text-lg font-semibold text-gray-900 mb-4 sm:mb-5">
             Категории
           </h2>
           <div className="grid grid-cols-2 sm:grid-cols-4 gap-3 sm:gap-4">
@@ -2198,20 +2198,18 @@ export default function EducationGuidePage() {
         {selectedCategory === "grants" ? (
           <div className="space-y-6">
             {/* Grants Search and Filters */}
-            <div className="bg-white rounded-lg p-4 sm:p-6 shadow-sm">
+            <div className="bg-white rounded-2xl sm:rounded-3xl p-4 sm:p-6">
               <div className="flex flex-col lg:flex-row gap-4">
                 {/* Search */}
-                <div className="flex-1">
-                  <div className="relative">
-                    <Search className="absolute left-3 top-1/2 transform -translate-y-1/2 text-gray-400 h-5 w-5" />
-                    <input
-                      type="text"
-                      placeholder="Поиск стипендий..."
-                      value={grantSearchTerm}
-                      onChange={(e) => setGrantSearchTerm(e.target.value)}
-                      className="w-full pl-10 pr-4 py-3 border border-gray-300 rounded-lg focus:ring-2 focus:ring-blue-500 focus:border-transparent transition-all duration-300"
-                    />
-                  </div>
+                <div className="flex-1 relative">
+                  <Search className="absolute left-3 top-1/2 transform -translate-y-1/2 text-gray-400 h-5 w-5" />
+                  <input
+                    type="text"
+                    placeholder="Поиск стипендий..."
+                    value={grantSearchTerm}
+                    onChange={(e) => setGrantSearchTerm(e.target.value)}
+                    className="w-full pl-10 pr-4 py-3 border border-gray-300 rounded-lg focus:ring-2 focus:ring-blue-500 focus:border-transparent transition-all duration-300"
+                  />
                 </div>
 
                 {/* Filter Toggle */}
@@ -2391,7 +2389,7 @@ export default function EducationGuidePage() {
               {filteredGrants.map((grant) => (
                 <div
                   key={grant.id}
-                  className="bg-white rounded-lg shadow-lg hover:shadow-xl transition-all duration-300 border-0 flex flex-col"
+                  className="bg-white rounded-2xl sm:rounded-3xl transition-all duration-300 border-0 flex flex-col"
                 >
                   <div className="p-6 flex flex-col h-full">
                     <div className="flex justify-between items-start mb-3">
@@ -2551,7 +2549,7 @@ export default function EducationGuidePage() {
           <div className="space-y-6">
             <ScheduleFilter onShowSchedule={handleShowSchedule} />
             {isLoading && (
-              <div className="bg-white rounded-lg p-6 shadow-sm">
+              <div className="bg-white rounded-2xl sm:rounded-3xl p-6">
                 <div className="text-center py-12">
                   <div className="animate-spin mb-4">
                     <Clock className="h-12 w-12 text-blue-600 mx-auto" />
@@ -2566,7 +2564,7 @@ export default function EducationGuidePage() {
               </div>
             )}
             {showSchedule && (
-              <div className="bg-white rounded-lg p-6 shadow-sm animate-fade-in-up">
+              <div className="bg-white rounded-2xl sm:rounded-3xl p-6 shadow-sm animate-fade-in-up">
                 <div className="text-center py-12">
                   <div className="animate-bounce mb-4">
                     <Clock className="h-12 w-12 text-gray-400 mx-auto" />
@@ -2586,9 +2584,9 @@ export default function EducationGuidePage() {
             )}
           </div>
         ) : (
-          <div>
-            <div className="flex items-center justify-between mb-4 sm:mb-6">
-              <h2 className="text-lg sm:text-xl font-semibold text-gray-900 transition-all duration-300">
+          <div className="bg-white rounded-2xl sm:rounded-3xl p-4 sm:p-6">
+            <div className="flex items-center justify-between mb-4 sm:mb-5">
+              <h2 className="text-base sm:text-lg font-semibold text-gray-900 transition-all duration-300">
                 {filteredGuides.length === 0
                   ? "Гайды не найдены"
                   : `Найдено гайдов: ${filteredGuides.length}`}
@@ -2607,34 +2605,32 @@ export default function EducationGuidePage() {
                 </Button>
               )}
             </div>
-            <div className="transition-all duration-500 ease-out">
-              {filteredGuides.length > 0 ? (
-                <div className="grid grid-cols-1 sm:grid-cols-2 lg:grid-cols-3 gap-4 sm:gap-6">
-                  {filteredGuides.map((guide, index) => (
-                    <div
-                      key={`guide-${guide.id}`}
-                      className="h-[280px] animate-fade-in"
-                      style={{
-                        animationDelay: `${index * 100}ms`,
-                        animationFillMode: "both",
-                      }}
-                    >
-                      <GuideCard guide={guide} />
-                    </div>
-                  ))}
-                </div>
-              ) : (
-                <div className="text-center py-12 animate-fade-in">
-                  <BookOpen className="h-12 w-12 text-gray-400 mx-auto mb-4 transition-all duration-300" />
-                  <h3 className="text-lg font-medium text-gray-900 mb-2">
-                    Гайды не найдены
-                  </h3>
-                  <p className="text-gray-600">
-                    Попробуйте изменить поисковый запрос или фильтры
-                  </p>
-                </div>
-              )}
-            </div>
+            {filteredGuides.length > 0 ? (
+              <div className="grid grid-cols-1 sm:grid-cols-2 lg:grid-cols-3 gap-4 sm:gap-6 transition-all duration-500 ease-out">
+                {filteredGuides.map((guide, index) => (
+                  <div
+                    key={`guide-${guide.id}`}
+                    className="h-[280px] animate-fade-in"
+                    style={{
+                      animationDelay: `${index * 100}ms`,
+                      animationFillMode: "both",
+                    }}
+                  >
+                    <GuideCard guide={guide} />
+                  </div>
+                ))}
+              </div>
+            ) : (
+              <div className="text-center py-12 animate-fade-in">
+                <BookOpen className="h-12 w-12 text-gray-400 mx-auto mb-4 transition-all duration-300" />
+                <h3 className="text-lg font-medium text-gray-900 mb-2">
+                  Гайды не найдены
+                </h3>
+                <p className="text-gray-600">
+                  Попробуйте изменить поисковый запрос или фильтры
+                </p>
+              </div>
+            )}
           </div>
         )}
       </div>
