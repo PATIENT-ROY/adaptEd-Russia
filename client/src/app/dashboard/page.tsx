@@ -12,6 +12,7 @@ import {
   Calendar,
   Target,
   ScanLine,
+  Users,
 } from "lucide-react";
 import Link from "next/link";
 import { useAuth } from "@/contexts/AuthContext";
@@ -50,6 +51,13 @@ const quickActions = [
     icon: ScanLine,
     href: "/docscan",
     gradient: "from-indigo-500 to-indigo-600",
+  },
+  {
+    title: "Q&A / Сообщество",
+    description: "Живые вопросы, ответы и обсуждения",
+    icon: Users,
+    href: "/community/questions",
+    gradient: "from-pink-500 to-rose-600",
   },
 ];
 

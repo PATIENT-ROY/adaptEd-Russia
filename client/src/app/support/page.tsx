@@ -1,6 +1,7 @@
 "use client";
 
 import { useState, useEffect } from "react";
+import Link from "next/link";
 import { useRouter } from "next/navigation";
 import {
   Card,
@@ -165,7 +166,10 @@ export default function SupportPage() {
           {/* Contact Methods Skeleton */}
           <div className="grid grid-cols-1 md:grid-cols-3 gap-6 mb-12">
             {[1, 2, 3].map((i) => (
-              <div key={i} className="bg-white rounded-2xl sm:rounded-3xl p-6 shadow-sm">
+              <div
+                key={i}
+                className="bg-white rounded-2xl sm:rounded-3xl p-6 shadow-sm"
+              >
                 <div className="w-12 h-12 bg-gray-200 rounded-lg animate-pulse mb-4"></div>
                 <div className="h-6 w-40 bg-gray-200 rounded animate-pulse mb-2"></div>
                 <div className="h-4 w-48 bg-gray-200 rounded animate-pulse mb-2"></div>
@@ -417,6 +421,24 @@ export default function SupportPage() {
                         </div>
                       );
                     })}
+                  </CardContent>
+                </Card>
+
+                <Card>
+                  <CardHeader>
+                    <CardTitle className="flex items-center gap-2">
+                      <Users className="h-5 w-5 text-blue-600" />
+                      Q&amp;A / живое общение
+                    </CardTitle>
+                  </CardHeader>
+                  <CardContent className="space-y-3">
+                    <p className="text-sm text-gray-600">
+                      Задавайте вопросы сообществу и подключайтесь к живым
+                      сессиям с кураторами.
+                    </p>
+                    <Link href="/community/questions">
+                      <Button className="w-full">Перейти в Q&amp;A</Button>
+                    </Link>
                   </CardContent>
                 </Card>
 

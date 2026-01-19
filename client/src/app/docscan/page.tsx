@@ -1,6 +1,7 @@
 "use client";
 
 import { Layout } from "@/components/layout/layout";
+import { ProtectedRoute } from "@/components/auth/ProtectedRoute";
 import { Button } from "@/components/ui/button";
 import { Card, CardContent } from "@/components/ui/card";
 import {
@@ -600,7 +601,7 @@ export default function DocScanPage() {
   }, [showModal]);
 
   return (
-    <>
+    <ProtectedRoute>
       <Layout>
         <div className="space-y-6 sm:space-y-8">
           {/* Header */}
@@ -948,7 +949,7 @@ export default function DocScanPage() {
           </motion.div>
         )}
       </AnimatePresence>
-    </>
+    </ProtectedRoute>
   );
 }
 

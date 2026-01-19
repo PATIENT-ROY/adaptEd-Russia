@@ -34,11 +34,23 @@ import {
   organizationStructuredData,
 } from "@/components/seo/structured-data";
 import { useTranslation } from "@/hooks/useTranslation";
+import { useEffect, useState } from "react";
 
 // Компоненты features и benefits будут создаваться внутри компонента с использованием переводов
 
 export default function HomePage() {
   const { t } = useTranslation();
+  const [showScrollIndicator, setShowScrollIndicator] = useState(true);
+
+  useEffect(() => {
+    const handleScroll = () => {
+      setShowScrollIndicator(window.scrollY === 0);
+    };
+
+    handleScroll();
+    window.addEventListener("scroll", handleScroll, { passive: true });
+    return () => window.removeEventListener("scroll", handleScroll);
+  }, []);
 
   // Features с использованием переводов
   const features = [
@@ -73,6 +85,14 @@ export default function HomePage() {
       color: "text-indigo-600 bg-indigo-50",
       gradient: "from-indigo-500 to-indigo-600",
       stats: "OCR + Перевод",
+    },
+    {
+      icon: Users,
+      title: t("home.features.community"),
+      description: t("home.features.community.desc"),
+      color: "text-pink-600 bg-pink-50",
+      gradient: "from-pink-500 to-rose-600",
+      stats: t("home.section.features.stats.community"),
     },
   ];
 
@@ -232,7 +252,7 @@ export default function HomePage() {
                 <Link href="/education-guide" className="w-full sm:w-auto">
                   <Button
                     variant="outline"
-                    className="w-full sm:w-auto text-sm sm:text-base lg:text-lg px-4 sm:px-6 lg:px-8 py-3 sm:py-4 border-white/40 text-white bg-white/10 sm:hover:bg-white/20 active:bg-white/30 active:scale-95 backdrop-blur-sm shadow-lg sm:hover:shadow-xl active:shadow-md transform sm:hover:scale-105 transition-all duration-300"
+                    className="w-full sm:w-auto text-sm sm:text-base lg:text-lg px-4 sm:px-6 lg:px-8 py-3 sm:py-4 border-white/40 text-white bg-white/10 sm:hover:bg-white/90 sm:hover:text-indigo-700 sm:hover:border-white active:bg-white/30 active:scale-95 backdrop-blur-sm shadow-lg sm:hover:shadow-xl active:shadow-md transform sm:hover:scale-105 transition-all duration-300"
                   >
                     <BookOpen className="mr-2 h-4 w-4 sm:h-5 sm:w-5" />
                     {t("home.guides")}
@@ -245,7 +265,7 @@ export default function HomePage() {
                 {stats.map((stat) => (
                   <div
                     key={stat.label}
-                    className="text-center p-3 sm:p-4 rounded-2xl bg-white/10 backdrop-blur-sm border border-white/20 hover:bg-white/20 transition-all duration-300"
+                    className="text-center p-3 sm:p-4 rounded-2xl bg-white/10 backdrop-blur-sm border border-white/20"
                   >
                     <div className="text-lg sm:text-xl md:text-2xl lg:text-3xl font-bold text-white mb-1 sm:mb-2">
                       {stat.value}
@@ -274,6 +294,8 @@ export default function HomePage() {
                             ? "/ai-helper"
                             : feature.title === t("home.features.docscan")
                             ? "/docscan"
+                            : feature.title === t("home.features.community")
+                            ? "/community/questions"
                             : "#"
                         }
                         className="group"
@@ -302,16 +324,18 @@ export default function HomePage() {
           </div>
 
           {/* Scroll indicator */}
-          <div className="absolute bottom-4 sm:bottom-6 left-1/2 transform -translate-x-1/2 animate-bounce">
-            <div className="w-5 h-8 sm:w-6 sm:h-10 border-2 border-white/30 rounded-full flex justify-center">
-              <div className="w-1 h-2 sm:h-3 bg-white/60 rounded-full mt-1 sm:mt-2 animate-pulse"></div>
+          {showScrollIndicator && (
+            <div className="absolute bottom-4 sm:bottom-6 left-1/2 transform -translate-x-1/2 animate-bounce [@media(max-height:900px)]:fixed [@media(max-height:900px)]:bottom-2">
+              <div className="w-6 h-10 sm:w-7 sm:h-12 border-2 border-white/60 rounded-full flex justify-center shadow-[0_0_12px_rgba(255,255,255,0.35)]">
+                <div className="w-1.5 h-3 sm:h-4 bg-white/90 rounded-full mt-1.5 sm:mt-2 animate-pulse"></div>
+              </div>
             </div>
-          </div>
+          )}
         </div>
 
         {/* Features Section - Detailed */}
         <section className="py-12 sm:py-16 md:py-24 bg-gradient-to-br from-slate-50 via-white to-blue-50 rounded-2xl sm:rounded-3xl my-6 sm:my-8 lg:my-10">
-          <div className="max-w-7xl mx-auto px-2.5 sm:px-6 lg:px-8">
+          <div className="max-w-7xl mx-auto px-4 sm:px-6 lg:px-8">
             <div className="text-center mb-8 sm:mb-12">
               <div className="inline-flex items-center rounded-full bg-blue-100 px-4 py-2 text-xs sm:text-sm font-semibold text-blue-700 mb-4">
                 <Sparkles className="mr-2 h-3 w-3 sm:h-4 sm:w-4" />
@@ -331,7 +355,7 @@ export default function HomePage() {
                 return (
                   <Card
                     key={feature.title}
-                    className="group hover:scale-105 transition-all duration-300 animate-fade-in-up border-0 shadow-xl hover:shadow-2xl overflow-hidden"
+                    className="animate-fade-in-up border-0 shadow-xl"
                     style={{
                       animationDelay: `${index * 0.1}s`,
                       background:
@@ -339,10 +363,9 @@ export default function HomePage() {
                       backdropFilter: "blur(10px)",
                     }}
                   >
-                    <div className="absolute inset-0 bg-gradient-to-br from-blue-500/5 to-purple-500/5 opacity-0 group-hover:opacity-100 transition-opacity duration-500"></div>
                     <CardContent className="p-2.5 sm:p-6 lg:p-8 relative z-10 flex flex-col min-h-[200px] sm:min-h-0">
                       <div
-                        className={`w-9 h-9 sm:w-16 sm:h-16 rounded-lg sm:rounded-2xl bg-gradient-to-br ${feature.gradient} flex items-center justify-center mb-1.5 sm:mb-6 shadow-lg group-hover:scale-110 transition-transform duration-300 flex-shrink-0`}
+                        className={`w-9 h-9 sm:w-16 sm:h-16 rounded-lg sm:rounded-2xl bg-gradient-to-br ${feature.gradient} flex items-center justify-center mb-1.5 sm:mb-6 shadow-lg flex-shrink-0`}
                       >
                         <Icon className="h-4 w-4 sm:h-8 sm:w-8 text-white" />
                       </div>
@@ -393,10 +416,10 @@ export default function HomePage() {
                 return (
                   <div
                     key={benefit.title}
-                    className="group p-4 sm:p-6 lg:p-8 rounded-2xl bg-white/10 backdrop-blur-sm border border-white/20 hover:bg-white/20 transition-all duration-300 animate-slide-in-right"
+                    className="p-4 sm:p-6 lg:p-8 rounded-2xl bg-white/10 backdrop-blur-sm border border-white/20 animate-slide-in-right"
                     style={{ animationDelay: `${index * 0.1}s` }}
                   >
-                    <div className="w-12 h-12 sm:w-16 sm:h-16 rounded-2xl bg-white/20 flex items-center justify-center mb-4 sm:mb-6 group-hover:scale-110 transition-transform duration-300">
+                    <div className="w-12 h-12 sm:w-16 sm:h-16 rounded-2xl bg-white/20 flex items-center justify-center mb-4 sm:mb-6">
                       <Icon className="h-6 w-6 sm:h-8 sm:w-8 text-white" />
                     </div>
                     <h3 className="text-lg sm:text-xl font-bold text-white mb-2 sm:mb-3">
@@ -427,13 +450,70 @@ export default function HomePage() {
               <div className="absolute -bottom-4 right-6 text-3xl sm:text-4xl rotate-3 select-none">
                 🇷🇺
               </div>
-              <div className="relative space-y-3 sm:space-y-4 text-slate-800 text-sm sm:text-base leading-relaxed">
-                <p>{t("home.section.about.p1")}</p>
-                <p>{t("home.section.about.p2")}</p>
-                <p>{t("home.section.about.p3")}</p>
-                <p className="font-semibold italic">
-                  {t("home.section.about.p4")}
-                </p>
+              <div className="relative space-y-4 sm:space-y-5 text-slate-800 text-sm sm:text-base leading-relaxed">
+                <h3 className="text-lg sm:text-xl font-semibold text-slate-900">
+                  {t("home.section.about.heading")}
+                </h3>
+                <div className="flex items-center gap-3 rounded-xl bg-white/80 px-3 py-2 shadow-sm">
+                  <div className="flex h-9 w-9 items-center justify-center rounded-full bg-slate-100 text-slate-600">
+                    👤
+                  </div>
+                  <div className="text-xs sm:text-sm text-slate-600 leading-tight">
+                    <div className="font-semibold text-slate-900">
+                      {t("home.section.about.author.title")}
+                    </div>
+                    <div>{t("home.section.about.author.subtitle")}</div>
+                  </div>
+                </div>
+                <div className="space-y-3">
+                  <h4 className="text-sm sm:text-base font-semibold text-slate-900 uppercase tracking-wide">
+                    {t("home.section.about.experience.title")}
+                  </h4>
+                  <p>{t("home.section.about.experience.p1")}</p>
+                  <p>
+                    {t("home.section.about.experience.p2.prefix")}{" "}
+                    <span className="inline-flex items-center rounded-md bg-indigo-50 px-2 py-0.5 font-semibold text-indigo-700">
+                      {t("home.section.about.experience.highlight")}
+                    </span>
+                    {t("home.section.about.experience.p2.suffix")}
+                  </p>
+                  <p>{t("home.section.about.experience.p3")}</p>
+                </div>
+                <div className="h-px w-full bg-slate-200/80"></div>
+                <div className="space-y-3">
+                  <h4 className="text-sm sm:text-base font-semibold text-slate-900 uppercase tracking-wide">
+                    {t("home.section.about.purpose.title")}
+                  </h4>
+                  <p>{t("home.section.about.purpose.intro")}</p>
+                  <ul className="space-y-2 sm:space-y-2.5 pl-4">
+                    <li className="flex items-start gap-2">
+                      <span className="text-sm text-slate-500">🤖</span>
+                      <span>{t("home.section.about.purpose.bullet1")}</span>
+                    </li>
+                    <li className="flex items-start gap-2">
+                      <span className="text-sm text-slate-500">⏰</span>
+                      <span>{t("home.section.about.purpose.bullet2")}</span>
+                    </li>
+                    <li className="flex items-start gap-2">
+                      <span className="text-sm text-slate-500">📄</span>
+                      <span>{t("home.section.about.purpose.bullet3")}</span>
+                    </li>
+                    <li className="flex items-start gap-2">
+                      <span className="text-sm text-slate-500">🌍</span>
+                      <span>{t("home.section.about.purpose.bullet4")}</span>
+                    </li>
+                  </ul>
+                  <p>{t("home.section.about.purpose.support")}</p>
+                </div>
+                <div className="pt-2 sm:pt-3 flex flex-col sm:flex-row sm:items-center sm:justify-between gap-3 sm:gap-4">
+                  <div className="flex items-center gap-2 text-lg sm:text-xl font-semibold italic text-slate-900 border-l-4 border-slate-300 pl-4">
+                    <span>🤍</span>
+                    <span>{t("home.section.about.closing")}</span>
+                  </div>
+                  <span className="inline-flex items-center rounded-full bg-slate-200/70 px-3 py-1 text-xs sm:text-sm font-semibold text-slate-700">
+                    🎓 {t("home.section.about.badge.alumni")}
+                  </span>
+                </div>
               </div>
             </div>
           </div>
@@ -457,7 +537,7 @@ export default function HomePage() {
               {testimonials.map((testimonial, index) => (
                 <Card
                   key={testimonial.name}
-                  className="group hover:scale-105 transition-all duration-500 animate-fade-in-up border-0 shadow-xl hover:shadow-2xl"
+                  className="animate-fade-in-up border-0 shadow-xl"
                   style={{
                     animationDelay: `${index * 0.1}s`,
                     background:
@@ -498,7 +578,7 @@ export default function HomePage() {
         </section>
 
         {/* Pricing Section */}
-        <section className="py-12 sm:py-16 md:py-24 bg-gradient-to-br from-slate-50 via-blue-50 to-indigo-50 rounded-2xl sm:rounded-3xl my-6 sm:my-8 lg:my-10">
+        <section className="py-12 sm:py-16 md:py-24 bg-gradient-to-br from-slate-50 via-blue-50 to-indigo-50 rounded-2xl sm:rounded-3xl my-6 sm:my-8 lg:my-10 overflow-visible">
           <div className="mx-auto max-w-6xl px-3 sm:px-4 lg:px-6">
             <div className="text-center mb-12 sm:mb-16 lg:mb-20">
               <h2 className="text-2xl sm:text-3xl md:text-4xl lg:text-5xl xl:text-6xl font-bold tracking-tight text-slate-900 mb-4 sm:mb-6">
@@ -509,14 +589,14 @@ export default function HomePage() {
               </p>
             </div>
 
-            <div className="grid grid-cols-1 md:grid-cols-2 gap-6 sm:gap-8 lg:gap-12 max-w-5xl mx-auto">
+            <div className="grid grid-cols-1 md:grid-cols-2 gap-6 sm:gap-8 lg:gap-12 max-w-5xl mx-auto overflow-visible">
               {pricingPlans.map((plan, index) => (
                 <Card
                   key={plan.name}
-                  className={`group hover:scale-105 transition-all duration-500 relative flex flex-col ${
+                  className={`relative flex flex-col ${
                     plan.popular
                       ? "ring-4 ring-blue-500 shadow-2xl"
-                      : "shadow-xl hover:shadow-2xl"
+                      : "shadow-xl"
                   }`}
                   style={{
                     animationDelay: `${index * 0.1}s`,
