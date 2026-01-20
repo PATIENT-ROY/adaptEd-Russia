@@ -61,6 +61,12 @@ const quickActions = [
   },
 ];
 
+const dashboardCardClass = "border-0 shadow-xl";
+const dashboardCardStyle = {
+  background: "linear-gradient(135deg, rgba(255, 255, 255, 0.9) 0%, rgba(255, 255, 255, 0.7) 100%)",
+  backdropFilter: "blur(10px)",
+};
+
 export default function DashboardPage() {
   const { user, isLoading: authLoading } = useAuth();
   const { reminders, loading } = useReminders(user?.id || "");
@@ -283,7 +289,7 @@ export default function DashboardPage() {
               </div>
             </div>
           ) : (
-            <Card>
+            <Card className={dashboardCardClass} style={dashboardCardStyle}>
               <CardContent className="p-6 text-center">
                 {dashboardError ? (
                   <p className="text-red-600">
@@ -307,13 +313,16 @@ export default function DashboardPage() {
                 return (
                   <Link key={action.title} href={action.href}>
                     <Card
-                      className="group hover:scale-105 transition-all duration-300 animate-fade-in-up cursor-pointer h-full"
-                      style={{ animationDelay: `${index * 0.1}s` }}
+                      className={`${dashboardCardClass} transition-all duration-300 animate-fade-in-up cursor-pointer h-full`}
+                      style={{
+                        animationDelay: `${index * 0.1}s`,
+                        ...dashboardCardStyle,
+                      }}
                     >
                       <CardContent className="p-2.5 sm:p-6 text-center h-full flex flex-col justify-between min-h-[160px] sm:min-h-0">
                         <div className="flex-grow flex flex-col">
                           <div
-                            className={`w-9 h-9 sm:w-16 sm:h-16 rounded-lg sm:rounded-2xl bg-gradient-to-br ${action.gradient} flex items-center justify-center mx-auto mb-1.5 sm:mb-4 shadow-lg group-hover:scale-110 transition-transform duration-300 flex-shrink-0`}
+                            className={`w-9 h-9 sm:w-16 sm:h-16 rounded-lg sm:rounded-2xl bg-gradient-to-br ${action.gradient} flex items-center justify-center mx-auto mb-1.5 sm:mb-4 shadow-lg flex-shrink-0`}
                           >
                             <Icon className="h-4 w-4 sm:h-8 sm:w-8 text-white" />
                           </div>
@@ -340,7 +349,11 @@ export default function DashboardPage() {
             {loading ? (
               <div className="space-y-3 sm:space-y-4">
                 {[1, 2, 3].map((index) => (
-                  <Card key={index} className="animate-pulse">
+                  <Card
+                    key={index}
+                    className="animate-pulse"
+                    style={dashboardCardStyle}
+                  >
                     <CardContent className="p-4 sm:p-6">
                       <div className="flex items-center space-x-3 sm:space-x-4">
                         <div className="w-10 h-10 sm:w-12 sm:h-12 bg-gray-200 rounded-xl"></div>
@@ -358,8 +371,11 @@ export default function DashboardPage() {
                 {upcomingReminders.map((reminder, index) => (
                   <Card
                     key={reminder.id}
-                    className="animate-fade-in-up"
-                    style={{ animationDelay: `${index * 0.1}s` }}
+                    className={`${dashboardCardClass} animate-fade-in-up`}
+                    style={{
+                      animationDelay: `${index * 0.1}s`,
+                      ...dashboardCardStyle,
+                    }}
                   >
                     <CardContent className="p-4 sm:p-6">
                       <div className="flex flex-col sm:flex-row sm:items-center justify-between space-y-3 sm:space-y-0">
@@ -401,7 +417,7 @@ export default function DashboardPage() {
                 ))}
               </div>
             ) : (
-              <Card>
+              <Card className={dashboardCardClass} style={dashboardCardStyle}>
                 <CardContent className="p-6 text-center">
                   <div className="flex flex-col items-center space-y-3">
                     <Bell className="h-12 w-12 text-gray-400" />
@@ -430,8 +446,8 @@ export default function DashboardPage() {
             </h2>
             <div className="grid grid-cols-1 sm:grid-cols-2 lg:grid-cols-4 gap-4 sm:gap-6">
               <Card
-                className="animate-fade-in-up"
-                style={{ animationDelay: "0.1s" }}
+                className={`${dashboardCardClass} animate-fade-in-up`}
+                style={{ animationDelay: "0.1s", ...dashboardCardStyle }}
               >
                 <CardContent className="p-4 sm:p-6">
                   <div className="flex items-center space-x-3 sm:space-x-4">
@@ -451,8 +467,8 @@ export default function DashboardPage() {
               </Card>
 
               <Card
-                className="animate-fade-in-up"
-                style={{ animationDelay: "0.2s" }}
+                className={`${dashboardCardClass} animate-fade-in-up`}
+                style={{ animationDelay: "0.2s", ...dashboardCardStyle }}
               >
                 <CardContent className="p-6">
                   <div className="flex items-center space-x-4">
@@ -470,8 +486,8 @@ export default function DashboardPage() {
               </Card>
 
               <Card
-                className="animate-fade-in-up"
-                style={{ animationDelay: "0.3s" }}
+                className={`${dashboardCardClass} animate-fade-in-up`}
+                style={{ animationDelay: "0.3s", ...dashboardCardStyle }}
               >
                 <CardContent className="p-6">
                   <div className="flex items-center space-x-4">
@@ -491,8 +507,8 @@ export default function DashboardPage() {
               </Card>
 
               <Card
-                className="animate-fade-in-up"
-                style={{ animationDelay: "0.4s" }}
+                className={`${dashboardCardClass} animate-fade-in-up`}
+                style={{ animationDelay: "0.4s", ...dashboardCardStyle }}
               >
                 <CardContent className="p-6">
                   <div className="flex items-center space-x-4">

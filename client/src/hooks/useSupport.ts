@@ -1,4 +1,5 @@
 import { useState } from 'react';
+import { API_BASE_URL } from '@/lib/api';
 
 interface SupportFormData {
   name: string;
@@ -40,7 +41,6 @@ export const useSupport = () => {
     setError(null);
 
     try {
-      const API_BASE_URL = process.env.NEXT_PUBLIC_API_URL || 'http://localhost:3003/api';
       const response = await fetch(`${API_BASE_URL}/support/contact`, {
         method: 'POST',
         headers: {
@@ -69,7 +69,6 @@ export const useSupport = () => {
     setError(null);
 
     try {
-      const API_BASE_URL = process.env.NEXT_PUBLIC_API_URL || 'http://localhost:3003/api';
       const response = await fetch(`${API_BASE_URL}/support/faq`);
       const data = await response.json();
 
@@ -91,7 +90,6 @@ export const useSupport = () => {
     setError(null);
 
     try {
-      const API_BASE_URL = process.env.NEXT_PUBLIC_API_URL || 'http://localhost:3003/api';
       const response = await fetch(`${API_BASE_URL}/support/contact-info`);
       const data = await response.json();
 

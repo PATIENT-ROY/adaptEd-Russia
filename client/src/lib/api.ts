@@ -19,7 +19,8 @@ import {
   AchievementsOverview
 } from '@/types';
 
-const API_BASE_URL = process.env.NEXT_PUBLIC_API_URL || 'http://localhost:3003/api';
+export const API_BASE_URL =
+  process.env.NEXT_PUBLIC_API_URL || 'http://localhost:56548/api';
 
 // Интерфейс для ответа чата
 interface ChatMessageResponse {
@@ -77,8 +78,6 @@ class ApiClient {
 
     try {
       console.log(`API request - ${options.method || 'GET'} ${url}`);
-      console.log('API request - Headers:', headers);
-      console.log('API request - Body:', options.body);
       
       const response = await fetch(url, {
         ...options,

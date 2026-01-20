@@ -221,6 +221,12 @@ const fallbackQuickActions: ProfileQuickAction[] = [
   },
 ];
 
+const profileCardClass = "border-0 shadow-xl";
+const profileCardStyle = {
+  background: "linear-gradient(135deg, rgba(255, 255, 255, 0.9) 0%, rgba(255, 255, 255, 0.7) 100%)",
+  backdropFilter: "blur(10px)",
+};
+
 const fallbackAchievements: ProfileAchievement[] = [
   {
     id: "first-steps",
@@ -597,18 +603,15 @@ export default function ProfilePage() {
                 return (
                   <Link key={action.id} href={action.href}>
                     <Card
-                      className={`group hover:scale-105 transition-all duration-500 animate-fade-in-up border-0 shadow-xl hover:shadow-2xl overflow-hidden cursor-pointer ${
+                      className={`${profileCardClass} animate-fade-in-up cursor-pointer h-full ${
                         isProfileLoading ? "animate-pulse" : ""
                       }`}
                       style={{
                         animationDelay: `${index * 0.1}s`,
-                        background:
-                          "linear-gradient(135deg, rgba(255, 255, 255, 0.9) 0%, rgba(255, 255, 255, 0.7) 100%)",
-                        backdropFilter: "blur(10px)",
+                        ...profileCardStyle,
                       }}
                     >
-                      <div className="absolute inset-0 bg-gradient-to-br from-blue-500/5 to-purple-500/5 opacity-0 group-hover:opacity-100 transition-opacity duration-500"></div>
-                      <CardContent className="p-2.5 sm:p-6 relative z-10 flex flex-col min-h-[160px] sm:min-h-0">
+                      <CardContent className="p-2.5 sm:p-6 relative z-10 flex flex-col h-full">
                         <div
                           className={`w-9 h-9 sm:w-14 sm:h-14 md:w-16 md:h-16 rounded-lg sm:rounded-2xl bg-gradient-to-br ${action.color} flex items-center justify-center mb-1.5 sm:mb-4 shadow-lg group-hover:scale-110 transition-transform duration-300 flex-shrink-0`}
                         >
@@ -666,7 +669,10 @@ export default function ProfilePage() {
             </div>
 
             {isBillingHistoryOpen && (
-              <Card className="border-0 shadow-xl animate-fade-in-up">
+              <Card
+                className={`${profileCardClass} animate-fade-in-up`}
+                style={profileCardStyle}
+              >
                 <CardHeader>
                   <CardTitle className="flex items-center space-x-3">
                     <div className="w-10 h-10 rounded-2xl bg-gradient-to-br from-green-500 to-emerald-600 flex items-center justify-center shadow-lg">
@@ -799,15 +805,9 @@ export default function ProfilePage() {
             <div className="lg:col-span-1 space-y-6">
               {/* Personal Information */}
               <Card
-                className="group hover:scale-105 transition-all duration-500 animate-fade-in-up border-0 shadow-xl hover:shadow-2xl overflow-hidden"
-                style={{
-                  animationDelay: "0.2s",
-                  background:
-                    "linear-gradient(135deg, rgba(255, 255, 255, 0.9) 0%, rgba(255, 255, 255, 0.7) 100%)",
-                  backdropFilter: "blur(10px)",
-                }}
+                className={`${profileCardClass} animate-fade-in-up`}
+                style={{ animationDelay: "0.2s", ...profileCardStyle }}
               >
-                <div className="absolute inset-0 bg-gradient-to-br from-blue-500/5 to-purple-500/5 opacity-0 group-hover:opacity-100 transition-opacity duration-500"></div>
                 <CardHeader className="relative z-10">
                   <CardTitle className="flex items-center space-x-3">
                     <div className="w-10 h-10 rounded-2xl bg-gradient-to-br from-blue-400 to-blue-600 flex items-center justify-center shadow-lg">
@@ -865,15 +865,9 @@ export default function ProfilePage() {
               {/* Settings (Desktop only) */}
               <div className="hidden lg:block">
                 <Card
-                  className="group hover:scale-105 transition-all duration-500 animate-fade-in-up border-0 shadow-xl hover:shadow-2xl overflow-hidden"
-                  style={{
-                    animationDelay: "0.3s",
-                    background:
-                      "linear-gradient(135deg, rgba(255, 255, 255, 0.9) 0%, rgba(255, 255, 255, 0.7) 100%)",
-                    backdropFilter: "blur(10px)",
-                  }}
+                  className={`${profileCardClass} animate-fade-in-up`}
+                  style={{ animationDelay: "0.3s", ...profileCardStyle }}
                 >
-                  <div className="absolute inset-0 bg-gradient-to-br from-blue-500/5 to-purple-500/5 opacity-0 group-hover:opacity-100 transition-opacity duration-500"></div>
                   <CardHeader
                     className="relative z-10 cursor-pointer"
                     onClick={() => setIsSettingsOpen(!isSettingsOpen)}
@@ -963,15 +957,9 @@ export default function ProfilePage() {
             <div className="lg:col-span-2 space-y-6">
               {/* Recent Activity */}
               <Card
-                className="group hover:scale-105 transition-all duration-500 animate-fade-in-up border-0 shadow-xl hover:shadow-2xl overflow-hidden"
-                style={{
-                  animationDelay: "0.4s",
-                  background:
-                    "linear-gradient(135deg, rgba(255, 255, 255, 0.9) 0%, rgba(255, 255, 255, 0.7) 100%)",
-                  backdropFilter: "blur(10px)",
-                }}
+                className={`${profileCardClass} animate-fade-in-up`}
+                style={{ animationDelay: "0.4s", ...profileCardStyle }}
               >
-                <div className="absolute inset-0 bg-gradient-to-br from-blue-500/5 to-purple-500/5 opacity-0 group-hover:opacity-100 transition-opacity duration-500"></div>
                 <CardHeader className="relative z-10">
                   <CardTitle className="flex items-center space-x-3">
                     <div className="w-10 h-10 rounded-2xl bg-gradient-to-br from-green-400 to-green-600 flex items-center justify-center shadow-lg">
@@ -1025,15 +1013,9 @@ export default function ProfilePage() {
 
               {/* Achievements */}
               <Card
-                className="group hover:scale-105 transition-all duration-500 animate-fade-in-up border-0 shadow-xl hover:shadow-2xl overflow-hidden"
-                style={{
-                  animationDelay: "0.5s",
-                  background:
-                    "linear-gradient(135deg, rgba(255, 255, 255, 0.9) 0%, rgba(255, 255, 255, 0.7) 100%)",
-                  backdropFilter: "blur(10px)",
-                }}
+                className={`${profileCardClass} animate-fade-in-up`}
+                style={{ animationDelay: "0.5s", ...profileCardStyle }}
               >
-                <div className="absolute inset-0 bg-gradient-to-br from-blue-500/5 to-purple-500/5 opacity-0 group-hover:opacity-100 transition-opacity duration-500"></div>
                 <CardHeader className="relative z-10">
                   <CardTitle className="flex items-center space-x-3">
                     <div className="w-10 h-10 rounded-2xl bg-gradient-to-br from-yellow-400 to-orange-500 flex items-center justify-center shadow-lg">
@@ -1102,15 +1084,9 @@ export default function ProfilePage() {
               {/* Settings (Mobile & Tablet only) */}
               <div className="lg:hidden">
                 <Card
-                  className="group hover:scale-105 transition-all duration-500 animate-fade-in-up border-0 shadow-xl hover:shadow-2xl overflow-hidden"
-                  style={{
-                    animationDelay: "0.6s",
-                    background:
-                      "linear-gradient(135deg, rgba(255, 255, 255, 0.9) 0%, rgba(255, 255, 255, 0.7) 100%)",
-                    backdropFilter: "blur(10px)",
-                  }}
+                  className={`${profileCardClass} animate-fade-in-up`}
+                  style={{ animationDelay: "0.6s", ...profileCardStyle }}
                 >
-                  <div className="absolute inset-0 bg-gradient-to-br from-blue-500/5 to-purple-500/5 opacity-0 group-hover:opacity-100 transition-opacity duration-500"></div>
                   <CardHeader
                     className="relative z-10 cursor-pointer"
                     onClick={() => setIsSettingsOpen(!isSettingsOpen)}

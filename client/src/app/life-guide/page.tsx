@@ -16,6 +16,7 @@ import {
 } from "lucide-react";
 import { useState, useMemo, useEffect } from "react";
 import { Guide, GuideCategory, Language, Difficulty } from "@/types";
+import { useTranslation } from "@/hooks/useTranslation";
 
 // Моковые данные бытовых гайдов
 const lifeGuides: Guide[] = [
@@ -1279,29 +1280,31 @@ const lifeGuides: Guide[] = [
   },
 ];
 
-const categories = [
-  { id: "all", name: "Все", icon: Home },
-  { id: "housing", name: "Жильё", icon: Building },
-  { id: "transport", name: "Транспорт", icon: Bus },
-  { id: "health", name: "Здоровье", icon: Shield },
-  { id: "services", name: "Услуги", icon: Phone },
+const categoriesConfig = [
+  { id: "all", icon: Home },
+  { id: "housing", icon: Building },
+  { id: "transport", icon: Bus },
+  { id: "health", icon: Shield },
+  { id: "services", icon: Phone },
 ];
 
 const emergencyContacts = [
-  { name: "Полиция", number: "102", description: "Экстренная помощь" },
-  { name: "Скорая помощь", number: "103", description: "Медицинская помощь" },
-  { name: "Пожарная служба", number: "101", description: "Пожар и ЧС" },
-  {
-    name: "Единая служба спасения",
-    number: "112",
-    description: "Общий номер экстренных служб",
-  },
+  { id: "police", number: "102" },
+  { id: "ambulance", number: "103" },
+  { id: "fire", number: "101" },
+  { id: "rescue", number: "112" },
 ];
 
 export default function LifeGuidePage() {
+  const { t } = useTranslation();
   const [searchQuery, setSearchQuery] = useState("");
   const [selectedCategory, setSelectedCategory] = useState("all");
   const [isInitialLoading, setIsInitialLoading] = useState(true);
+
+  const categories = categoriesConfig.map((category) => ({
+    ...category,
+    name: t(`lifeGuide.categories.${category.id}`),
+  }));
 
   // Эффект для имитации загрузки при обновлении страницы
   useEffect(() => {
@@ -1490,17 +1493,21 @@ export default function LifeGuidePage() {
         {/* Emergency Contacts */}
         <div className="bg-red-50 border border-red-200 rounded-lg p-6">
           <h2 className="text-lg font-semibold text-red-900 mb-4">
-            Экстренные контакты
+            {t("lifeGuide.emergencyContacts.title")}
           </h2>
           <div className="grid grid-cols-1 md:grid-cols-2 lg:grid-cols-4 gap-4">
             {emergencyContacts.map((contact) => (
-              <Card key={contact.name} className="border-red-200">
+              <Card key={contact.id} className="border-red-200">
                 <CardContent className="p-4">
-                  <h3 className="font-medium text-red-900">{contact.name}</h3>
+                  <h3 className="font-medium text-red-900">
+                    {t(`lifeGuide.emergencyContacts.${contact.id}.title`)}
+                  </h3>
                   <p className="text-2xl font-bold text-red-600">
                     {contact.number}
                   </p>
-                  <p className="text-sm text-red-700">{contact.description}</p>
+                  <p className="text-sm text-red-700">
+                    {t(`lifeGuide.emergencyContacts.${contact.id}.description`)}
+                  </p>
                 </CardContent>
               </Card>
             ))}
@@ -1537,7 +1544,7 @@ export default function LifeGuidePage() {
         {/* Categories */}
         <div className="bg-white rounded-2xl sm:rounded-3xl p-4 sm:p-6">
           <h2 className="text-base sm:text-lg font-semibold text-gray-900 mb-4 sm:mb-5">
-            Категории
+            {t("lifeGuide.categories.title")}
           </h2>
           <div className="grid grid-cols-2 sm:grid-cols-3 lg:grid-cols-6 gap-3 sm:gap-4">
             {categories.map((category) => {

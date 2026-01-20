@@ -4,7 +4,12 @@ import { Layout } from "@/components/layout/layout";
 import { ProtectedRoute } from "@/components/auth/ProtectedRoute";
 import { Card, CardContent } from "@/components/ui/card";
 import { Button } from "@/components/ui/button";
-import { AchievementCategory, AchievementStatus, AchievementsOverview } from "@/types";
+import {
+  AchievementCategory,
+  AchievementStatus,
+  AchievementsOverview,
+  UserLevel,
+} from "@/types";
 import {
   Trophy,
   Lock,
@@ -63,6 +68,96 @@ const RARITY_CONFIG = {
   },
 };
 
+const FALLBACK_OVERVIEW: AchievementsOverview = {
+  achievements: [
+    {
+      id: "ach-1",
+      name: "Первый гайд",
+      description: "Прочитайте свой первый гайд",
+      category: AchievementCategory.GETTING_STARTED,
+      icon: "📘",
+      xpReward: 50,
+      requirement: "read_1_guide",
+      rarity: "common",
+      unlocked: true,
+      progress: 1,
+      progressCurrent: 1,
+      progressTarget: 1,
+    },
+    {
+      id: "ach-2",
+      name: "Первые 7 дней",
+      description: "Заходите в приложение 7 дней подряд",
+      category: AchievementCategory.GETTING_STARTED,
+      icon: "🔥",
+      xpReward: 80,
+      requirement: "streak_7_days",
+      rarity: "rare",
+      unlocked: false,
+      progress: 4 / 7,
+      progressCurrent: 4,
+      progressTarget: 7,
+    },
+    {
+      id: "ach-3",
+      name: "Сессия под контролем",
+      description: "Прочитайте 5 учебных гайдов",
+      category: AchievementCategory.EDUCATION,
+      icon: "🎓",
+      xpReward: 120,
+      requirement: "read_5_guides",
+      rarity: "rare",
+      unlocked: true,
+      progress: 1,
+      progressCurrent: 5,
+      progressTarget: 5,
+    },
+    {
+      id: "ach-4",
+      name: "Документы без стресса",
+      description: "Завершите 3 гайда по документам",
+      category: AchievementCategory.LIFE,
+      icon: "📄",
+      xpReward: 100,
+      requirement: "finish_doc_guides",
+      rarity: "common",
+      unlocked: false,
+      progress: 2 / 3,
+      progressCurrent: 2,
+      progressTarget: 3,
+    },
+    {
+      id: "ach-5",
+      name: "Чемпион активности",
+      description: "Задайте 10 вопросов в AI",
+      category: AchievementCategory.ACTIVITY,
+      icon: "⚡️",
+      xpReward: 140,
+      requirement: "ask_ai_10",
+      rarity: "epic",
+      unlocked: false,
+      progress: 3 / 10,
+      progressCurrent: 3,
+      progressTarget: 10,
+    },
+  ],
+  unlockedCount: 2,
+  totalCount: 5,
+  totalXP: 170,
+  metrics: {
+    guidesRead: 4,
+    aiQuestions: 2,
+    remindersCreated: 3,
+    remindersCompleted: 2,
+    docScanCount: 1,
+    streak: 4,
+    daysSinceRegistration: 12,
+    grantApplications: 0,
+    level: UserLevel.NEWBIE,
+    xp: 170,
+  },
+};
+
 export default function AchievementsPage() {
   const [overview, setOverview] = useState<AchievementsOverview | null>(null);
   const [selectedCategory, setSelectedCategory] = useState<AchievementCategory | "all">("all");
@@ -82,9 +177,10 @@ export default function AchievementsPage() {
         setOverview(data);
       } catch (err) {
         if (controller?.cancelled) return;
-        setError(
-          err instanceof Error ? err.message : "Не удалось загрузить достижения"
-        );
+        const message =
+          err instanceof Error ? err.message : "Не удалось загрузить достижения";
+        setError(message);
+        setOverview(FALLBACK_OVERVIEW);
       } finally {
         if (!controller?.cancelled) {
           setIsLoading(false);
@@ -208,7 +304,7 @@ export default function AchievementsPage() {
             </div>
           </div>
 
-          {error && (
+          {error && !overview && (
             <Card className="border-red-200 bg-red-50">
               <CardContent className="p-4 sm:p-6">
                 <div className="flex flex-col sm:flex-row sm:items-center sm:justify-between gap-3">
@@ -221,6 +317,30 @@ export default function AchievementsPage() {
                         Не удалось загрузить достижения
                       </h2>
                       <p className="text-sm text-red-600/80">{error}</p>
+                    </div>
+                  </div>
+                  <Button variant="outline" onClick={() => loadAchievements()}>
+                    Повторить попытку
+                  </Button>
+                </div>
+              </CardContent>
+            </Card>
+          )}
+          {error && overview && (
+            <Card className="border-yellow-200 bg-yellow-50">
+              <CardContent className="p-4 sm:p-6">
+                <div className="flex flex-col sm:flex-row sm:items-center sm:justify-between gap-3">
+                  <div className="flex items-start space-x-3">
+                    <div className="rounded-full bg-yellow-100 p-2">
+                      <Sparkles className="h-5 w-5 text-yellow-700" />
+                    </div>
+                    <div>
+                      <h2 className="text-sm sm:text-base font-semibold text-yellow-800">
+                        Показаны демо-данные
+                      </h2>
+                      <p className="text-sm text-yellow-700/80">
+                        API недоступен: {error}
+                      </p>
                     </div>
                   </div>
                   <Button variant="outline" onClick={() => loadAchievements()}>

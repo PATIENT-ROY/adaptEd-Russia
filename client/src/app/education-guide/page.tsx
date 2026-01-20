@@ -41,6 +41,7 @@ import {
   GrantLevel,
   GrantCategory,
 } from "@/types";
+import { useTranslation } from "@/hooks/useTranslation";
 
 // Моковые данные гайдов
 const educationGuides: Guide[] = [
@@ -1811,20 +1812,26 @@ type Category = {
   href?: string;
 };
 
-const categories: Category[] = [
-  { id: "all", name: "Все", icon: BookOpen },
-  { id: "grants", name: "Стипендия", icon: Award },
-  { id: "schedule", name: "Расписание", icon: Clock },
-  { id: "exams", name: "Экзамены", icon: GraduationCap },
-  { id: "papers", name: "Учебные работы", icon: FileText },
-  { id: "documents", name: "Документы", icon: FileText },
-  { id: "structure", name: "Структура вуза", icon: Calendar },
-  { id: "dictionary", name: "Словарь сленга", icon: BookOpen },
-  { id: "expulsion-risks", name: "Риски отчисления", icon: AlertTriangle },
-  { id: "translation-centers", name: "Центры перевода", icon: Languages, isLink: true, href: "/education/translation-centers" },
+const categoriesConfig: Omit<Category, "name">[] = [
+  { id: "all", icon: BookOpen },
+  { id: "grants", icon: Award },
+  { id: "schedule", icon: Clock },
+  { id: "exams", icon: GraduationCap },
+  { id: "papers", icon: FileText },
+  { id: "documents", icon: FileText },
+  { id: "structure", icon: Calendar },
+  { id: "dictionary", icon: BookOpen },
+  { id: "expulsion-risks", icon: AlertTriangle },
+  {
+    id: "translation-centers",
+    icon: Languages,
+    isLink: true,
+    href: "/education/translation-centers",
+  },
 ];
 
 export default function EducationGuidePage() {
+  const { t } = useTranslation();
   const [searchQuery, setSearchQuery] = useState("");
   const [selectedCategory, setSelectedCategory] = useState("all");
   const [showSchedule, setShowSchedule] = useState(false);
@@ -1840,6 +1847,11 @@ export default function EducationGuidePage() {
     category?: GrantCategory[];
   }>({});
   const [favorites, setFavorites] = useState<string[]>([]);
+
+  const categories: Category[] = categoriesConfig.map((category) => ({
+    ...category,
+    name: t(`educationGuide.categories.${category.id}`),
+  }));
 
   // Эффект для имитации загрузки при обновлении страницы
   useEffect(() => {
@@ -2148,7 +2160,7 @@ export default function EducationGuidePage() {
         {/* Categories */}
         <div className="bg-white rounded-2xl sm:rounded-3xl p-4 sm:p-6">
           <h2 className="text-base sm:text-lg font-semibold text-gray-900 mb-4 sm:mb-5">
-            Категории
+            {t("educationGuide.categories.title")}
           </h2>
           <div className="grid grid-cols-2 sm:grid-cols-4 gap-3 sm:gap-4">
             {categories.map((category) => {

@@ -14,6 +14,7 @@ import {
   Edit,
   Eye,
   ScanLine,
+  Award,
 } from "lucide-react";
 import Link from "next/link";
 import { useAuth } from "@/contexts/AuthContext";
@@ -142,12 +143,32 @@ const adminActions = [
   },
   {
     title: "DocScan",
-    description: "Статистика сканирования, квоты и тарифы",
+    description: "Статистика сканирования",
     icon: ScanLine,
-    href: "/admin/docscan",
+    href: "/admin/docscan/analytics",
     color: "from-indigo-500 to-indigo-600",
   },
+  {
+    title: "Живое сообщество",
+    description: "Вопросы, ответы, модерация и активность",
+    icon: Users,
+    href: "/community/questions",
+    color: "from-pink-500 to-rose-600",
+  },
+  {
+    title: "Достижения",
+    description: "Награды, прогресс и статистика",
+    icon: Award,
+    href: "/admin/achievements",
+    color: "from-amber-500 to-orange-500",
+  },
 ];
+
+const adminCardClass = "border-0 shadow-xl";
+const adminCardStyle = {
+  background: "linear-gradient(135deg, rgba(255, 255, 255, 0.9) 0%, rgba(255, 255, 255, 0.7) 100%)",
+  backdropFilter: "blur(10px)",
+};
 
 export default function AdminPage() {
   const { user } = useAuth();
@@ -173,7 +194,7 @@ export default function AdminPage() {
     return (
       <Layout>
         <div className="flex items-center justify-center min-h-screen">
-          <Card className="w-96 border-0 shadow-xl">
+          <Card className={`w-96 ${adminCardClass}`} style={adminCardStyle}>
             <CardContent className="p-8 text-center">
               <Shield className="h-16 w-16 text-red-500 mx-auto mb-4" />
               <h2 className="text-2xl font-bold text-slate-900 mb-2">
@@ -227,8 +248,8 @@ export default function AdminPage() {
             return (
               <Card
                 key={stat.title}
-                className="animate-fade-in-up"
-                style={{ animationDelay: `${index * 0.1}s` }}
+                className={`${adminCardClass} animate-fade-in-up`}
+                style={{ animationDelay: `${index * 0.1}s`, ...adminCardStyle }}
               >
                 <CardContent className="p-4 sm:p-6">
                   <div className="flex items-center justify-between">
@@ -270,12 +291,12 @@ export default function AdminPage() {
                   className="h-full block"
                 >
                   <Card
-                    className="group hover:scale-105 transition-all duration-300 animate-fade-in-up cursor-pointer h-full"
-                    style={{ animationDelay: `${index * 0.1}s` }}
+                    className={`${adminCardClass} animate-fade-in-up cursor-pointer h-full`}
+                    style={{ animationDelay: `${index * 0.1}s`, ...adminCardStyle }}
                   >
                     <CardContent className="p-4 sm:p-6">
                       <div
-                        className={`w-12 h-12 rounded-xl bg-gradient-to-br ${action.color} flex items-center justify-center mb-4 group-hover:scale-110 transition-transform duration-300`}
+                        className={`w-12 h-12 rounded-xl bg-gradient-to-br ${action.color} flex items-center justify-center mb-4`}
                       >
                         <Icon className="h-6 w-6 text-white" />
                       </div>
@@ -295,7 +316,7 @@ export default function AdminPage() {
 
         {/* Recent Users */}
         <div className="grid grid-cols-1 lg:grid-cols-2 gap-6 sm:gap-8">
-          <Card>
+          <Card className={adminCardClass} style={adminCardStyle}>
             <CardHeader>
               <CardTitle className="flex items-center space-x-2">
                 <Users className="h-5 w-5" />
@@ -348,7 +369,7 @@ export default function AdminPage() {
           </Card>
 
           {/* Recent Guides */}
-          <Card>
+          <Card className={adminCardClass} style={adminCardStyle}>
             <CardHeader>
               <CardTitle className="flex items-center space-x-2">
                 <BookOpen className="h-5 w-5" />
@@ -414,7 +435,7 @@ export default function AdminPage() {
         </div>
 
         {/* System Status */}
-        <Card>
+        <Card className={adminCardClass} style={adminCardStyle}>
           <CardHeader>
             <CardTitle className="flex items-center space-x-2">
               <Activity className="h-5 w-5" />

@@ -4,7 +4,8 @@ const nextConfig: NextConfig = {
   // Для Netlify плагин сам управляет output
   output: process.env.NETLIFY ? undefined : 'standalone',
   experimental: {
-    optimizePackageImports: ['lucide-react'],
+    optimizePackageImports:
+      process.env.NODE_ENV === 'production' ? ['lucide-react'] : [],
   },
   images: {
     domains: ['localhost'],

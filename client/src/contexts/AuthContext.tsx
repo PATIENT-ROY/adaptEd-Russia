@@ -8,24 +8,7 @@ import React, {
   useCallback,
 } from "react";
 import type { User, UpdateProfileRequest } from "@/types";
-import { apiClient } from "@/lib/api";
-
-// Используем тот же API_BASE_URL, что и в api.ts
-// В браузере process.env доступен только для NEXT_PUBLIC_* переменных
-// Если Next.js не перезапущен, переменная может быть undefined
-const API_BASE_URL =
-  (typeof window !== "undefined"
-    ? process.env.NEXT_PUBLIC_API_URL
-    : process.env.NEXT_PUBLIC_API_URL) || "http://localhost:3003/api";
-
-// Логируем для отладки
-if (typeof window !== "undefined") {
-  console.log("API_BASE_URL:", API_BASE_URL);
-  console.log(
-    "process.env.NEXT_PUBLIC_API_URL:",
-    process.env.NEXT_PUBLIC_API_URL
-  );
-}
+import { apiClient, API_BASE_URL } from "@/lib/api";
 
 interface AuthContextType {
   user: User | null;
@@ -59,7 +42,6 @@ export function AuthProvider({ children }: { children: React.ReactNode }) {
     if (savedUser && savedToken) {
       try {
         setUser(JSON.parse(savedUser));
-        console.log("User and token restored from localStorage");
       } catch (error) {
         console.error("Error parsing saved user:", error);
         localStorage.removeItem("user");
@@ -67,7 +49,6 @@ export function AuthProvider({ children }: { children: React.ReactNode }) {
       }
     } else if (savedUser && !savedToken) {
       // Если есть пользователь, но нет токена, очищаем данные
-      console.log("User found but no token, clearing data");
       localStorage.removeItem("user");
       localStorage.removeItem("isNewUser");
     }
@@ -86,10 +67,6 @@ export function AuthProvider({ children }: { children: React.ReactNode }) {
       try {
         // Реальный API запрос
         const loginUrl = `${API_BASE_URL}/auth/login`;
-        console.log("Attempting login to:", loginUrl);
-        console.log("Full URL:", loginUrl);
-        console.log("API_BASE_URL value:", API_BASE_URL);
-
         const response = await fetch(loginUrl, {
           method: "POST",
           headers: {
@@ -127,7 +104,6 @@ export function AuthProvider({ children }: { children: React.ReactNode }) {
         if (!response.ok) {
           const errorMessage =
             data?.error || data?.message || `Ошибка сервера: ${response.status}`;
-          console.error("Login failed:", errorMessage);
           return false;
         }
 
@@ -136,7 +112,6 @@ export function AuthProvider({ children }: { children: React.ReactNode }) {
 
           // Проверяем наличие необходимых данных
           if (!user || !token) {
-            console.error("Login failed: missing user or token in response");
             return false;
           }
 
@@ -145,21 +120,13 @@ export function AuthProvider({ children }: { children: React.ReactNode }) {
           localStorage.setItem("user", JSON.stringify(user));
           localStorage.setItem("token", token);
 
-          console.log("Login successful, token saved:", token);
           return true;
         } else {
           const errorMessage = data?.error || data?.message || "Неверный email или пароль";
-          console.error("Login failed:", errorMessage);
           return false;
         }
       } catch (error) {
         console.error("Login error:", error);
-        if (error instanceof TypeError && error.message === "Failed to fetch") {
-          console.error(
-            "Network error - check if backend is running on:",
-            API_BASE_URL
-          );
-        }
         return false;
       } finally {
         setIsLoading(false);
@@ -176,13 +143,9 @@ export function AuthProvider({ children }: { children: React.ReactNode }) {
       }
     ): Promise<boolean> => {
       setIsLoading(true);
-      console.log("Register function called with:", userData);
       try {
         // Реальный API запрос
         const registerUrl = `${API_BASE_URL}/auth/register`;
-        console.log("Attempting register to:", registerUrl);
-        console.log("Full URL:", registerUrl);
-        console.log("API_BASE_URL value:", API_BASE_URL);
 
         const response = await fetch(registerUrl, {
           method: "POST",

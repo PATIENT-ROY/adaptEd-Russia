@@ -104,9 +104,9 @@ export function UserProgressComponent({ progress }: UserProgressProps) {
               <Button
                 variant="outline"
                 size="sm"
-                className="flex items-center space-x-1"
+                className="group flex items-center space-x-1 border-slate-200 text-slate-700 hover:bg-yellow-50 hover:text-yellow-700 hover:border-yellow-200"
               >
-                <Trophy className="h-4 w-4" />
+                <Trophy className="h-4 w-4 text-yellow-500 transition-colors duration-200 group-hover:text-yellow-600" />
                 <span className="hidden sm:inline">Достижения</span>
               </Button>
             </Link>
