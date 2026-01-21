@@ -1497,7 +1497,7 @@ export default function LifeGuidePage() {
           </h2>
           <div className="grid grid-cols-1 md:grid-cols-2 lg:grid-cols-4 gap-4">
             {emergencyContacts.map((contact) => (
-              <Card key={contact.id} className="border-red-200">
+              <Card key={contact.id} className="border-red-200 no-hover">
                 <CardContent className="p-4">
                   <h3 className="font-medium text-red-900">
                     {t(`lifeGuide.emergencyContacts.${contact.id}.title`)}
