@@ -288,10 +288,10 @@ export default function AdminUsersPage() {
               </div>
               <div>
                 <h1 className="text-xl sm:text-2xl font-bold text-gray-900">
-                  Управление пользователями
+                  {t("admin.users.header.title")}
                 </h1>
                 <p className="text-sm sm:text-base text-gray-600">
-                  Просмотр и управление всеми пользователями платформы
+                  {t("admin.users.header.subtitle")}
                 </p>
               </div>
             </div>
@@ -319,7 +319,7 @@ export default function AdminUsersPage() {
                 <Search className="absolute left-3 top-1/2 transform -translate-y-1/2 h-4 w-4 text-gray-400" />
                 <Input
                   type="text"
-                  placeholder="Поиск по имени, email или стране..."
+                  placeholder={t("admin.users.search.placeholder")}
                   value={searchTerm}
                   onChange={(e) => setSearchTerm(e.target.value)}
                   className="pl-10"
@@ -331,7 +331,7 @@ export default function AdminUsersPage() {
                 onChange={(e) => setStatusFilter(e.target.value)}
                   className="w-full appearance-none px-3 py-2 pr-9 border border-slate-300 rounded-lg focus:ring-2 focus:ring-blue-500 focus:border-blue-500"
               >
-                <option value="all">Все статусы</option>
+                <option value="all">{t("admin.users.filters.status.all")}</option>
                 <option value="active">Активные</option>
                 <option value="pending">Ожидающие</option>
                 <option value="blocked">Заблокированные</option>
@@ -344,7 +344,7 @@ export default function AdminUsersPage() {
                 onChange={(e) => setRoleFilter(e.target.value)}
                   className="w-full appearance-none px-3 py-2 pr-9 border border-slate-300 rounded-lg focus:ring-2 focus:ring-blue-500 focus:border-blue-500"
               >
-                <option value="all">Все роли</option>
+                <option value="all">{t("admin.users.filters.role.all")}</option>
                 <option value="student">Студенты</option>
                 <option value="admin">Администраторы</option>
                 <option value="guest">Гости</option>

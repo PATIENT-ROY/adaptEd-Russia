@@ -8,6 +8,7 @@ import { Card, CardContent } from "@/components/ui/card";
 import { Input } from "@/components/ui/input";
 import { useAuth } from "@/contexts/AuthContext";
 import { useReminders } from "@/hooks/useReminders";
+import { useTranslation } from "@/hooks/useTranslation";
 import {
   Bell,
   Plus,
@@ -28,6 +29,7 @@ import {
   ReminderStatus,
   ReminderPriority,
   ReminderCategory,
+  Language,
 } from "@/types";
 
 const getStatusIcon = (status: Reminder["status"]) => {
@@ -71,20 +73,39 @@ const getTypeColor = (category: Reminder["category"]) => {
   }
 };
 
-const getCategoryLabel = (category: ReminderCategory): string => {
+const getCategoryLabel = (
+  category: ReminderCategory,
+  t: (key: string) => string
+): string => {
   switch (category) {
     case ReminderCategory.EDUCATION:
-      return "Учёба";
+      return t("reminders.category.education");
     case ReminderCategory.LIFE:
-      return "Быт";
+      return t("reminders.category.life");
     case ReminderCategory.DOCUMENTS:
-      return "Документы";
+      return t("reminders.category.documents");
     case ReminderCategory.HEALTH:
-      return "Здоровье";
+      return t("reminders.category.health");
     case ReminderCategory.OTHER:
-      return "Другое";
+      return t("reminders.category.other");
     default:
-      return "Другое";
+      return t("reminders.category.other");
+  }
+};
+
+const getLocaleByLanguage = (language?: Language): string => {
+  switch (language) {
+    case Language.EN:
+      return "en-US";
+    case Language.FR:
+      return "fr-FR";
+    case Language.AR:
+      return "ar";
+    case Language.ZH:
+      return "zh-CN";
+    case Language.RU:
+    default:
+      return "ru-RU";
   }
 };
 
@@ -105,6 +126,8 @@ const getCategoryBadgeColor = (category: ReminderCategory): string => {
 
 // Компонент календаря
 const CalendarView = ({ reminders }: { reminders: Reminder[] }) => {
+  const { t, currentLanguage } = useTranslation();
+  const locale = getLocaleByLanguage(currentLanguage);
   const [currentDate, setCurrentDate] = useState(new Date());
   const [selectedDate, setSelectedDate] = useState<Date | null>(null);
 
@@ -154,21 +177,19 @@ const CalendarView = ({ reminders }: { reminders: Reminder[] }) => {
     });
   };
 
-  const monthNames = [
-    "Январь",
-    "Февраль",
-    "Март",
-    "Апрель",
-    "Май",
-    "Июнь",
-    "Июль",
-    "Август",
-    "Сентябрь",
-    "Октябрь",
-    "Ноябрь",
-    "Декабрь",
-  ];
-  const weekDays = ["Вс", "Пн", "Вт", "Ср", "Чт", "Пт", "Сб"];
+  const weekDays = useMemo(() => {
+    const formatter = new Intl.DateTimeFormat(locale, { weekday: "short" });
+    const baseDate = new Date(2021, 7, 1); // 2021-08-01 is Sunday
+    return Array.from({ length: 7 }, (_, idx) =>
+      formatter.format(
+        new Date(
+          baseDate.getFullYear(),
+          baseDate.getMonth(),
+          baseDate.getDate() + idx
+        )
+      )
+    );
+  }, [locale]);
 
   const getRemindersForDate = (day: number): Reminder[] => {
     const dateKey = `${year}-${String(month + 1).padStart(2, "0")}-${String(
@@ -210,7 +231,10 @@ const CalendarView = ({ reminders }: { reminders: Reminder[] }) => {
           <ChevronLeft className="h-5 w-5 text-gray-600" />
         </button>
         <h3 className="text-lg font-semibold text-gray-900">
-          {monthNames[month]} {year}
+          {new Intl.DateTimeFormat(locale, { month: "long" }).format(
+            new Date(year, month, 1)
+          )}{" "}
+          {year}
         </h3>
         <button
           onClick={() => navigateMonth("next")}
@@ -294,12 +318,14 @@ const CalendarView = ({ reminders }: { reminders: Reminder[] }) => {
       {selectedDate && selectedDateReminders.length > 0 && (
         <div className="mt-6 pt-4 border-t border-gray-200">
           <h4 className="text-sm font-semibold text-gray-900 mb-3">
-            Напоминания на{" "}
-            {selectedDate.toLocaleDateString("ru-RU", {
-              day: "numeric",
-              month: "long",
-              year: "numeric",
-            })}
+            {t("reminders.calendar.remindersOn").replace(
+              "{date}",
+              selectedDate.toLocaleDateString(locale, {
+                day: "numeric",
+                month: "long",
+                year: "numeric",
+              })
+            )}
           </h4>
           <div className="space-y-2">
             {selectedDateReminders.map((reminder) => (
@@ -323,13 +349,14 @@ const CalendarView = ({ reminders }: { reminders: Reminder[] }) => {
 
       {selectedDate && selectedDateReminders.length === 0 && (
         <div className="mt-6 pt-4 border-t border-gray-200 text-sm text-gray-500 text-center">
-          На{" "}
-          {selectedDate.toLocaleDateString("ru-RU", {
-            day: "numeric",
-            month: "long",
-            year: "numeric",
-          })}{" "}
-          нет напоминаний
+          {t("reminders.calendar.noRemindersOnDate").replace(
+            "{date}",
+            selectedDate.toLocaleDateString(locale, {
+              day: "numeric",
+              month: "long",
+              year: "numeric",
+            })
+          )}
         </div>
       )}
     </div>
@@ -341,6 +368,8 @@ export default function RemindersPage() {
   const router = useRouter();
   const { reminders, loading, createReminder, updateReminder, deleteReminder } =
     useReminders(user?.id || "");
+  const { t, currentLanguage } = useTranslation();
+  const locale = getLocaleByLanguage(currentLanguage);
 
   // Автоматическое перенаправление на /login если не авторизован
   useEffect(() => {
@@ -403,7 +432,7 @@ export default function RemindersPage() {
         hasDate: !!newReminder.date,
         hasUser: !!user?.id,
       });
-      alert("Пожалуйста, заполните все обязательные поля (название и дата)");
+      alert(t("reminders.validation.requiredFields"));
       return;
     }
 
@@ -425,12 +454,12 @@ export default function RemindersPage() {
 
       // Проверяем, что категория и дата заполнены
       if (!newReminder.category) {
-        alert("Пожалуйста, выберите категорию");
+        alert(t("reminders.validation.chooseCategory"));
         return;
       }
 
       if (!dateInput) {
-        alert("Пожалуйста, укажите дату");
+        alert(t("reminders.validation.chooseDate"));
         return;
       }
 
@@ -466,14 +495,14 @@ export default function RemindersPage() {
         )
       ) {
         console.error("Invalid category:", newReminder.category);
-        alert("Ошибка: неверная категория");
+        alert(t("reminders.validation.invalidCategory"));
         return;
       }
 
       // Проверяем, что дата валидна
       if (!dateWithTime || dateWithTime === "") {
         console.error("Invalid date:", dateWithTime);
-        alert("Ошибка: неверная дата");
+        alert(t("reminders.validation.invalidDate"));
         return;
       }
 
@@ -488,9 +517,7 @@ export default function RemindersPage() {
         console.log("Response dueDate:", createdReminder?.dueDate);
       } catch (error) {
         console.error("Error creating reminder:", error);
-        alert(
-          "Ошибка при создании напоминания. Проверьте консоль для деталей."
-        );
+        alert(t("reminders.validation.createError"));
         return;
       }
 
@@ -635,7 +662,9 @@ export default function RemindersPage() {
         <div className="flex items-center justify-center min-h-screen">
           <div className="text-center">
             <div className="animate-spin rounded-full h-8 w-8 border-b-2 border-blue-600 mx-auto mb-4"></div>
-            <p className="text-gray-600">Проверка авторизации...</p>
+            <p className="text-gray-600">
+              {t("reminders.authChecking")}
+            </p>
           </div>
         </div>
       </Layout>
@@ -654,10 +683,10 @@ export default function RemindersPage() {
               </div>
               <div>
                 <h1 className="text-xl sm:text-2xl font-bold text-gray-900">
-                  Мои напоминания
+                  {t("reminders.header.title")}
                 </h1>
                 <p className="text-sm sm:text-base text-gray-600">
-                  Управляйте задачами и важными датами
+                  {t("reminders.header.subtitle")}
                 </p>
               </div>
             </div>
@@ -666,7 +695,7 @@ export default function RemindersPage() {
               className="flex items-center space-x-2 w-full sm:w-auto"
             >
               <Plus className="h-4 w-4" />
-              <span>Добавить напоминание</span>
+              <span>{t("reminders.actions.add")}</span>
             </Button>
           </div>
         </div>
@@ -677,7 +706,7 @@ export default function RemindersPage() {
             <CardContent className="p-4 sm:p-6">
               <div className="flex items-center justify-between mb-4">
                 <h3 className="text-lg font-semibold text-gray-900">
-                  Добавить напоминание
+                  {t("reminders.form.title")}
                 </h3>
                 <Button
                   variant="outline"
@@ -691,7 +720,7 @@ export default function RemindersPage() {
               <form onSubmit={handleAddReminder} className="space-y-4">
                 <div>
                   <label className="block text-sm font-medium text-gray-700 mb-1">
-                    Название *
+                    {t("reminders.form.fields.title")}
                   </label>
                   <Input
                     type="text"
@@ -702,14 +731,14 @@ export default function RemindersPage() {
                         title: e.target.value,
                       }))
                     }
-                    placeholder="Введите название напоминания"
+                    placeholder={t("reminders.form.placeholders.title")}
                     required
                   />
                 </div>
 
                 <div>
                   <label className="block text-sm font-medium text-gray-700 mb-1">
-                    Описание
+                    {t("reminders.form.fields.description")}
                   </label>
                   <textarea
                     value={newReminder.description}
@@ -719,7 +748,7 @@ export default function RemindersPage() {
                         description: e.target.value,
                       }))
                     }
-                    placeholder="Дополнительная информация"
+                    placeholder={t("reminders.form.placeholders.description")}
                     className="w-full px-3 py-2 border border-gray-300 rounded-md focus:ring-2 focus:ring-purple-500 focus:border-transparent"
                     rows={3}
                   />
@@ -728,7 +757,7 @@ export default function RemindersPage() {
                 <div className="grid grid-cols-1 sm:grid-cols-2 lg:grid-cols-3 gap-4">
                   <div>
                     <label className="block text-sm font-medium text-gray-700 mb-1">
-                      Дата *
+                      {t("reminders.form.fields.date")}
                     </label>
                     <Input
                       type="date"
@@ -745,7 +774,7 @@ export default function RemindersPage() {
 
                   <div>
                     <label className="block text-sm font-medium text-gray-700 mb-1">
-                      Тип
+                      {t("reminders.form.fields.category")}
                     </label>
                     <div className="relative">
                       <select
@@ -759,16 +788,20 @@ export default function RemindersPage() {
                         className="w-full px-3 py-2 border border-gray-300 rounded-md focus:ring-2 focus:ring-purple-500 focus:border-transparent appearance-none"
                       >
                         <option value={ReminderCategory.EDUCATION}>
-                          Учёба
+                          {t("reminders.category.education")}
                         </option>
-                        <option value={ReminderCategory.LIFE}>Быт</option>
+                        <option value={ReminderCategory.LIFE}>
+                          {t("reminders.category.life")}
+                        </option>
                         <option value={ReminderCategory.DOCUMENTS}>
-                          Документы
+                          {t("reminders.category.documents")}
                         </option>
                         <option value={ReminderCategory.HEALTH}>
-                          Здоровье
+                          {t("reminders.category.health")}
                         </option>
-                        <option value={ReminderCategory.OTHER}>Другое</option>
+                        <option value={ReminderCategory.OTHER}>
+                          {t("reminders.category.other")}
+                        </option>
                       </select>
                       <div className="absolute right-3 top-1/2 transform -translate-y-1/2 pointer-events-none">
                         <svg
@@ -790,7 +823,7 @@ export default function RemindersPage() {
 
                   <div>
                     <label className="block text-sm font-medium text-gray-700 mb-1">
-                      Приоритет
+                      {t("reminders.form.fields.priority")}
                     </label>
                     <div className="relative">
                       <select
@@ -803,9 +836,15 @@ export default function RemindersPage() {
                         }
                         className="w-full px-3 py-2 border border-gray-300 rounded-md focus:ring-2 focus:ring-purple-500 focus:border-transparent appearance-none"
                       >
-                        <option value={ReminderPriority.LOW}>Низкий</option>
-                        <option value={ReminderPriority.MEDIUM}>Средний</option>
-                        <option value={ReminderPriority.HIGH}>Высокий</option>
+                        <option value={ReminderPriority.LOW}>
+                          {t("reminders.priority.low")}
+                        </option>
+                        <option value={ReminderPriority.MEDIUM}>
+                          {t("reminders.priority.medium")}
+                        </option>
+                        <option value={ReminderPriority.HIGH}>
+                          {t("reminders.priority.high")}
+                        </option>
                       </select>
                       <div className="absolute right-3 top-1/2 transform -translate-y-1/2 pointer-events-none">
                         <svg
@@ -828,7 +867,7 @@ export default function RemindersPage() {
 
                 <div>
                   <label className="block text-sm font-medium text-gray-700 mb-1">
-                    Способ уведомления
+                    {t("reminders.form.fields.notificationMethod")}
                   </label>
                   <div className="space-y-2">
                     <label className="flex items-center space-x-2 cursor-pointer">
@@ -864,7 +903,9 @@ export default function RemindersPage() {
                             />
                           </svg>
                         </div>
-                        <span className="text-sm text-gray-700">Email</span>
+                        <span className="text-sm text-gray-700">
+                          {t("reminders.notification.email")}
+                        </span>
                       </div>
                     </label>
                     <label className="flex items-center space-x-2 cursor-pointer">
@@ -894,7 +935,9 @@ export default function RemindersPage() {
                             <path d="M9.78 18.65l.28-4.23 7.68-6.92c.34-.31-.07-.46-.52-.19L7.74 13.3 3.64 12c-.88-.25-.89-.86.2-1.3l15.97-6.16c.73-.33 1.43.18 1.15 1.3l-2.72 12.81c-.19.91-.74 1.13-1.5.71L12.6 16.3l-1.99 1.93c-.23.23-.42.42-.83.42z" />
                           </svg>
                         </div>
-                        <span className="text-sm text-gray-700">Telegram</span>
+                        <span className="text-sm text-gray-700">
+                          {t("reminders.notification.telegram")}
+                        </span>
                       </div>
                     </label>
                     <label className="flex items-center space-x-2 cursor-pointer">
@@ -920,7 +963,9 @@ export default function RemindersPage() {
                             VK
                           </span>
                         </div>
-                        <span className="text-sm text-gray-700">ВКонтакте</span>
+                        <span className="text-sm text-gray-700">
+                          {t("reminders.notification.vk")}
+                        </span>
                       </div>
                     </label>
                   </div>
@@ -933,14 +978,14 @@ export default function RemindersPage() {
                     onClick={() => setShowAddForm(false)}
                     className="w-full sm:w-auto"
                   >
-                    Отмена
+                    {t("reminders.actions.cancel")}
                   </Button>
                   <Button
                     type="submit"
                     className="flex items-center space-x-2 w-full sm:w-auto"
                   >
                     <Save className="h-4 w-4" />
-                    <span>Сохранить</span>
+                    <span>{t("reminders.actions.save")}</span>
                   </Button>
                 </div>
               </form>
@@ -955,7 +1000,7 @@ export default function RemindersPage() {
               <Search className="absolute left-3 top-1/2 transform -translate-y-1/2 h-4 w-4 text-gray-400" />
               <input
                 type="text"
-                placeholder="Поиск по напоминаниям..."
+                placeholder={t("reminders.search.placeholder")}
                 value={searchTerm}
                 onChange={(e) => setSearchTerm(e.target.value)}
                 className="w-full pl-10 pr-4 py-2 border border-gray-300 rounded-md focus:ring-2 focus:ring-purple-500 focus:border-transparent"
@@ -966,7 +1011,7 @@ export default function RemindersPage() {
               className="flex items-center space-x-2 w-full sm:w-auto"
             >
               <Filter className="h-4 w-4" />
-              <span>Фильтры</span>
+              <span>{t("reminders.search.filters")}</span>
             </Button>
           </div>
         </div>
@@ -980,7 +1025,9 @@ export default function RemindersPage() {
                   <AlertCircle className="h-5 w-5 sm:h-6 sm:w-6 text-red-600" />
                 </div>
                 <div>
-                  <p className="text-sm font-medium text-gray-600">Срочные</p>
+                  <p className="text-sm font-medium text-gray-600">
+                    {t("reminders.stats.urgent")}
+                  </p>
                   <p className="text-xl sm:text-2xl font-bold text-gray-900">
                     {
                       reminders.filter(
@@ -1002,7 +1049,9 @@ export default function RemindersPage() {
                   <Clock className="h-5 w-5 sm:h-6 sm:w-6 text-blue-600" />
                 </div>
                 <div>
-                  <p className="text-sm font-medium text-gray-600">Активные</p>
+                  <p className="text-sm font-medium text-gray-600">
+                    {t("reminders.stats.active")}
+                  </p>
                   <p className="text-xl sm:text-2xl font-bold text-gray-900">
                     {pendingReminders.length}
                   </p>
@@ -1018,7 +1067,9 @@ export default function RemindersPage() {
                   <CheckCircle className="h-5 w-5 sm:h-6 sm:w-6 text-green-600" />
                 </div>
                 <div>
-                  <p className="text-sm font-medium text-gray-600">Выполнено</p>
+                  <p className="text-sm font-medium text-gray-600">
+                    {t("reminders.stats.completed")}
+                  </p>
                   <p className="text-xl sm:text-2xl font-bold text-gray-900">
                     {completedReminders.length}
                   </p>
@@ -1032,7 +1083,7 @@ export default function RemindersPage() {
         {!authLoading && !loading && (
           <div>
             <h2 className="text-lg sm:text-xl font-semibold text-gray-900 mb-4">
-              Активные напоминания
+              {t("reminders.sections.active")}
               {pendingReminders.length > 0 && (
                 <span className="ml-2 text-purple-600">
                   ({pendingReminders.length})
@@ -1044,14 +1095,14 @@ export default function RemindersPage() {
                 <CardContent className="p-6 sm:p-8 text-center">
                   <Bell className="h-12 w-12 text-gray-400 mx-auto mb-4" />
                   <h3 className="text-lg font-medium text-gray-900 mb-2">
-                    Нет активных напоминаний
+                    {t("reminders.empty.active.title")}
                   </h3>
                   <p className="text-gray-600 mb-4">
-                    Создайте первое напоминание, чтобы начать
+                    {t("reminders.empty.active.description")}
                   </p>
                   <Button onClick={() => setShowAddForm(true)}>
                     <Plus className="h-4 w-4 mr-2" />
-                    Добавить напоминание
+                    {t("reminders.actions.add")}
                   </Button>
                 </CardContent>
               </Card>
@@ -1096,7 +1147,7 @@ export default function RemindersPage() {
                                     dueDateValue === ""
                                   ) {
                                     console.log("No dueDate value");
-                                    return "Дата не указана";
+                                    return t("reminders.dateNotSpecified");
                                   }
 
                                   let date: Date;
@@ -1107,7 +1158,7 @@ export default function RemindersPage() {
                                       dueDateValue === "null" ||
                                       dueDateValue === "undefined"
                                     ) {
-                                      return "Дата не указана";
+                                      return t("reminders.dateNotSpecified");
                                     }
                                     if (dueDateValue.includes("T")) {
                                       date = new Date(dueDateValue);
@@ -1127,11 +1178,11 @@ export default function RemindersPage() {
 
                                   if (isNaN(date.getTime())) {
                                     console.log("Invalid date:", dueDateValue);
-                                    return "Дата не указана";
+                                    return t("reminders.dateNotSpecified");
                                   }
 
                                   const formatted = date.toLocaleDateString(
-                                    "ru-RU",
+                                    locale,
                                     {
                                       year: "numeric",
                                       month: "long",
@@ -1147,12 +1198,12 @@ export default function RemindersPage() {
                                     "dueDate:",
                                     reminder.dueDate
                                   );
-                                  return "Дата не указана";
+                                  return t("reminders.dateNotSpecified");
                                 }
                               })()}
                             </p>
                             <div className="text-xs text-gray-400 mt-1 flex items-center space-x-2">
-                              <span>Уведомление:</span>
+                              <span>{t("reminders.notification.label")}</span>
                               {reminder.notificationMethod === "email" ? (
                                 <span className="flex items-center space-x-1">
                                   <div className="w-4 h-4 bg-gray-600 rounded-full flex items-center justify-center flex-shrink-0">
@@ -1170,7 +1221,7 @@ export default function RemindersPage() {
                                       />
                                     </svg>
                                   </div>
-                                  <span>Email</span>
+                                  <span>{t("reminders.notification.email")}</span>
                                 </span>
                               ) : reminder.notificationMethod === "telegram" ? (
                                 <span className="flex items-center space-x-1">
@@ -1183,7 +1234,7 @@ export default function RemindersPage() {
                                       <path d="M9.78 18.65l.28-4.23 7.68-6.92c.34-.31-.07-.46-.52-.19L7.74 13.3 3.64 12c-.88-.25-.89-.86.2-1.3l15.97-6.16c.73-.33 1.43.18 1.15 1.3l-2.72 12.81c-.19.91-.74 1.13-1.5.71L12.6 16.3l-1.99 1.93c-.23.23-.42.42-.83.42z" />
                                     </svg>
                                   </div>
-                                  <span>Telegram</span>
+                                  <span>{t("reminders.notification.telegram")}</span>
                                 </span>
                               ) : reminder.notificationMethod === "vk" ? (
                                 <span className="flex items-center space-x-1">
@@ -1192,7 +1243,7 @@ export default function RemindersPage() {
                                       VK
                                     </span>
                                   </div>
-                                  <span>VK</span>
+                                  <span>{t("reminders.notification.vkShort")}</span>
                                 </span>
                               ) : (
                                 <span className="flex items-center space-x-1">
@@ -1211,7 +1262,7 @@ export default function RemindersPage() {
                                       />
                                     </svg>
                                   </div>
-                                  <span>Email</span>
+                                  <span>{t("reminders.notification.email")}</span>
                                 </span>
                               )}
                             </div>
@@ -1280,7 +1331,7 @@ export default function RemindersPage() {
                               catEnum = ReminderCategory.OTHER;
                             }
 
-                            const categoryLabel = getCategoryLabel(catEnum);
+                            const categoryLabel = getCategoryLabel(catEnum, t);
 
                             console.log("Category mapping result:", {
                               rawCategory,
@@ -1310,10 +1361,10 @@ export default function RemindersPage() {
                             )}`}
                           >
                             {reminder.priority === ReminderPriority.HIGH
-                              ? "Срочно"
+                              ? t("reminders.priorityLabels.urgent")
                               : reminder.priority === ReminderPriority.MEDIUM
-                              ? "Важно"
-                              : "Обычно"}
+                              ? t("reminders.priorityLabels.important")
+                              : t("reminders.priorityLabels.normal")}
                           </span>
                           <div className="flex space-x-2 relative">
                             <Button
@@ -1323,7 +1374,7 @@ export default function RemindersPage() {
                               className="text-xs sm:text-sm relative group"
                             >
                               <span className="absolute -top-1 -right-1 text-sm opacity-0 group-hover:opacity-100 transition-opacity animate-bounce">✅</span>
-                              Выполнить
+                              {t("reminders.actions.complete")}
                             </Button>
                             <Button
                               variant="outline"
@@ -1347,7 +1398,7 @@ export default function RemindersPage() {
         {!loading && completedReminders.length > 0 && (
           <div>
             <h2 className="text-lg sm:text-xl font-semibold text-gray-900 mb-4">
-              Выполненные задачи
+              {t("reminders.sections.completed")}
             </h2>
             <div className="space-y-3 sm:space-y-4">
               {completedReminders.map((reminder) => (
@@ -1369,7 +1420,7 @@ export default function RemindersPage() {
                             {(() => {
                               try {
                                 if (!reminder.dueDate) {
-                                  return "Дата не указана";
+                                  return t("reminders.dateNotSpecified");
                                 }
                                 let date: Date;
                                 const dueDateValue = reminder.dueDate;
@@ -1389,15 +1440,15 @@ export default function RemindersPage() {
                                   date = new Date(String(dueDateValue));
                                 }
                                 if (isNaN(date.getTime())) {
-                                  return "Дата не указана";
+                                  return t("reminders.dateNotSpecified");
                                 }
-                                return date.toLocaleDateString("ru-RU", {
+                                return date.toLocaleDateString(locale, {
                                   year: "numeric",
                                   month: "long",
                                   day: "numeric",
                                 });
                               } catch {
-                                return "Дата не указана";
+                                return t("reminders.dateNotSpecified");
                               }
                             })()}
                           </p>
@@ -1436,7 +1487,7 @@ export default function RemindersPage() {
                           else if (catStr === "OTHER")
                             catEnum = ReminderCategory.OTHER;
 
-                          const categoryLabel = getCategoryLabel(catEnum);
+                          const categoryLabel = getCategoryLabel(catEnum, t);
 
                           console.log("Category mapping result (completed):", {
                             rawCategory,
@@ -1456,7 +1507,7 @@ export default function RemindersPage() {
                           );
                         })()}
                         <span className="px-2 py-1 rounded-full text-xs font-medium bg-green-100 text-green-700">
-                          Выполнено
+                          {t("reminders.status.completed")}
                         </span>
                         <Button
                           variant="outline"
@@ -1477,7 +1528,7 @@ export default function RemindersPage() {
         {/* Calendar Preview */}
         <div>
           <h2 className="text-lg sm:text-xl font-semibold text-gray-900 mb-4">
-            Календарь
+            {t("reminders.sections.calendar")}
           </h2>
           <Card>
             <CardContent className="p-4 sm:p-6">
@@ -1485,10 +1536,10 @@ export default function RemindersPage() {
                 <div className="flex flex-col items-center justify-center py-8 text-center">
                   <Calendar className="h-12 w-12 text-gray-400 mb-4" />
                   <h3 className="text-lg font-medium text-gray-900 mb-2">
-                    Нет активных напоминаний
+                    {t("reminders.empty.calendar.title")}
                   </h3>
                   <p className="text-gray-600 text-sm">
-                    Создайте напоминание, чтобы увидеть его в календаре
+                    {t("reminders.empty.calendar.description")}
                   </p>
                 </div>
               ) : (

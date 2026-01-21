@@ -194,7 +194,7 @@ export default function AdminPage() {
     return (
       <Layout>
         <div className="flex items-center justify-center min-h-screen">
-          <Card className={`w-96 ${adminCardClass}`} style={adminCardStyle}>
+          <Card className={`w-96 ${adminCardClass} no-hover`} style={adminCardStyle}>
             <CardContent className="p-8 text-center">
               <Shield className="h-16 w-16 text-red-500 mx-auto mb-4" />
               <h2 className="text-2xl font-bold text-slate-900 mb-2">
@@ -248,7 +248,7 @@ export default function AdminPage() {
             return (
               <Card
                 key={stat.title}
-                className={`${adminCardClass} animate-fade-in-up`}
+                className={`${adminCardClass} no-hover animate-fade-in-up`}
                 style={{ animationDelay: `${index * 0.1}s`, ...adminCardStyle }}
               >
                 <CardContent className="p-4 sm:p-6">
@@ -316,7 +316,7 @@ export default function AdminPage() {
 
         {/* Recent Users */}
         <div className="grid grid-cols-1 lg:grid-cols-2 gap-6 sm:gap-8">
-          <Card className={adminCardClass} style={adminCardStyle}>
+          <Card className={`${adminCardClass} no-hover`} style={adminCardStyle}>
             <CardHeader>
               <CardTitle className="flex items-center space-x-2">
                 <Users className="h-5 w-5" />
@@ -369,7 +369,7 @@ export default function AdminPage() {
           </Card>
 
           {/* Recent Guides */}
-          <Card className={adminCardClass} style={adminCardStyle}>
+          <Card className={`${adminCardClass} no-hover`} style={adminCardStyle}>
             <CardHeader>
               <CardTitle className="flex items-center space-x-2">
                 <BookOpen className="h-5 w-5" />
@@ -435,7 +435,7 @@ export default function AdminPage() {
         </div>
 
         {/* System Status */}
-        <Card className={adminCardClass} style={adminCardStyle}>
+        <Card className={`${adminCardClass} no-hover`} style={adminCardStyle}>
           <CardHeader>
             <CardTitle className="flex items-center space-x-2">
               <Activity className="h-5 w-5" />

@@ -670,7 +670,7 @@ export default function ProfilePage() {
 
             {isBillingHistoryOpen && (
               <Card
-                className={`${profileCardClass} animate-fade-in-up`}
+                className={`${profileCardClass} no-hover animate-fade-in-up`}
                 style={profileCardStyle}
               >
                 <CardHeader>
@@ -805,7 +805,7 @@ export default function ProfilePage() {
             <div className="lg:col-span-1 space-y-6">
               {/* Personal Information */}
               <Card
-                className={`${profileCardClass} animate-fade-in-up`}
+                className={`${profileCardClass} no-hover animate-fade-in-up`}
                 style={{ animationDelay: "0.2s", ...profileCardStyle }}
               >
                 <CardHeader className="relative z-10">
@@ -957,7 +957,7 @@ export default function ProfilePage() {
             <div className="lg:col-span-2 space-y-6">
               {/* Recent Activity */}
               <Card
-                className={`${profileCardClass} animate-fade-in-up`}
+                className={`${profileCardClass} no-hover animate-fade-in-up`}
                 style={{ animationDelay: "0.4s", ...profileCardStyle }}
               >
                 <CardHeader className="relative z-10">
@@ -1013,7 +1013,7 @@ export default function ProfilePage() {
 
               {/* Achievements */}
               <Card
-                className={`${profileCardClass} animate-fade-in-up`}
+                className={`${profileCardClass} no-hover animate-fade-in-up`}
                 style={{ animationDelay: "0.5s", ...profileCardStyle }}
               >
                 <CardHeader className="relative z-10">

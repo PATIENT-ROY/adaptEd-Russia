@@ -5,6 +5,7 @@ import { Layout } from "@/components/layout/layout";
 import { ProtectedRoute } from "@/components/auth/ProtectedRoute";
 import { useAuth } from "@/contexts/AuthContext";
 import { useChat } from "@/hooks/useChat";
+import { useTranslation } from "@/hooks/useTranslation";
 import { Button } from "@/components/ui/button";
 import {
   Card,
@@ -105,6 +106,7 @@ const quickQuestions = [
 
 export default function AiHelperPage() {
   const { user } = useAuth();
+  const { t } = useTranslation();
   const { messages, loading, error, sendMessage, clearChat } = useChat(
     user?.id || ""
   );
@@ -334,10 +336,10 @@ export default function AiHelperPage() {
               </div>
               <div>
                 <h1 className="text-xl sm:text-2xl font-bold text-gray-900">
-                  AI Помощник
+                  {t("aiHelper.header.title")}
                 </h1>
                 <p className="text-sm sm:text-base text-gray-600">
-                  Задавайте вопросы на любом языке и получайте быстрые ответы
+                  {t("aiHelper.header.subtitle")}
                 </p>
               </div>
             </div>

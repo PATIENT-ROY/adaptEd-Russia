@@ -5,6 +5,7 @@ import { ProtectedRoute } from "@/components/auth/ProtectedRoute";
 import { Card, CardContent, CardHeader, CardTitle } from "@/components/ui/card";
 import { Button } from "@/components/ui/button";
 import { Input } from "@/components/ui/input";
+import { useTranslation } from "@/hooks/useTranslation";
 import {
   BookOpen,
   Search,
@@ -107,6 +108,7 @@ const statusColors: Record<string, string> = {
 
 export default function AdminGuidesPage() {
   const { user } = useAuth();
+  const { t } = useTranslation();
   const [isAdmin, setIsAdmin] = useState(false);
   const [guides, setGuides] = useState(mockGuides);
   const [searchTerm, setSearchTerm] = useState("");
@@ -224,10 +226,10 @@ export default function AdminGuidesPage() {
               </div>
               <div>
                 <h1 className="text-xl sm:text-2xl font-bold text-gray-900">
-                  Управление гайдами
+                  {t("admin.guides.header.title")}
                 </h1>
                 <p className="text-sm sm:text-base text-gray-600">
-                  Создание, редактирование и публикация гайдов
+                  {t("admin.guides.header.subtitle")}
                 </p>
               </div>
             </div>
@@ -255,7 +257,7 @@ export default function AdminGuidesPage() {
                 <Search className="absolute left-3 top-1/2 transform -translate-y-1/2 h-4 w-4 text-gray-400" />
                 <Input
                   type="text"
-                  placeholder="Поиск по названию, содержанию или тегам..."
+                  placeholder={t("admin.guides.search.placeholder")}
                   value={searchTerm}
                   onChange={(e) => setSearchTerm(e.target.value)}
                   className="pl-10"
@@ -267,7 +269,7 @@ export default function AdminGuidesPage() {
                 onChange={(e) => setStatusFilter(e.target.value)}
                   className="w-full appearance-none px-3 py-2 pr-9 border border-slate-300 rounded-lg focus:ring-2 focus:ring-green-500 focus:border-green-500"
               >
-                <option value="all">Все статусы</option>
+                <option value="all">{t("admin.guides.filters.status.all")}</option>
                 <option value="published">Опубликованные</option>
                 <option value="draft">Черновики</option>
                 <option value="archived">Архивные</option>
@@ -280,7 +282,7 @@ export default function AdminGuidesPage() {
                 onChange={(e) => setCategoryFilter(e.target.value)}
                   className="w-full appearance-none px-3 py-2 pr-9 border border-slate-300 rounded-lg focus:ring-2 focus:ring-green-500 focus:border-green-500"
               >
-                <option value="all">Все категории</option>
+                <option value="all">{t("admin.guides.filters.category.all")}</option>
                 <option value="education">Образование</option>
                 <option value="life">Быт</option>
               </select>

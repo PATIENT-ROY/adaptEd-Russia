@@ -4,6 +4,7 @@ import { Layout } from "@/components/layout/layout";
 import { ProtectedRoute } from "@/components/auth/ProtectedRoute";
 import { Card, CardContent } from "@/components/ui/card";
 import { Button } from "@/components/ui/button";
+import { useTranslation } from "@/hooks/useTranslation";
 import {
   AchievementCategory,
   AchievementStatus,
@@ -159,6 +160,7 @@ const FALLBACK_OVERVIEW: AchievementsOverview = {
 };
 
 export default function AchievementsPage() {
+  const { t } = useTranslation();
   const [overview, setOverview] = useState<AchievementsOverview | null>(null);
   const [selectedCategory, setSelectedCategory] = useState<AchievementCategory | "all">("all");
   const [isLoading, setIsLoading] = useState(true);
@@ -295,10 +297,10 @@ export default function AchievementsPage() {
               </div>
               <div className="flex-1">
                 <h1 className="text-xl sm:text-2xl font-bold text-gray-900">
-                  Достижения
+                  {t("achievements.header.title")}
                 </h1>
                 <p className="text-sm sm:text-base text-gray-600">
-                  Отслеживайте свой прогресс и получайте награды
+                  {t("achievements.header.subtitle")}
                 </p>
               </div>
             </div>

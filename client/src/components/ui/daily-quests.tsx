@@ -15,7 +15,7 @@ export function DailyQuestsComponent({ quests }: DailyQuestsProps) {
     totalQuests > 0 ? (completedQuests / totalQuests) * 100 : 0;
 
   return (
-    <Card className="shadow-lg border-0 bg-gradient-to-br from-orange-50 to-yellow-50">
+    <Card className="shadow-lg border-0 bg-gradient-to-br from-orange-50 to-yellow-50 no-hover">
       <CardHeader className="pb-3">
         <div className="flex items-center justify-between">
           <CardTitle className="text-lg sm:text-xl flex items-center space-x-2">

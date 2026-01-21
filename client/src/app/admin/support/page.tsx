@@ -8,6 +8,7 @@ import { Card, CardContent, CardHeader, CardTitle } from "@/components/ui/card";
 import { Button } from "@/components/ui/button";
 import { Badge } from "@/components/ui/badge";
 import { Input } from "@/components/ui/input";
+import { useTranslation } from "@/hooks/useTranslation";
 import {
   MessageSquare,
   Clock,
@@ -60,6 +61,7 @@ interface SupportTicket {
 }
 
 export default function AdminSupportPage() {
+  const { t } = useTranslation();
   const { user } = useAuth();
   const [tickets, setTickets] = useState<SupportTicket[]>([]);
   const [loading, setLoading] = useState(true);
@@ -220,10 +222,10 @@ export default function AdminSupportPage() {
               </Link>
               <div>
                 <h1 className="text-3xl font-bold text-gray-900">
-              Управление обращениями в поддержку
+                  {t("admin.support.header.title")}
             </h1>
             <p className="text-gray-600">
-              Просмотр и управление обращениями пользователей
+                  {t("admin.support.header.subtitle")}
             </p>
               </div>
             </div>

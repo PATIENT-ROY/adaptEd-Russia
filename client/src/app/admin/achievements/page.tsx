@@ -4,6 +4,7 @@ import { Layout } from "@/components/layout/layout";
 import { ProtectedRoute } from "@/components/auth/ProtectedRoute";
 import { Card, CardContent, CardHeader, CardTitle } from "@/components/ui/card";
 import { Button } from "@/components/ui/button";
+import { useTranslation } from "@/hooks/useTranslation";
 import {
   ArrowLeft,
   Award,
@@ -49,6 +50,7 @@ const recentAchievements = [
 
 export default function AdminAchievementsPage() {
   const { user } = useAuth();
+  const { t } = useTranslation();
   const [isAdmin, setIsAdmin] = useState(false);
 
   useEffect(() => {
@@ -106,17 +108,17 @@ export default function AdminAchievementsPage() {
                 </div>
                 <div>
                   <h1 className="text-xl sm:text-2xl font-bold text-gray-900">
-                    Достижения — аналитика
+                    {t("admin.achievements.header.title")}
                   </h1>
                   <p className="text-sm sm:text-base text-gray-600">
-                    Награды, прогресс и вовлечённость
+                    {t("admin.achievements.header.subtitle")}
                   </p>
                 </div>
               </div>
               <div className="flex items-center space-x-2">
                 <Button variant="outline" className="flex items-center space-x-2">
                   <Star className="h-4 w-4" />
-                  <span>Экспорт</span>
+                  <span>{t("admin.achievements.actions.export")}</span>
                 </Button>
               </div>
             </div>

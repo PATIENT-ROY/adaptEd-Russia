@@ -94,6 +94,11 @@
     box-shadow: 0 25px 50px -12px rgba(0, 0, 0, 0.15);
 }
 
+.modern-card.no-hover:hover {
+    transform: none;
+    box-shadow: 0 20px 25px -5px rgba(0, 0, 0, 0.1);
+}
+
 .modern-button {
     background: linear-gradient(135deg, #3b82f6 0%, #6366f1 100%);
     color: white;

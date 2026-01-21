@@ -17,49 +17,13 @@ import {
 import Link from "next/link";
 import { useAuth } from "@/contexts/AuthContext";
 import { useReminders } from "@/hooks/useReminders";
+import { useTranslation } from "@/hooks/useTranslation";
 import { useState, useEffect, useCallback } from "react";
 import type { Reminder, UserProgress, DailyQuest } from "@/types";
+import { Language } from "@/types";
 import { UserProgressComponent } from "@/components/ui/user-progress";
 import { DailyQuestsComponent } from "@/components/ui/daily-quests";
 import { fetchDashboardOverview } from "@/lib/api";
-
-const quickActions = [
-  {
-    title: "Образовательный навигатор",
-    description: "Гайды по образовательной системе",
-    icon: BookOpen,
-    href: "/education-guide",
-    gradient: "from-blue-500 to-blue-600",
-  },
-  {
-    title: "Умные напоминания",
-    description: "Управление задачами и сроками",
-    icon: Bell,
-    href: "/reminders",
-    gradient: "from-purple-500 to-purple-600",
-  },
-  {
-    title: "AI Помощник",
-    description: "Задавайте вопросы на родном языке",
-    icon: MessageSquare,
-    href: "/ai-helper",
-    gradient: "from-orange-500 to-orange-600",
-  },
-  {
-    title: "DocScan",
-    description: "OCR из PDF и фото, перевод и экспорт",
-    icon: ScanLine,
-    href: "/docscan",
-    gradient: "from-indigo-500 to-indigo-600",
-  },
-  {
-    title: "Q&A / Сообщество",
-    description: "Живые вопросы, ответы и обсуждения",
-    icon: Users,
-    href: "/community/questions",
-    gradient: "from-pink-500 to-rose-600",
-  },
-];
 
 const dashboardCardClass = "border-0 shadow-xl";
 const dashboardCardStyle = {
@@ -70,11 +34,59 @@ const dashboardCardStyle = {
 export default function DashboardPage() {
   const { user, isLoading: authLoading } = useAuth();
   const { reminders, loading } = useReminders(user?.id || "");
+  const { t, currentLanguage } = useTranslation();
   const [upcomingReminders, setUpcomingReminders] = useState<Reminder[]>([]);
   const [userProgress, setUserProgress] = useState<UserProgress | null>(null);
   const [dailyQuests, setDailyQuests] = useState<DailyQuest[]>([]);
   const [isInitialLoading, setIsInitialLoading] = useState(true);
   const [dashboardError, setDashboardError] = useState<string | null>(null);
+  const firstName = user?.name?.split(" ")[0] || t("dashboard.welcome.defaultName");
+  const welcomeMessage = t("dashboard.welcome").replace("{name}", firstName);
+  const localeByLanguage: Record<Language, string> = {
+    [Language.RU]: "ru-RU",
+    [Language.EN]: "en-US",
+    [Language.FR]: "fr-FR",
+    [Language.AR]: "ar",
+    [Language.ZH]: "zh-CN",
+  };
+  const dateLocale = localeByLanguage[currentLanguage] ?? "ru-RU";
+  const quickActions = [
+    {
+      title: t("dashboard.quickActions.education.title"),
+      description: t("dashboard.quickActions.education.description"),
+      icon: BookOpen,
+      href: "/education-guide",
+      gradient: "from-blue-500 to-blue-600",
+    },
+    {
+      title: t("dashboard.quickActions.reminders.title"),
+      description: t("dashboard.quickActions.reminders.description"),
+      icon: Bell,
+      href: "/reminders",
+      gradient: "from-purple-500 to-purple-600",
+    },
+    {
+      title: t("dashboard.quickActions.aiHelper.title"),
+      description: t("dashboard.quickActions.aiHelper.description"),
+      icon: MessageSquare,
+      href: "/ai-helper",
+      gradient: "from-orange-500 to-orange-600",
+    },
+    {
+      title: t("dashboard.quickActions.docscan.title"),
+      description: t("dashboard.quickActions.docscan.description"),
+      icon: ScanLine,
+      href: "/docscan",
+      gradient: "from-indigo-500 to-indigo-600",
+    },
+    {
+      title: t("dashboard.quickActions.community.title"),
+      description: t("dashboard.quickActions.community.description"),
+      icon: Users,
+      href: "/community/questions",
+      gradient: "from-pink-500 to-rose-600",
+    },
+  ];
 
   const fetchDashboardData = useCallback(async () => {
     if (!user) {
@@ -230,7 +242,7 @@ export default function DashboardPage() {
       <Layout>
         <div className="space-y-6 sm:space-y-8 animate-fade-in-up">
           {/* Welcome Header */}
-          <Card className="bg-gradient-to-r from-blue-50 to-indigo-50 border-0 shadow-lg">
+          <Card className="bg-gradient-to-r from-blue-50 to-indigo-50 border-0 shadow-lg no-hover">
             <CardContent className="p-4 sm:p-6 lg:p-8">
               <div className="flex flex-col sm:flex-row sm:items-center space-y-4 sm:space-y-0 sm:space-x-4">
                 <div className="w-12 h-12 sm:w-16 sm:h-16 rounded-2xl bg-gradient-to-br from-blue-500 to-indigo-600 flex items-center justify-center shadow-lg">
@@ -243,10 +255,10 @@ export default function DashboardPage() {
                     ✨
                   </div>
                   <h1 className="text-xl sm:text-2xl lg:text-3xl font-bold text-slate-900 mb-1 sm:mb-2">
-                    Добро пожаловать, {user?.name.split(" ")[0]}! <span className="animate-wave inline-block">👋</span>
+                    {welcomeMessage} <span className="animate-wave inline-block">👋</span>
                   </h1>
                   <p className="text-sm sm:text-base lg:text-lg text-slate-600">
-                    Вот что происходит с вашей учёбой и бытом в России
+                    {t("dashboard.welcome.subtitle")}
                   </p>
                 </div>
               </div>
@@ -254,7 +266,7 @@ export default function DashboardPage() {
           </Card>
 
           {dashboardError && (
-            <Card className="border-red-200 bg-red-50 shadow-none">
+            <Card className="border-red-200 bg-red-50 shadow-none no-hover">
               <CardContent className="p-4 sm:p-6">
                 <div className="flex flex-col sm:flex-row sm:items-center sm:justify-between gap-3 sm:gap-4">
                   <div className="flex items-start space-x-3">
@@ -289,7 +301,7 @@ export default function DashboardPage() {
               </div>
             </div>
           ) : (
-            <Card className={dashboardCardClass} style={dashboardCardStyle}>
+            <Card className={`${dashboardCardClass} no-hover`} style={dashboardCardStyle}>
               <CardContent className="p-6 text-center">
                 {dashboardError ? (
                   <p className="text-red-600">
@@ -305,7 +317,7 @@ export default function DashboardPage() {
           {/* Quick Actions */}
           <div>
             <h2 className="text-xl sm:text-2xl font-bold text-slate-900 mb-4 sm:mb-6">
-              Быстрые действия
+              {t("dashboard.quickActions.title")}
             </h2>
             <div className="grid grid-cols-2 gap-2 sm:gap-4 lg:gap-6">
               {quickActions.map((action, index) => {
@@ -344,14 +356,14 @@ export default function DashboardPage() {
           {/* Upcoming Reminders */}
           <div>
             <h2 className="text-xl sm:text-2xl font-bold text-slate-900 mb-4 sm:mb-6">
-              Ближайшие напоминания
+              {t("dashboard.upcomingReminders.title")}
             </h2>
             {loading ? (
               <div className="space-y-3 sm:space-y-4">
                 {[1, 2, 3].map((index) => (
                   <Card
                     key={index}
-                    className="animate-pulse"
+                    className="animate-pulse no-hover"
                     style={dashboardCardStyle}
                   >
                     <CardContent className="p-4 sm:p-6">
@@ -371,7 +383,7 @@ export default function DashboardPage() {
                 {upcomingReminders.map((reminder, index) => (
                   <Card
                     key={reminder.id}
-                    className={`${dashboardCardClass} animate-fade-in-up`}
+                    className={`${dashboardCardClass} no-hover animate-fade-in-up`}
                     style={{
                       animationDelay: `${index * 0.1}s`,
                       ...dashboardCardStyle,
@@ -397,7 +409,7 @@ export default function DashboardPage() {
                             </h3>
                             <p className="text-xs sm:text-sm text-slate-600">
                               {new Date(reminder.dueDate).toLocaleDateString(
-                                "ru-RU"
+                                dateLocale,
                               )}
                             </p>
                           </div>
@@ -408,7 +420,7 @@ export default function DashboardPage() {
                             size="sm"
                             className="w-full sm:w-auto"
                           >
-                            Подробнее
+                            {t("dashboard.upcomingReminders.details")}
                           </Button>
                         </Link>
                       </div>
@@ -417,21 +429,22 @@ export default function DashboardPage() {
                 ))}
               </div>
             ) : (
-              <Card className={dashboardCardClass} style={dashboardCardStyle}>
+              <Card className={`${dashboardCardClass} no-hover`} style={dashboardCardStyle}>
                 <CardContent className="p-6 text-center">
                   <div className="flex flex-col items-center space-y-3">
                     <Bell className="h-12 w-12 text-gray-400" />
                     <div>
                       <h3 className="text-lg font-medium text-gray-900 mb-1">
-                        Нет активных напоминаний
+                        {t("dashboard.upcomingReminders.empty.title")}
                       </h3>
                       <p className="text-sm text-gray-600">
-                        Создайте первое напоминание, чтобы не пропустить важные
-                        дела
+                        {t("dashboard.upcomingReminders.empty.description")}
                       </p>
                     </div>
                     <Link href="/reminders">
-                      <Button className="mt-2">Создать напоминание</Button>
+                      <Button className="mt-2">
+                        {t("dashboard.upcomingReminders.empty.cta")}
+                      </Button>
                     </Link>
                   </div>
                 </CardContent>
@@ -442,11 +455,11 @@ export default function DashboardPage() {
           {/* Statistics */}
           <div>
             <h2 className="text-xl sm:text-2xl font-bold text-slate-900 mb-4 sm:mb-6">
-              Ваша статистика
+              {t("dashboard.stats.title")}
             </h2>
             <div className="grid grid-cols-1 sm:grid-cols-2 lg:grid-cols-4 gap-4 sm:gap-6">
               <Card
-                className={`${dashboardCardClass} animate-fade-in-up`}
+                className={`${dashboardCardClass} no-hover animate-fade-in-up`}
                 style={{ animationDelay: "0.1s", ...dashboardCardStyle }}
               >
                 <CardContent className="p-4 sm:p-6">
@@ -456,7 +469,7 @@ export default function DashboardPage() {
                     </div>
                     <div>
                       <p className="text-xs sm:text-sm font-medium text-slate-600">
-                        Изучено гайдов
+                        {t("dashboard.stats.guides")}
                       </p>
                       <p className="text-lg sm:text-xl font-bold text-slate-900">
                         12
@@ -467,7 +480,7 @@ export default function DashboardPage() {
               </Card>
 
               <Card
-                className={`${dashboardCardClass} animate-fade-in-up`}
+                className={`${dashboardCardClass} no-hover animate-fade-in-up`}
                 style={{ animationDelay: "0.2s", ...dashboardCardStyle }}
               >
                 <CardContent className="p-6">
@@ -477,7 +490,7 @@ export default function DashboardPage() {
                     </div>
                     <div>
                       <p className="text-sm font-medium text-slate-600">
-                        Дней в России
+                        {t("dashboard.stats.daysInRussia")}
                       </p>
                       <p className="text-2xl font-bold text-slate-900">45</p>
                     </div>
@@ -486,7 +499,7 @@ export default function DashboardPage() {
               </Card>
 
               <Card
-                className={`${dashboardCardClass} animate-fade-in-up`}
+                className={`${dashboardCardClass} no-hover animate-fade-in-up`}
                 style={{ animationDelay: "0.3s", ...dashboardCardStyle }}
               >
                 <CardContent className="p-6">
@@ -496,7 +509,7 @@ export default function DashboardPage() {
                     </div>
                     <div>
                       <p className="text-sm font-medium text-slate-600">
-                        Активных задач
+                        {t("dashboard.stats.activeTasks")}
                       </p>
                       <p className="text-2xl font-bold text-slate-900">
                         {reminders.filter((r) => r.status === "PENDING").length}
@@ -507,7 +520,7 @@ export default function DashboardPage() {
               </Card>
 
               <Card
-                className={`${dashboardCardClass} animate-fade-in-up`}
+                className={`${dashboardCardClass} no-hover animate-fade-in-up`}
                 style={{ animationDelay: "0.4s", ...dashboardCardStyle }}
               >
                 <CardContent className="p-6">
@@ -517,7 +530,7 @@ export default function DashboardPage() {
                     </div>
                     <div>
                       <p className="text-sm font-medium text-slate-600">
-                        Вопросов к AI
+                        {t("dashboard.stats.aiQuestions")}
                       </p>
                       <p className="text-2xl font-bold text-slate-900">23</p>
                     </div>

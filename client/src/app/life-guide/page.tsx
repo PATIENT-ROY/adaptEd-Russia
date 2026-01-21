@@ -1481,10 +1481,10 @@ export default function LifeGuidePage() {
             </div>
             <div>
               <h1 className="text-xl sm:text-2xl font-bold text-gray-900">
-                Бытовой гид
+                {t("lifeGuide.header.title")}
               </h1>
               <p className="text-sm sm:text-base text-gray-600">
-                Пошаговые инструкции для жизни в России
+                {t("lifeGuide.header.subtitle")}
               </p>
             </div>
           </div>
@@ -1521,7 +1521,7 @@ export default function LifeGuidePage() {
               <Search className="absolute left-3 top-1/2 transform -translate-y-1/2 h-4 w-4 text-gray-400 transition-colors duration-300" />
               <input
                 type="text"
-                placeholder="Поиск по инструкциям..."
+                placeholder={t("lifeGuide.search.placeholder")}
                 value={searchQuery}
                 onChange={(e) => setSearchQuery(e.target.value)}
                 className="w-full pl-10 pr-4 py-2 border border-gray-300 rounded-md focus:ring-2 focus:ring-green-500 focus:border-transparent transition-all duration-300 hover:border-gray-400"
@@ -1536,7 +1536,7 @@ export default function LifeGuidePage() {
               }}
             >
               <Filter className="h-4 w-4 transition-all duration-300" />
-              <span>Сбросить</span>
+              <span>{t("lifeGuide.search.reset")}</span>
             </Button>
           </div>
         </div>
@@ -1578,8 +1578,11 @@ export default function LifeGuidePage() {
           <div className="flex items-center justify-between mb-4 sm:mb-5">
             <h2 className="text-base sm:text-lg font-semibold text-gray-900 transition-all duration-300">
               {filteredGuides.length === 0
-                ? "Инструкции не найдены"
-                : `Найдено инструкций: ${filteredGuides.length}`}
+                ? t("lifeGuide.guidesNotFound")
+                : t("lifeGuide.guidesFound").replace(
+                    "{count}",
+                    String(filteredGuides.length),
+                  )}
             </h2>
             {(searchQuery || selectedCategory !== "all") && (
               <Button
@@ -1591,7 +1594,7 @@ export default function LifeGuidePage() {
                   setSelectedCategory("all");
                 }}
               >
-                Показать все
+                {t("lifeGuide.showAll")}
               </Button>
             )}
           </div>
