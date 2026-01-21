@@ -1344,9 +1344,6 @@ const translations: Record<Language, Record<string, string>> = {
     "reminders.status.completed": "مكتمل",
     "reminders.calendar.remindersOn": "تذكيرات بتاريخ {date}",
     "reminders.calendar.noRemindersOnDate": "لا توجد تذكيرات بتاريخ {date}",
-    "educationGuide.guidesNotFound": "لم يتم العثور على أدلة",
-    "educationGuide.guidesFound": "تم العثور على أدلة: {count}",
-    "educationGuide.showAll": "عرض الكل",
     
     // Home Page Sections
     "home.section.features.title": "كل ما تحتاجه للتكيف الناجح",
@@ -1730,9 +1727,6 @@ const translations: Record<Language, Record<string, string>> = {
     "reminders.status.completed": "已完成",
     "reminders.calendar.remindersOn": "提醒：{date}",
     "reminders.calendar.noRemindersOnDate": "{date} 没有提醒",
-    "educationGuide.guidesNotFound": "未找到指南",
-    "educationGuide.guidesFound": "已找到指南：{count}",
-    "educationGuide.showAll": "显示全部",
     
     // Home Page Sections
     "home.section.features.title": "成功适应所需的一切",
