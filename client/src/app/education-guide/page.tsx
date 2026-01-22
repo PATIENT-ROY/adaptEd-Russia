@@ -2,6 +2,7 @@
 
 import { Layout } from "@/components/layout/layout";
 import { GuideCard } from "@/components/ui/guide-card";
+import { GuideCardBase } from "@/components/ui/guide-card-base";
 import { Button } from "@/components/ui/button";
 import {
   ScheduleFilter,
@@ -2399,22 +2400,59 @@ export default function EducationGuidePage() {
               style={{ gridAutoRows: "1fr" }}
             >
               {filteredGrants.map((grant) => (
-                <div
+                <GuideCardBase
                   key={grant.id}
-                  className="bg-white rounded-2xl sm:rounded-3xl transition-all duration-300 border-0 flex flex-col"
-                >
-                  <div className="p-6 flex flex-col h-full">
-                    <div className="flex justify-between items-start mb-3">
-                      <div className="flex items-center space-x-2">
-                        {getTypeIcon(grant.type)}
-                        <span
-                          className={`px-2 py-1 rounded-full text-xs font-medium ${getStatusColor(
-                            grant.status
-                          )}`}
-                        >
-                          {grant.status}
+                  className="rounded-2xl sm:rounded-3xl"
+                  icon={
+                    <div className="rounded-xl flex-shrink-0 h-12 w-12 sm:h-14 sm:w-14 flex items-center justify-center shadow-sm bg-slate-100 text-slate-700">
+                      {getTypeIcon(grant.type)}
+                    </div>
+                  }
+                  title={grant.title}
+                  subtitle={grant.organization}
+                  badges={
+                    <>
+                      <span
+                        className={`px-2 py-1 rounded-full text-xs font-medium ${getStatusColor(
+                          grant.status
+                        )}`}
+                      >
+                        {grant.status}
+                      </span>
+                      {grant.isFeatured && (
+                        <span className="inline-flex items-center space-x-1 text-xs text-yellow-600 font-medium">
+                          <Star className="h-3 w-3 sm:h-4 sm:w-4 text-yellow-500 fill-yellow-500" />
+                          <span>Рекомендуемый</span>
                         </span>
-                      </div>
+                      )}
+                    </>
+                  }
+                  description={grant.description}
+                  meta={[
+                    {
+                      icon: <DollarSign className="h-3 w-3 sm:h-4 sm:w-4" />,
+                      label: "Сумма:",
+                      value: formatAmount(grant.amount, grant.currency),
+                      valueClassName: "text-green-600",
+                    },
+                    {
+                      icon: <Calendar className="h-3 w-3 sm:h-4 sm:w-4" />,
+                      label: "Дедлайн:",
+                      value: new Date(
+                        grant.applicationDeadline
+                      ).toLocaleDateString("ru-RU"),
+                      valueClassName: "text-red-600",
+                    },
+                    {
+                      icon: <GraduationCap className="h-3 w-3 sm:h-4 sm:w-4" />,
+                      label: "Уровень:",
+                      value: grant.level,
+                      valueClassName: "text-gray-700",
+                    },
+                  ]}
+                  tags={grant.tags}
+                  footerActions={
+                    <>
                       <div className="flex items-center space-x-2">
                         <Button
                           variant="ghost"
@@ -2430,109 +2468,22 @@ export default function EducationGuidePage() {
                             }`}
                           />
                         </Button>
-                        <Button
-                          variant="ghost"
-                          size="sm"
-                          className="p-1 h-8 w-8"
-                        >
+                        <Button variant="ghost" size="sm" className="p-1 h-8 w-8">
                           <Share2 className="h-4 w-4 text-gray-400" />
                         </Button>
                       </div>
-                    </div>
-
-                    <div className="h-6 mb-2">
-                      {grant.isFeatured && (
-                        <div className="flex items-center space-x-1">
-                          <Star className="h-3 w-3 sm:h-4 sm:w-4 text-yellow-500 fill-yellow-500" />
-                          <span className="text-xs sm:text-sm text-yellow-600 font-medium">
-                            Рекомендуемый
-                          </span>
-                        </div>
-                      )}
-                    </div>
-
-                    <div className="h-16 mb-2">
-                      <h3 className="text-base sm:text-lg font-semibold text-gray-900 hover:text-blue-600 transition-colors line-clamp-2">
-                        {grant.title}
-                      </h3>
-                    </div>
-
-                    <div className="h-6 mb-3">
-                      <div className="flex items-center space-x-1 text-xs sm:text-sm text-gray-600">
-                        <Building className="h-3 w-3 sm:h-4 sm:w-4" />
-                        <span className="line-clamp-1">
-                          {grant.organization}
-                        </span>
+                      <div className="flex space-x-2">
+                        <Button className="bg-gradient-to-r from-blue-600 to-purple-600 hover:from-blue-700 hover:to-purple-700 text-xs sm:text-sm">
+                          <Eye className="h-3 w-3 sm:h-4 sm:w-4 mr-1 sm:mr-2" />
+                          Подробнее
+                        </Button>
+                        <Button variant="outline" className="px-2 sm:px-3">
+                          <TrendingUp className="h-3 w-3 sm:h-4 sm:w-4" />
+                        </Button>
                       </div>
-                    </div>
-
-                    <div className="h-12 mb-4">
-                      <p className="text-gray-600 text-xs sm:text-sm leading-5 line-clamp-2">
-                        {grant.description}
-                      </p>
-                    </div>
-
-                    <div className="space-y-3 mb-6">
-                      <div className="flex items-center justify-between">
-                        <div className="flex items-center space-x-2 text-gray-600 w-20 sm:w-24">
-                          <DollarSign className="h-3 w-3 sm:h-4 sm:w-4 flex-shrink-0" />
-                          <span className="text-xs sm:text-sm">Сумма:</span>
-                        </div>
-                        <span className="font-semibold text-green-600 text-right text-xs sm:text-sm">
-                          {formatAmount(grant.amount, grant.currency)}
-                        </span>
-                      </div>
-
-                      <div className="flex items-center justify-between">
-                        <div className="flex items-center space-x-2 text-gray-600 w-20 sm:w-24">
-                          <Calendar className="h-3 w-3 sm:h-4 sm:w-4 flex-shrink-0" />
-                          <span className="text-xs sm:text-sm">Дедлайн:</span>
-                        </div>
-                        <span className="font-medium text-red-600 text-right text-xs sm:text-sm">
-                          {new Date(
-                            grant.applicationDeadline
-                          ).toLocaleDateString("ru-RU")}
-                        </span>
-                      </div>
-
-                      <div className="flex items-center justify-between">
-                        <div className="flex items-center space-x-2 text-gray-600 w-20 sm:w-24">
-                          <GraduationCap className="h-3 w-3 sm:h-4 sm:w-4 flex-shrink-0" />
-                          <span className="text-xs sm:text-sm">Уровень:</span>
-                        </div>
-                        <span className="px-2 sm:px-3 py-1.5 sm:py-2 rounded-full text-xs font-medium bg-gray-100 text-gray-700 text-right">
-                          {grant.level}
-                        </span>
-                      </div>
-                    </div>
-
-                    <div className="flex flex-wrap gap-2 mb-4">
-                      {grant.tags.slice(0, 3).map((tag) => (
-                        <span
-                          key={tag}
-                          className="px-2 sm:px-3 py-1.5 sm:py-2 rounded-full text-xs font-medium bg-blue-100 text-blue-700"
-                        >
-                          {tag}
-                        </span>
-                      ))}
-                      {grant.tags.length > 3 && (
-                        <span className="px-2 sm:px-3 py-1.5 sm:py-2 rounded-full text-xs font-medium bg-blue-100 text-blue-700">
-                          +{grant.tags.length - 3}
-                        </span>
-                      )}
-                    </div>
-
-                    <div className="flex space-x-2 mt-auto">
-                      <Button className="flex-1 bg-gradient-to-r from-blue-600 to-purple-600 hover:from-blue-700 hover:to-purple-700 text-xs sm:text-sm">
-                        <Eye className="h-3 w-3 sm:h-4 sm:w-4 mr-1 sm:mr-2" />
-                        Подробнее
-                      </Button>
-                      <Button variant="outline" className="px-2 sm:px-3">
-                        <TrendingUp className="h-3 w-3 sm:h-4 sm:w-4" />
-                      </Button>
-                    </div>
-                  </div>
-                </div>
+                    </>
+                  }
+                />
               ))}
             </div>
 
