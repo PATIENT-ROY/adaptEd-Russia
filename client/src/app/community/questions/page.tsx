@@ -1,125 +1,71 @@
 "use client";
 
-import { useMemo, useRef, useState } from "react";
+import { useCallback, useEffect, useRef, useState } from "react";
 import { useRouter } from "next/navigation";
 import { Layout } from "@/components/layout/layout";
 import { ProtectedRoute } from "@/components/auth/ProtectedRoute";
 import { Button } from "@/components/ui/button";
 import { QuestionCard } from "@/components/community/QuestionCard";
-import { ArrowLeft, Plus } from "lucide-react";
-
-type Question = {
-  id: string;
-  title: string;
-  description?: string;
-  answers?: string[];
-  answersCount: number;
-  likesCount: number;
-  author: string;
-  timeLabel: string;
-  createdAt: number;
-  isAnswered?: boolean;
-};
-
-const initialQuestions: Question[] = [
-  {
-    id: "q-1",
-    title: "Какие шаги для продления регистрации?",
-    description: "Нужен список документов и сроки подачи.",
-    answers: [
-      "Сначала уточните срок действия регистрации и подготовьте копии паспорта, миграционной карты и договора.",
-      "В некоторых вузах есть международный отдел, который помогает с подачей.",
-    ],
-    answersCount: 3,
-    likesCount: 12,
-    author: "Алина",
-    timeLabel: "2 часа назад",
-    createdAt: Date.now() - 1000 * 60 * 120,
-    isAnswered: true,
-  },
-  {
-    id: "q-2",
-    title: "Как перевестись в другой вуз внутри города?",
-    description: "Интересует перевод на 2 курс.",
-    answers: [
-      "Нужно согласие двух вузов, академическая справка и заявление на перевод.",
-    ],
-    answersCount: 1,
-    likesCount: 5,
-    author: "Сергей",
-    timeLabel: "вчера",
-    createdAt: Date.now() - 1000 * 60 * 60 * 28,
-  },
-  {
-    id: "q-3",
-    title: "Что делать при угрозе отчисления?",
-    description: "Не успел сдать экзамен, нужна инструкция.",
-    answers: [],
-    answersCount: 0,
-    likesCount: 2,
-    author: "Мина",
-    timeLabel: "сегодня",
-    createdAt: Date.now() - 1000 * 60 * 45,
-  },
-  {
-    id: "q-4",
-    title: "Как оформить ИНН быстрее?",
-    description: "Есть ли онлайн запись?",
-    answers: [
-      "Запишитесь через Госуслуги или сайт ФНС, так быстрее попасть в окно.",
-      "Если у вас есть регистрация, очередь обычно быстрее.",
-    ],
-    answersCount: 2,
-    likesCount: 8,
-    author: "Карим",
-    timeLabel: "3 дня назад",
-    createdAt: Date.now() - 1000 * 60 * 60 * 72,
-  },
-  {
-    id: "q-5",
-    title: "Можно ли работать по студенческой визе?",
-    description: "Какие ограничения по часам?",
-    answers: [
-      "Да, но только при наличии разрешения и без нарушений статуса.",
-      "Часы зависят от условий вуза и законодательства, уточните в международном отделе.",
-    ],
-    answersCount: 4,
-    likesCount: 15,
-    author: "Жак",
-    timeLabel: "5 часов назад",
-    createdAt: Date.now() - 1000 * 60 * 300,
-    isAnswered: true,
-  },
-];
+import { useQuestions, type Answer } from "@/hooks/useQuestions";
+import { useAuth } from "@/contexts/AuthContext";
+import {
+  ArrowLeft,
+  Plus,
+  MessageCircle,
+  TrendingUp,
+  Clock,
+  Search,
+  Sparkles,
+  Users,
+  Loader2,
+  AlertCircle,
+  X,
+} from "lucide-react";
 
 export default function CommunityQuestionsPage() {
   const router = useRouter();
+  const { user } = useAuth();
+  const {
+    questions,
+    isLoading,
+    error,
+    fetchQuestions,
+    fetchQuestion,
+    createQuestion,
+    addAnswer,
+    likeQuestion,
+    unlikeQuestion,
+  } = useQuestions();
+
   const [activeSort, setActiveSort] = useState<"popular" | "new">("popular");
-  const [questions, setQuestions] = useState<Question[]>(initialQuestions);
   const [isFormVisible, setIsFormVisible] = useState(false);
-  const [expandedQuestionId, setExpandedQuestionId] = useState<string | null>(
-    null
-  );
-  const [likedQuestions, setLikedQuestions] = useState<Record<string, boolean>>(
-    {}
-  );
-  const [formData, setFormData] = useState({
-    title: "",
-    description: "",
-  });
+  const [expandedQuestionId, setExpandedQuestionId] = useState<string | null>(null);
+  const [likedQuestions, setLikedQuestions] = useState<Record<string, boolean>>({});
+  const [expandedAnswers, setExpandedAnswers] = useState<Record<string, Answer[]>>({});
+  const [loadingAnswers, setLoadingAnswers] = useState<Record<string, boolean>>({});
+  const [searchQuery, setSearchQuery] = useState("");
+  const [formData, setFormData] = useState({ title: "", description: "" });
+  const [isSubmitting, setIsSubmitting] = useState(false);
   const formRef = useRef<HTMLDivElement | null>(null);
 
-  const filteredQuestions = useMemo(() => {
-    return [...questions].sort((a, b) => {
-      if (activeSort === "popular") {
-        return b.likesCount - a.likesCount;
-      }
-      return b.createdAt - a.createdAt;
-    });
-  }, [activeSort, questions]);
+  // Загрузка вопросов при монтировании и смене сортировки
+  useEffect(() => {
+    fetchQuestions(activeSort);
+  }, [activeSort, fetchQuestions]);
+
+  // Фильтрация по поиску
+  const filteredQuestions = questions.filter((q) => {
+    if (!searchQuery.trim()) return true;
+    const query = searchQuery.toLowerCase();
+    return (
+      q.title.toLowerCase().includes(query) ||
+      q.description?.toLowerCase().includes(query) ||
+      q.author.toLowerCase().includes(query)
+    );
+  });
 
   const handleFormChange = (
-    e: React.ChangeEvent<HTMLInputElement | HTMLTextAreaElement | HTMLSelectElement>
+    e: React.ChangeEvent<HTMLInputElement | HTMLTextAreaElement>
   ) => {
     setFormData((prev) => ({
       ...prev,
@@ -127,163 +73,349 @@ export default function CommunityQuestionsPage() {
     }));
   };
 
-  const handleSubmit = (e: React.FormEvent) => {
+  const handleSubmit = async (e: React.FormEvent) => {
     e.preventDefault();
-
     const title = formData.title.trim();
     const description = formData.description.trim();
     if (!title) return;
 
-    const newQuestion: Question = {
-      id: `q-${Date.now()}`,
-      title,
-      description: description || undefined,
-      answers: [],
-      answersCount: 0,
-      likesCount: 0,
-      author: "Вы",
-      timeLabel: "только что",
-      createdAt: Date.now(),
-    };
+    setIsSubmitting(true);
+    const newQuestion = await createQuestion(title, description || undefined);
+    setIsSubmitting(false);
 
-    setQuestions((prev) => [newQuestion, ...prev]);
-    setFormData({ title: "", description: "" });
-    setIsFormVisible(false);
-    setExpandedQuestionId(null);
+    if (newQuestion) {
+      setFormData({ title: "", description: "" });
+      setIsFormVisible(false);
+      setActiveSort("new"); // Переключаемся на новые чтобы увидеть свой вопрос
+    }
   };
 
-  const handleToggleAnswers = (questionId: string) => {
-    setExpandedQuestionId((prev) => (prev === questionId ? null : questionId));
-  };
+  const handleToggleAnswers = useCallback(async (questionId: string) => {
+    if (expandedQuestionId === questionId) {
+      setExpandedQuestionId(null);
+      return;
+    }
 
-  const handleLike = (questionId: string) => {
-    setLikedQuestions((prev) => {
-      const nextLiked = !prev[questionId];
-      setQuestions((questionList) =>
-        questionList.map((question) =>
-          question.id === questionId
-            ? {
-                ...question,
-                likesCount: question.likesCount + (nextLiked ? 1 : -1),
-              }
-            : question
-        )
-      );
-      return { ...prev, [questionId]: nextLiked };
-    });
+    setExpandedQuestionId(questionId);
+
+    // Загружаем ответы если ещё не загружены
+    if (!expandedAnswers[questionId]) {
+      setLoadingAnswers((prev) => ({ ...prev, [questionId]: true }));
+      const detail = await fetchQuestion(questionId);
+      if (detail) {
+        setExpandedAnswers((prev) => ({ ...prev, [questionId]: detail.answers }));
+        // Проверяем лайки пользователя
+        if (user && detail.likedByUserIds.includes(user.id)) {
+          setLikedQuestions((prev) => ({ ...prev, [questionId]: true }));
+        }
+      }
+      setLoadingAnswers((prev) => ({ ...prev, [questionId]: false }));
+    }
+  }, [expandedQuestionId, expandedAnswers, fetchQuestion, user]);
+
+  const handleLike = useCallback(async (questionId: string) => {
+    const isCurrentlyLiked = likedQuestions[questionId];
+
+    // Оптимистичное обновление UI
+    setLikedQuestions((prev) => ({ ...prev, [questionId]: !isCurrentlyLiked }));
+
+    const result = isCurrentlyLiked
+      ? await unlikeQuestion(questionId)
+      : await likeQuestion(questionId);
+
+    // Откатываем если ошибка
+    if (!result) {
+      setLikedQuestions((prev) => ({ ...prev, [questionId]: isCurrentlyLiked }));
+    }
+  }, [likedQuestions, likeQuestion, unlikeQuestion]);
+
+  const handleAddAnswer = useCallback(async (questionId: string, content: string) => {
+    const answer = await addAnswer(questionId, content);
+    if (answer) {
+      setExpandedAnswers((prev) => ({
+        ...prev,
+        [questionId]: [...(prev[questionId] || []), answer],
+      }));
+    }
+  }, [addAnswer]);
+
+  const stats = {
+    total: questions.length,
+    answered: questions.filter((q) => q.isAnswered).length,
+    unanswered: questions.filter((q) => !q.isAnswered).length,
   };
 
   return (
     <ProtectedRoute>
       <Layout>
-        <div className="min-h-screen bg-gradient-to-br from-blue-50 via-white to-purple-50 py-8">
-          <div className="max-w-6xl mx-auto px-4 sm:px-6 lg:px-8">
-        <div className="flex items-center justify-between mb-6">
-          <Button
-            variant="ghost"
-            className="hover:bg-blue-100"
-            onClick={() => router.back()}
-          >
-            <ArrowLeft className="h-4 w-4 mr-2" />
-            Назад
-          </Button>
-          <Button
-            onClick={() => {
-              setIsFormVisible(true);
-              requestAnimationFrame(() => {
-                formRef.current?.scrollIntoView({ behavior: "smooth" });
-              });
-            }}
-          >
-            <Plus className="h-4 w-4 mr-2" />
-            К форме вопроса
-          </Button>
-        </div>
+        <div className="min-h-screen bg-gradient-to-br from-slate-50 via-blue-50 to-indigo-50 rounded-2xl sm:rounded-3xl mx-4 sm:mx-6 lg:mx-8 my-4 sm:my-6 lg:my-8 overflow-hidden">
+          {/* Hero Section */}
+          <div className="relative overflow-hidden bg-gradient-to-r from-indigo-600 via-purple-600 to-pink-500 rounded-2xl sm:rounded-3xl mx-4 sm:mx-6 lg:mx-8 mt-4 sm:mt-6 mb-6 sm:mb-8 lg:mb-10">
+            <div className="absolute inset-0 bg-[url('data:image/svg+xml;base64,PHN2ZyB3aWR0aD0iNjAiIGhlaWdodD0iNjAiIHZpZXdCb3g9IjAgMCA2MCA2MCIgeG1sbnM9Imh0dHA6Ly93d3cudzMub3JnLzIwMDAvc3ZnIj48ZyBmaWxsPSJub25lIiBmaWxsLXJ1bGU9ImV2ZW5vZGQiPjxwYXRoIGQ9Ik0zNiAxOGMtOS45NCAwLTE4IDguMDYtMTggMThzOC4wNiAxOCAxOCAxOCAxOC04LjA2IDE4LTE4LTguMDYtMTgtMTgtMTh6bTAgMzJjLTcuNzMyIDAtMTQtNi4yNjgtMTQtMTRzNi4yNjgtMTQgMTQtMTQgMTQgNi4yNjggMTQgMTQtNi4yNjggMTQtMTQgMTR6IiBmaWxsPSIjZmZmIiBmaWxsLW9wYWNpdHk9Ii4wNSIvPjwvZz48L3N2Zz4=')] opacity-30" />
+            <div className="relative max-w-7xl mx-auto px-3 sm:px-4 lg:px-6 py-8 sm:py-12">
+              <Button
+                variant="ghost"
+                className="text-white/80 hover:text-white hover:bg-white/10 mb-6"
+                onClick={() => router.back()}
+              >
+                <ArrowLeft className="h-4 w-4 mr-2" />
+                Назад
+              </Button>
 
-        <div className="text-center mb-10">
-          <h1 className="text-4xl font-bold text-gray-900 mb-3">
-            Сообщество / живое общение
-          </h1>
-          <p className="text-lg text-gray-600 max-w-3xl mx-auto">
-            Пишите любой вопрос — отвечают студенты, кураторы и администрация.
-          </p>
-          <p className="text-sm text-slate-500 mt-2">
-            Можно общаться свободно: отвечать, уточнять, спорить по делу.
-          </p>
-        </div>
+              <div className="flex flex-col md:flex-row md:items-end md:justify-between gap-6">
+                <div>
+                  <div className="flex items-center gap-3 mb-3">
+                    <div className="p-2 bg-white/20 rounded-xl backdrop-blur-sm">
+                      <MessageCircle className="h-8 w-8 text-white" />
+                    </div>
+                    <h1 className="text-4xl md:text-5xl font-bold text-white">
+                      Сообщество
+                    </h1>
+                  </div>
+                  <p className="text-lg text-white/80 max-w-xl">
+                    Задавайте вопросы, делитесь опытом и помогайте друг другу.
+                    Студенты, кураторы и администрация всегда готовы помочь.
+                  </p>
+                </div>
 
-        {isFormVisible && (
-          <div
-            ref={formRef}
-            className="bg-white rounded-2xl border border-slate-200 shadow-sm p-6 mb-8"
-          >
-            <div className="mb-4">
-              <h2 className="text-xl font-semibold text-slate-900">
-                Форма вопроса
-              </h2>
-              <p className="text-sm text-slate-600">
-                Любой вопрос — студенты, кураторы и администрация подключатся.
-              </p>
+                {/* Stats cards */}
+                <div className="flex gap-3">
+                  <div className="bg-white/20 backdrop-blur-sm rounded-xl px-4 py-3 text-center min-w-[80px]">
+                    <div className="text-2xl font-bold text-white">{stats.total}</div>
+                    <div className="text-xs text-white/70">вопросов</div>
+                  </div>
+                  <div className="bg-emerald-500/30 backdrop-blur-sm rounded-xl px-4 py-3 text-center min-w-[80px]">
+                    <div className="text-2xl font-bold text-white">{stats.answered}</div>
+                    <div className="text-xs text-white/70">с ответами</div>
+                  </div>
+                  <div className="bg-amber-500/30 backdrop-blur-sm rounded-xl px-4 py-3 text-center min-w-[80px]">
+                    <div className="text-2xl font-bold text-white">{stats.unanswered}</div>
+                    <div className="text-xs text-white/70">ждут ответа</div>
+                  </div>
+                </div>
+              </div>
             </div>
-            <form onSubmit={handleSubmit} className="space-y-4">
-              <div>
-                <label className="block text-sm font-medium text-gray-700 mb-1">
-                  Заголовок *
-                </label>
-                <input
-                  name="title"
-                  value={formData.title}
-                  onChange={handleFormChange}
-                  className="w-full px-3 py-2 border border-gray-300 rounded-lg focus:ring-2 focus:ring-blue-500 focus:border-transparent"
-                  placeholder="Кратко сформулируйте вопрос"
-                  required
-                />
-              </div>
-              <div>
-                <label className="block text-sm font-medium text-gray-700 mb-1">
-                  Описание
-                </label>
-                <textarea
-                  name="description"
-                  value={formData.description}
-                  onChange={handleFormChange}
-                  rows={4}
-                  className="w-full px-3 py-2 border border-gray-300 rounded-lg focus:ring-2 focus:ring-blue-500 focus:border-transparent resize-none"
-                  placeholder="Детали, контекст, что уже пробовали"
-                />
-              </div>
-              <div className="flex items-end">
-                <Button type="submit" className="w-full sm:w-auto">
-                  Опубликовать
-                </Button>
-              </div>
-            </form>
           </div>
-        )}
 
-        <div className="grid gap-6">
-          {filteredQuestions.map((question) => (
-            <QuestionCard
-              key={question.id}
-              title={question.title}
-              description={question.description}
-              answers={question.answers}
-              answersCount={question.answersCount}
-              likesCount={question.likesCount}
-              author={question.author}
-              time={question.timeLabel}
-              isAnswered={question.isAnswered}
-              isExpanded={expandedQuestionId === question.id}
-              onToggle={() => handleToggleAnswers(question.id)}
-              onLike={() => handleLike(question.id)}
-              isLiked={!!likedQuestions[question.id]}
-            />
-          ))}
-        </div>
+          {/* Main Content */}
+          <div className="max-w-7xl mx-auto px-3 sm:px-4 lg:px-6 py-6 sm:py-8">
+            {/* Action Bar */}
+            <div className="flex flex-col sm:flex-row gap-4 mb-8">
+              {/* Search */}
+              <div className="relative flex-1">
+                <Search className="absolute left-4 top-1/2 -translate-y-1/2 h-5 w-5 text-slate-400" />
+                <input
+                  type="text"
+                  placeholder="Поиск вопросов..."
+                  value={searchQuery}
+                  onChange={(e) => setSearchQuery(e.target.value)}
+                  className="w-full pl-12 pr-4 py-3 bg-white border border-slate-200 rounded-xl shadow-sm focus:ring-2 focus:ring-indigo-500 focus:border-transparent transition-shadow"
+                />
+                {searchQuery && (
+                  <button
+                    onClick={() => setSearchQuery("")}
+                    className="absolute right-4 top-1/2 -translate-y-1/2 text-slate-400 hover:text-slate-600"
+                  >
+                    <X className="h-4 w-4" />
+                  </button>
+                )}
+              </div>
+
+              {/* Sort tabs */}
+              <div className="flex bg-white rounded-xl border border-slate-200 p-1 shadow-sm">
+                <button
+                  onClick={() => setActiveSort("popular")}
+                  className={`flex items-center gap-2 px-4 py-2 rounded-lg text-sm font-medium transition-all ${
+                    activeSort === "popular"
+                      ? "bg-gradient-to-r from-indigo-600 to-purple-600 text-white shadow-md"
+                      : "text-slate-600 hover:bg-slate-100"
+                  }`}
+                >
+                  <TrendingUp className="h-4 w-4" />
+                  Популярные
+                </button>
+                <button
+                  onClick={() => setActiveSort("new")}
+                  className={`flex items-center gap-2 px-4 py-2 rounded-lg text-sm font-medium transition-all ${
+                    activeSort === "new"
+                      ? "bg-gradient-to-r from-indigo-600 to-purple-600 text-white shadow-md"
+                      : "text-slate-600 hover:bg-slate-100"
+                  }`}
+                >
+                  <Clock className="h-4 w-4" />
+                  Новые
+                </button>
+              </div>
+
+              {/* Ask question button */}
+              <Button
+                onClick={() => {
+                  setIsFormVisible(true);
+                  requestAnimationFrame(() => {
+                    formRef.current?.scrollIntoView({ behavior: "smooth" });
+                  });
+                }}
+                className="bg-gradient-to-r from-indigo-600 to-purple-600 hover:from-indigo-700 hover:to-purple-700 text-white shadow-lg shadow-indigo-200 rounded-xl px-6"
+              >
+                <Plus className="h-4 w-4 mr-2" />
+                Задать вопрос
+              </Button>
+            </div>
+
+            {/* Question Form */}
+            {isFormVisible && (
+              <div
+                ref={formRef}
+                className="bg-white rounded-2xl border border-slate-200 shadow-xl shadow-slate-200/50 p-6 mb-8 animate-in slide-in-from-top-4 duration-300"
+              >
+                <div className="flex items-start justify-between mb-4">
+                  <div>
+                    <h2 className="text-xl font-semibold text-slate-900 flex items-center gap-2">
+                      <Sparkles className="h-5 w-5 text-indigo-500" />
+                      Новый вопрос
+                    </h2>
+                    <p className="text-sm text-slate-600 mt-1">
+                      Опишите свой вопрос — сообщество обязательно поможет!
+                    </p>
+                  </div>
+                  <button
+                    onClick={() => setIsFormVisible(false)}
+                    className="p-2 text-slate-400 hover:text-slate-600 hover:bg-slate-100 rounded-lg transition-colors"
+                  >
+                    <X className="h-5 w-5" />
+                  </button>
+                </div>
+
+                <form onSubmit={handleSubmit} className="space-y-4">
+                  <div>
+                    <label className="block text-sm font-medium text-slate-700 mb-1.5">
+                      Заголовок <span className="text-red-500">*</span>
+                    </label>
+                    <input
+                      name="title"
+                      value={formData.title}
+                      onChange={handleFormChange}
+                      className="w-full px-4 py-3 border border-slate-200 rounded-xl focus:ring-2 focus:ring-indigo-500 focus:border-transparent transition-shadow"
+                      placeholder="Кратко сформулируйте вопрос"
+                      required
+                      minLength={5}
+                    />
+                  </div>
+                  <div>
+                    <label className="block text-sm font-medium text-slate-700 mb-1.5">
+                      Описание <span className="text-slate-400">(опционально)</span>
+                    </label>
+                    <textarea
+                      name="description"
+                      value={formData.description}
+                      onChange={handleFormChange}
+                      rows={4}
+                      className="w-full px-4 py-3 border border-slate-200 rounded-xl focus:ring-2 focus:ring-indigo-500 focus:border-transparent resize-none transition-shadow"
+                      placeholder="Добавьте детали, контекст, что уже пробовали..."
+                    />
+                  </div>
+                  <div className="flex items-center justify-end gap-3 pt-2">
+                    <Button
+                      type="button"
+                      variant="outline"
+                      onClick={() => setIsFormVisible(false)}
+                      className="rounded-xl"
+                    >
+                      Отмена
+                    </Button>
+                    <Button
+                      type="submit"
+                      disabled={isSubmitting || !formData.title.trim()}
+                      className="bg-gradient-to-r from-indigo-600 to-purple-600 hover:from-indigo-700 hover:to-purple-700 text-white shadow-md shadow-indigo-200 rounded-xl px-6 disabled:opacity-50"
+                    >
+                      {isSubmitting ? (
+                        <>
+                          <Loader2 className="h-4 w-4 mr-2 animate-spin" />
+                          Публикуем...
+                        </>
+                      ) : (
+                        "Опубликовать"
+                      )}
+                    </Button>
+                  </div>
+                </form>
+              </div>
+            )}
+
+            {/* Error */}
+            {error && (
+              <div className="bg-red-50 border border-red-200 rounded-xl p-4 mb-6 flex items-center gap-3 text-red-700">
+                <AlertCircle className="h-5 w-5 flex-shrink-0" />
+                <p>{error}</p>
+              </div>
+            )}
+
+            {/* Loading */}
+            {isLoading && (
+              <div className="flex items-center justify-center py-16">
+                <Loader2 className="h-8 w-8 animate-spin text-indigo-600" />
+                <span className="ml-3 text-slate-600">Загрузка вопросов...</span>
+              </div>
+            )}
+
+            {/* Questions List */}
+            {!isLoading && (
+              <div className="space-y-4">
+                {filteredQuestions.length === 0 ? (
+                  <div className="text-center py-16">
+                    <Users className="h-16 w-16 mx-auto text-slate-300 mb-4" />
+                    <h3 className="text-xl font-semibold text-slate-700 mb-2">
+                      {searchQuery ? "Ничего не найдено" : "Пока нет вопросов"}
+                    </h3>
+                    <p className="text-slate-500 mb-6">
+                      {searchQuery
+                        ? "Попробуйте изменить поисковый запрос"
+                        : "Станьте первым, кто задаст вопрос сообществу!"}
+                    </p>
+                    {!searchQuery && (
+                      <Button
+                        onClick={() => setIsFormVisible(true)}
+                        className="bg-gradient-to-r from-indigo-600 to-purple-600 text-white rounded-xl"
+                      >
+                        <Plus className="h-4 w-4 mr-2" />
+                        Задать первый вопрос
+                      </Button>
+                    )}
+                  </div>
+                ) : (
+                  filteredQuestions.map((question) => (
+                    <QuestionCard
+                      key={question.id}
+                      id={question.id}
+                      title={question.title}
+                      description={question.description}
+                      answers={expandedAnswers[question.id]}
+                      answersCount={question.answersCount}
+                      likesCount={question.likesCount}
+                      author={question.author}
+                      time={question.timeLabel}
+                      isAnswered={question.isAnswered}
+                      isExpanded={expandedQuestionId === question.id}
+                      onToggle={() => handleToggleAnswers(question.id)}
+                      onLike={() => handleLike(question.id)}
+                      onAddAnswer={(content) => handleAddAnswer(question.id, content)}
+                      isLiked={!!likedQuestions[question.id]}
+                      isLoadingAnswers={loadingAnswers[question.id]}
+                    />
+                  ))
+                )}
+              </div>
+            )}
+
+            {/* Footer hint */}
+            {!isLoading && filteredQuestions.length > 0 && (
+              <p className="text-center text-sm text-slate-400 mt-8">
+                💡 Совет: отвечайте на вопросы других — это помогает всему сообществу!
+              </p>
+            )}
           </div>
         </div>
       </Layout>
     </ProtectedRoute>
   );
 }
-
