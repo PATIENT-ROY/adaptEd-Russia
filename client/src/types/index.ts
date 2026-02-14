@@ -180,6 +180,7 @@ export interface RegisterRequest {
   name: string;
   email: string;
   password: string;
+  country?: string;
   language?: Language;
   role?: Role;
   plan?: Plan;
