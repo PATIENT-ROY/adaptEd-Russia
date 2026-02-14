@@ -6,3 +6,8 @@ dist/
 .env
 .env.local
 .DS_Store
+.gitignore.save
+*.bak
+client/.env.local.bak
+client/.next.zip
+client/next 2.config.ts

@@ -34,7 +34,7 @@ import {
   organizationStructuredData,
 } from "@/components/seo/structured-data";
 import { useTranslation } from "@/hooks/useTranslation";
-import { useEffect, useState } from "react";
+import { useEffect, useState, useMemo } from "react";
 
 // Компоненты features и benefits будут создаваться внутри компонента с использованием переводов
 
@@ -52,8 +52,8 @@ export default function HomePage() {
     return () => window.removeEventListener("scroll", handleScroll);
   }, []);
 
-  // Features с использованием переводов
-  const features = [
+  // Features с использованием переводов (мемоизированы)
+  const features = useMemo(() => [
     {
       icon: BookOpen,
       title: t("home.features.navigator"),
@@ -94,10 +94,10 @@ export default function HomePage() {
       gradient: "from-pink-500 to-rose-600",
       stats: t("home.section.features.stats.community"),
     },
-  ];
+  ], [t]);
 
-  // Benefits с использованием переводов
-  const benefits = [
+  // Benefits с использованием переводов (мемоизированы)
+  const benefits = useMemo(() => [
     {
       icon: Globe,
       title: t("home.benefits.clear"),
@@ -128,10 +128,10 @@ export default function HomePage() {
       title: t("home.benefits.verified"),
       description: t("home.benefits.verified.desc"),
     },
-  ];
+  ], [t]);
 
-  // Pricing plans с использованием переводов
-  const pricingPlans = [
+  // Pricing plans с использованием переводов (мемоизированы)
+  const pricingPlans = useMemo(() => [
     {
       name: t("home.pricing.freemium"),
       price: t("home.pricing.freemium.price"),
@@ -171,10 +171,10 @@ export default function HomePage() {
       buttonText: t("home.pricing.button.premium"),
       buttonVariant: "default" as const,
     },
-  ];
+  ], [t]);
 
-  // Stats с использованием переводов
-  const stats = [
+  // Stats с использованием переводов (мемоизированы)
+  const stats = useMemo(() => [
     {
       icon: Users,
       value: t("home.stats.students.value"),
@@ -195,10 +195,10 @@ export default function HomePage() {
       value: t("home.stats.universities.value"),
       label: t("home.stats.universities"),
     },
-  ];
+  ], [t]);
 
-  // Testimonials с использованием переводов
-  const testimonials = [
+  // Testimonials с использованием переводов (мемоизированы)
+  const testimonials = useMemo(() => [
     {
       name: t("home.testimonial.1.name"),
       country: t("home.testimonial.1.country"),
@@ -217,7 +217,7 @@ export default function HomePage() {
       text: t("home.testimonial.3.text"),
       rating: 5,
     },
-  ];
+  ], [t]);
   return (
     <>
       <StructuredData data={websiteStructuredData} />

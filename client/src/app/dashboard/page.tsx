@@ -18,7 +18,7 @@ import Link from "next/link";
 import { useAuth } from "@/contexts/AuthContext";
 import { useReminders } from "@/hooks/useReminders";
 import { useTranslation } from "@/hooks/useTranslation";
-import { useState, useEffect, useCallback } from "react";
+import { useState, useEffect, useCallback, useMemo } from "react";
 import type { Reminder, UserProgress, DailyQuest } from "@/types";
 import { Language } from "@/types";
 import { UserProgressComponent } from "@/components/ui/user-progress";
@@ -42,15 +42,19 @@ export default function DashboardPage() {
   const [dashboardError, setDashboardError] = useState<string | null>(null);
   const firstName = user?.name?.split(" ")[0] || t("dashboard.welcome.defaultName");
   const welcomeMessage = t("dashboard.welcome").replace("{name}", firstName);
-  const localeByLanguage: Record<Language, string> = {
-    [Language.RU]: "ru-RU",
-    [Language.EN]: "en-US",
-    [Language.FR]: "fr-FR",
-    [Language.AR]: "ar",
-    [Language.ZH]: "zh-CN",
-  };
-  const dateLocale = localeByLanguage[currentLanguage] ?? "ru-RU";
-  const quickActions = [
+  
+  const dateLocale = useMemo(() => {
+    const localeByLanguage: Record<Language, string> = {
+      [Language.RU]: "ru-RU",
+      [Language.EN]: "en-US",
+      [Language.FR]: "fr-FR",
+      [Language.AR]: "ar",
+      [Language.ZH]: "zh-CN",
+    };
+    return localeByLanguage[currentLanguage] ?? "ru-RU";
+  }, [currentLanguage]);
+
+  const quickActions = useMemo(() => [
     {
       title: t("dashboard.quickActions.education.title"),
       description: t("dashboard.quickActions.education.description"),
@@ -86,7 +90,7 @@ export default function DashboardPage() {
       href: "/community/questions",
       gradient: "from-pink-500 to-rose-600",
     },
-  ];
+  ], [t]);
 
   const fetchDashboardData = useCallback(async () => {
     if (!user) {
@@ -472,7 +476,7 @@ export default function DashboardPage() {
                         {t("dashboard.stats.guides")}
                       </p>
                       <p className="text-lg sm:text-xl font-bold text-slate-900">
-                        12
+                        {userProgress?.totalGuidesRead ?? "—"}
                       </p>
                     </div>
                   </div>
@@ -492,7 +496,11 @@ export default function DashboardPage() {
                       <p className="text-sm font-medium text-slate-600">
                         {t("dashboard.stats.daysInRussia")}
                       </p>
-                      <p className="text-2xl font-bold text-slate-900">45</p>
+                      <p className="text-2xl font-bold text-slate-900">
+                        {user?.registeredAt 
+                          ? Math.floor((Date.now() - new Date(user.registeredAt).getTime()) / (1000 * 60 * 60 * 24))
+                          : "—"}
+                      </p>
                     </div>
                   </div>
                 </CardContent>
@@ -532,7 +540,9 @@ export default function DashboardPage() {
                       <p className="text-sm font-medium text-slate-600">
                         {t("dashboard.stats.aiQuestions")}
                       </p>
-                      <p className="text-2xl font-bold text-slate-900">23</p>
+                      <p className="text-2xl font-bold text-slate-900">
+                        {userProgress?.totalAIQuestions ?? "—"}
+                      </p>
                     </div>
                   </div>
                 </CardContent>

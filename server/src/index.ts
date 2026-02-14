@@ -49,14 +49,44 @@ app.use(helmet());
       }));
 
 const ENABLE_RATE_LIMIT = process.env.RATE_LIMIT !== 'false';
-const limiter = rateLimit({
+
+// Стандартный лимитер для большинства API
+const standardLimiter = rateLimit({
   windowMs: 15 * 60 * 1000, // 15 минут
   max: 100, // максимум 100 запросов с одного IP
   message: 'Слишком много запросов с этого IP, попробуйте позже.',
+  standardHeaders: true,
+  legacyHeaders: false,
 });
+
+// Строгий лимитер для аутентификации (защита от брутфорса)
+const authLimiter = rateLimit({
+  windowMs: 15 * 60 * 1000, // 15 минут
+  max: 10, // максимум 10 попыток входа
+  message: 'Слишком много попыток входа, попробуйте позже.',
+  standardHeaders: true,
+  legacyHeaders: false,
+});
+
+// Лимитер для AI чата (ресурсоёмкие запросы)
+const aiLimiter = rateLimit({
+  windowMs: 60 * 1000, // 1 минута
+  max: 10, // максимум 10 сообщений в минуту
+  message: 'Слишком много запросов к AI, подождите минуту.',
+  standardHeaders: true,
+  legacyHeaders: false,
+});
+
 if (ENABLE_RATE_LIMIT) {
-  app.use('/api/auth', limiter);
-  app.use('/api/chat', limiter);
+  // Строгий лимит для аутентификации
+  app.use('/api/auth/login', authLimiter);
+  app.use('/api/auth/register', authLimiter);
+  
+  // Лимит для AI запросов
+  app.use('/api/chat', aiLimiter);
+  
+  // Стандартный лимит для остальных API
+  app.use('/api', standardLimiter);
 }
 
 // Парсинг JSON и cookies

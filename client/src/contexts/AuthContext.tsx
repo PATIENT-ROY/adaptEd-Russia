@@ -8,7 +8,7 @@ import React, {
   useCallback,
 } from "react";
 import type { User, UpdateProfileRequest } from "@/types";
-import { apiClient, API_BASE_URL } from "@/lib/api";
+import { apiClient } from "@/lib/api";
 
 interface AuthContextType {
   user: User | null;
@@ -65,68 +65,15 @@ export function AuthProvider({ children }: { children: React.ReactNode }) {
     async (email: string, password: string): Promise<boolean> => {
       setIsLoading(true);
       try {
-        // Реальный API запрос
-        const loginUrl = `${API_BASE_URL}/auth/login`;
-        const response = await fetch(loginUrl, {
-          method: "POST",
-          headers: {
-            "Content-Type": "application/json",
-          },
-          body: JSON.stringify({ email, password }),
-          // Добавляем mode и credentials для CORS
-          mode: "cors",
-          credentials: "include",
-        });
-
-        // Получаем текст ответа для безопасного парсинга
-        let data;
-        const contentType = response.headers.get("content-type");
-        const isJson = contentType?.includes("application/json");
-
-        try {
-          if (isJson) {
-            const text = await response.text();
-            data = text ? JSON.parse(text) : {};
-          } else {
-            // Если ответ не JSON, выбрасываем ошибку
-            throw new Error(
-              `HTTP error! status: ${response.status}, statusText: ${response.statusText}`
-            );
-          }
-        } catch (parseError) {
-          console.error("Error parsing response:", parseError);
-          throw new Error(
-            `Не удалось обработать ответ сервера. Статус: ${response.status}`
-          );
-        }
-
-        // Проверяем статус ответа
-        if (!response.ok) {
-          const errorMessage =
-            data?.error || data?.message || `Ошибка сервера: ${response.status}`;
-          return false;
-        }
-
-        if (data.success && data.data) {
-          const { user, token } = data.data;
-
-          // Проверяем наличие необходимых данных
-          if (!user || !token) {
-            return false;
-          }
-
-          // Сохраняем пользователя и токен
-          setUser(user);
-          localStorage.setItem("user", JSON.stringify(user));
-          localStorage.setItem("token", token);
-
+        const response = await apiClient.login({ email, password });
+        
+        if (response?.user && response?.token) {
+          setUser(response.user);
+          localStorage.setItem("user", JSON.stringify(response.user));
           return true;
-        } else {
-          const errorMessage = data?.error || data?.message || "Неверный email или пароль";
-          return false;
         }
-      } catch (error) {
-        console.error("Login error:", error);
+        return false;
+      } catch {
         return false;
       } finally {
         setIsLoading(false);
@@ -144,89 +91,23 @@ export function AuthProvider({ children }: { children: React.ReactNode }) {
     ): Promise<boolean> => {
       setIsLoading(true);
       try {
-        // Реальный API запрос
-        const registerUrl = `${API_BASE_URL}/auth/register`;
-
-        const response = await fetch(registerUrl, {
-          method: "POST",
-          headers: {
-            "Content-Type": "application/json",
-          },
-          body: JSON.stringify({
-            name: userData.name,
-            email: userData.email,
-            password: userData.password,
-            country: userData.country,
-            language: userData.language,
-          }),
-          // Добавляем mode и credentials для CORS
-          mode: "cors",
-          credentials: "include",
+        const response = await apiClient.register({
+          name: userData.name,
+          email: userData.email,
+          password: userData.password,
+          country: userData.country,
+          language: userData.language,
         });
-
-        // Получаем текст ответа для безопасного парсинга
-        let data;
-        const contentType = response.headers.get("content-type");
-        const isJson = contentType?.includes("application/json");
-
-        try {
-          if (isJson) {
-            const text = await response.text();
-            data = text ? JSON.parse(text) : {};
-          } else {
-            // Если ответ не JSON, выбрасываем ошибку
-            throw new Error(
-              `HTTP error! status: ${response.status}, statusText: ${response.statusText}`
-            );
-          }
-        } catch (parseError) {
-          console.error("Error parsing response:", parseError);
-          throw new Error(
-            `Не удалось обработать ответ сервера. Статус: ${response.status}`
-          );
-        }
-
-        // Проверяем статус ответа
-        if (!response.ok) {
-          const errorMessage =
-            data?.error || data?.message || `Ошибка сервера: ${response.status}`;
-          console.error("Registration failed:", errorMessage);
-          return false;
-        }
-
-        if (data.success && data.data) {
-          const { user, token } = data.data;
-
-          // Проверяем наличие необходимых данных
-          if (!user || !token) {
-            console.error("Registration failed: missing user or token in response");
-            return false;
-          }
-
-          // Сохраняем пользователя и токен
-          setUser(user);
-          localStorage.setItem("user", JSON.stringify(user));
-          localStorage.setItem("token", token);
-
-          // Устанавливаем флаг нового пользователя
+        
+        if (response?.user && response?.token) {
+          setUser(response.user);
+          localStorage.setItem("user", JSON.stringify(response.user));
           setIsNewUser(true);
           localStorage.setItem("isNewUser", "true");
-
-          console.log("Registration successful, token saved:", token);
           return true;
-        } else {
-          const errorMessage = data?.error || data?.message || "Ошибка при регистрации";
-          console.error("Registration failed:", errorMessage);
-          return false;
         }
-      } catch (error) {
-        console.error("Register error:", error);
-        if (error instanceof TypeError && error.message === "Failed to fetch") {
-          console.error(
-            "Network error - check if backend is running on:",
-            API_BASE_URL
-          );
-        }
+        return false;
+      } catch {
         return false;
       } finally {
         setIsLoading(false);

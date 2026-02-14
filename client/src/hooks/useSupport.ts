@@ -41,10 +41,13 @@ export const useSupport = () => {
     setError(null);
 
     try {
+      const token = typeof window !== 'undefined' ? localStorage.getItem('token') : null;
+      
       const response = await fetch(`${API_BASE_URL}/support/contact`, {
         method: 'POST',
         headers: {
           'Content-Type': 'application/json',
+          ...(token ? { Authorization: `Bearer ${token}` } : {}),
         },
         body: JSON.stringify(formData),
       });

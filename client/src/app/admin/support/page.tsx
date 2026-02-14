@@ -25,6 +25,7 @@ import {
   ArrowLeft,
 } from "lucide-react";
 import { useAuth } from "@/contexts/AuthContext";
+import { API_BASE_URL } from "@/lib/api";
 
 interface SupportTicket {
   id: string;
@@ -76,7 +77,7 @@ export default function AdminSupportPage() {
   const loadTickets = async () => {
     try {
       setLoading(true);
-      const response = await fetch("/api/support/admin/tickets", {
+      const response = await fetch(`${API_BASE_URL}/support/admin/tickets`, {
         headers: {
           Authorization: `Bearer ${localStorage.getItem("token")}`,
         },
@@ -148,7 +149,7 @@ export default function AdminSupportPage() {
   const updateTicketStatus = async (ticketId: string, status: string) => {
     try {
       const response = await fetch(
-        `/api/support/admin/tickets/${ticketId}/status`,
+        `${API_BASE_URL}/support/admin/tickets/${ticketId}/status`,
         {
           method: "PUT",
           headers: {
@@ -171,7 +172,7 @@ export default function AdminSupportPage() {
   const respondToTicket = async (ticketId: string, content: string) => {
     try {
       const response = await fetch(
-        `/api/support/admin/tickets/${ticketId}/respond`,
+        `${API_BASE_URL}/support/admin/tickets/${ticketId}/respond`,
         {
           method: "POST",
           headers: {

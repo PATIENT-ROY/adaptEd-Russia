@@ -14,7 +14,10 @@ import { Button } from "@/components/ui/button";
 import { Input } from "@/components/ui/input";
 
 import { useSupport } from "@/hooks/useSupport";
+import { useAuth } from "@/contexts/AuthContext";
+import { API_BASE_URL } from "@/lib/api";
 import type { FAQItem } from "@/types";
+import { Badge } from "@/components/ui/badge";
 import {
   MessageSquare,
   Mail,
@@ -29,10 +32,29 @@ import {
   Globe,
   Shield,
   ArrowLeft,
+  ChevronDown,
+  ChevronUp,
+  Inbox,
+  Reply,
 } from "lucide-react";
+
+interface SupportTicket {
+  id: string;
+  subject: string;
+  message: string;
+  status: string;
+  createdAt: string;
+  responses: Array<{
+    id: string;
+    content: string;
+    isAdmin: boolean;
+    createdAt: string;
+  }>;
+}
 
 export default function SupportPage() {
   const router = useRouter();
+  const { user } = useAuth();
   const { submitSupportForm, getFAQ } = useSupport();
   const [formData, setFormData] = useState({
     name: "",
@@ -42,15 +64,76 @@ export default function SupportPage() {
   });
   const [isSubmitting, setIsSubmitting] = useState(false);
   const [isSubmitted, setIsSubmitted] = useState(false);
+  const [submitError, setSubmitError] = useState<string | null>(null);
   const [faqItems, setFaqItems] = useState<FAQItem[]>([]);
   const [privacyConsent, setPrivacyConsent] = useState(false);
   const [isInitialLoading, setIsInitialLoading] = useState(true);
+  const [myTickets, setMyTickets] = useState<SupportTicket[]>([]);
+  const [expandedTicketId, setExpandedTicketId] = useState<string | null>(null);
+
+  // Загрузка своих обращений
+  const loadMyTickets = async () => {
+    if (!user) return;
+    
+    try {
+      const token = localStorage.getItem("token");
+      const response = await fetch(`${API_BASE_URL}/support/my-tickets`, {
+        headers: {
+          Authorization: `Bearer ${token}`,
+        },
+      });
+
+      if (response.ok) {
+        const data = await response.json();
+        setMyTickets(data.data || []);
+      }
+    } catch (error) {
+      console.error("Ошибка при загрузке обращений:", error);
+    }
+  };
+
+  // Загружаем обращения при авторизации
+  useEffect(() => {
+    if (user) {
+      loadMyTickets();
+    }
+  }, [user]);
+
+  const getStatusBadge = (status: string) => {
+    switch (status) {
+      case "OPEN":
+        return <Badge className="bg-red-100 text-red-700">Открыто</Badge>;
+      case "IN_PROGRESS":
+        return <Badge className="bg-yellow-100 text-yellow-700">В работе</Badge>;
+      case "RESOLVED":
+        return <Badge className="bg-green-100 text-green-700">Решено</Badge>;
+      case "CLOSED":
+        return <Badge className="bg-gray-100 text-gray-700">Закрыто</Badge>;
+      default:
+        return <Badge>{status}</Badge>;
+    }
+  };
 
   const handleSubmit = async (e: React.FormEvent) => {
     e.preventDefault();
+    setSubmitError(null);
 
     if (!privacyConsent) {
-      alert("Необходимо согласиться с политикой обработки персональных данных");
+      setSubmitError("Необходимо согласиться с политикой обработки персональных данных");
+      return;
+    }
+
+    // Клиентская валидация
+    if (formData.name.length < 2) {
+      setSubmitError("Имя должно содержать минимум 2 символа");
+      return;
+    }
+    if (formData.subject.length < 5) {
+      setSubmitError("Тема должна содержать минимум 5 символов");
+      return;
+    }
+    if (formData.message.length < 10) {
+      setSubmitError("Сообщение должно содержать минимум 10 символов");
       return;
     }
 
@@ -61,8 +144,11 @@ export default function SupportPage() {
       setIsSubmitted(true);
       setFormData({ name: "", email: "", subject: "", message: "" });
       setPrivacyConsent(false);
+      // Перезагружаем обращения
+      loadMyTickets();
     } catch (err) {
       console.error("Ошибка при отправке формы:", err);
+      setSubmitError(err instanceof Error ? err.message : "Ошибка при отправке формы");
     } finally {
       setIsSubmitting(false);
     }
@@ -281,9 +367,10 @@ export default function SupportPage() {
                             name="name"
                             type="text"
                             required
+                            minLength={2}
                             value={formData.name}
                             onChange={handleInputChange}
-                            placeholder="Ваше имя"
+                            placeholder="Ваше имя (мин. 2 символа)"
                           />
                         </div>
                         <div>
@@ -317,9 +404,10 @@ export default function SupportPage() {
                           name="subject"
                           type="text"
                           required
+                          minLength={5}
                           value={formData.subject}
                           onChange={handleInputChange}
-                          placeholder="Кратко опишите проблему"
+                          placeholder="Кратко опишите проблему (мин. 5 символов)"
                         />
                       </div>
 
@@ -334,13 +422,22 @@ export default function SupportPage() {
                           id="message"
                           name="message"
                           required
+                          minLength={10}
                           value={formData.message}
                           onChange={handleInputChange}
                           rows={6}
                           className="w-full px-3 py-2 border border-gray-300 rounded-lg focus:ring-2 focus:ring-blue-500 focus:border-transparent resize-none"
-                          placeholder="Подробно опишите ваш вопрос или проблему..."
+                          placeholder="Подробно опишите ваш вопрос или проблему (мин. 10 символов)..."
                         />
                       </div>
+
+                      {/* Ошибка */}
+                      {submitError && (
+                        <div className="flex items-center gap-2 p-3 bg-red-50 border border-red-200 rounded-lg text-red-700 text-sm">
+                          <AlertCircle className="h-4 w-4 flex-shrink-0" />
+                          {submitError}
+                        </div>
+                      )}
 
                       {/* Согласие с политикой обработки персональных данных */}
                       <div className="flex items-start space-x-3 p-3 bg-blue-50 rounded-lg border border-blue-200">
@@ -476,6 +573,101 @@ export default function SupportPage() {
             </div>
 
             {/* FAQ */}
+            {/* Мои обращения */}
+            {user && myTickets.length > 0 && (
+              <div className="mt-12">
+                <h2 className="text-2xl font-bold text-gray-900 mb-6 flex items-center gap-2">
+                  <Inbox className="h-6 w-6 text-blue-600" />
+                  Мои обращения
+                </h2>
+                <div className="space-y-4">
+                  {myTickets.map((ticket) => (
+                    <Card key={ticket.id} className="overflow-hidden">
+                      <div
+                        className="p-4 cursor-pointer hover:bg-gray-50 transition-colors"
+                        onClick={() => setExpandedTicketId(
+                          expandedTicketId === ticket.id ? null : ticket.id
+                        )}
+                      >
+                        <div className="flex items-center justify-between">
+                          <div className="flex-1">
+                            <div className="flex items-center gap-3 mb-1">
+                              <h3 className="font-semibold text-gray-900">
+                                {ticket.subject}
+                              </h3>
+                              {getStatusBadge(ticket.status)}
+                            </div>
+                            <p className="text-sm text-gray-500">
+                              {new Date(ticket.createdAt).toLocaleDateString("ru-RU", {
+                                day: "numeric",
+                                month: "long",
+                                year: "numeric",
+                                hour: "2-digit",
+                                minute: "2-digit",
+                              })}
+                              {ticket.responses.length > 0 && (
+                                <span className="ml-2 text-blue-600">
+                                  • {ticket.responses.length} {ticket.responses.length === 1 ? "ответ" : "ответа"}
+                                </span>
+                              )}
+                            </p>
+                          </div>
+                          {expandedTicketId === ticket.id ? (
+                            <ChevronUp className="h-5 w-5 text-gray-400" />
+                          ) : (
+                            <ChevronDown className="h-5 w-5 text-gray-400" />
+                          )}
+                        </div>
+                      </div>
+
+                      {expandedTicketId === ticket.id && (
+                        <div className="border-t border-gray-100 p-4 bg-gray-50 space-y-4">
+                          {/* Оригинальное сообщение */}
+                          <div className="bg-white rounded-lg p-3 border border-gray-200">
+                            <p className="text-sm text-gray-500 mb-1">Ваше сообщение:</p>
+                            <p className="text-gray-700">{ticket.message}</p>
+                          </div>
+
+                          {/* Ответы */}
+                          {ticket.responses.length > 0 ? (
+                            <div className="space-y-3">
+                              {ticket.responses.map((response) => (
+                                <div
+                                  key={response.id}
+                                  className={`rounded-lg p-3 ${
+                                    response.isAdmin
+                                      ? "bg-blue-50 border-l-4 border-blue-400"
+                                      : "bg-white border border-gray-200"
+                                  }`}
+                                >
+                                  <div className="flex items-center gap-2 mb-1">
+                                    {response.isAdmin && (
+                                      <Reply className="h-4 w-4 text-blue-600" />
+                                    )}
+                                    <span className="text-sm font-medium text-gray-700">
+                                      {response.isAdmin ? "Поддержка" : "Вы"}
+                                    </span>
+                                    <span className="text-xs text-gray-400">
+                                      {new Date(response.createdAt).toLocaleString("ru-RU")}
+                                    </span>
+                                  </div>
+                                  <p className="text-gray-700">{response.content}</p>
+                                </div>
+                              ))}
+                            </div>
+                          ) : (
+                            <p className="text-sm text-gray-500 text-center py-2">
+                              Ответов пока нет. Мы скоро свяжемся с вами!
+                            </p>
+                          )}
+                        </div>
+                      )}
+                    </Card>
+                  ))}
+                </div>
+              </div>
+            )}
+
             <div className="mt-16">
               <div className="text-center mb-8">
                 <h2 className="text-3xl font-bold text-gray-900 mb-4">

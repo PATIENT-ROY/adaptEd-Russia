@@ -22,6 +22,19 @@ const supportFormSchema = z.object({
 // POST /api/support/contact - Отправка формы обратной связи
 router.post("/contact", async (req: AuthenticatedRequest, res) => {
   try {
+    // Проверяем токен если есть (опциональная авторизация)
+    const authHeader = req.headers.authorization;
+    if (authHeader && authHeader.startsWith("Bearer ")) {
+      const token = authHeader.split(" ")[1];
+      try {
+        const jwt = await import("jsonwebtoken");
+        const decoded = jwt.default.verify(token, process.env.JWT_SECRET || "your-secret-key") as { userId: string; email: string; role: string };
+        req.user = decoded;
+      } catch {
+        // Токен невалидный - продолжаем без авторизации
+      }
+    }
+
     // Валидация данных
     const validatedData = supportFormSchema.parse(req.body);
     
@@ -145,6 +158,40 @@ router.get("/contact-info", async (req, res) => {
     });
   } catch (error) {
     console.error("Ошибка при получении контактной информации:", error);
+    res.status(500).json({
+      success: false,
+      message: "Внутренняя ошибка сервера",
+    });
+  }
+});
+
+// ===== USER ENDPOINTS =====
+
+// GET /api/support/my-tickets - Получение своих обращений (для авторизованных)
+router.get("/my-tickets", authMiddleware, async (req: AuthenticatedRequest, res) => {
+  try {
+    const tickets = await prisma.supportTicket.findMany({
+      where: {
+        userId: req.user!.userId,
+      },
+      include: {
+        responses: {
+          orderBy: {
+            createdAt: "asc",
+          },
+        },
+      },
+      orderBy: {
+        createdAt: "desc",
+      },
+    });
+
+    res.status(200).json({
+      success: true,
+      data: tickets,
+    });
+  } catch (error) {
+    console.error("Ошибка при получении обращений:", error);
     res.status(500).json({
       success: false,
       message: "Внутренняя ошибка сервера",
@@ -313,17 +360,9 @@ router.post("/admin/tickets/:id/respond", authMiddleware, async (req: Authentica
     const response = await prisma.supportResponse.create({
       data: {
         ticketId: req.params.id,
-        adminId: req.user.userId,
+        // adminId не указываем - пользователь из таблицы User, а не Admin
         content,
         isAdmin: true,
-      },
-      include: {
-        admin: {
-          select: {
-            id: true,
-            name: true,
-          },
-        },
       },
     });
 

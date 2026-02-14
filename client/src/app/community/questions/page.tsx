@@ -148,49 +148,49 @@ export default function CommunityQuestionsPage() {
   return (
     <ProtectedRoute>
       <Layout>
-        <div className="min-h-screen bg-gradient-to-br from-slate-50 via-blue-50 to-indigo-50 rounded-2xl sm:rounded-3xl mx-4 sm:mx-6 lg:mx-8 my-4 sm:my-6 lg:my-8 overflow-hidden">
+        <div className="min-h-screen bg-gradient-to-br from-slate-50 via-blue-50 to-indigo-50 rounded-xl sm:rounded-2xl lg:rounded-3xl mx-2 sm:mx-4 lg:mx-8 my-2 sm:my-4 lg:my-8 overflow-hidden">
           {/* Hero Section */}
-          <div className="relative overflow-hidden bg-gradient-to-r from-indigo-600 via-purple-600 to-pink-500 rounded-2xl sm:rounded-3xl mx-4 sm:mx-6 lg:mx-8 mt-4 sm:mt-6 mb-6 sm:mb-8 lg:mb-10">
+          <div className="relative overflow-hidden bg-gradient-to-r from-indigo-600 via-purple-600 to-pink-500 rounded-xl sm:rounded-2xl lg:rounded-3xl mx-2 sm:mx-4 lg:mx-8 mt-2 sm:mt-4 mb-4 sm:mb-6 lg:mb-10">
             <div className="absolute inset-0 bg-[url('data:image/svg+xml;base64,PHN2ZyB3aWR0aD0iNjAiIGhlaWdodD0iNjAiIHZpZXdCb3g9IjAgMCA2MCA2MCIgeG1sbnM9Imh0dHA6Ly93d3cudzMub3JnLzIwMDAvc3ZnIj48ZyBmaWxsPSJub25lIiBmaWxsLXJ1bGU9ImV2ZW5vZGQiPjxwYXRoIGQ9Ik0zNiAxOGMtOS45NCAwLTE4IDguMDYtMTggMThzOC4wNiAxOCAxOCAxOCAxOC04LjA2IDE4LTE4LTguMDYtMTgtMTgtMTh6bTAgMzJjLTcuNzMyIDAtMTQtNi4yNjgtMTQtMTRzNi4yNjgtMTQgMTQtMTQgMTQgNi4yNjggMTQgMTQtNi4yNjggMTQtMTQgMTR6IiBmaWxsPSIjZmZmIiBmaWxsLW9wYWNpdHk9Ii4wNSIvPjwvZz48L3N2Zz4=')] opacity-30" />
-            <div className="relative max-w-7xl mx-auto px-3 sm:px-4 lg:px-6 py-8 sm:py-12">
+            <div className="relative max-w-7xl mx-auto px-3 sm:px-4 lg:px-6 py-5 sm:py-8 lg:py-12">
               <Button
                 variant="ghost"
-                className="text-white/80 hover:text-white hover:bg-white/10 mb-6"
+                size="sm"
+                className="text-white/80 hover:text-white hover:bg-white/10 mb-4 sm:mb-6 -ml-1"
                 onClick={() => router.back()}
               >
-                <ArrowLeft className="h-4 w-4 mr-2" />
-                Назад
+                <ArrowLeft className="h-4 w-4 mr-1 sm:mr-2" />
+                <span className="text-sm">Назад</span>
               </Button>
 
-              <div className="flex flex-col md:flex-row md:items-end md:justify-between gap-6">
+              <div className="flex flex-col gap-4 sm:gap-6">
                 <div>
-                  <div className="flex items-center gap-3 mb-3">
-                    <div className="p-2 bg-white/20 rounded-xl backdrop-blur-sm">
-                      <MessageCircle className="h-8 w-8 text-white" />
+                  <div className="flex items-center gap-2 sm:gap-3 mb-2 sm:mb-3">
+                    <div className="p-1.5 sm:p-2 bg-white/20 rounded-lg sm:rounded-xl backdrop-blur-sm">
+                      <MessageCircle className="h-5 w-5 sm:h-6 sm:w-6 lg:h-8 lg:w-8 text-white" />
                     </div>
-                    <h1 className="text-4xl md:text-5xl font-bold text-white">
+                    <h1 className="text-2xl sm:text-3xl lg:text-5xl font-bold text-white">
                       Сообщество
                     </h1>
                   </div>
-                  <p className="text-lg text-white/80 max-w-xl">
-                    Задавайте вопросы, делитесь опытом и помогайте друг другу.
-                    Студенты, кураторы и администрация всегда готовы помочь.
+                  <p className="text-sm sm:text-base lg:text-lg text-white/80 max-w-xl">
+                    Задавайте вопросы и помогайте друг другу
                   </p>
                 </div>
 
                 {/* Stats cards */}
-                <div className="flex gap-3">
-                  <div className="bg-white/20 backdrop-blur-sm rounded-xl px-4 py-3 text-center min-w-[80px]">
-                    <div className="text-2xl font-bold text-white">{stats.total}</div>
-                    <div className="text-xs text-white/70">вопросов</div>
+                <div className="grid grid-cols-3 gap-2 sm:flex sm:gap-3">
+                  <div className="bg-white/20 backdrop-blur-sm rounded-lg sm:rounded-xl px-2 sm:px-4 py-2 sm:py-3 text-center">
+                    <div className="text-lg sm:text-2xl font-bold text-white">{stats.total}</div>
+                    <div className="text-[10px] sm:text-xs text-white/70">вопросов</div>
                   </div>
-                  <div className="bg-emerald-500/30 backdrop-blur-sm rounded-xl px-4 py-3 text-center min-w-[80px]">
-                    <div className="text-2xl font-bold text-white">{stats.answered}</div>
-                    <div className="text-xs text-white/70">с ответами</div>
+                  <div className="bg-emerald-500/30 backdrop-blur-sm rounded-lg sm:rounded-xl px-2 sm:px-4 py-2 sm:py-3 text-center">
+                    <div className="text-lg sm:text-2xl font-bold text-white">{stats.answered}</div>
+                    <div className="text-[10px] sm:text-xs text-white/70">с ответами</div>
                   </div>
-                  <div className="bg-amber-500/30 backdrop-blur-sm rounded-xl px-4 py-3 text-center min-w-[80px]">
-                    <div className="text-2xl font-bold text-white">{stats.unanswered}</div>
-                    <div className="text-xs text-white/70">ждут ответа</div>
+                  <div className="bg-amber-500/30 backdrop-blur-sm rounded-lg sm:rounded-xl px-2 sm:px-4 py-2 sm:py-3 text-center">
+                    <div className="text-lg sm:text-2xl font-bold text-white">{stats.unanswered}</div>
+                    <div className="text-[10px] sm:text-xs text-white/70">ждут ответа</div>
                   </div>
                 </div>
               </div>
@@ -198,140 +198,149 @@ export default function CommunityQuestionsPage() {
           </div>
 
           {/* Main Content */}
-          <div className="max-w-7xl mx-auto px-3 sm:px-4 lg:px-6 py-6 sm:py-8">
+          <div className="max-w-7xl mx-auto px-2 sm:px-4 lg:px-6 py-4 sm:py-6 lg:py-8">
             {/* Action Bar */}
-            <div className="flex flex-col sm:flex-row gap-4 mb-8">
+            <div className="flex flex-col gap-3 sm:gap-4 mb-6 sm:mb-8">
               {/* Search */}
-              <div className="relative flex-1">
-                <Search className="absolute left-4 top-1/2 -translate-y-1/2 h-5 w-5 text-slate-400" />
+              <div className="relative">
+                <Search className="absolute left-3 sm:left-4 top-1/2 -translate-y-1/2 h-4 w-4 sm:h-5 sm:w-5 text-slate-400" />
                 <input
                   type="text"
                   placeholder="Поиск вопросов..."
                   value={searchQuery}
                   onChange={(e) => setSearchQuery(e.target.value)}
-                  className="w-full pl-12 pr-4 py-3 bg-white border border-slate-200 rounded-xl shadow-sm focus:ring-2 focus:ring-indigo-500 focus:border-transparent transition-shadow"
+                  className="w-full pl-10 sm:pl-12 pr-10 py-2.5 sm:py-3 text-sm sm:text-base bg-white border border-slate-200 rounded-lg sm:rounded-xl shadow-sm focus:ring-2 focus:ring-indigo-500 focus:border-transparent transition-shadow"
                 />
                 {searchQuery && (
                   <button
                     onClick={() => setSearchQuery("")}
-                    className="absolute right-4 top-1/2 -translate-y-1/2 text-slate-400 hover:text-slate-600"
+                    className="absolute right-3 sm:right-4 top-1/2 -translate-y-1/2 text-slate-400 hover:text-slate-600"
                   >
                     <X className="h-4 w-4" />
                   </button>
                 )}
               </div>
 
-              {/* Sort tabs */}
-              <div className="flex bg-white rounded-xl border border-slate-200 p-1 shadow-sm">
-                <button
-                  onClick={() => setActiveSort("popular")}
-                  className={`flex items-center gap-2 px-4 py-2 rounded-lg text-sm font-medium transition-all ${
-                    activeSort === "popular"
-                      ? "bg-gradient-to-r from-indigo-600 to-purple-600 text-white shadow-md"
-                      : "text-slate-600 hover:bg-slate-100"
-                  }`}
-                >
-                  <TrendingUp className="h-4 w-4" />
-                  Популярные
-                </button>
-                <button
-                  onClick={() => setActiveSort("new")}
-                  className={`flex items-center gap-2 px-4 py-2 rounded-lg text-sm font-medium transition-all ${
-                    activeSort === "new"
-                      ? "bg-gradient-to-r from-indigo-600 to-purple-600 text-white shadow-md"
-                      : "text-slate-600 hover:bg-slate-100"
-                  }`}
-                >
-                  <Clock className="h-4 w-4" />
-                  Новые
-                </button>
-              </div>
+              {/* Sort tabs + Button row */}
+              <div className="flex items-center gap-2 sm:gap-3">
+                {/* Sort tabs */}
+                <div className="flex flex-1 sm:flex-none bg-white rounded-lg sm:rounded-xl border border-slate-200 p-0.5 sm:p-1 shadow-sm">
+                  <button
+                    onClick={() => setActiveSort("popular")}
+                    className={`flex items-center justify-center gap-1 sm:gap-2 flex-1 sm:flex-none px-2 sm:px-4 py-1.5 sm:py-2 rounded-md sm:rounded-lg text-xs sm:text-sm font-medium transition-all ${
+                      activeSort === "popular"
+                        ? "bg-gradient-to-r from-indigo-600 to-purple-600 text-white shadow-md"
+                        : "text-slate-600 hover:bg-slate-100"
+                    }`}
+                  >
+                    <TrendingUp className="h-3 w-3 sm:h-4 sm:w-4" />
+                    <span className="hidden xs:inline">Популярные</span>
+                    <span className="xs:hidden">Топ</span>
+                  </button>
+                  <button
+                    onClick={() => setActiveSort("new")}
+                    className={`flex items-center justify-center gap-1 sm:gap-2 flex-1 sm:flex-none px-2 sm:px-4 py-1.5 sm:py-2 rounded-md sm:rounded-lg text-xs sm:text-sm font-medium transition-all ${
+                      activeSort === "new"
+                        ? "bg-gradient-to-r from-indigo-600 to-purple-600 text-white shadow-md"
+                        : "text-slate-600 hover:bg-slate-100"
+                    }`}
+                  >
+                    <Clock className="h-3 w-3 sm:h-4 sm:w-4" />
+                    <span className="hidden xs:inline">Новые</span>
+                    <span className="xs:hidden">Новые</span>
+                  </button>
+                </div>
 
-              {/* Ask question button */}
-              <Button
-                onClick={() => {
-                  setIsFormVisible(true);
-                  requestAnimationFrame(() => {
-                    formRef.current?.scrollIntoView({ behavior: "smooth" });
-                  });
-                }}
-                className="bg-gradient-to-r from-indigo-600 to-purple-600 hover:from-indigo-700 hover:to-purple-700 text-white shadow-lg shadow-indigo-200 rounded-xl px-6"
-              >
-                <Plus className="h-4 w-4 mr-2" />
-                Задать вопрос
-              </Button>
+                {/* Ask question button */}
+                <Button
+                  onClick={() => {
+                    setIsFormVisible(true);
+                    requestAnimationFrame(() => {
+                      formRef.current?.scrollIntoView({ behavior: "smooth" });
+                    });
+                  }}
+                  size="sm"
+                  className="bg-gradient-to-r from-indigo-600 to-purple-600 hover:from-indigo-700 hover:to-purple-700 text-white shadow-lg shadow-indigo-200 rounded-lg sm:rounded-xl px-3 sm:px-6 h-8 sm:h-10"
+                >
+                  <Plus className="h-4 w-4 sm:mr-2" />
+                  <span className="hidden sm:inline">Задать вопрос</span>
+                </Button>
+              </div>
             </div>
 
             {/* Question Form */}
             {isFormVisible && (
               <div
                 ref={formRef}
-                className="bg-white rounded-2xl border border-slate-200 shadow-xl shadow-slate-200/50 p-6 mb-8 animate-in slide-in-from-top-4 duration-300"
+                className="bg-white rounded-xl sm:rounded-2xl border border-slate-200 shadow-xl shadow-slate-200/50 p-4 sm:p-6 mb-6 sm:mb-8 animate-in slide-in-from-top-4 duration-300"
               >
-                <div className="flex items-start justify-between mb-4">
+                <div className="flex items-start justify-between mb-3 sm:mb-4">
                   <div>
-                    <h2 className="text-xl font-semibold text-slate-900 flex items-center gap-2">
-                      <Sparkles className="h-5 w-5 text-indigo-500" />
+                    <h2 className="text-lg sm:text-xl font-semibold text-slate-900 flex items-center gap-2">
+                      <Sparkles className="h-4 w-4 sm:h-5 sm:w-5 text-indigo-500" />
                       Новый вопрос
                     </h2>
-                    <p className="text-sm text-slate-600 mt-1">
-                      Опишите свой вопрос — сообщество обязательно поможет!
+                    <p className="text-xs sm:text-sm text-slate-600 mt-1">
+                      Опишите свой вопрос — сообщество поможет!
                     </p>
                   </div>
                   <button
                     onClick={() => setIsFormVisible(false)}
-                    className="p-2 text-slate-400 hover:text-slate-600 hover:bg-slate-100 rounded-lg transition-colors"
+                    className="p-1.5 sm:p-2 text-slate-400 hover:text-slate-600 hover:bg-slate-100 rounded-lg transition-colors"
                   >
-                    <X className="h-5 w-5" />
+                    <X className="h-4 w-4 sm:h-5 sm:w-5" />
                   </button>
                 </div>
 
-                <form onSubmit={handleSubmit} className="space-y-4">
+                <form onSubmit={handleSubmit} className="space-y-3 sm:space-y-4">
                   <div>
-                    <label className="block text-sm font-medium text-slate-700 mb-1.5">
+                    <label className="block text-xs sm:text-sm font-medium text-slate-700 mb-1 sm:mb-1.5">
                       Заголовок <span className="text-red-500">*</span>
                     </label>
                     <input
                       name="title"
                       value={formData.title}
                       onChange={handleFormChange}
-                      className="w-full px-4 py-3 border border-slate-200 rounded-xl focus:ring-2 focus:ring-indigo-500 focus:border-transparent transition-shadow"
+                      className="w-full px-3 sm:px-4 py-2.5 sm:py-3 text-sm sm:text-base border border-slate-200 rounded-lg sm:rounded-xl focus:ring-2 focus:ring-indigo-500 focus:border-transparent transition-shadow"
                       placeholder="Кратко сформулируйте вопрос"
                       required
                       minLength={5}
                     />
                   </div>
                   <div>
-                    <label className="block text-sm font-medium text-slate-700 mb-1.5">
+                    <label className="block text-xs sm:text-sm font-medium text-slate-700 mb-1 sm:mb-1.5">
                       Описание <span className="text-slate-400">(опционально)</span>
                     </label>
                     <textarea
                       name="description"
                       value={formData.description}
                       onChange={handleFormChange}
-                      rows={4}
-                      className="w-full px-4 py-3 border border-slate-200 rounded-xl focus:ring-2 focus:ring-indigo-500 focus:border-transparent resize-none transition-shadow"
-                      placeholder="Добавьте детали, контекст, что уже пробовали..."
+                      rows={3}
+                      className="w-full px-3 sm:px-4 py-2.5 sm:py-3 text-sm sm:text-base border border-slate-200 rounded-lg sm:rounded-xl focus:ring-2 focus:ring-indigo-500 focus:border-transparent resize-none transition-shadow"
+                      placeholder="Добавьте детали..."
                     />
                   </div>
-                  <div className="flex items-center justify-end gap-3 pt-2">
+                  <div className="flex items-center justify-end gap-2 sm:gap-3 pt-1 sm:pt-2">
                     <Button
                       type="button"
                       variant="outline"
+                      size="sm"
                       onClick={() => setIsFormVisible(false)}
-                      className="rounded-xl"
+                      className="rounded-lg sm:rounded-xl text-xs sm:text-sm"
                     >
                       Отмена
                     </Button>
                     <Button
                       type="submit"
+                      size="sm"
                       disabled={isSubmitting || !formData.title.trim()}
-                      className="bg-gradient-to-r from-indigo-600 to-purple-600 hover:from-indigo-700 hover:to-purple-700 text-white shadow-md shadow-indigo-200 rounded-xl px-6 disabled:opacity-50"
+                      className="bg-gradient-to-r from-indigo-600 to-purple-600 hover:from-indigo-700 hover:to-purple-700 text-white shadow-md shadow-indigo-200 rounded-lg sm:rounded-xl px-4 sm:px-6 text-xs sm:text-sm disabled:opacity-50"
                     >
                       {isSubmitting ? (
                         <>
-                          <Loader2 className="h-4 w-4 mr-2 animate-spin" />
-                          Публикуем...
+                          <Loader2 className="h-3 w-3 sm:h-4 sm:w-4 mr-1 sm:mr-2 animate-spin" />
+                          <span className="hidden sm:inline">Публикуем...</span>
+                          <span className="sm:hidden">...</span>
                         </>
                       ) : (
                         "Опубликовать"
