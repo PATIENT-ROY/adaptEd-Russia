@@ -77,8 +77,7 @@ export function Footer() {
             </div>
             <p className="text-slate-300 text-xs sm:text-sm leading-relaxed mb-3 sm:mb-4">
               Помогаем иностранным студентам адаптироваться к жизни и учёбе в
-              российских вузах. Образовательные гайды, бытовые советы и
-              AI-помощник.
+              российских вузах. Гайды, AI-помощник с 3 режимами и шаблонами.
             </p>
             <div className="flex space-x-2 sm:space-x-3">
               {socialLinks.map((social, index) => {

@@ -198,7 +198,7 @@ const fallbackQuickActions: ProfileQuickAction[] = [
   {
     id: "ai-assistant",
     title: "AI Помощник",
-    description: "Задавайте вопросы на родном языке",
+    description: "3 режима + Шаблоны для курсовых, резюме, писем",
     icon: "MessageSquare",
     color: "from-orange-500 to-orange-600",
     href: "/ai-helper",

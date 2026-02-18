@@ -114,7 +114,7 @@ export function WelcomeNotification({
               </li>
               <li className="flex items-start">
                 <span className="w-1.5 h-1.5 bg-blue-600 rounded-full mt-2 mr-2 flex-shrink-0"></span>
-                Задайте вопросы AI-помощнику
+                Используйте AI-помощник (3 режима + шаблоны)
               </li>
             </ul>
           </div>

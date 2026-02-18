@@ -41,7 +41,7 @@ const adminStats = [
     color: "from-green-500 to-green-600",
   },
   {
-    title: "AI консультаций",
+    title: "AI (3 режима + Шаблоны)",
     value: "8 642",
     change: "+19%",
     period: "за неделю",

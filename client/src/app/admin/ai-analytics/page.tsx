@@ -97,7 +97,7 @@ export default function AdminAiAnalyticsPage() {
                     AI-аналитика
                   </h1>
                   <p className="text-sm sm:text-base text-gray-600">
-                    Качество ответов, тренды и эффективность
+                    3 режима (Учёба, Жизнь, Генератор) + Шаблоны
                   </p>
                 </div>
               </div>
@@ -161,11 +161,10 @@ export default function AdminAiAnalyticsPage() {
               </CardHeader>
               <CardContent className="space-y-3 text-sm">
                 {[
-                  ["Учёба", "32%"],
-                  ["Документы", "24%"],
-                  ["Отчисление", "18%"],
-                  ["Быт", "14%"],
-                  ["Работа", "12%"],
+                  ["Режим: Учёба", "42%"],
+                  ["Режим: Жизнь", "28%"],
+                  ["Режим: Генератор", "18%"],
+                  ["Шаблоны", "12%"],
                 ].map(([label, value]) => (
                   <div
                     key={label}
