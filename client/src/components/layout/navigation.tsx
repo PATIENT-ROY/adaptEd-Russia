@@ -19,7 +19,6 @@ import {
   X,
   Shield,
   ScanLine,
-  FileText,
 } from "lucide-react";
 import { useState } from "react";
 import type { Language } from "@/types";
@@ -39,7 +38,6 @@ const navigationItemsConfig = [
 
 const authenticatedNavigationItemsConfig = [
   { href: "/ai-helper", labelKey: "nav.aiHelper", icon: MessageSquare },
-  { href: "/templates", labelKey: "nav.templates", icon: FileText },
   { href: "/docscan", labelKey: "nav.docscan", icon: ScanLine },
 ];
 
