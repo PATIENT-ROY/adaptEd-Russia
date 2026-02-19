@@ -171,7 +171,10 @@ export default function AiHelperPage() {
   };
 
   useEffect(() => {
-    scrollToBottom();
+    // Скролл только если есть сообщения (не при первой загрузке)
+    if (messages.length > 0) {
+      scrollToBottom();
+    }
   }, [messages, loading]);
 
   useEffect(() => {
