@@ -155,9 +155,10 @@ export default function AiHelperPage() {
   );
   const [inputMessage, setInputMessage] = useState("");
   const [currentMode, setCurrentMode] = useState<AIMode>("study");
-  const messagesEndRef = useRef<HTMLDivElement>(null);
   const chatContainerRef = useRef<HTMLDivElement>(null);
   const recognitionRef = useRef<ISpeechRecognition | null>(null);
+  const prevMessagesLengthRef = useRef(0);
+  const isFirstRenderRef = useRef(true);
   const [isSpeechSupported, setIsSpeechSupported] = useState(false);
   const [isListening, setIsListening] = useState(false);
   const [speechError, setSpeechError] = useState<string | null>(null);
@@ -165,17 +166,29 @@ export default function AiHelperPage() {
   const currentModeConfig = AI_MODES.find(m => m.id === currentMode) || AI_MODES[0];
   const quickQuestions = QUICK_QUESTIONS_BY_MODE[currentMode];
 
-  // Автоматическая прокрутка к новым сообщениям
+  // Автоматическая прокрутка к новым сообщениям (только внутри чата)
   const scrollToBottom = () => {
-    messagesEndRef.current?.scrollIntoView({ behavior: "smooth" });
+    if (chatContainerRef.current) {
+      chatContainerRef.current.scrollTop = chatContainerRef.current.scrollHeight;
+    }
   };
 
   useEffect(() => {
-    // Скролл только если есть сообщения (не при первой загрузке)
-    if (messages.length > 0) {
-      scrollToBottom();
+    // Пропускаем первый рендер
+    if (isFirstRenderRef.current) {
+      isFirstRenderRef.current = false;
+      prevMessagesLengthRef.current = messages.length;
+      return;
     }
-  }, [messages, loading]);
+    
+    // Скролл только если добавились новые сообщения
+    if (messages.length > prevMessagesLengthRef.current) {
+      // Небольшая задержка чтобы DOM обновился
+      setTimeout(scrollToBottom, 100);
+    }
+    
+    prevMessagesLengthRef.current = messages.length;
+  }, [messages]);
 
   useEffect(() => {
     if (typeof window === "undefined") return;
@@ -568,7 +581,6 @@ export default function AiHelperPage() {
                             </div>
                           </div>
                         ))}
-                        <div ref={messagesEndRef} />
                       </div>
                     )}
 
