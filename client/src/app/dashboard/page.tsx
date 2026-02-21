@@ -18,7 +18,7 @@ import Link from "next/link";
 import { useAuth } from "@/contexts/AuthContext";
 import { useReminders } from "@/hooks/useReminders";
 import { useTranslation } from "@/hooks/useTranslation";
-import { useState, useEffect, useMemo } from "react";
+import { useState, useEffect, useMemo, useCallback } from "react";
 import type { Reminder, UserProgress, DailyQuest } from "@/types";
 import { Language } from "@/types";
 import { UserProgressComponent } from "@/components/ui/user-progress";
@@ -92,7 +92,38 @@ export default function DashboardPage() {
     },
   ], [t]);
 
-  // Загрузка данных с AbortController для предотвращения race conditions
+  // Функция загрузки данных дашборда
+  const fetchDashboardData = useCallback(async () => {
+    if (!user) return;
+    
+    setIsInitialLoading(true);
+    setDashboardError(null);
+
+    try {
+      const data = await fetchDashboardOverview();
+      setUserProgress(data.userProgress);
+      setDailyQuests(data.dailyQuests);
+    } catch (error) {
+      console.error("Failed to load dashboard overview:", error);
+      let message = "Не удалось загрузить данные дашборда";
+      
+      if (error instanceof Error) {
+        if (error.name === 'ConnectionError' || error.message.includes('Failed to fetch')) {
+          message = "Сервер недоступен. Проверьте подключение.";
+        } else {
+          message = error.message;
+        }
+      }
+      
+      setDashboardError(message);
+      setUserProgress(null);
+      setDailyQuests([]);
+    } finally {
+      setIsInitialLoading(false);
+    }
+  }, [user]);
+
+  // Загрузка данных при монтировании
   useEffect(() => {
     if (authLoading) return;
     if (!user) {
@@ -102,58 +133,8 @@ export default function DashboardPage() {
       return;
     }
 
-    let isMounted = true;
-    const controller = new AbortController();
-
-    const loadDashboardData = async () => {
-      setIsInitialLoading(true);
-      setDashboardError(null);
-
-      try {
-        const data = await fetchDashboardOverview();
-        
-        // Проверяем что компонент ещё смонтирован
-        if (isMounted && !controller.signal.aborted) {
-          setUserProgress(data.userProgress);
-          setDailyQuests(data.dailyQuests);
-        }
-      } catch (error) {
-        // Игнорируем ошибки отменённых запросов
-        if (error instanceof Error && error.name === 'AbortError') {
-          return;
-        }
-        
-        if (isMounted) {
-          console.error("Failed to load dashboard overview:", error);
-          let message = "Не удалось загрузить данные дашборда";
-          
-          if (error instanceof Error) {
-            if (error.name === 'ConnectionError' || error.message.includes('Failed to fetch')) {
-              message = "Сервер недоступен. Проверьте подключение.";
-            } else {
-              message = error.message;
-            }
-          }
-          
-          setDashboardError(message);
-          setUserProgress(null);
-          setDailyQuests([]);
-        }
-      } finally {
-        if (isMounted && !controller.signal.aborted) {
-          setIsInitialLoading(false);
-        }
-      }
-    };
-
-    loadDashboardData();
-
-    // Cleanup: отменяем запрос при размонтировании
-    return () => {
-      isMounted = false;
-      controller.abort();
-    };
-  }, [authLoading, user]);
+    fetchDashboardData();
+  }, [authLoading, user, fetchDashboardData]);
 
   useEffect(() => {
     if (reminders.length > 0) {
@@ -386,7 +367,7 @@ export default function DashboardPage() {
               <div className="space-y-3 sm:space-y-4">
                 {[1, 2, 3].map((index) => (
                   <Card
-                    key={index}
+                    key={`skeleton-reminder-${index}`}
                     className="animate-pulse no-hover"
                     style={dashboardCardStyle}
                   >

@@ -1,15 +1,17 @@
 import bcrypt from 'bcryptjs';
 import jwt, { SignOptions } from 'jsonwebtoken';
+import crypto from 'crypto';
 import { Request, Response, NextFunction } from 'express';
 import { prisma } from './database';
 
 let JWT_SECRET = process.env.JWT_SECRET;
 if (!JWT_SECRET) {
   if (process.env.NODE_ENV === 'production') {
-    throw new Error('JWT_SECRET is required in production');
+    throw new Error('❌ JWT_SECRET is required in production environment');
   }
-  JWT_SECRET = 'fallback-secret';
-  console.warn('[auth] JWT_SECRET is not set, using fallback-secret');
+  // DEVELOPMENT: Генерируем случайный secret вместо hardcoded
+  JWT_SECRET = crypto.randomBytes(32).toString('hex');
+  console.warn('[auth] ⚠️ No JWT_SECRET provided, generated random secret for development');
 }
 const JWT_EXPIRES_IN = process.env.JWT_EXPIRES_IN || '7d';
 

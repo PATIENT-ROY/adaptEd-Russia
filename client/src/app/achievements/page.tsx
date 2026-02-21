@@ -259,7 +259,7 @@ export default function AchievementsPage() {
             </div>
             <div className="grid grid-cols-1 sm:grid-cols-2 lg:grid-cols-3 gap-4">
               {Array.from({ length: 6 }).map((_, index) => (
-                <Card key={index} className="animate-pulse">
+                <Card key={`skeleton-achievement-${index}`} className="animate-pulse">
                   <CardContent className="p-6 space-y-4">
                     <div className="w-16 h-16 bg-gray-200 rounded-2xl mx-auto" />
                     <div className="h-4 bg-gray-200 rounded w-3/4 mx-auto" />

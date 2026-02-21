@@ -9,7 +9,12 @@ const router = Router();
 // Схемы валидации
 const registerSchema = z.object({
   email: z.string().email('Неверный формат email'),
-  password: z.string().min(6, 'Пароль должен содержать минимум 6 символов'),
+  password: z
+    .string()
+    .min(8, 'Пароль минимум 8 символов')
+    .regex(/[A-Z]/, 'Минимум одна заглавная буква')
+    .regex(/[a-z]/, 'Минимум одна строчная буква')
+    .regex(/[0-9]/, 'Минимум одна цифра'),
   name: z.string().min(2, 'Имя должно содержать минимум 2 символа'),
   language: z.enum(['RU', 'EN', 'FR', 'AR', 'ZH']).default('RU'),
   country: z.string().min(2, 'Укажите страну'),

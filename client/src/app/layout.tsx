@@ -7,7 +7,7 @@ import { NotificationsWrapper } from "@/components/ui/notifications-wrapper";
 import { ConditionalFooter } from "@/components/layout/conditional-footer";
 import { HtmlLang } from "@/components/language/html-lang";
 import { CookieConsent } from "@/components/ui/cookie-consent";
-import { ErrorBoundary } from "@/components/ErrorBoundary";
+import { ErrorBoundary } from "@/components/auth/ErrorBoundary";
 
 const inter = Inter({ subsets: ["latin"] });
 

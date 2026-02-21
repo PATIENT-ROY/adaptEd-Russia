@@ -19,10 +19,17 @@ const createAnswerSchema = z.object({
   content: z.string().min(2, "Ответ должен содержать минимум 2 символа"),
 });
 
+// Схема для query параметров
+const querySchema = z.object({
+  sort: z.enum(['popular', 'new']).default('popular'),
+  page: z.coerce.number().int().positive().default(1),
+  limit: z.coerce.number().int().min(1).max(100).default(20),
+});
+
 // GET /api/questions - Получение списка вопросов
 router.get("/", async (req, res) => {
   try {
-    const { sort = "popular" } = req.query;
+    const { sort, page, limit } = querySchema.parse(req.query);
 
     const questions = await prisma.question.findMany({
       include: {
@@ -47,6 +54,8 @@ router.get("/", async (req, res) => {
         sort === "new"
           ? { createdAt: "desc" }
           : { likes: { _count: "desc" } },
+      skip: (page - 1) * limit,
+      take: limit,
     });
 
     // Форматируем ответ

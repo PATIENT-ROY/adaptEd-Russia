@@ -77,6 +77,24 @@ const aiLimiter = rateLimit({
   legacyHeaders: false,
 });
 
+// Лимитер для операций удаления
+const deleteLimiter = rateLimit({
+  windowMs: 60 * 60 * 1000, // 1 час
+  max: 20, // максимум 20 удалений в час
+  message: 'Слишком много операций удаления, попробуйте позже.',
+  standardHeaders: true,
+  legacyHeaders: false,
+});
+
+// Лимитер для платежей
+const paymentLimiter = rateLimit({
+  windowMs: 60 * 60 * 1000, // 1 час
+  max: 10, // максимум 10 платежей в час
+  message: 'Слишком много платежных операций.',
+  standardHeaders: true,
+  legacyHeaders: false,
+});
+
 if (ENABLE_RATE_LIMIT) {
   // Строгий лимит для аутентификации
   app.use('/api/auth/login', authLimiter);
@@ -85,22 +103,60 @@ if (ENABLE_RATE_LIMIT) {
   // Лимит для AI запросов
   app.use('/api/chat', aiLimiter);
   
+  // Лимит для платежей
+  app.use('/api/payments', paymentLimiter);
+  
   // Стандартный лимит для остальных API
   app.use('/api', standardLimiter);
 }
 
-// Парсинг JSON и cookies
+// Таймауты для запросов
+app.use((req, res, next) => {
+  // Стандартный таймаут 30 секунд
+  req.setTimeout(30000);
+  
+  // Для AI запросов - до 60 секунд
+  if (req.path.includes('/chat')) {
+    req.setTimeout(60000);
+  }
+  
+  next();
+});
+
+// Парсинг JSON и cookies с лимитами
 app.use(express.json({ limit: '10mb' }));
-app.use(express.urlencoded({ extended: true }));
+app.use(express.urlencoded({ limit: '10mb', extended: true }));
 app.use(cookieParser());
 
-// Health check
-app.get('/health', (req, res) => {
-  res.json({ 
-    status: 'OK', 
-    timestamp: new Date().toISOString(),
-    version: '1.0.0'
-  });
+// Health check с проверкой БД
+app.get('/health', async (req, res) => {
+  try {
+    // Проверяем database connection
+    const { prisma } = await import('./lib/database');
+    await prisma.$queryRaw`SELECT 1`;
+    
+    res.json({ 
+      status: 'healthy', 
+      timestamp: new Date().toISOString(),
+      version: '1.0.0',
+      uptime: process.uptime(),
+      checks: {
+        database: 'ok',
+        server: 'ok',
+      }
+    });
+  } catch (error) {
+    res.status(503).json({
+      status: 'unhealthy',
+      timestamp: new Date().toISOString(),
+      version: '1.0.0',
+      error: 'Database connection failed',
+      checks: {
+        database: 'error',
+        server: 'ok',
+      }
+    });
+  }
 });
 
 // API root endpoint
@@ -118,16 +174,22 @@ app.get('/api', (req, res) => {
 if (process.env.USE_MOCK_REMINDERS === 'true') {
   // Моковые данные для тестирования
   let reminders: any[] = [];
+  
+  // Импорт authMiddleware для защиты mock routes
+  const { authMiddleware } = require('./lib/auth');
 
-  // Простые API роуты для тестирования
-  app.get('/api/reminders', (req, res) => {
-    res.json({ success: true, data: reminders });
+  // Простые API роуты для тестирования (с аутентификацией)
+  app.get('/api/reminders', authMiddleware, (req: any, res) => {
+    const userId = req.user?.userId;
+    const userReminders = reminders.filter(r => r.userId === userId);
+    res.json({ success: true, data: userReminders });
   });
 
-  app.post('/api/reminders', (req, res) => {
+  app.post('/api/reminders', authMiddleware, (req: any, res) => {
+    const userId = req.user?.userId;
     const newReminder = {
       id: Date.now().toString(),
-      userId: req.body.userId,
+      userId: userId,
       title: req.body.title,
       description: req.body.description,
       date: req.body.date,
@@ -141,9 +203,10 @@ if (process.env.USE_MOCK_REMINDERS === 'true') {
     res.json({ success: true, data: newReminder });
   });
 
-  app.put('/api/reminders/:id', (req, res) => {
+  app.put('/api/reminders/:id', authMiddleware, (req: any, res) => {
     const id = req.params.id;
-    const index = reminders.findIndex((r) => r.id === id);
+    const userId = req.user?.userId;
+    const index = reminders.findIndex((r) => r.id === id && r.userId === userId);
     if (index !== -1) {
       reminders[index] = { ...reminders[index], ...req.body, updatedAt: new Date() };
       res.json({ success: true, data: reminders[index] });
@@ -152,9 +215,10 @@ if (process.env.USE_MOCK_REMINDERS === 'true') {
     }
   });
 
-  app.delete('/api/reminders/:id', (req, res) => {
+  app.delete('/api/reminders/:id', authMiddleware, (req: any, res) => {
     const id = req.params.id;
-    const index = reminders.findIndex((r) => r.id === id);
+    const userId = req.user?.userId;
+    const index = reminders.findIndex((r) => r.id === id && r.userId === userId);
     if (index !== -1) {
       reminders.splice(index, 1);
       res.json({ success: true });
