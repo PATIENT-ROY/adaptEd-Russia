@@ -28,6 +28,9 @@ const log = isDev ? console.log.bind(console) : () => {};
 const logWarn = isDev ? console.warn.bind(console) : () => {};
 const logError = console.error.bind(console); // Ошибки всегда логируем
 
+// Event для уведомления приложения об unauthorized
+export const AUTH_INVALID_EVENT = 'auth:invalid';
+
 // Интерфейс для ответа чата
 interface ChatMessageResponse {
   userMessage?: ChatMessage;
@@ -63,6 +66,50 @@ class ApiClient {
     }
   }
 
+  // Обработка 401 ошибки - отправляем событие вместо редиректа
+  private handleUnauthorized(): void {
+    this.clearToken();
+    
+    if (typeof window !== 'undefined' && !window.location.pathname.includes('/login')) {
+      window.dispatchEvent(
+        new CustomEvent(AUTH_INVALID_EVENT, {
+          detail: { reason: 'token_expired' }
+        })
+      );
+    }
+  }
+
+  // Получить понятное сообщение об ошибке по статус коду
+  private getErrorMessage(status: number, serverMessage?: string): string {
+    if (serverMessage) return serverMessage;
+    
+    switch (status) {
+      case 400:
+        return 'Некорректные данные запроса';
+      case 401:
+        return 'Сеанс истёк. Пожалуйста, войдите заново';
+      case 403:
+        return 'У вас нет доступа к этому ресурсу';
+      case 404:
+        return 'Запрашиваемый ресурс не найден';
+      case 409:
+        return 'Конфликт данных. Возможно, такая запись уже существует';
+      case 422:
+        return 'Ошибка валидации данных';
+      case 429:
+        return 'Слишком много запросов. Подождите немного';
+      case 500:
+        return 'Ошибка сервера. Попробуйте позже';
+      case 502:
+      case 503:
+      case 504:
+        return 'Сервер временно недоступен. Попробуйте позже';
+      default:
+        return `Ошибка запроса (${status})`;
+    }
+  }
+
+  // Основной метод запроса
   private async request<T>(
     endpoint: string,
     options: RequestInit = {}
@@ -104,15 +151,12 @@ class ApiClient {
       if (!response.ok) {
         logError('API request - Error response:', response.status, data?.error);
         
-        // Если недействительный токен, очищаем его
+        // Если недействительный токен, очищаем его и отправляем событие
         if (response.status === 401 || data.error?.includes('токен') || data.error?.includes('token')) {
-          this.clearToken();
-          // Перенаправляем на страницу входа только если это не страница входа
-          if (typeof window !== 'undefined' && !window.location.pathname.includes('/login')) {
-            window.location.href = '/login';
-          }
+          this.handleUnauthorized();
         }
-        throw new Error(data.error || data.message || 'Ошибка запроса');
+        
+        throw new Error(this.getErrorMessage(response.status, data.error || data.message));
       }
 
       return data;
@@ -121,7 +165,7 @@ class ApiClient {
       
       // Обработка ошибок подключения
       if (error instanceof TypeError && error.message === 'Failed to fetch') {
-        const connectionError = new Error('Сервер недоступен. Убедитесь, что бэкенд запущен.');
+        const connectionError = new Error('Нет подключения к серверу. Проверьте интернет.');
         connectionError.name = 'ConnectionError';
         logWarn('API connection error - server may be down');
         throw connectionError;
@@ -131,6 +175,38 @@ class ApiClient {
     }
   }
 
+  // Метод запроса с retry логикой
+  private async requestWithRetry<T>(
+    endpoint: string,
+    options: RequestInit = {},
+    retries = 2,
+    delay = 1000
+  ): Promise<ApiResponse<T>> {
+    try {
+      return await this.request<T>(endpoint, options);
+    } catch (error) {
+      // Не retry на 4xx ошибках (клиентские ошибки)
+      if (error instanceof Error && !error.name.includes('Connection')) {
+        throw error;
+      }
+      
+      if (retries <= 0) throw error;
+      
+      log(`API retry - ${retries} attempts left, waiting ${delay}ms`);
+      await new Promise(r => setTimeout(r, delay));
+      
+      return this.requestWithRetry<T>(endpoint, options, retries - 1, delay * 2);
+    }
+  }
+
+  // Проверка данных ответа
+  private ensureData<T>(response: ApiResponse<T>, errorMessage: string): T {
+    if (!response.data) {
+      throw new Error(errorMessage);
+    }
+    return response.data;
+  }
+
   // Аутентификация
   async register(data: RegisterRequest): Promise<AuthResponse> {
     const response = await this.request<AuthResponse>('/auth/register', {
@@ -138,11 +214,13 @@ class ApiClient {
       body: JSON.stringify(data),
     });
 
-    if (response.success && response.data) {
-      this.setToken(response.data.token);
+    const authData = this.ensureData(response, 'Ошибка регистрации: сервер вернул пустой ответ');
+    
+    if (authData.token) {
+      this.setToken(authData.token);
     }
 
-    return response.data!;
+    return authData;
   }
 
   async login(data: LoginRequest): Promise<AuthResponse> {
@@ -151,16 +229,24 @@ class ApiClient {
       body: JSON.stringify(data),
     });
 
-    if (response.success && response.data) {
-      this.setToken(response.data.token);
+    const authData = this.ensureData(response, 'Ошибка входа: сервер вернул пустой ответ');
+    
+    if (authData.token) {
+      this.setToken(authData.token);
     }
 
-    return response.data!;
+    return authData;
   }
 
   async verifyToken(): Promise<User> {
     const response = await this.request<{ user: User }>('/auth/verify');
-    return response.data!.user;
+    const data = this.ensureData(response, 'Не удалось проверить токен');
+    
+    if (!data.user) {
+      throw new Error('Не удалось получить данные пользователя');
+    }
+    
+    return data.user;
   }
 
   logout() {
@@ -173,33 +259,33 @@ class ApiClient {
       method: 'PUT',
       body: JSON.stringify(data),
     });
-    return response.data!;
+    return this.ensureData(response, 'Не удалось обновить профиль');
   }
 
   async getUserProfile(): Promise<User> {
-    const response = await this.request<User>('/user/profile');
-    return response.data!;
+    const response = await this.requestWithRetry<User>('/user/profile');
+    return this.ensureData(response, 'Не удалось загрузить профиль');
   }
 
   async getProfileOverview(): Promise<ProfileOverview> {
-    const response = await this.request<ProfileOverview>('/user/profile/overview');
-    return response.data!;
+    const response = await this.requestWithRetry<ProfileOverview>('/user/profile/overview');
+    return this.ensureData(response, 'Не удалось загрузить данные профиля');
   }
 
   async getDashboardOverview(): Promise<DashboardOverview> {
-    const response = await this.request<DashboardOverview>('/user/dashboard');
-    return response.data!;
+    const response = await this.requestWithRetry<DashboardOverview>('/user/dashboard');
+    return this.ensureData(response, 'Не удалось загрузить данные дашборда');
   }
 
   async getAchievementsOverview(): Promise<AchievementsOverview> {
-    const response = await this.request<AchievementsOverview>('/user/achievements');
-    return response.data!;
+    const response = await this.requestWithRetry<AchievementsOverview>('/user/achievements');
+    return this.ensureData(response, 'Не удалось загрузить достижения');
   }
 
   // Напоминания
   async getReminders(): Promise<Reminder[]> {
-    const response = await this.request<Reminder[]>('/reminders');
-    return response.data!;
+    const response = await this.requestWithRetry<Reminder[]>('/reminders');
+    return this.ensureData(response, 'Не удалось загрузить напоминания');
   }
 
   async createReminder(data: Omit<Reminder, 'id' | 'createdAt' | 'updatedAt' | 'userId'>): Promise<Reminder> {
@@ -236,7 +322,7 @@ class ApiClient {
       method: 'PUT',
       body: JSON.stringify(data),
     });
-    return response.data!;
+    return this.ensureData(response, 'Не удалось обновить напоминание');
   }
 
   async deleteReminder(id: string): Promise<void> {
@@ -251,13 +337,13 @@ class ApiClient {
     if (category) params.append('category', category);
     if (language) params.append('language', language);
 
-    const response = await this.request<Guide[]>(`/guides?${params.toString()}`);
-    return response.data!;
+    const response = await this.requestWithRetry<Guide[]>(`/guides?${params.toString()}`);
+    return this.ensureData(response, 'Не удалось загрузить гайды');
   }
 
   async getGuide(id: string): Promise<Guide> {
-    const response = await this.request<Guide>(`/guides/${id}`);
-    return response.data!;
+    const response = await this.requestWithRetry<Guide>(`/guides/${id}`);
+    return this.ensureData(response, 'Не удалось загрузить гайд');
   }
 
   // Чат
@@ -266,14 +352,13 @@ class ApiClient {
       method: 'POST',
       body: JSON.stringify({ content }),
     });
-    // API возвращает { userMessage, aiMessage } или ChatMessage
-    const data = response.data || response;
+    const data = response.data ?? response;
     return data as ChatMessageResponse | ChatMessage;
   }
 
   async getChatHistory(): Promise<ChatMessage[]> {
-    const response = await this.request<ChatMessage[]>('/chat/messages');
-    return response.data!;
+    const response = await this.requestWithRetry<ChatMessage[]>('/chat/messages');
+    return this.ensureData(response, 'Не удалось загрузить историю чата');
   }
 
   // Проверка подключения

@@ -463,9 +463,9 @@ function PaymentTestContent() {
                                 const features = JSON.parse(plan.features);
                                 return features
                                   .slice(0, 3)
-                                  .map((feature: string, index: number) => (
+                                  .map((feature: string) => (
                                     <li
-                                      key={index}
+                                      key={feature}
                                       className="flex items-center"
                                     >
                                       <CheckCircle className="h-3 w-3 mr-2 text-green-500" />

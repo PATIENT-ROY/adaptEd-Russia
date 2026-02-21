@@ -29,12 +29,12 @@ interface UseApiCacheResult<T> {
 }
 
 /**
- * Хук для кэширования API запросов
+ * Хук для кэширования API запросов с поддержкой AbortController
  * Простая альтернатива SWR без внешних зависимостей
  */
 export function useApiCache<T>(
   key: string | null,
-  fetcher: () => Promise<T>,
+  fetcher: (signal?: AbortSignal) => Promise<T>,
   options: UseApiCacheOptions = {}
 ): UseApiCacheResult<T> {
   const { ttl = DEFAULT_TTL, revalidateOnFocus = false, deps = [] } = options;
@@ -49,33 +49,42 @@ export function useApiCache<T>(
   });
   const [error, setError] = useState<Error | null>(null);
   const [isLoading, setIsLoading] = useState(!data);
-  const isMounted = useRef(true);
+  
+  const isMountedRef = useRef(true);
+  const abortControllerRef = useRef<AbortController | null>(null);
 
-  const fetchData = useCallback(async () => {
+  // Основная функция загрузки с AbortController
+  const fetchData = useCallback(async (signal?: AbortSignal) => {
     if (!key) return;
     
     setIsLoading(true);
     setError(null);
     
     try {
-      const result = await fetcher();
+      const result = await fetcher(signal);
       
-      if (isMounted.current) {
+      // Проверяем что компонент ещё смонтирован и запрос не отменён
+      if (isMountedRef.current && !signal?.aborted) {
         setData(result);
         cache.set(key, { data: result, timestamp: Date.now() });
       }
     } catch (err) {
-      if (isMounted.current) {
+      // Игнорируем ошибки отменённых запросов
+      if (err instanceof Error && err.name === 'AbortError') {
+        return;
+      }
+      
+      if (isMountedRef.current) {
         setError(err instanceof Error ? err : new Error(String(err)));
       }
     } finally {
-      if (isMounted.current) {
+      if (isMountedRef.current && !signal?.aborted) {
         setIsLoading(false);
       }
     }
   }, [key, fetcher]);
 
-  // Начальная загрузка
+  // Начальная загрузка и загрузка при изменении зависимостей
   useEffect(() => {
     if (!key) return;
     
@@ -83,20 +92,42 @@ export function useApiCache<T>(
     const isStale = !cached || Date.now() - cached.timestamp >= ttl;
     
     if (isStale) {
-      fetchData();
+      // Отменяем предыдущий запрос если есть
+      if (abortControllerRef.current) {
+        abortControllerRef.current.abort();
+      }
+      
+      // Создаём новый AbortController
+      const controller = new AbortController();
+      abortControllerRef.current = controller;
+      
+      fetchData(controller.signal);
     }
+    
+    // Cleanup: отменяем запрос при размонтировании
+    return () => {
+      if (abortControllerRef.current) {
+        abortControllerRef.current.abort();
+      }
+    };
+  // eslint-disable-next-line react-hooks/exhaustive-deps
   }, [key, ttl, fetchData, ...deps]);
 
   // Ревалидация при фокусе окна
   useEffect(() => {
-    if (!revalidateOnFocus) return;
+    if (!revalidateOnFocus || !key) return;
     
     const handleFocus = () => {
-      if (key) {
-        const cached = cache.get(key) as CacheEntry<T> | undefined;
-        if (!cached || Date.now() - cached.timestamp >= ttl) {
-          fetchData();
+      const cached = cache.get(key) as CacheEntry<T> | undefined;
+      if (!cached || Date.now() - cached.timestamp >= ttl) {
+        // Отменяем предыдущий запрос
+        if (abortControllerRef.current) {
+          abortControllerRef.current.abort();
         }
+        
+        const controller = new AbortController();
+        abortControllerRef.current = controller;
+        fetchData(controller.signal);
       }
     };
     
@@ -104,11 +135,15 @@ export function useApiCache<T>(
     return () => window.removeEventListener('focus', handleFocus);
   }, [key, ttl, revalidateOnFocus, fetchData]);
 
-  // Cleanup
+  // Cleanup при размонтировании компонента
   useEffect(() => {
-    isMounted.current = true;
+    isMountedRef.current = true;
     return () => {
-      isMounted.current = false;
+      isMountedRef.current = false;
+      // Отменяем все текущие запросы
+      if (abortControllerRef.current) {
+        abortControllerRef.current.abort();
+      }
     };
   }, []);
 
@@ -119,13 +154,29 @@ export function useApiCache<T>(
         cache.set(key, { data: newData, timestamp: Date.now() });
       }
     } else {
-      fetchData();
+      // Отменяем предыдущий запрос и делаем новый
+      if (abortControllerRef.current) {
+        abortControllerRef.current.abort();
+      }
+      const controller = new AbortController();
+      abortControllerRef.current = controller;
+      fetchData(controller.signal);
     }
   }, [key, fetchData]);
 
   const revalidate = useCallback(async () => {
-    await fetchData();
-  }, [fetchData]);
+    if (!key) return;
+    
+    // Отменяем предыдущий запрос
+    if (abortControllerRef.current) {
+      abortControllerRef.current.abort();
+    }
+    
+    const controller = new AbortController();
+    abortControllerRef.current = controller;
+    
+    await fetchData(controller.signal);
+  }, [key, fetchData]);
 
   return { data, error, isLoading, mutate, revalidate };
 }
@@ -143,4 +194,3 @@ export function clearApiCache(): void {
 export function invalidateCache(key: string): void {
   cache.delete(key);
 }
-

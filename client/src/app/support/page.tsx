@@ -496,11 +496,11 @@ export default function SupportPage() {
                     </CardTitle>
                   </CardHeader>
                   <CardContent className="space-y-4">
-                    {contactMethods.map((method, index) => {
+                    {contactMethods.map((method) => {
                       const Icon = method.icon;
                       return (
                         <div
-                          key={index}
+                          key={method.title}
                           className="flex items-start gap-3 p-3 rounded-lg bg-gray-50"
                         >
                           <Icon className="h-5 w-5 text-blue-600 mt-0.5" />
@@ -680,9 +680,9 @@ export default function SupportPage() {
 
               <div className="grid md:grid-cols-2 gap-6">
                 {(faqItems.length > 0 ? faqItems : fallbackFaqItems).map(
-                  (item, index) => (
+                  (item) => (
                     <Card
-                      key={index}
+                      key={item.question}
                       className="hover:shadow-lg transition-shadow"
                     >
                       <CardHeader>

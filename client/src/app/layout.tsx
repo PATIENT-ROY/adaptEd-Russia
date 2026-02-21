@@ -7,6 +7,7 @@ import { NotificationsWrapper } from "@/components/ui/notifications-wrapper";
 import { ConditionalFooter } from "@/components/layout/conditional-footer";
 import { HtmlLang } from "@/components/language/html-lang";
 import { CookieConsent } from "@/components/ui/cookie-consent";
+import { ErrorBoundary } from "@/components/ErrorBoundary";
 
 const inter = Inter({ subsets: ["latin"] });
 
@@ -108,16 +109,18 @@ export default function RootLayout({
         <meta name="msapplication-TileColor" content="#2563eb" />
       </head>
       <body className={inter.className}>
-        <AuthProvider>
-          <LanguageProvider>
-            <HtmlLang />
-            <NotificationsWrapper>
-              {children}
-              <ConditionalFooter />
-              <CookieConsent />
-            </NotificationsWrapper>
-          </LanguageProvider>
-        </AuthProvider>
+        <ErrorBoundary>
+          <AuthProvider>
+            <LanguageProvider>
+              <HtmlLang />
+              <NotificationsWrapper>
+                {children}
+                <ConditionalFooter />
+                <CookieConsent />
+              </NotificationsWrapper>
+            </LanguageProvider>
+          </AuthProvider>
+        </ErrorBoundary>
       </body>
     </html>
   );

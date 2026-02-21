@@ -7,8 +7,10 @@ import React, {
   useEffect,
   useCallback,
 } from "react";
+import { useRouter } from "next/navigation";
 import type { User, UpdateProfileRequest } from "@/types";
-import { apiClient } from "@/lib/api";
+import { apiClient, AUTH_INVALID_EVENT } from "@/lib/api";
+import { clearApiCache } from "@/hooks/useApiCache";
 
 interface AuthContextType {
   user: User | null;
@@ -29,12 +31,13 @@ interface AuthContextType {
 const AuthContext = createContext<AuthContextType | undefined>(undefined);
 
 export function AuthProvider({ children }: { children: React.ReactNode }) {
+  const router = useRouter();
   const [user, setUser] = useState<User | null>(null);
   const [isLoading, setIsLoading] = useState(true);
   const [isNewUser, setIsNewUser] = useState(false);
 
+  // Инициализация - проверяем сохраненного пользователя
   useEffect(() => {
-    // Проверяем сохраненного пользователя и токен в localStorage
     const savedUser = localStorage.getItem("user");
     const savedToken = localStorage.getItem("token");
     const savedNewUserFlag = localStorage.getItem("isNewUser");
@@ -48,18 +51,33 @@ export function AuthProvider({ children }: { children: React.ReactNode }) {
         localStorage.removeItem("token");
       }
     } else if (savedUser && !savedToken) {
-      // Если есть пользователь, но нет токена, очищаем данные
       localStorage.removeItem("user");
       localStorage.removeItem("isNewUser");
     }
 
-    // Восстанавливаем флаг нового пользователя
     if (savedNewUserFlag === "true") {
       setIsNewUser(true);
     }
 
     setIsLoading(false);
   }, []);
+
+  // Слушаем событие AUTH_INVALID_EVENT для обработки 401 ошибок
+  useEffect(() => {
+    const handleAuthInvalid = () => {
+      setUser(null);
+      setIsNewUser(false);
+      localStorage.removeItem("user");
+      localStorage.removeItem("isNewUser");
+      clearApiCache();
+      router.push("/login?reason=session_expired");
+    };
+
+    window.addEventListener(AUTH_INVALID_EVENT, handleAuthInvalid);
+    return () => {
+      window.removeEventListener(AUTH_INVALID_EVENT, handleAuthInvalid);
+    };
+  }, [router]);
 
   const login = useCallback(
     async (email: string, password: string): Promise<boolean> => {
@@ -116,7 +134,7 @@ export function AuthProvider({ children }: { children: React.ReactNode }) {
     []
   );
 
-  const logout = useCallback(() => {
+  const logout = useCallback(async () => {
     // Сохраняем информацию о выходе для показа уведомления
     const userName = user?.name.split(" ")[0] || "Пользователь";
     localStorage.setItem(
@@ -127,16 +145,26 @@ export function AuthProvider({ children }: { children: React.ReactNode }) {
       })
     );
 
+    // Вызываем logout на API клиенте
+    try {
+      apiClient.logout();
+    } catch (error) {
+      console.error("Logout error:", error);
+    }
+
     // Очищаем данные пользователя и токен
     setUser(null);
     setIsNewUser(false);
     localStorage.removeItem("user");
     localStorage.removeItem("isNewUser");
     localStorage.removeItem("token");
+    
+    // Очищаем кэш API
+    clearApiCache();
 
-    // Перенаправляем на главную страницу
-    window.location.href = "/";
-  }, [user]);
+    // Используем router.push вместо window.location (без перезагрузки)
+    router.push("/");
+  }, [user, router]);
 
   const clearNewUserFlag = useCallback(() => {
     setIsNewUser(false);

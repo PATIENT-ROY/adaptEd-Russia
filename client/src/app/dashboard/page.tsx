@@ -18,7 +18,7 @@ import Link from "next/link";
 import { useAuth } from "@/contexts/AuthContext";
 import { useReminders } from "@/hooks/useReminders";
 import { useTranslation } from "@/hooks/useTranslation";
-import { useState, useEffect, useCallback, useMemo } from "react";
+import { useState, useEffect, useMemo } from "react";
 import type { Reminder, UserProgress, DailyQuest } from "@/types";
 import { Language } from "@/types";
 import { UserProgressComponent } from "@/components/ui/user-progress";
@@ -92,7 +92,9 @@ export default function DashboardPage() {
     },
   ], [t]);
 
-  const fetchDashboardData = useCallback(async () => {
+  // Загрузка данных с AbortController для предотвращения race conditions
+  useEffect(() => {
+    if (authLoading) return;
     if (!user) {
       setUserProgress(null);
       setDailyQuests([]);
@@ -100,40 +102,58 @@ export default function DashboardPage() {
       return;
     }
 
-    setIsInitialLoading(true);
-    setDashboardError(null);
+    let isMounted = true;
+    const controller = new AbortController();
 
-    try {
-      const data = await fetchDashboardOverview();
-      setUserProgress(data.userProgress);
-      setDailyQuests(data.dailyQuests);
-    } catch (error) {
-      console.error("Failed to load dashboard overview:", error);
-      let message = "Не удалось загрузить данные дашборда";
-      
-      if (error instanceof Error) {
-        if (error.name === 'ConnectionError' || error.message.includes('Failed to fetch')) {
-          message = "Сервер недоступен. Проверьте подключение.";
-          if (process.env.NODE_ENV === 'development') {
-            console.warn('Development mode: API server may not be running on port 3003');
+    const loadDashboardData = async () => {
+      setIsInitialLoading(true);
+      setDashboardError(null);
+
+      try {
+        const data = await fetchDashboardOverview();
+        
+        // Проверяем что компонент ещё смонтирован
+        if (isMounted && !controller.signal.aborted) {
+          setUserProgress(data.userProgress);
+          setDailyQuests(data.dailyQuests);
+        }
+      } catch (error) {
+        // Игнорируем ошибки отменённых запросов
+        if (error instanceof Error && error.name === 'AbortError') {
+          return;
+        }
+        
+        if (isMounted) {
+          console.error("Failed to load dashboard overview:", error);
+          let message = "Не удалось загрузить данные дашборда";
+          
+          if (error instanceof Error) {
+            if (error.name === 'ConnectionError' || error.message.includes('Failed to fetch')) {
+              message = "Сервер недоступен. Проверьте подключение.";
+            } else {
+              message = error.message;
+            }
           }
-        } else {
-          message = error.message;
+          
+          setDashboardError(message);
+          setUserProgress(null);
+          setDailyQuests([]);
+        }
+      } finally {
+        if (isMounted && !controller.signal.aborted) {
+          setIsInitialLoading(false);
         }
       }
-      
-      setDashboardError(message);
-      setUserProgress(null);
-      setDailyQuests([]);
-    } finally {
-      setIsInitialLoading(false);
-    }
-  }, [user]);
+    };
 
-  useEffect(() => {
-    if (authLoading) return;
-    fetchDashboardData();
-  }, [authLoading, fetchDashboardData]);
+    loadDashboardData();
+
+    // Cleanup: отменяем запрос при размонтировании
+    return () => {
+      isMounted = false;
+      controller.abort();
+    };
+  }, [authLoading, user]);
 
   useEffect(() => {
     if (reminders.length > 0) {
