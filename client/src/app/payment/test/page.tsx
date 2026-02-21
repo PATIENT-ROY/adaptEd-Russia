@@ -72,7 +72,6 @@ function PaymentTestContent() {
     // Проверяем авторизацию только на клиенте
     if (typeof window !== "undefined") {
       const token = localStorage.getItem("token");
-      console.log("Token found:", !!token, "Token value:", token);
       setIsAuthenticated(!!token);
     }
   }, []);
@@ -124,14 +123,6 @@ function PaymentTestContent() {
 
   const handleCreatePayment = async () => {
     if (!selectedPlan) return;
-
-    console.log("handleCreatePayment - isAuthenticated:", isAuthenticated);
-    console.log(
-      "handleCreatePayment - localStorage token:",
-      typeof window !== "undefined"
-        ? localStorage.getItem("token")
-        : "no window"
-    );
 
     // Проверяем авторизацию
     if (!isAuthenticated) {

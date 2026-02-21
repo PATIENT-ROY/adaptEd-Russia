@@ -641,9 +641,9 @@ export default function DocScanPage() {
               )}
 
               {/* File Upload Area */}
-              <Card
+              <div
                 {...getRootProps()}
-                className={`border-2 border-dashed transition-all duration-300 cursor-pointer rounded-2xl ${
+                className={`border-2 border-dashed transition-all duration-300 cursor-pointer rounded-2xl bg-white shadow-lg ${
                   isDragActive
                     ? "border-[#6A5AE0] bg-gradient-to-br from-[#6A5AE0]/10 to-[#3B82F6]/10"
                     : selectedFile
@@ -651,7 +651,7 @@ export default function DocScanPage() {
                     : "border-gray-300 hover:border-[#6A5AE0] hover:bg-gray-50"
                 }`}
               >
-                <CardContent className="p-8 sm:p-12">
+                <div className="p-8 sm:p-12">
                   <input {...getInputProps()} />
                   <div className="flex flex-col items-center justify-center space-y-4">
                     <div
@@ -671,10 +671,10 @@ export default function DocScanPage() {
                     </div>
                     <div className="text-center">
                       <p className="text-lg sm:text-xl font-semibold text-gray-900 mb-1">
-                        Перетащи файл
+                        Перетащи файл сюда
                       </p>
                       <p className="text-sm sm:text-base text-gray-500">
-                        или выбери из папки
+                        или кликни для выбора из папки
                       </p>
                       <p className="text-xs text-gray-400 mt-2">
                         Поддерживаются: PNG, JPG, PDF
@@ -695,8 +695,8 @@ export default function DocScanPage() {
                       </motion.div>
                     )}
                   </div>
-                </CardContent>
-              </Card>
+                </div>
+              </div>
 
               {/* Action Buttons */}
               <div className="grid grid-cols-1 sm:grid-cols-2 gap-4">

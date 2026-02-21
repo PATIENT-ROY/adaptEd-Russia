@@ -1863,7 +1863,6 @@ export default function EducationGuidePage() {
   }, []);
 
   const handleShowSchedule = async (filters: ScheduleFilters) => {
-    console.log("Показать расписание с фильтрами:", filters);
     setIsLoading(true);
     setShowSchedule(false);
 

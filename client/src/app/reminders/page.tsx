@@ -417,21 +417,7 @@ export default function RemindersPage() {
   const handleAddReminder = async (e: React.FormEvent) => {
     e.preventDefault();
 
-    console.log("handleAddReminder called");
-    console.log("Form state:", {
-      title: newReminder.title,
-      date: newReminder.date,
-      category: newReminder.category,
-      priority: newReminder.priority,
-      user: user?.id,
-    });
-
     if (!newReminder.title || !newReminder.date || !user?.id) {
-      console.warn("Validation failed:", {
-        hasTitle: !!newReminder.title,
-        hasDate: !!newReminder.date,
-        hasUser: !!user?.id,
-      });
       alert(t("reminders.validation.requiredFields"));
       return;
     }
@@ -442,15 +428,6 @@ export default function RemindersPage() {
       const dateWithTime = dateInput
         ? `${dateInput}T00:00:00.000Z`
         : new Date().toISOString();
-
-      console.log("Creating reminder with:", {
-        title: newReminder.title,
-        dateInput,
-        dateWithTime,
-        category: newReminder.category,
-        priority: newReminder.priority,
-        notificationMethod: newReminder.notificationMethod,
-      });
 
       // Проверяем, что категория и дата заполнены
       if (!newReminder.category) {
@@ -477,17 +454,6 @@ export default function RemindersPage() {
         notificationMethod: newReminder.notificationMethod || "email",
       };
 
-      console.log(
-        "Reminder data being sent:",
-        JSON.stringify(reminderData, null, 2)
-      );
-      console.log("Category value:", newReminder.category);
-      console.log("Category type:", typeof newReminder.category);
-      console.log("Date value:", dateInput);
-      console.log("Date with time:", dateWithTime);
-      console.log("Date with time type:", typeof dateWithTime);
-      console.log("Full reminder state:", JSON.stringify(newReminder, null, 2));
-
       // Проверяем, что категория - это строка enum
       if (
         !Object.values(ReminderCategory).includes(
@@ -509,12 +475,6 @@ export default function RemindersPage() {
       try {
         const createdReminder = await createReminder(reminderData);
 
-        console.log(
-          "Created reminder response:",
-          JSON.stringify(createdReminder, null, 2)
-        );
-        console.log("Response category:", createdReminder?.category);
-        console.log("Response dueDate:", createdReminder?.dueDate);
       } catch (error) {
         console.error("Error creating reminder:", error);
         alert(t("reminders.validation.createError"));
@@ -1130,15 +1090,6 @@ export default function RemindersPage() {
                               {(() => {
                                 try {
                                   const dueDateValue = reminder.dueDate;
-                                  console.log(
-                                    "Formatting date for reminder:",
-                                    reminder.id,
-                                    "dueDate:",
-                                    dueDateValue,
-                                    "type:",
-                                    typeof dueDateValue
-                                  );
-
                                   if (
                                     !dueDateValue ||
                                     dueDateValue === null ||
@@ -1146,7 +1097,6 @@ export default function RemindersPage() {
                                     dueDateValue === "null" ||
                                     dueDateValue === ""
                                   ) {
-                                    console.log("No dueDate value");
                                     return t("reminders.dateNotSpecified");
                                   }
 
@@ -1177,7 +1127,6 @@ export default function RemindersPage() {
                                   }
 
                                   if (isNaN(date.getTime())) {
-                                    console.log("Invalid date:", dueDateValue);
                                     return t("reminders.dateNotSpecified");
                                   }
 
@@ -1189,7 +1138,6 @@ export default function RemindersPage() {
                                       day: "numeric",
                                     }
                                   );
-                                  console.log("Formatted date:", formatted);
                                   return formatted;
                                 } catch (error) {
                                   console.error(
@@ -1270,19 +1218,7 @@ export default function RemindersPage() {
                         </div>
                         <div className="flex flex-col sm:flex-row items-start sm:items-center space-y-2 sm:space-y-0 sm:space-x-2">
                           {(() => {
-                            // Отладочная информация
-                            console.log("Rendering category for reminder:", {
-                              id: reminder.id,
-                              title: reminder.title,
-                              category: reminder.category,
-                              categoryType: typeof reminder.category,
-                              fullReminder: reminder,
-                            });
-
-                            // Безопасное получение категории
                             const rawCategory = reminder.category;
-
-                            // Если категория отсутствует или пустая, пытаемся найти её в других полях
                             let category = rawCategory;
                             const rawCategoryStr = String(
                               rawCategory || ""
@@ -1292,24 +1228,11 @@ export default function RemindersPage() {
                               rawCategoryStr === "OTHER" ||
                               rawCategoryStr === ""
                             ) {
-                              // Проверяем, может быть категория в другом поле
-                              console.warn(
-                                "⚠️ Category is missing or OTHER, checking reminder object:",
-                                reminder
-                              );
-
-                              // Если категория отсутствует, используем OTHER как fallback
                               category = ReminderCategory.OTHER;
                             }
 
                             const catStr = String(category).toUpperCase();
-                            console.log("Processing category string:", {
-                              rawCategory,
-                              category,
-                              catStr,
-                            });
 
-                            // Маппинг строки к enum
                             let catEnum: ReminderCategory =
                               ReminderCategory.OTHER;
                             if (catStr === "EDUCATION") {
@@ -1322,25 +1245,9 @@ export default function RemindersPage() {
                               catEnum = ReminderCategory.HEALTH;
                             } else if (catStr === "OTHER") {
                               catEnum = ReminderCategory.OTHER;
-                            } else {
-                              console.warn(
-                                "⚠️ Unknown category value:",
-                                catStr,
-                                "using OTHER as fallback"
-                              );
-                              catEnum = ReminderCategory.OTHER;
                             }
 
                             const categoryLabel = getCategoryLabel(catEnum, t);
-
-                            console.log("Category mapping result:", {
-                              rawCategory,
-                              category,
-                              catStr,
-                              catEnum,
-                              categoryLabel,
-                              reminderKeys: Object.keys(reminder),
-                            });
 
                             return (
                               <span
@@ -1456,24 +1363,11 @@ export default function RemindersPage() {
                       </div>
                       <div className="flex items-center space-x-2">
                         {(() => {
-                          // Отладочная информация
-                          console.log(
-                            "Rendering category for completed reminder:",
-                            {
-                              id: reminder.id,
-                              title: reminder.title,
-                              category: reminder.category,
-                              categoryType: typeof reminder.category,
-                            }
-                          );
-
-                          // Безопасное получение категории
                           const rawCategory = reminder.category;
                           const category =
                             rawCategory || ReminderCategory.OTHER;
                           const catStr = String(category).toUpperCase();
 
-                          // Маппинг строки к enum
                           let catEnum: ReminderCategory =
                             ReminderCategory.OTHER;
                           if (catStr === "EDUCATION")
@@ -1488,13 +1382,6 @@ export default function RemindersPage() {
                             catEnum = ReminderCategory.OTHER;
 
                           const categoryLabel = getCategoryLabel(catEnum, t);
-
-                          console.log("Category mapping result (completed):", {
-                            rawCategory,
-                            catStr,
-                            catEnum,
-                            categoryLabel,
-                          });
 
                           return (
                             <span
