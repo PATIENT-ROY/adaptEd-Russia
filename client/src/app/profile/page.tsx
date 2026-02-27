@@ -37,10 +37,12 @@ import {
   HelpCircle,
 } from "lucide-react";
 import Link from "next/link";
-import { useEffect, useMemo, useState } from "react";
+import Image from "next/image";
+import { useEffect, useMemo, useState, useRef, useCallback } from "react";
 import { useAuth } from "@/contexts/AuthContext";
 import { ProfileEditForm } from "@/components/ui/profile-edit-form";
-import { fetchProfileOverview } from "@/lib/api";
+import { fetchProfileOverview, API_BASE_URL } from "@/lib/api";
+import { Camera, Star } from "lucide-react";
 import {
   User as UserType,
   Plan,
@@ -52,6 +54,8 @@ import {
   ProfileBillingItem,
   Role,
 } from "@/types";
+import { useReview } from "@/hooks/useReview";
+import { ReviewModal } from "@/components/ReviewModal";
 
 // Расширенный тип для пользователя с дополнительными полями
 interface ExtendedUser extends UserType {
@@ -277,6 +281,8 @@ const iconMap = {
   CreditCard,
   Clock,
   Activity,
+  Edit,
+  Star,
 };
 
 const getIconByName = (iconName: string) =>
@@ -333,12 +339,82 @@ export default function ProfilePage() {
   const [isSettingsOpen, setIsSettingsOpen] = useState(false);
   const [isEditFormVisible, setIsEditFormVisible] = useState(false);
   const [isBillingHistoryOpen, setIsBillingHistoryOpen] = useState(false);
+  const [isReviewModalOpen, setIsReviewModalOpen] = useState(false);
   const [profileOverview, setProfileOverview] =
     useState<ProfileOverview | null>(null);
   const [isProfileLoading, setIsProfileLoading] = useState(false);
   const [profileError, setProfileError] = useState<string | null>(null);
+  const [avatarUrl, setAvatarUrl] = useState<string | null>(null);
+  const [isUploadingAvatar, setIsUploadingAvatar] = useState(false);
+  const avatarInputRef = useRef<HTMLInputElement>(null);
   const { user, logout, updateProfile } = useAuth();
   const { t } = useTranslation();
+  const {
+    review,
+    loading: reviewLoading,
+    error: reviewError,
+    saving: reviewSaving,
+    saveError: reviewSaveError,
+    statusMessage: reviewStatusMessage,
+    createOrUpdate: saveReview,
+  } = useReview();
+
+  const loadAvatar = useCallback(async () => {
+    try {
+      const token = localStorage.getItem("token");
+      if (!token) return;
+      const res = await fetch(`${API_BASE_URL}/user/profile/avatar`, {
+        headers: { Authorization: `Bearer ${token}` },
+      });
+      if (res.ok) {
+        const body = await res.json();
+        if (body.data?.avatar) {
+          setAvatarUrl(body.data.avatar);
+        }
+      }
+    } catch {
+      // ignore
+    }
+  }, []);
+
+  const handleAvatarChange = async (e: React.ChangeEvent<HTMLInputElement>) => {
+    const file = e.target.files?.[0];
+    if (!file) return;
+
+    if (!file.type.startsWith("image/")) return;
+    if (file.size > 350_000) {
+      alert("Файл слишком большой. Максимум 350KB.");
+      return;
+    }
+
+    setIsUploadingAvatar(true);
+    try {
+      const reader = new FileReader();
+      reader.onloadend = async () => {
+        const base64 = reader.result as string;
+        const token = localStorage.getItem("token");
+        const res = await fetch(`${API_BASE_URL}/user/profile/avatar`, {
+          method: "PUT",
+          headers: {
+            "Content-Type": "application/json",
+            Authorization: `Bearer ${token}`,
+          },
+          body: JSON.stringify({ avatar: base64 }),
+        });
+        if (res.ok) {
+          setAvatarUrl(base64);
+        }
+        setIsUploadingAvatar(false);
+      };
+      reader.readAsDataURL(file);
+    } catch {
+      setIsUploadingAvatar(false);
+    }
+  };
+
+  useEffect(() => {
+    loadAvatar();
+  }, [loadAvatar]);
 
   useEffect(() => {
     let isMounted = true;
@@ -461,13 +537,25 @@ export default function ProfilePage() {
     );
   }
 
-  const avatar = mergedUser.name?.charAt(0)?.toUpperCase?.() ?? "A";
+  const avatarInitial = mergedUser.name?.charAt(0)?.toUpperCase?.() ?? "A";
 
   const extendedUser = mergedUser;
 
   const statsToRender = (profileOverview?.stats ?? fallbackStats).slice(0, 3);
   const quickActionsToRender =
     profileOverview?.quickActions ?? fallbackQuickActions;
+
+  const customQuickActions = [
+    ...(!review ? [{
+      id: 'leave-review',
+      title: 'Оставить отзыв',
+      description: 'Поделитесь своим мнением',
+      href: '#',
+      icon: 'Star',
+      color: 'bg-yellow-100 text-yellow-600',
+    }] : []),
+    ...quickActionsToRender,
+  ];
   const achievementsToRender =
     profileOverview?.achievements ?? fallbackAchievements;
   const recentActivityToRender = (
@@ -499,12 +587,40 @@ export default function ProfilePage() {
           <div className="relative max-w-7xl mx-auto px-3 sm:px-4 lg:px-6">
             <div className="flex flex-col lg:flex-row items-center space-y-4 sm:space-y-6 lg:space-y-0 lg:space-x-8">
               {/* Avatar */}
-              <div className="relative">
-                <div className="w-20 h-20 sm:w-24 sm:h-24 md:w-28 md:h-28 lg:w-32 lg:h-32 rounded-full bg-gradient-to-br from-white/20 to-white/10 backdrop-blur-sm border-4 border-white/30 flex items-center justify-center text-white text-2xl sm:text-3xl md:text-4xl lg:text-5xl font-bold shadow-2xl">
-                  {avatar}
+              <div className="relative group">
+                <div className="w-20 h-20 sm:w-24 sm:h-24 md:w-28 md:h-28 lg:w-32 lg:h-32 rounded-full bg-gradient-to-br from-white/20 to-white/10 backdrop-blur-sm border-4 border-white/30 flex items-center justify-center text-white text-2xl sm:text-3xl md:text-4xl lg:text-5xl font-bold shadow-2xl overflow-hidden">
+                  {avatarUrl ? (
+                    <Image
+                      src={avatarUrl}
+                      alt="Avatar"
+                      width={128}
+                      height={128}
+                      className="w-full h-full object-cover"
+                    />
+                  ) : (
+                    avatarInitial
+                  )}
                 </div>
+                <button
+                  onClick={() => avatarInputRef.current?.click()}
+                  disabled={isUploadingAvatar}
+                  className="absolute inset-0 w-20 h-20 sm:w-24 sm:h-24 md:w-28 md:h-28 lg:w-32 lg:h-32 rounded-full bg-black/0 group-hover:bg-black/40 flex items-center justify-center transition-all duration-200 cursor-pointer"
+                >
+                  <Camera className="h-6 w-6 sm:h-8 sm:w-8 text-white opacity-0 group-hover:opacity-100 transition-opacity duration-200" />
+                </button>
+                <input
+                  ref={avatarInputRef}
+                  type="file"
+                  accept="image/png,image/jpeg,image/jpg,image/webp"
+                  onChange={handleAvatarChange}
+                  className="hidden"
+                />
                 <div className="absolute -bottom-1 -right-1 sm:-bottom-2 sm:-right-2 w-6 h-6 sm:w-8 sm:h-8 rounded-full bg-gradient-to-br from-green-400 to-green-600 flex items-center justify-center border-2 border-white">
-                  <CheckCircle className="h-3 w-3 sm:h-4 sm:w-4 text-white" />
+                  {isUploadingAvatar ? (
+                    <div className="h-3 w-3 sm:h-4 sm:w-4 border-2 border-white border-t-transparent rounded-full animate-spin" />
+                  ) : (
+                    <CheckCircle className="h-3 w-3 sm:h-4 sm:w-4 text-white" />
+                  )}
                 </div>
               </div>
 
@@ -590,6 +706,22 @@ export default function ProfilePage() {
           )}
 
           {/* Quick Actions */}
+          {reviewError && (
+            <div className="mb-4 p-3 rounded bg-red-50 text-red-700 text-sm">
+              {reviewError}
+            </div>
+          )}
+          {reviewStatusMessage && (
+            <div className={`mb-4 p-3 rounded text-sm ${
+              review?.status === "REJECTED"
+                ? "bg-red-50 text-red-700"
+                : review?.status === "APPROVED"
+                ? "bg-green-50 text-green-700"
+                : "bg-blue-50 text-blue-700"
+            }`}>
+              {reviewStatusMessage}
+            </div>
+          )}
           <div
             className="animate-fade-in-up"
             style={{ animationDelay: "0.1s" }}
@@ -598,33 +730,48 @@ export default function ProfilePage() {
               Быстрые действия
             </h2>
             <div className="grid grid-cols-2 lg:grid-cols-3 gap-1.5 sm:gap-4 lg:gap-6">
-              {quickActionsToRender.map((action, index) => {
+              {customQuickActions.map((action, index) => {
                 const Icon = getIconByName(action.icon);
+                const isReviewAction = action.id === "leave-review";
+                const card = (
+                  <Card
+                    className={`${profileCardClass} animate-fade-in-up cursor-pointer h-full ${
+                      isProfileLoading ? "animate-pulse" : ""
+                    }`}
+                    style={{
+                      animationDelay: `${index * 0.1}s`,
+                      ...profileCardStyle,
+                    }}
+                  >
+                    <CardContent className="p-2.5 sm:p-6 relative z-10 flex flex-col h-full">
+                      <div
+                        className={`w-9 h-9 sm:w-14 sm:h-14 md:w-16 md:h-16 rounded-lg sm:rounded-2xl bg-gradient-to-br ${action.color} flex items-center justify-center mb-1.5 sm:mb-4 shadow-lg group-hover:scale-110 transition-transform duration-300 flex-shrink-0`}
+                      >
+                        <Icon className="h-4 w-4 sm:h-7 sm:w-7 md:h-8 md:w-8 text-white" />
+                      </div>
+                      <h3 className="text-xs sm:text-lg lg:text-xl font-bold text-slate-900 mb-1 sm:mb-2 flex-shrink-0 leading-tight line-clamp-2">
+                        {action.title}
+                      </h3>
+                      <p className="text-[11px] sm:text-sm lg:text-base text-slate-600 flex-grow overflow-hidden line-clamp-4 sm:line-clamp-none leading-snug">
+                        {action.description}
+                      </p>
+                    </CardContent>
+                  </Card>
+                );
+                if (isReviewAction) {
+                  return (
+                    <button
+                      key={action.id}
+                      onClick={() => setIsReviewModalOpen(true)}
+                      className="w-full text-left"
+                    >
+                      {card}
+                    </button>
+                  );
+                }
                 return (
                   <Link key={action.id} href={action.href}>
-                    <Card
-                      className={`${profileCardClass} animate-fade-in-up cursor-pointer h-full ${
-                        isProfileLoading ? "animate-pulse" : ""
-                      }`}
-                      style={{
-                        animationDelay: `${index * 0.1}s`,
-                        ...profileCardStyle,
-                      }}
-                    >
-                      <CardContent className="p-2.5 sm:p-6 relative z-10 flex flex-col h-full">
-                        <div
-                          className={`w-9 h-9 sm:w-14 sm:h-14 md:w-16 md:h-16 rounded-lg sm:rounded-2xl bg-gradient-to-br ${action.color} flex items-center justify-center mb-1.5 sm:mb-4 shadow-lg group-hover:scale-110 transition-transform duration-300 flex-shrink-0`}
-                        >
-                          <Icon className="h-4 w-4 sm:h-7 sm:w-7 md:h-8 md:w-8 text-white" />
-                        </div>
-                        <h3 className="text-xs sm:text-lg lg:text-xl font-bold text-slate-900 mb-1 sm:mb-2 flex-shrink-0 leading-tight line-clamp-2">
-                          {action.title}
-                        </h3>
-                        <p className="text-[11px] sm:text-sm lg:text-base text-slate-600 flex-grow overflow-hidden line-clamp-4 sm:line-clamp-none leading-snug">
-                          {action.description}
-                        </p>
-                      </CardContent>
-                    </Card>
+                    {card}
                   </Link>
                 );
               })}
@@ -632,6 +779,21 @@ export default function ProfilePage() {
           </div>
 
           {/* Billing & Invoices Section */}
+          <ReviewModal
+            isOpen={isReviewModalOpen}
+            onClose={() => setIsReviewModalOpen(false)}
+            review={review}
+            loading={reviewLoading}
+            error={reviewError}
+            saving={reviewSaving}
+            saveError={reviewSaveError}
+            statusMessage={reviewStatusMessage}
+            onSave={async (data) => {
+              await saveReview(data);
+              // keep modal open to show status; close after success
+              setIsReviewModalOpen(false);
+            }}
+          />
           <div
             className="animate-fade-in-up"
             style={{ animationDelay: "0.3s" }}

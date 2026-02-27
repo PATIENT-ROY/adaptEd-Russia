@@ -317,6 +317,18 @@ exports.Prisma.QuestionLikeScalarFieldEnum = {
   createdAt: 'createdAt'
 };
 
+exports.Prisma.ReviewScalarFieldEnum = {
+  id: 'id',
+  userId: 'userId',
+  text: 'text',
+  rating: 'rating',
+  status: 'status',
+  isFeatured: 'isFeatured',
+  allowPublication: 'allowPublication',
+  createdAt: 'createdAt',
+  updatedAt: 'updatedAt'
+};
+
 exports.Prisma.SortOrder = {
   asc: 'asc',
   desc: 'desc'
@@ -344,7 +356,8 @@ exports.Prisma.ModelName = {
   UserGrantApplication: 'UserGrantApplication',
   Question: 'Question',
   Answer: 'Answer',
-  QuestionLike: 'QuestionLike'
+  QuestionLike: 'QuestionLike',
+  Review: 'Review'
 };
 
 /**

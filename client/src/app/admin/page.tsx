@@ -156,6 +156,13 @@ const adminActions = [
     color: "from-pink-500 to-rose-600",
   },
   {
+    title: "Отзывы",
+    description: "Модерация и публикация отзывов пользователей",
+    icon: MessageSquare,
+    href: "/admin/reviews",
+    color: "from-yellow-500 to-orange-500",
+  },
+  {
     title: "Достижения",
     description: "Награды, прогресс и статистика",
     icon: Award,

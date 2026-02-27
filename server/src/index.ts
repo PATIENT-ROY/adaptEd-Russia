@@ -16,6 +16,7 @@ import grantRoutes from './api/grants.js';
 import paymentRoutes from './api/payments.js';
 import scheduleRoutes from './api/schedule.js';
 import questionRoutes from './api/questions.js';
+import reviewRoutes from './api/reviews.js';
 
 // Загружаем переменные окружения
 dotenv.config();
@@ -44,7 +45,7 @@ app.use(helmet());
           ...(process.env.CLIENT_URL ? [process.env.CLIENT_URL] : [])
         ],
         credentials: true,
-        methods: ['GET', 'POST', 'PUT', 'DELETE', 'OPTIONS'],
+        methods: ['GET', 'POST', 'PUT', 'PATCH', 'DELETE', 'OPTIONS'],
         allowedHeaders: ['Content-Type', 'Authorization'],
       }));
 
@@ -239,6 +240,7 @@ app.use('/api/grants', grantRoutes);
 app.use('/api/payments', paymentRoutes);
 app.use('/api/schedule', scheduleRoutes);
 app.use('/api/questions', questionRoutes);
+app.use('/api', reviewRoutes);
 
 // 404 handler
 app.use('*', (req, res) => {

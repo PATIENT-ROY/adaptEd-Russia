@@ -158,6 +158,33 @@ export interface ContactInfo {
   emergencySupport: string;
 }
 
+export enum ReviewStatus {
+  PENDING = 'PENDING',
+  APPROVED = 'APPROVED',
+  REJECTED = 'REJECTED',
+}
+
+export interface Review {
+  id: string;
+  userId: string;
+  text: string;
+  rating: number;
+  status: ReviewStatus;
+  isFeatured: boolean;
+  allowPublication?: boolean;
+  createdAt: string;
+  updatedAt: string;
+  user: {
+    id: string;
+    name: string;
+    avatar?: string;
+    university?: string;
+    city?: string;
+    country?: string;
+    subscriptionStatus?: string;
+  };
+}
+
 // API Types
 export interface ApiResponse<T = unknown> {
   success: boolean;

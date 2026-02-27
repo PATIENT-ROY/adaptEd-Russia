@@ -20,7 +20,7 @@ import {
 } from '@/types';
 
 export const API_BASE_URL =
-  process.env.NEXT_PUBLIC_API_URL || 'http://localhost:56548/api';
+  process.env.NEXT_PUBLIC_API_URL || 'http://localhost:3003/api';
 
 // Логирование только в development
 const isDev = process.env.NODE_ENV === 'development';

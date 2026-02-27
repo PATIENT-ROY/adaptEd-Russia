@@ -11,6 +11,17 @@ datasource db {
   url      = env("DATABASE_URL")
 }
 
+// ------------------------------------------------------------------
+// Enums used throughout the schema
+// ------------------------------------------------------------------
+
+/// Статус отзыва, создаётся пользователем и проходит модерацию
+/// PENDING — только что отправлен, ожидает проверки
+/// APPROVED — разрешён к показу, может использоваться на сайте
+/// REJECTED — отклонён, пользователь должен переделать/удалить
+///
+
+
 // Пользователи
 model User {
   id           String   @id @default(cuid())
@@ -41,6 +52,7 @@ model User {
   questions    Question[]
   answers      Answer[]
   questionLikes QuestionLike[]
+  reviews      Review[]          // обратная связь пользователей
   
   @@map("users")
 }
@@ -333,3 +345,22 @@ model QuestionLike {
   @@unique([questionId, userId])
   @@map("question_likes")
 } 
+
+// Отзывы пользователей
+model Review {
+  id         String   @id @default(uuid())
+  userId     String   @unique
+  text       String
+  rating     Int
+  status     String   @default("PENDING")
+  isFeatured Boolean  @default(false)
+  allowPublication Boolean @default(true)
+  createdAt  DateTime @default(now())
+  updatedAt  DateTime @updatedAt
+
+  user       User     @relation(fields: [userId], references: [id], onDelete: Cascade)
+
+  @@index([isFeatured])
+  @@index([createdAt])
+  @@map("reviews")
+}

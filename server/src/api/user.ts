@@ -473,6 +473,72 @@ const updateProfileSchema = z.object({
   gender: z.enum(['MALE', 'FEMALE']).optional(),
 });
 
+// Загрузить/обновить аватар
+router.put('/profile/avatar', authMiddleware, async (req: Request, res: Response) => {
+  try {
+    const user = (req as any).user;
+    const { avatar } = req.body;
+
+    if (!avatar || typeof avatar !== 'string') {
+      return res.status(400).json({
+        success: false,
+        error: 'Аватар не предоставлен',
+      } as ApiResponse);
+    }
+
+    if (avatar.length > 500_000) {
+      return res.status(400).json({
+        success: false,
+        error: 'Файл слишком большой (макс. ~350KB)',
+      } as ApiResponse);
+    }
+
+    await prisma.profile.upsert({
+      where: { userId: user.userId },
+      create: {
+        userId: user.userId,
+        avatar,
+        interests: '[]',
+      },
+      update: { avatar },
+    });
+
+    res.json({
+      success: true,
+      data: { avatar },
+      message: 'Аватар обновлён',
+    } as ApiResponse);
+  } catch (error) {
+    console.error('Upload avatar error:', error);
+    res.status(500).json({
+      success: false,
+      error: 'Не удалось обновить аватар',
+    } as ApiResponse);
+  }
+});
+
+// Получить аватар
+router.get('/profile/avatar', authMiddleware, async (req: Request, res: Response) => {
+  try {
+    const user = (req as any).user;
+    const profile = await prisma.profile.findUnique({
+      where: { userId: user.userId },
+      select: { avatar: true },
+    });
+
+    res.json({
+      success: true,
+      data: { avatar: profile?.avatar || null },
+    } as ApiResponse);
+  } catch (error) {
+    console.error('Get avatar error:', error);
+    res.status(500).json({
+      success: false,
+      error: 'Не удалось загрузить аватар',
+    } as ApiResponse);
+  }
+});
+
 // Получить профиль пользователя
 router.get('/profile', authMiddleware, async (req: Request, res: Response) => {
   try {

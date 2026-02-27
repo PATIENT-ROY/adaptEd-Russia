@@ -117,6 +117,23 @@ export interface Guide {
   updatedAt: Date;
 }
 
+export enum ReviewStatus {
+  PENDING = 'PENDING',
+  APPROVED = 'APPROVED',
+  REJECTED = 'REJECTED'
+}
+
+export interface Review {
+  id: string;
+  userId: string;
+  text: string;
+  rating: number;
+  status: ReviewStatus;
+  isFeatured: boolean;
+  createdAt: Date;
+  updatedAt: Date;
+}
+
 export interface ChatMessage {
   id: string;
   userId: string;
