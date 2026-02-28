@@ -53,25 +53,18 @@ export const useQuestions = () => {
   const [totalCount, setTotalCount] = useState(0);
   const pageRef = useRef(1);
 
-  const getToken = () => {
-    if (typeof window !== "undefined") {
-      return localStorage.getItem("token");
-    }
-    return null;
-  };
-
-  const getHeaders = (withAuth = false) => {
+  const getHeaders = useCallback((withAuth = false) => {
     const headers: Record<string, string> = {
       "Content-Type": "application/json",
     };
-    if (withAuth) {
-      const token = getToken();
+    if (withAuth && typeof window !== "undefined") {
+      const token = localStorage.getItem("token");
       if (token) {
         headers.Authorization = `Bearer ${token}`;
       }
     }
     return headers;
-  };
+  }, []);
 
   const fetchQuestions = useCallback(
     async (
@@ -127,7 +120,7 @@ export const useQuestions = () => {
         setIsLoadingMore(false);
       }
     },
-    [],
+    [getHeaders],
   );
 
   const loadMore = useCallback(
@@ -160,7 +153,7 @@ export const useQuestions = () => {
         return null;
       }
     },
-    [],
+    [getHeaders],
   );
 
   const createQuestion = useCallback(
@@ -195,7 +188,7 @@ export const useQuestions = () => {
         return null;
       }
     },
-    [],
+    [getHeaders],
   );
 
   const addAnswer = useCallback(
@@ -237,7 +230,7 @@ export const useQuestions = () => {
         return null;
       }
     },
-    [],
+    [getHeaders],
   );
 
   const likeQuestion = useCallback(
@@ -280,7 +273,7 @@ export const useQuestions = () => {
         return null;
       }
     },
-    [],
+    [getHeaders],
   );
 
   const unlikeQuestion = useCallback(
@@ -323,7 +316,7 @@ export const useQuestions = () => {
         return null;
       }
     },
-    [],
+    [getHeaders],
   );
 
   const deleteQuestion = useCallback(
@@ -354,7 +347,7 @@ export const useQuestions = () => {
         return false;
       }
     },
-    [],
+    [getHeaders],
   );
 
   return {

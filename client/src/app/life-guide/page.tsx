@@ -10,7 +10,6 @@ import {
   Home,
   Building,
   Bus,
-  FileText,
   Shield,
   Phone,
 } from "lucide-react";
@@ -1600,7 +1599,7 @@ export default function LifeGuidePage() {
           </div>
           {filteredGuides.length > 0 ? (
             <div className="grid grid-cols-1 sm:grid-cols-2 lg:grid-cols-3 gap-4 sm:gap-6 transition-all duration-500 ease-out">
-              {filteredGuides.map((guide, index) => (
+              {filteredGuides.map((guide) => (
                 <div
                   key={`guide-${guide.id}`}
                   className="h-[280px]"

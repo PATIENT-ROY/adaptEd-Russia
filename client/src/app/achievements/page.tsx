@@ -193,7 +193,7 @@ export default function AchievementsPage() {
         }
       }
     },
-    []
+    [t]
   );
 
   useEffect(() => {

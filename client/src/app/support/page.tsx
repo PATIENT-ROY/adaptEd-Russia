@@ -1,6 +1,6 @@
 "use client";
 
-import { useState, useEffect } from "react";
+import { useState, useEffect, useCallback } from "react";
 import Link from "next/link";
 import {
   Card,
@@ -71,9 +71,9 @@ export default function SupportPage() {
   const [myTickets, setMyTickets] = useState<SupportTicket[]>([]);
   const [expandedTicketId, setExpandedTicketId] = useState<string | null>(null);
 
-  const loadMyTickets = async () => {
+  const loadMyTickets = useCallback(async () => {
     if (!user) return;
-    
+
     try {
       const token = localStorage.getItem("token");
       const response = await fetch(`${API_BASE_URL}/support/my-tickets`, {
@@ -89,13 +89,13 @@ export default function SupportPage() {
     } catch (error) {
       console.error("Error loading tickets:", error);
     }
-  };
+  }, [user]);
 
   useEffect(() => {
     if (user) {
       loadMyTickets();
     }
-  }, [user]);
+  }, [user, loadMyTickets]);
 
   const getStatusBadge = (status: string) => {
     switch (status) {

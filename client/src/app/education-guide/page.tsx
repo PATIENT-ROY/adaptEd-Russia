@@ -1866,7 +1866,8 @@ export default function EducationGuidePage() {
     setIsLoading(true);
     setShowSchedule(false);
 
-    // Имитация загрузки данных
+    // Имитация загрузки данных (filters будут использоваться при подключении API)
+    void filters;
     await new Promise((resolve) => setTimeout(resolve, 1500));
 
     setIsLoading(false);

@@ -39,7 +39,7 @@ export default function ReviewTable({ reviews, onApprove, onReject, onToggleFeat
                       {r.user.university || r.user.country || "-"}
                     </p>
                     <p className="text-xs text-gray-500">
-                      {r.user.plan || "-"}
+                      {r.user.subscriptionStatus || "-"}
                     </p>
                   </div>
                 </div>

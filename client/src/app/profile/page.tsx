@@ -50,11 +50,7 @@ import {
   User as UserType,
   Plan,
   ProfileOverview,
-  ProfileStat,
   ProfileQuickAction,
-  ProfileAchievement,
-  ProfileActivityItem,
-  ProfileBillingItem,
   Role,
 } from "@/types";
 import { useReview } from "@/hooks/useReview";

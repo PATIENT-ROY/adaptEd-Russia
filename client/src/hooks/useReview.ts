@@ -39,7 +39,7 @@ export function useReview(): UseReviewResult {
       }
       const body = await res.json();
       setReview(body.data || null);
-    } catch (e: any) {
+    } catch (e: unknown) {
       console.error("Failed to fetch review:", e);
       setError("Не удалось загрузить отзыв");
     } finally {

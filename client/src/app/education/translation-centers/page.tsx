@@ -282,7 +282,7 @@ export default function TranslationCentersPage() {
   const { t } = useTranslation();
   const { user } = useAuth();
   const [selectedCity, setSelectedCity] = useState<string>("Москва");
-  const [isUsingProfileCity, setIsUsingProfileCity] = useState(false);
+  const [, setIsUsingProfileCity] = useState(false);
   const [centers, setCenters] = useState<TranslationCenter[]>([]);
   const [isLoading, setIsLoading] = useState(true);
 
