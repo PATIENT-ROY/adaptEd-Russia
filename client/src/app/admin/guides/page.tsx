@@ -15,7 +15,6 @@ import {
   Shield,
   Plus,
   Download,
-  Eye as EyeIcon,
   FileText,
   Tag,
   Globe,
@@ -26,10 +25,9 @@ import {
 } from "lucide-react";
 import Link from "next/link";
 import { useAuth } from "@/contexts/AuthContext";
-import { useState, useEffect } from "react";
+import { useState } from "react";
 import { Role } from "@/types";
 
-// Моковые данные гайдов
 const mockGuides = [
   {
     id: "1",
@@ -105,11 +103,19 @@ const statusColors: Record<string, string> = {
   archived: "bg-gray-100 text-gray-700",
 };
 
-
 export default function AdminGuidesPage() {
+  return (
+    <ProtectedRoute>
+      <AdminGuidesContent />
+    </ProtectedRoute>
+  );
+}
+
+function AdminGuidesContent() {
   const { user } = useAuth();
   const { t } = useTranslation();
-  const [isAdmin, setIsAdmin] = useState(false);
+  const isAdmin = user?.role === Role.ADMIN;
+
   const [guides, setGuides] = useState(mockGuides);
   const [searchTerm, setSearchTerm] = useState("");
   const [statusFilter, setStatusFilter] = useState("all");
@@ -122,20 +128,6 @@ export default function AdminGuidesPage() {
     status: "draft",
   });
 
-  useEffect(() => {
-    if (user?.role === Role.ADMIN) {
-      setIsAdmin(true);
-    }
-  }, [user]);
-
-  if (!user) {
-    return (
-      <ProtectedRoute>
-        <div>Loading...</div>
-      </ProtectedRoute>
-    );
-  }
-
   if (!isAdmin) {
     return (
       <Layout>
@@ -144,13 +136,13 @@ export default function AdminGuidesPage() {
             <CardContent className="p-8 text-center">
               <Shield className="h-16 w-16 text-red-500 mx-auto mb-4" />
               <h2 className="text-2xl font-bold text-slate-900 mb-2">
-                Доступ запрещен
+                {t("admin.accessDenied.title")}
               </h2>
               <p className="text-slate-600 mb-6">
-                У вас нет прав для доступа к админ-панели
+                {t("admin.accessDenied.description")}
               </p>
               <Link href="/dashboard">
-                <Button>Вернуться на главную</Button>
+                <Button>{t("admin.accessDenied.action")}</Button>
               </Link>
             </CardContent>
           </Card>
@@ -174,19 +166,6 @@ export default function AdminGuidesPage() {
 
     return matchesSearch && matchesStatus && matchesCategory;
   });
-
-  // const handleStatusChange = (guideId: string, newStatus: string) => {
-  //   setGuides(
-  //     guides.map((guide) =>
-  //       guide.id === guideId
-  //         ? {
-  //             ...guide,
-  //             status: newStatus as "published" | "draft" | "archived",
-  //           }
-  //         : guide
-  //     )
-  //   );
-  // };
 
   const handleDeleteGuide = (guideId: string) => {
     setGuides(guides.filter((guide) => guide.id !== guideId));
@@ -236,14 +215,14 @@ export default function AdminGuidesPage() {
             <div className="flex items-center space-x-2">
               <Button variant="outline" className="flex items-center space-x-2">
                 <Download className="h-4 w-4" />
-                <span>Экспорт</span>
+                <span>{t("admin.guides.export")}</span>
               </Button>
               <Button
                 className="flex items-center space-x-2"
                 onClick={() => setIsCreateOpen(true)}
               >
                 <Plus className="h-4 w-4" />
-                <span>Создать гайд</span>
+                <span>{t("admin.guides.create")}</span>
               </Button>
             </div>
           </div>
@@ -270,9 +249,9 @@ export default function AdminGuidesPage() {
                   className="w-full appearance-none px-3 py-2 pr-9 border border-slate-300 rounded-lg focus:ring-2 focus:ring-green-500 focus:border-green-500"
               >
                 <option value="all">{t("admin.guides.filters.status.all")}</option>
-                <option value="published">Опубликованные</option>
-                <option value="draft">Черновики</option>
-                <option value="archived">Архивные</option>
+                <option value="published">{t("admin.guides.filters.status.published")}</option>
+                <option value="draft">{t("admin.guides.filters.status.draft")}</option>
+                <option value="archived">{t("admin.guides.filters.status.archived")}</option>
               </select>
                 <ChevronDown className="h-4 w-4 text-gray-400 pointer-events-none absolute right-3 top-1/2 -translate-y-1/2" />
               </div>
@@ -283,8 +262,8 @@ export default function AdminGuidesPage() {
                   className="w-full appearance-none px-3 py-2 pr-9 border border-slate-300 rounded-lg focus:ring-2 focus:ring-green-500 focus:border-green-500"
               >
                 <option value="all">{t("admin.guides.filters.category.all")}</option>
-                <option value="education">Образование</option>
-                <option value="life">Быт</option>
+                <option value="education">{t("admin.guides.filters.category.education")}</option>
+                <option value="life">{t("admin.guides.filters.category.life")}</option>
               </select>
                 <ChevronDown className="h-4 w-4 text-gray-400 pointer-events-none absolute right-3 top-1/2 -translate-y-1/2" />
               </div>
@@ -296,18 +275,19 @@ export default function AdminGuidesPage() {
         <Card>
           <CardHeader>
             <CardTitle className="flex items-center justify-between">
-              <span>Гайды ({filteredGuides.length})</span>
+              <span>{t("admin.guides.table.title")} ({filteredGuides.length})</span>
               {selectedGuides.length > 0 && (
                 <div className="flex items-center space-x-2">
                   <span className="text-sm text-gray-600">
-                    Выбрано: {selectedGuides.length}
+                    {t("admin.guides.table.selected")} {selectedGuides.length}
                   </span>
                   <Button variant="outline" size="sm">
                     <CheckCircle className="h-4 w-4 mr-2" />
-                    Опубликовать
+                    {t("admin.guides.table.publish")}
                   </Button>
                   <Button variant="outline" size="sm">
-                    <Clock className="h-4 w-4 mr-2" />В черновики
+                    <Clock className="h-4 w-4 mr-2" />
+                    {t("admin.guides.table.toDraft")}
                   </Button>
                 </div>
               )}
@@ -330,19 +310,19 @@ export default function AdminGuidesPage() {
                       />
                     </th>
                     <th className="text-left py-3 px-4 font-medium text-gray-900">
-                      Гайд
+                      {t("admin.guides.table.guide")}
                     </th>
                     <th className="text-left py-3 px-4 font-medium text-gray-900">
-                      Категория
+                      {t("admin.guides.table.category")}
                     </th>
                     <th className="text-left py-3 px-4 font-medium text-gray-900">
-                      Статус
+                      {t("admin.guides.table.status")}
                     </th>
                     <th className="text-left py-3 px-4 font-medium text-gray-900">
-                      Статистика
+                      {t("admin.guides.table.stats")}
                     </th>
                     <th className="text-left py-3 px-4 font-medium text-gray-900">
-                      Действия
+                      {t("admin.guides.table.actions")}
                     </th>
                   </tr>
                 </thead>
@@ -398,20 +378,22 @@ export default function AdminGuidesPage() {
                           }`}
                         >
                           {guide.status === "published"
-                            ? "Опубликован"
+                            ? t("admin.guides.statuses.published")
                             : guide.status === "draft"
-                            ? "Черновик"
-                            : "Архивный"}
+                            ? t("admin.guides.statuses.draft")
+                            : t("admin.guides.statuses.archived")}
                         </span>
                       </td>
                       <td className="py-3 px-4">
                         <div className="text-sm">
                           <p className="text-gray-900">
-                            {guide.views} просмотров
+                            {guide.views} {t("admin.guides.activity.views")}
                           </p>
-                          <p className="text-gray-600">Автор: {guide.author}</p>
+                          <p className="text-gray-600">
+                            {t("admin.guides.activity.author")}: {guide.author}
+                          </p>
                           <p className="text-gray-500 text-xs">
-                            Обновлен: {guide.updatedAt}
+                            {t("admin.guides.activity.updated")}: {guide.updatedAt}
                           </p>
                         </div>
                       </td>
@@ -420,16 +402,14 @@ export default function AdminGuidesPage() {
                           <Button
                             variant="outline"
                             size="sm"
-                            title="Просмотр"
-                            aria-label="Просмотр гайда"
+                            aria-label={t("admin.common.view")}
                           >
                             <Eye className="h-4 w-4" />
                           </Button>
                           <Button
                             variant="outline"
                             size="sm"
-                            title="Редактировать"
-                            aria-label="Редактировать гайд"
+                            aria-label={t("admin.common.edit")}
                           >
                             <Edit className="h-4 w-4" />
                           </Button>
@@ -438,8 +418,7 @@ export default function AdminGuidesPage() {
                             size="sm"
                             onClick={() => handleDeleteGuide(guide.id)}
                             className="text-red-600 hover:text-red-700"
-                            title="Удалить"
-                            aria-label="Удалить гайд"
+                            aria-label={t("admin.common.delete")}
                           >
                             <Trash2 className="h-4 w-4" />
                           </Button>
@@ -463,7 +442,7 @@ export default function AdminGuidesPage() {
                 </div>
                 <div>
                   <p className="text-sm font-medium text-gray-600">
-                    Опубликованные
+                    {t("admin.guides.stats.published")}
                   </p>
                   <p className="text-xl font-bold text-gray-900">
                     {guides.filter((g) => g.status === "published").length}
@@ -480,7 +459,7 @@ export default function AdminGuidesPage() {
                   <Clock className="h-5 w-5 text-white" />
                 </div>
                 <div>
-                  <p className="text-sm font-medium text-gray-600">Черновики</p>
+                  <p className="text-sm font-medium text-gray-600">{t("admin.guides.stats.drafts")}</p>
                   <p className="text-xl font-bold text-gray-900">
                     {guides.filter((g) => g.status === "draft").length}
                   </p>
@@ -493,11 +472,11 @@ export default function AdminGuidesPage() {
             <CardContent className="p-4 sm:p-6">
               <div className="flex items-center space-x-3">
                 <div className="w-10 h-10 rounded-xl bg-gradient-to-br from-blue-500 to-blue-600 flex items-center justify-center">
-                  <EyeIcon className="h-5 w-5 text-white" />
+                  <Eye className="h-5 w-5 text-white" />
                 </div>
                 <div>
                   <p className="text-sm font-medium text-gray-600">
-                    Всего просмотров
+                    {t("admin.guides.stats.totalViews")}
                   </p>
                   <p className="text-xl font-bold text-gray-900">
                     {guides.reduce((sum, guide) => sum + guide.views, 0)}
@@ -514,7 +493,7 @@ export default function AdminGuidesPage() {
                   <Globe className="h-5 w-5 text-white" />
                 </div>
                 <div>
-                  <p className="text-sm font-medium text-gray-600">Языки</p>
+                  <p className="text-sm font-medium text-gray-600">{t("admin.guides.stats.languages")}</p>
                   <p className="text-xl font-bold text-gray-900">
                     {new Set(guides.map((g) => g.language)).size}
                   </p>
@@ -530,7 +509,7 @@ export default function AdminGuidesPage() {
             <CardHeader>
               <CardTitle className="flex items-center space-x-2">
                 <Plus className="h-5 w-5" />
-                <span>Новый гайд</span>
+                <span>{t("admin.guides.modal.title")}</span>
               </CardTitle>
             </CardHeader>
             <CardContent>
@@ -559,10 +538,11 @@ export default function AdminGuidesPage() {
                 }}
               >
                 <div className="space-y-2">
-                  <label className="text-sm font-medium text-gray-700">
-                    Название
+                  <label htmlFor="new-guide-name" className="text-sm font-medium text-gray-700">
+                    {t("admin.guides.modal.name")}
                   </label>
                   <Input
+                    id="new-guide-name"
                     value={newGuide.title}
                     onChange={(e) =>
                       setNewGuide((prev) => ({
@@ -570,17 +550,18 @@ export default function AdminGuidesPage() {
                         title: e.target.value,
                       }))
                     }
-                    placeholder="Название гайда"
+                    placeholder={t("admin.guides.modal.namePlaceholder")}
                     required
                   />
                 </div>
                 <div className="grid grid-cols-1 sm:grid-cols-2 gap-3">
                   <div className="space-y-1">
-                    <label className="text-sm font-medium text-gray-700">
-                      Категория
+                    <label htmlFor="new-guide-category" className="text-sm font-medium text-gray-700">
+                      {t("admin.guides.modal.category")}
                     </label>
                     <div className="relative">
                       <select
+                        id="new-guide-category"
                         value={newGuide.category}
                         onChange={(e) =>
                           setNewGuide((prev) => ({
@@ -590,18 +571,19 @@ export default function AdminGuidesPage() {
                         }
                         className="w-full appearance-none px-3 py-2 pr-9 border border-slate-300 rounded-lg focus:ring-2 focus:ring-green-500 focus:border-green-500"
                       >
-                        <option value="education">Образование</option>
-                        <option value="life">Быт</option>
+                        <option value="education">{t("admin.guides.filters.category.education")}</option>
+                        <option value="life">{t("admin.guides.filters.category.life")}</option>
                       </select>
                       <ChevronDown className="h-4 w-4 text-gray-400 pointer-events-none absolute right-3 top-1/2 -translate-y-1/2" />
                     </div>
                   </div>
                   <div className="space-y-1">
-                    <label className="text-sm font-medium text-gray-700">
-                      Статус
+                    <label htmlFor="new-guide-status" className="text-sm font-medium text-gray-700">
+                      {t("admin.guides.modal.status")}
                     </label>
                     <div className="relative">
                       <select
+                        id="new-guide-status"
                         value={newGuide.status}
                         onChange={(e) =>
                           setNewGuide((prev) => ({
@@ -611,9 +593,9 @@ export default function AdminGuidesPage() {
                         }
                         className="w-full appearance-none px-3 py-2 pr-9 border border-slate-300 rounded-lg focus:ring-2 focus:ring-green-500 focus:border-green-500"
                       >
-                        <option value="draft">Черновик</option>
-                        <option value="published">Опубликован</option>
-                        <option value="archived">Архивный</option>
+                        <option value="draft">{t("admin.guides.statuses.draft")}</option>
+                        <option value="published">{t("admin.guides.statuses.published")}</option>
+                        <option value="archived">{t("admin.guides.statuses.archived")}</option>
                       </select>
                       <ChevronDown className="h-4 w-4 text-gray-400 pointer-events-none absolute right-3 top-1/2 -translate-y-1/2" />
                     </div>
@@ -625,11 +607,11 @@ export default function AdminGuidesPage() {
                     variant="outline"
                     onClick={() => setIsCreateOpen(false)}
                   >
-                    Отмена
+                    {t("admin.common.cancel")}
                   </Button>
                   <Button type="submit" className="flex items-center space-x-2">
                     <Plus className="h-4 w-4" />
-                    <span>Создать</span>
+                    <span>{t("admin.common.create")}</span>
                   </Button>
                 </div>
               </form>

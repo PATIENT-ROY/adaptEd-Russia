@@ -1,7 +1,7 @@
 "use client";
 
 import { useState, useEffect, Suspense } from "react";
-import { useSearchParams } from "next/navigation";
+import { useSearchParams, useRouter } from "next/navigation";
 import { Layout } from "@/components/layout/layout";
 import { Button } from "@/components/ui/button";
 import {
@@ -43,9 +43,12 @@ import {
   Subscription,
   PaymentResponse,
 } from "@/types";
+import { useTranslation } from "@/hooks/useTranslation";
 
 function PaymentTestContent() {
   const searchParams = useSearchParams();
+  const router = useRouter();
+  const { t } = useTranslation();
   const [plans, setPlans] = useState<SubscriptionPlan[]>([]);
   const [testData, setTestData] = useState<TestData | null>(null);
   const [selectedPlan, setSelectedPlan] = useState<SubscriptionPlan | null>(
@@ -64,19 +67,35 @@ function PaymentTestContent() {
   const [isLoadingData, setIsLoadingData] = useState(true);
   const [isAuthenticated, setIsAuthenticated] = useState(false);
 
+  const [toastMessage, setToastMessage] = useState<string | null>(null);
+  const [toastType, setToastType] = useState<"success" | "error" | "info">("info");
+  const [showConfirm, setShowConfirm] = useState(false);
+  const [confirmMessage, setConfirmMessage] = useState("");
+  const [confirmCallback, setConfirmCallback] = useState<(() => void) | null>(null);
+
+  const showToast = (message: string, type: "success" | "error" | "info" = "info") => {
+    setToastMessage(message);
+    setToastType(type);
+    setTimeout(() => setToastMessage(null), 4000);
+  };
+
+  const requestConfirm = (message: string, onConfirm: () => void) => {
+    setConfirmMessage(message);
+    setConfirmCallback(() => onConfirm);
+    setShowConfirm(true);
+  };
+
   useEffect(() => {
     loadData();
   }, []);
 
   useEffect(() => {
-    // Проверяем авторизацию только на клиенте
     if (typeof window !== "undefined") {
       const token = localStorage.getItem("token");
       setIsAuthenticated(!!token);
     }
   }, []);
 
-  // Обработка payment_id из URL (когда пользователь переходит с callback страницы)
   useEffect(() => {
     const paymentId = searchParams.get("payment_id");
     if (paymentId && !currentPayment) {
@@ -89,7 +108,6 @@ function PaymentTestContent() {
     try {
       setIsLoadingData(true);
 
-      // Загружаем данные параллельно, но обрабатываем ошибки отдельно
       const [plansData, testDataResponse, subscriptionData, historyData] =
         await Promise.all([
           getSubscriptionPlans().catch((error) => {
@@ -124,14 +142,10 @@ function PaymentTestContent() {
   const handleCreatePayment = async () => {
     if (!selectedPlan) return;
 
-    // Проверяем авторизацию
     if (!isAuthenticated) {
-      const shouldLogin = confirm(
-        "Для создания платежа необходимо войти в систему. Перейти на страницу входа?"
-      );
-      if (shouldLogin) {
-        window.location.href = "/login";
-      }
+      requestConfirm(t("payment.test.loginRequired"), () => {
+        router.push("/login");
+      });
       return;
     }
 
@@ -144,7 +158,6 @@ function PaymentTestContent() {
 
       setCurrentPayment(payment);
 
-      // Если есть URL для подтверждения, открываем его
       if (payment.confirmationUrl) {
         window.open(payment.confirmationUrl, "_blank");
       }
@@ -154,14 +167,11 @@ function PaymentTestContent() {
         error instanceof Error &&
         error.message.includes("Authentication required")
       ) {
-        const shouldLogin = confirm(
-          "Сессия истекла. Перейти на страницу входа?"
-        );
-        if (shouldLogin) {
-          window.location.href = "/login";
-        }
+        requestConfirm(t("payment.test.sessionExpired"), () => {
+          router.push("/login");
+        });
       } else {
-        alert("Ошибка при создании платежа. Попробуйте еще раз.");
+        showToast(t("payment.test.createError"), "error");
       }
     } finally {
       setIsLoading(false);
@@ -197,7 +207,6 @@ function PaymentTestContent() {
       const payment = await getPayment(paymentId);
       setCurrentPayment(payment);
 
-      // Если платеж успешен, обновляем данные
       if (payment.status === PaymentStatus.SUCCEEDED) {
         await loadData();
       }
@@ -216,7 +225,6 @@ function PaymentTestContent() {
       const payment = await getPayment(paymentId);
       setCurrentPayment(payment);
 
-      // Если платеж успешен, обновляем данные
       if (payment.status === PaymentStatus.SUCCEEDED) {
         await loadData();
       }
@@ -230,7 +238,6 @@ function PaymentTestContent() {
       if (navigator.clipboard && window.isSecureContext) {
         navigator.clipboard.writeText(text);
       } else {
-        // Fallback for older browsers or non-secure contexts
         const textArea = document.createElement("textarea");
         textArea.value = text;
         textArea.style.position = "fixed";
@@ -282,12 +289,11 @@ function PaymentTestContent() {
             <div className="flex items-center justify-center mb-4">
               <TestTube className="h-8 w-8 text-blue-600 mr-3" />
               <h1 className="text-3xl sm:text-4xl font-bold text-slate-900">
-                Тестирование платежей
+                {t("payment.test.title")}
               </h1>
             </div>
             <p className="text-lg text-slate-600 max-w-2xl mx-auto">
-              Тестовая среда для проверки интеграции с YooKassa. Все платежи
-              безопасны и не списывают реальные деньги.
+              {t("payment.test.subtitle")}
             </p>
           </div>
 
@@ -301,11 +307,10 @@ function PaymentTestContent() {
             >
               <Info className="h-4 w-4 mr-2" />
               {isLoadingData
-                ? "Загрузка..."
+                ? t("payment.test.loading")
                 : showTestInfo
-                ? "Скрыть"
-                : "Показать"}{" "}
-              тестовые данные
+                ? t("payment.test.hideTestData")
+                : t("payment.test.showTestData")}
             </Button>
           </div>
 
@@ -315,11 +320,10 @@ function PaymentTestContent() {
               <CardHeader>
                 <CardTitle className="flex items-center">
                   <TestTube className="h-5 w-5 mr-2" />
-                  Тестовые данные
+                  {t("payment.test.testDataTitle")}
                 </CardTitle>
                 <CardDescription>
-                  Используйте эти данные для тестирования различных сценариев
-                  платежей
+                  {t("payment.test.testDataDescription")}
                 </CardDescription>
               </CardHeader>
               <CardContent>
@@ -328,7 +332,7 @@ function PaymentTestContent() {
                   <div>
                     <h3 className="font-semibold mb-3 flex items-center">
                       <CreditCard className="h-4 w-4 mr-2" />
-                      Тестовые карты
+                      {t("payment.test.testCards")}
                     </h3>
                     <div className="space-y-2">
                       {Object.entries(testData.testCards).map(([key, card]) => (
@@ -367,7 +371,7 @@ function PaymentTestContent() {
                   <div>
                     <h3 className="font-semibold mb-3 flex items-center">
                       <Smartphone className="h-4 w-4 mr-2" />
-                      Тестовые СБП номера
+                      {t("payment.test.testSbp")}
                     </h3>
                     <div className="space-y-2">
                       {Object.entries(testData.testSbpPhones).map(
@@ -413,9 +417,9 @@ function PaymentTestContent() {
             <div className="lg:col-span-2">
               <Card>
                 <CardHeader>
-                  <CardTitle>Планы подписок</CardTitle>
+                  <CardTitle>{t("payment.test.plansTitle")}</CardTitle>
                   <CardDescription>
-                    Выберите план для тестирования платежа
+                    {t("payment.test.plansDescription")}
                   </CardDescription>
                 </CardHeader>
                 <CardContent>
@@ -431,7 +435,6 @@ function PaymentTestContent() {
                         onClick={() => setSelectedPlan(plan)}
                       >
                         <CardContent className="p-4">
-                          {/* Selection indicator */}
                           {selectedPlan?.id === plan.id && (
                             <div className="absolute top-3 right-3">
                               <div className="w-6 h-6 bg-blue-500 rounded-full flex items-center justify-center">
@@ -442,7 +445,9 @@ function PaymentTestContent() {
                           <div className="flex items-center justify-between mb-2">
                             <h3 className="font-semibold">{plan.name}</h3>
                             <Badge variant="info">
-                              {plan.interval === "MONTHLY" ? "Месяц" : "Год"}
+                              {plan.interval === "MONTHLY"
+                                ? t("payment.test.intervalMonthly")
+                                : t("payment.test.intervalYearly")}
                             </Badge>
                           </div>
                           <div className="text-2xl font-bold text-blue-600 mb-2">
@@ -464,7 +469,7 @@ function PaymentTestContent() {
                                     </li>
                                   ));
                               } catch {
-                                return <li>Ошибка загрузки функций</li>;
+                                return <li>{t("payment.test.featuresError")}</li>;
                               }
                             })()}
                           </ul>
@@ -478,7 +483,7 @@ function PaymentTestContent() {
               {/* Payment Method Selection */}
               <Card className="mt-6">
                 <CardHeader>
-                  <CardTitle>Способ оплаты</CardTitle>
+                  <CardTitle>{t("payment.test.paymentMethod")}</CardTitle>
                 </CardHeader>
                 <CardContent>
                   <div className="grid grid-cols-1 md:grid-cols-3 gap-4">
@@ -486,17 +491,17 @@ function PaymentTestContent() {
                       {
                         method: PaymentMethod.CARD,
                         icon: CreditCard,
-                        label: "Банковская карта",
+                        label: t("payment.test.methodCard"),
                       },
                       {
                         method: PaymentMethod.SBP,
                         icon: Smartphone,
-                        label: "СБП",
+                        label: t("payment.test.methodSbp"),
                       },
                       {
                         method: PaymentMethod.WALLET,
                         icon: Wallet,
-                        label: "Электронный кошелек",
+                        label: t("payment.test.methodWallet"),
                       },
                     ].map(({ method, icon: Icon, label }) => (
                       <Card
@@ -509,7 +514,6 @@ function PaymentTestContent() {
                         onClick={() => setPaymentMethod(method)}
                       >
                         <CardContent className="p-4 text-center">
-                          {/* Selection indicator */}
                           {paymentMethod === method && (
                             <div className="absolute top-3 right-3">
                               <div className="w-6 h-6 bg-blue-500 rounded-full flex items-center justify-center">
@@ -533,7 +537,7 @@ function PaymentTestContent() {
                     <div className="flex items-center text-blue-800">
                       <Info className="h-4 w-4 mr-2" />
                       <span className="text-sm">
-                        Для создания платежей необходимо войти в систему
+                        {t("payment.test.authRequired")}
                       </span>
                     </div>
                   </div>
@@ -554,7 +558,7 @@ function PaymentTestContent() {
                           }`}
                         />
                         <span>
-                          План: {selectedPlan ? selectedPlan.name : "Не выбран"}
+                          {t("payment.test.planLabel")}: {selectedPlan ? selectedPlan.name : t("payment.test.notSelected")}
                         </span>
                       </div>
                       <div
@@ -568,18 +572,18 @@ function PaymentTestContent() {
                           }`}
                         />
                         <span>
-                          Способ:{" "}
+                          {t("payment.test.methodLabel")}:{" "}
                           {paymentMethod === PaymentMethod.CARD
-                            ? "Карта"
+                            ? t("payment.test.methodCardShort")
                             : paymentMethod === PaymentMethod.SBP
-                            ? "СБП"
-                            : "Кошелек"}
+                            ? t("payment.test.methodSbpShort")
+                            : t("payment.test.methodWalletShort")}
                         </span>
                       </div>
                     </div>
                     {selectedPlan && (
                       <div className="text-green-600 font-medium">
-                        Готово к созданию платежа
+                        {t("payment.test.readyToCreate")}
                       </div>
                     )}
                   </div>
@@ -597,15 +601,15 @@ function PaymentTestContent() {
                   {isLoading ? (
                     <>
                       <div className="animate-spin rounded-full h-4 w-4 border-b-2 border-white mr-2"></div>
-                      Создание платежа...
+                      {t("payment.test.creating")}
                     </>
                   ) : selectedPlan ? (
                     <>
                       <CheckCircle className="h-4 w-4 mr-2" />
-                      Создать тестовый платеж
+                      {t("payment.test.createButton")}
                     </>
                   ) : (
-                    "Выберите план подписки"
+                    t("payment.test.selectPlan")
                   )}
                 </Button>
               </div>
@@ -617,12 +621,12 @@ function PaymentTestContent() {
               {currentPayment && (
                 <Card>
                   <CardHeader>
-                    <CardTitle>Текущий платеж</CardTitle>
+                    <CardTitle>{t("payment.test.currentPayment")}</CardTitle>
                   </CardHeader>
                   <CardContent>
                     <div className="space-y-3">
                       <div className="flex items-center justify-between">
-                        <span className="text-sm text-gray-600">Статус:</span>
+                        <span className="text-sm text-gray-600">{t("payment.test.statusLabel")}:</span>
                         <Badge
                           className={getStatusColor(
                             getPaymentStatus(currentPayment) || ""
@@ -639,7 +643,7 @@ function PaymentTestContent() {
                         </Badge>
                       </div>
                       <div className="flex items-center justify-between">
-                        <span className="text-sm text-gray-600">Сумма:</span>
+                        <span className="text-sm text-gray-600">{t("payment.test.amountLabel")}:</span>
                         <span className="font-medium">
                           {getPaymentAmount(currentPayment)} ₽
                         </span>
@@ -663,7 +667,7 @@ function PaymentTestContent() {
                           className="w-full"
                         >
                           <ExternalLink className="h-4 w-4 mr-2" />
-                          Перейти к оплате
+                          {t("payment.test.goToPay")}
                         </Button>
                       )}
                       <Button
@@ -672,7 +676,7 @@ function PaymentTestContent() {
                         onClick={handleCheckPayment}
                         className="w-full"
                       >
-                        Проверить статус
+                        {t("payment.test.checkStatus")}
                       </Button>
                     </div>
                   </CardContent>
@@ -683,18 +687,18 @@ function PaymentTestContent() {
               {subscription && (
                 <Card>
                   <CardHeader>
-                    <CardTitle>Активная подписка</CardTitle>
+                    <CardTitle>{t("payment.test.activeSubscription")}</CardTitle>
                   </CardHeader>
                   <CardContent>
                     <div className="space-y-3">
                       <div className="flex items-center justify-between">
-                        <span className="text-sm text-gray-600">План:</span>
+                        <span className="text-sm text-gray-600">{t("payment.test.planLabel")}:</span>
                         <span className="font-medium">
                           {subscription.plan?.name}
                         </span>
                       </div>
                       <div className="flex items-center justify-between">
-                        <span className="text-sm text-gray-600">Статус:</span>
+                        <span className="text-sm text-gray-600">{t("payment.test.statusLabel")}:</span>
                         <Badge
                           className={
                             subscription.status === SubscriptionStatus.ACTIVE
@@ -706,7 +710,7 @@ function PaymentTestContent() {
                         </Badge>
                       </div>
                       <div className="flex items-center justify-between">
-                        <span className="text-sm text-gray-600">До:</span>
+                        <span className="text-sm text-gray-600">{t("payment.test.untilLabel")}:</span>
                         <span className="font-medium">
                           {new Date(subscription.endDate).toLocaleDateString()}
                         </span>
@@ -720,7 +724,7 @@ function PaymentTestContent() {
               {paymentHistory.length > 0 && (
                 <Card>
                   <CardHeader>
-                    <CardTitle>История платежей</CardTitle>
+                    <CardTitle>{t("payment.test.paymentHistory")}</CardTitle>
                   </CardHeader>
                   <CardContent>
                     <div className="space-y-3 max-h-64 overflow-y-auto">
@@ -755,6 +759,52 @@ function PaymentTestContent() {
           </div>
         </div>
       </div>
+
+      {/* Toast notification */}
+      {toastMessage && (
+        <div className="fixed bottom-6 right-6 z-50 animate-in fade-in slide-in-from-bottom-4">
+          <div
+            className={`rounded-lg px-5 py-3 shadow-lg text-white text-sm font-medium ${
+              toastType === "error"
+                ? "bg-red-600"
+                : toastType === "success"
+                ? "bg-green-600"
+                : "bg-blue-600"
+            }`}
+          >
+            {toastMessage}
+          </div>
+        </div>
+      )}
+
+      {/* Confirm dialog */}
+      {showConfirm && (
+        <div className="fixed inset-0 z-50 flex items-center justify-center bg-black/40">
+          <div className="bg-white rounded-xl shadow-xl p-6 max-w-sm w-full mx-4">
+            <p className="text-slate-800 mb-6">{confirmMessage}</p>
+            <div className="flex justify-end space-x-3">
+              <Button
+                variant="outline"
+                onClick={() => {
+                  setShowConfirm(false);
+                  setConfirmCallback(null);
+                }}
+              >
+                {t("payment.test.cancel")}
+              </Button>
+              <Button
+                onClick={() => {
+                  setShowConfirm(false);
+                  confirmCallback?.();
+                  setConfirmCallback(null);
+                }}
+              >
+                {t("payment.test.confirm")}
+              </Button>
+            </div>
+          </div>
+        </div>
+      )}
     </Layout>
   );
 }
@@ -767,7 +817,6 @@ export default function PaymentTestPage() {
           <div className="max-w-7xl mx-auto px-4 sm:px-6 lg:px-8">
             <div className="text-center">
               <div className="animate-spin rounded-full h-12 w-12 border-b-2 border-blue-600 mx-auto mb-4"></div>
-              <p className="text-gray-600">Загрузка...</p>
             </div>
           </div>
         </div>

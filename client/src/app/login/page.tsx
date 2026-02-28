@@ -5,6 +5,7 @@ import { useRouter } from "next/navigation";
 import Link from "next/link";
 import { AnimatePresence, motion } from "framer-motion";
 import { useAuth } from "@/contexts/AuthContext";
+import { useTranslation } from "@/hooks/useTranslation";
 import { Button } from "@/components/ui/button";
 import { Input } from "@/components/ui/input";
 import {
@@ -40,19 +41,20 @@ export default function LoginPage() {
   const stepTimeoutRef = useRef<NodeJS.Timeout | null>(null);
 
   const { login } = useAuth();
+  const { t } = useTranslation();
   const router = useRouter();
 
   const handleEmailSubmit = (e: React.FormEvent) => {
     e.preventDefault();
 
     if (!email.trim()) {
-      setEmailError("Введите email");
+      setEmailError(t("login.error.emailRequired"));
       return;
     }
 
     const emailPattern = /^[\w.!#$%&'*+/=?^`{|}~-]+@[\w-]+(?:\.[\w-]+)+$/;
     if (!emailPattern.test(email.trim())) {
-      setEmailError("Введите корректный email");
+      setEmailError(t("login.error.emailInvalid"));
       return;
     }
 
@@ -77,11 +79,11 @@ export default function LoginPage() {
       if (success) {
         router.push("/dashboard");
       } else {
-        setError("Неверный email или пароль");
+        setError(t("login.error.invalidCredentials"));
         setPassword("");
       }
     } catch {
-      setError("Произошла ошибка при входе");
+      setError(t("login.error.generic"));
     } finally {
       setIsLoading(false);
     }
@@ -121,13 +123,13 @@ export default function LoginPage() {
         </div>
 
         {/* Login Card */}
-        <Card className="border-0 shadow-2xl animate-fade-in-up relative">
+        <Card className="border-0 shadow-2xl relative">
           {/* Go Back Button */}
           <div className="absolute top-4 left-4 z-10">
             <Link
               href="/"
               className="inline-flex items-center justify-center w-10 h-10 rounded-full bg-slate-100 hover:bg-slate-200 text-slate-600 hover:text-slate-900 transition-all duration-200 group"
-              aria-label="На главную"
+              aria-label={t("login.goHome")}
             >
               <ArrowLeft className="h-5 w-5 group-hover:-translate-x-1 transition-transform duration-200" />
             </Link>
@@ -138,12 +140,12 @@ export default function LoginPage() {
               <LogIn className="h-8 w-8 text-white" />
             </div>
             <CardTitle className="text-2xl font-bold text-slate-900">
-              Добро пожаловать!
+              {t("login.welcome")}
             </CardTitle>
             <CardDescription className="text-slate-600">
               {step === "email"
-                ? "Войдите в свой аккаунт — начнём с подтверждения email"
-                : "Введите пароль, чтобы завершить вход"}
+                ? t("login.subtitle")
+                : t("login.subtitlePassword")}
             </CardDescription>
           </CardHeader>
 
@@ -165,14 +167,14 @@ export default function LoginPage() {
                   htmlFor="email"
                   className="text-sm font-medium text-slate-700"
                 >
-                  Email
+                  {t("login.email")}
                 </label>
                 <div className="relative">
                   <Mail className="absolute left-3 top-1/2 transform -translate-y-1/2 h-4 w-4 text-slate-400" />
                   <Input
                     id="email"
                     type="email"
-                    placeholder="your@email.com"
+                    placeholder={t("login.emailPlaceholder")}
                     value={email}
                     onChange={(e) => setEmail(e.target.value)}
                     className="pl-10 h-12 border-slate-200 focus:border-blue-500 focus:ring-blue-500"
@@ -189,7 +191,7 @@ export default function LoginPage() {
                     type="submit"
                     className="w-full h-12 bg-gradient-to-r from-blue-500 to-purple-600 hover:from-blue-600 hover:to-purple-700 text-white shadow-lg"
                   >
-                    Продолжить
+                    {t("login.next")}
                   </Button>
                 </motion.form>
               ) : (
@@ -211,7 +213,7 @@ export default function LoginPage() {
                     <div className="flex items-center justify-between">
                       <div>
                         <p className="text-xs uppercase tracking-wide text-slate-400">
-                          Подтверждённый email
+                          {t("login.confirmedEmail")}
                         </p>
                         <p className="text-sm font-semibold text-slate-900">
                           {email}
@@ -221,9 +223,9 @@ export default function LoginPage() {
                         type="button"
                         onClick={handleBackToEmail}
                         className="text-sm font-medium text-blue-600 hover:text-blue-700"
-                        aria-label="Изменить email"
+                        aria-label={t("login.changeEmail")}
                       >
-                        Изменить
+                        {t("login.back")}
                       </button>
                     </div>
                   </motion.div>
@@ -244,14 +246,14 @@ export default function LoginPage() {
                   htmlFor="password"
                   className="text-sm font-medium text-slate-700"
                 >
-                  Пароль
+                  {t("login.password")}
                 </label>
                 <div className="relative">
                   <Lock className="absolute left-3 top-1/2 transform -translate-y-1/2 h-4 w-4 text-slate-400" />
                   <Input
                     id="password"
                     type={showPassword ? "text" : "password"}
-                    placeholder="Введите пароль"
+                    placeholder={t("login.passwordPlaceholder")}
                     value={password}
                     onChange={(e) => setPassword(e.target.value)}
                     className="pl-10 pr-10 h-12 border-slate-200 focus:border-blue-500 focus:ring-blue-500"
@@ -263,7 +265,7 @@ export default function LoginPage() {
                     onClick={() => setShowPassword(!showPassword)}
                     className="absolute right-3 top-1/2 transform -translate-y-1/2 text-slate-400 hover:text-slate-600"
                           aria-label={
-                            showPassword ? "Скрыть пароль" : "Показать пароль"
+                            showPassword ? t("login.hidePassword") : t("login.showPassword")
                           }
                   >
                     {showPassword ? (
@@ -278,7 +280,7 @@ export default function LoginPage() {
                     href="/forgot-password"
                     className="text-sm text-blue-600 hover:text-blue-700 font-medium"
                   >
-                    Забыли пароль?
+                    {t("login.forgotPassword")}
                   </Link>
                 </div>
               </div>
@@ -307,12 +309,12 @@ export default function LoginPage() {
                 {isLoading ? (
                   <>
                     <Loader2 className="mr-2 h-4 w-4 animate-spin" />
-                    Вход...
+                    {t("login.submitting")}
                   </>
                 ) : (
                   <>
                     <LogIn className="mr-2 h-4 w-4" />
-                    Войти
+                    {t("login.submit")}
                   </>
                 )}
               </Button>
@@ -340,7 +342,7 @@ export default function LoginPage() {
                   >
                     <Loader2 className="h-4 w-4 animate-spin" />
                     <span className="text-sm font-medium">
-                      Переходим к паролю...
+                      {t("login.transitioningToPassword")}
                     </span>
                   </motion.div>
                 </motion.div>
@@ -353,19 +355,19 @@ export default function LoginPage() {
                 <div className="w-full border-t border-slate-200" />
               </div>
               <div className="relative flex justify-center text-sm">
-                <span className="px-2 bg-white text-slate-500">или</span>
+                <span className="px-2 bg-white text-slate-500">{t("login.or")}</span>
               </div>
             </div>
 
             {/* Register Link */}
             <div className="text-center">
               <p className="text-slate-600">
-                Нет аккаунта?{" "}
+                {t("login.noAccount")}{" "}
                 <Link
                   href="/register"
                   className="text-blue-600 hover:text-blue-700 font-medium"
                 >
-                  Зарегистрироваться
+                  {t("login.register")}
                 </Link>
               </p>
             </div>
@@ -376,15 +378,15 @@ export default function LoginPage() {
         <div className="mt-6 sm:mt-8 grid grid-cols-3 gap-3 sm:gap-4">
           <div className="text-center p-4 rounded-xl bg-white/50 backdrop-blur-sm border border-white/20">
             <BookOpen className="h-6 w-6 text-blue-600 mx-auto mb-2" />
-            <p className="text-xs text-slate-600">Образовательные гайды</p>
+            <p className="text-xs text-slate-600">{t("login.feature.education")}</p>
           </div>
           <div className="text-center p-4 rounded-xl bg-white/50 backdrop-blur-sm border border-white/20">
             <Globe className="h-6 w-6 text-green-600 mx-auto mb-2" />
-            <p className="text-xs text-slate-600">Адаптация к жизни</p>
+            <p className="text-xs text-slate-600">{t("login.feature.life")}</p>
           </div>
           <div className="text-center p-4 rounded-xl bg-white/50 backdrop-blur-sm border border-white/20">
             <Users className="h-6 w-6 text-purple-600 mx-auto mb-2" />
-            <p className="text-xs text-slate-600">Сообщество студентов</p>
+            <p className="text-xs text-slate-600">{t("login.feature.community")}</p>
           </div>
         </div>
       </div>

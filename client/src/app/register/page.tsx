@@ -5,6 +5,7 @@ import { useRouter } from "next/navigation";
 import Link from "next/link";
 import { AnimatePresence, motion } from "framer-motion";
 import { useAuth } from "@/contexts/AuthContext";
+import { useTranslation } from "@/hooks/useTranslation";
 import { Button } from "@/components/ui/button";
 import { Input } from "@/components/ui/input";
 import {
@@ -24,9 +25,6 @@ import {
   AlertCircle,
   User,
   Globe,
-  BookOpen,
-  Home,
-  Bell,
   ArrowLeft,
 } from "lucide-react";
 import { Role, Plan, Language } from "@/types";
@@ -118,6 +116,7 @@ export default function RegisterPage() {
 
   const { register } = useAuth();
   const router = useRouter();
+  const { t } = useTranslation();
 
   const handleChange = (
     e: React.ChangeEvent<HTMLInputElement | HTMLSelectElement>
@@ -136,7 +135,7 @@ export default function RegisterPage() {
       formData.email.trim()
     );
     if (!formData.name.trim() || !isValidEmail || !formData.country) {
-      setDetailsError("Заполните имя, корректный email и страну");
+      setDetailsError(t("register.error.detailsRequired"));
       return;
     }
 
@@ -152,7 +151,7 @@ export default function RegisterPage() {
     setError("");
 
     if (formData.password !== formData.confirmPassword) {
-      setError("Пароли не совпадают");
+      setError(t("register.error.passwordMismatch"));
       setFormData((prev) => ({
         ...prev,
         password: "",
@@ -162,7 +161,7 @@ export default function RegisterPage() {
     }
 
     if (formData.password.length < 6) {
-      setError("Пароль должен содержать минимум 6 символов");
+      setError(t("register.error.passwordTooShort"));
       setFormData((prev) => ({
         ...prev,
         password: "",
@@ -187,16 +186,16 @@ export default function RegisterPage() {
       if (success) {
         router.push("/dashboard");
       } else {
-        setError("Аккаунт с таким email уже существует");
+        setError(t("register.error.emailExists"));
       }
     } catch (err) {
       if (
         err instanceof Error &&
         err.message.toLowerCase().includes("network")
       ) {
-        setError("Проверьте подключение к интернету");
+        setError(t("register.error.networkError"));
       } else {
-        setError("Произошла ошибка при регистрации");
+        setError(t("register.error.generic"));
       }
     } finally {
       setIsLoading(false);
@@ -237,7 +236,7 @@ export default function RegisterPage() {
         </div>
 
         {/* Register Card */}
-        <Card className="border-0 shadow-2xl animate-fade-in-up relative">
+        <Card className="border-0 shadow-2xl relative">
           {/* Go Back Button - positioned in top-left corner */}
           <div className="absolute top-4 left-4 z-10">
             <Link
@@ -253,10 +252,10 @@ export default function RegisterPage() {
               <UserPlus className="h-8 w-8 text-white" />
             </div>
             <CardTitle className="text-2xl font-bold text-slate-900">
-              Присоединяйтесь к нам!
+              {t("register.title")}
             </CardTitle>
             <CardDescription className="text-slate-600">
-              Создайте аккаунт и начните адаптацию к жизни в России
+              {t("register.subtitle")}
             </CardDescription>
           </CardHeader>
 
@@ -281,7 +280,7 @@ export default function RegisterPage() {
                       htmlFor="name"
                       className="text-sm font-medium text-slate-700"
                     >
-                      Полное имя
+                      {t("register.name")}
                     </label>
                     <div className="relative">
                       <User className="absolute left-3 top-1/2 transform -translate-y-1/2 h-4 w-4 text-slate-400" />
@@ -289,7 +288,7 @@ export default function RegisterPage() {
                         id="name"
                         name="name"
                         type="text"
-                        placeholder="Ваше полное имя"
+                        placeholder={t("register.namePlaceholder")}
                         value={formData.name}
                         onChange={handleChange}
                         className="pl-10 h-12 border-slate-200 focus:border-blue-500 focus:ring-blue-500"
@@ -304,7 +303,7 @@ export default function RegisterPage() {
                       htmlFor="email"
                       className="text-sm font-medium text-slate-700"
                     >
-                      Email
+                      {t("register.email")}
                     </label>
                     <div className="relative">
                       <Mail className="absolute left-3 top-1/2 transform -translate-y-1/2 h-4 w-4 text-slate-400" />
@@ -312,7 +311,7 @@ export default function RegisterPage() {
                         id="email"
                         name="email"
                         type="email"
-                        placeholder="your@email.com"
+                        placeholder={t("register.emailPlaceholder")}
                         value={formData.email}
                         onChange={handleChange}
                         className="pl-10 h-12 border-slate-200 focus:border-blue-500 focus:ring-blue-500"
@@ -326,7 +325,7 @@ export default function RegisterPage() {
                       htmlFor="country"
                       className="text-sm font-medium text-slate-700"
                     >
-                      Страна
+                      {t("register.country")}
                     </label>
                     <div className="relative">
                       <Globe className="absolute left-3 top-1/2 transform -translate-y-1/2 h-4 w-4 text-slate-400 pointer-events-none" />
@@ -338,7 +337,7 @@ export default function RegisterPage() {
                         className="w-full pl-10 h-12 border border-slate-200 rounded-lg focus:border-blue-500 focus:ring-2 focus:ring-blue-500 bg-white text-slate-900 appearance-none"
                         required
                       >
-                        <option value="">Выберите страну</option>
+                        <option value="">{t("register.countryPlaceholder")}</option>
                         {countries.map((country) => (
                           <option key={country} value={country}>
                             {country}
@@ -365,7 +364,7 @@ export default function RegisterPage() {
                     type="submit"
                     className="w-full h-12 bg-gradient-to-r from-green-500 to-emerald-600 hover:from-green-600 hover:to-emerald-700 text-white shadow-lg"
                   >
-                    Продолжить
+                    {t("register.next")}
                   </Button>
                 </motion.form>
               ) : (
@@ -392,10 +391,10 @@ export default function RegisterPage() {
                     <div className="flex items-center justify-between">
                       <div>
                         <p className="text-xs uppercase tracking-wide text-slate-400">
-                          Шаг 1 заполнен
+                          {t("register.step1Complete")}
                         </p>
                         <p className="text-sm font-semibold text-slate-900">
-                          {formData.name ? formData.name : "Имя не указано"}
+                          {formData.name ? formData.name : t("register.nameNotProvided")}
                         </p>
                         <p className="text-xs text-slate-500">
                           {formData.email}
@@ -406,7 +405,7 @@ export default function RegisterPage() {
                         onClick={handleBackToDetails}
                         className="text-sm font-medium text-blue-600 hover:text-blue-700"
                       >
-                        Изменить
+                        {t("register.edit")}
                       </button>
                     </div>
                   </motion.div>
@@ -428,7 +427,7 @@ export default function RegisterPage() {
                         htmlFor="password"
                         className="text-sm font-medium text-slate-700"
                       >
-                        Пароль
+                        {t("register.password")}
                       </label>
                       <div className="relative">
                         <Lock className="absolute left-3 top-1/2 transform -translate-y-1/2 h-4 w-4 text-slate-400" />
@@ -436,7 +435,7 @@ export default function RegisterPage() {
                           id="password"
                           name="password"
                           type={showPassword ? "text" : "password"}
-                          placeholder="Минимум 6 символов"
+                          placeholder={t("register.passwordPlaceholder")}
                           value={formData.password}
                           onChange={handleChange}
                           className="pl-10 pr-10 h-12 border-slate-200 focus:border-blue-500 focus:ring-blue-500"
@@ -448,7 +447,7 @@ export default function RegisterPage() {
                           onClick={() => setShowPassword(!showPassword)}
                           className="absolute right-3 top-1/2 transform -translate-y-1/2 text-slate-400 hover:text-slate-600"
                           aria-label={
-                            showPassword ? "Скрыть пароль" : "Показать пароль"
+                            showPassword ? t("register.hidePassword") : t("register.showPassword")
                           }
                         >
                           {showPassword ? (
@@ -465,7 +464,7 @@ export default function RegisterPage() {
                         htmlFor="confirmPassword"
                         className="text-sm font-medium text-slate-700"
                       >
-                        Подтвердите пароль
+                        {t("register.confirmPassword")}
                       </label>
                       <div className="relative">
                         <Lock className="absolute left-3 top-1/2 transform -translate-y-1/2 h-4 w-4 text-slate-400" />
@@ -473,7 +472,7 @@ export default function RegisterPage() {
                           id="confirmPassword"
                           name="confirmPassword"
                           type={showConfirmPassword ? "text" : "password"}
-                          placeholder="Повторите пароль"
+                          placeholder={t("register.confirmPasswordPlaceholder")}
                           value={formData.confirmPassword}
                           onChange={handleChange}
                           className="pl-10 pr-10 h-12 border-slate-200 focus:border-blue-500 focus:ring-blue-500"
@@ -487,8 +486,8 @@ export default function RegisterPage() {
                           className="absolute right-3 top-1/2 transform -translate-y-1/2 text-slate-400 hover:text-slate-600"
                           aria-label={
                             showConfirmPassword
-                              ? "Скрыть подтверждение пароля"
-                              : "Показать подтверждение пароля"
+                              ? t("register.hideConfirmPassword")
+                              : t("register.showConfirmPassword")
                           }
                         >
                           {showConfirmPassword ? (
@@ -524,12 +523,12 @@ export default function RegisterPage() {
                         {isLoading ? (
                           <>
                             <Loader2 className="mr-2 h-4 w-4 animate-spin" />
-                            Регистрация...
+                            {t("register.submitting")}
                           </>
                         ) : (
                           <>
                             <UserPlus className="mr-2 h-4 w-4" />
-                            Зарегистрироваться
+                            {t("register.submit")}
                           </>
                         )}
                       </Button>
@@ -557,7 +556,7 @@ export default function RegisterPage() {
                   >
                     <Loader2 className="h-4 w-4 animate-spin" />
                     <span className="text-sm font-medium">
-                      Готовим следующий шаг...
+                      {t("register.preparingNextStep")}
                     </span>
                   </motion.div>
                 </motion.div>
@@ -570,40 +569,25 @@ export default function RegisterPage() {
                 <div className="w-full border-t border-slate-200" />
               </div>
               <div className="relative flex justify-center text-sm">
-                <span className="px-2 bg-white text-slate-500">или</span>
+                <span className="px-2 bg-white text-slate-500">{t("register.or")}</span>
               </div>
             </div>
 
             {/* Login Link */}
             <div className="text-center">
               <p className="text-slate-600">
-                Уже есть аккаунт?{" "}
+                {t("register.hasAccount")}{" "}
                 <Link
                   href="/login"
                   className="text-blue-600 hover:text-blue-700 font-medium"
                 >
-                  Войти
+                  {t("register.login")}
                 </Link>
               </p>
             </div>
           </CardContent>
         </Card>
 
-        {/* Features (скрыто чтобы избежать прокрутки) */}
-        <div className="hidden">
-          <div className="text-center p-4 rounded-xl bg-white/50 backdrop-blur-sm border border-white/20">
-            <BookOpen className="h-6 w-6 text-blue-600 mx-auto mb-2" />
-            <p className="text-xs text-slate-600">Образовательные гайды</p>
-          </div>
-          <div className="text-center p-4 rounded-xl bg-white/50 backdrop-blur-sm border border-white/20">
-            <Home className="h-6 w-6 text-green-600 mx-auto mb-2" />
-            <p className="text-xs text-сlate-600">Бытовые советы</p>
-          </div>
-          <div className="text-center p-4 rounded-xl bg-white/50 backdrop-blur-sm border border-white/20">
-            <Bell className="h-6 w-6 text-purple-600 mx-auto mb-2" />
-            <p className="text-xs text-slate-600">Умные напоминания</p>
-          </div>
-        </div>
       </div>
     </div>
   );

@@ -21,34 +21,30 @@ import {
 } from "lucide-react";
 import { getPayment } from "@/lib/api";
 import { PaymentStatus } from "@/types";
+import { useTranslation } from "@/hooks/useTranslation";
 
 function PaymentCallbackContent() {
   const searchParams = useSearchParams();
   const router = useRouter();
+  const { t } = useTranslation();
   const [paymentId, setPaymentId] = useState<string | null>(null);
   const [paymentStatus, setPaymentStatus] = useState<string | null>(null);
   const [isLoading, setIsLoading] = useState(true);
   const [error, setError] = useState<string | null>(null);
 
   useEffect(() => {
-    // Получаем payment_id из URL
-    // URL может быть: /payment/callback?payment_id=... или /payment/.../payment/test?payment_id=...
     const url = typeof window !== "undefined" ? window.location.href : "";
     const urlObj = new URL(url);
 
-    // Пытаемся получить payment_id из query параметров
     let id = searchParams.get("payment_id");
 
-    // Если payment_id нет в query, пытаемся извлечь из пути
     if (!id) {
-      // Обработка URL вида: /payment/127.0.4.240:56548/payment/test?payment_id=...
       const pathMatch = url.match(/payment[^/]*\/payment\/test/);
       if (pathMatch) {
         id = urlObj.searchParams.get("payment_id");
       }
     }
 
-    // Также проверяем альтернативные имена параметров
     if (!id) {
       id = searchParams.get("paymentId") || searchParams.get("id");
     }
@@ -57,7 +53,7 @@ function PaymentCallbackContent() {
       setPaymentId(id);
       checkPaymentStatus(id);
     } else {
-      setError("Не найден идентификатор платежа");
+      setError(t("payment.callback.noPaymentId"));
       setIsLoading(false);
     }
     // eslint-disable-next-line react-hooks/exhaustive-deps
@@ -71,7 +67,6 @@ function PaymentCallbackContent() {
       const payment = await getPayment(id);
       setPaymentStatus(payment.status);
 
-      // Если платеж успешен, перенаправляем на страницу тестирования через 2 секунды
       if (payment.status === PaymentStatus.SUCCEEDED) {
         setTimeout(() => {
           router.push("/payment/test?payment_id=" + id);
@@ -82,7 +77,7 @@ function PaymentCallbackContent() {
       setError(
         err instanceof Error
           ? err.message
-          : "Не удалось проверить статус платежа"
+          : t("payment.callback.checkError")
       );
     } finally {
       setIsLoading(false);
@@ -120,17 +115,17 @@ function PaymentCallbackContent() {
   };
 
   const getStatusLabel = (status: string | null) => {
-    if (!status) return "Проверка...";
+    if (!status) return t("payment.callback.statusChecking");
 
     switch (status) {
       case PaymentStatus.SUCCEEDED:
-        return "Успешно";
+        return t("payment.callback.statusSucceeded");
       case PaymentStatus.FAILED:
-        return "Неудачно";
+        return t("payment.callback.statusFailed");
       case PaymentStatus.CANCELED:
-        return "Отменен";
+        return t("payment.callback.statusCanceled");
       case PaymentStatus.PENDING:
-        return "В обработке";
+        return t("payment.callback.statusPending");
       default:
         return status;
     }
@@ -151,20 +146,18 @@ function PaymentCallbackContent() {
           <Card>
             <CardHeader>
               <CardTitle className="flex items-center justify-center">
-                Обработка платежа
+                {t("payment.callback.title")}
               </CardTitle>
               <CardDescription className="text-center">
-                Проверка статуса платежа...
+                {t("payment.callback.subtitle")}
               </CardDescription>
             </CardHeader>
             <CardContent>
               <div className="flex flex-col items-center space-y-6">
-                {/* Иконка статуса */}
                 <div className="flex items-center justify-center">
                   {getStatusIcon(paymentStatus)}
                 </div>
 
-                {/* Сообщение об ошибке */}
                 {error && (
                   <div className="w-full p-4 bg-red-50 border border-red-200 rounded-lg">
                     <div className="flex items-center space-x-2 text-red-800">
@@ -174,11 +167,10 @@ function PaymentCallbackContent() {
                   </div>
                 )}
 
-                {/* Информация о платеже */}
                 {paymentId && (
                   <div className="w-full space-y-4">
                     <div className="flex items-center justify-between p-3 bg-gray-50 rounded-lg">
-                      <span className="text-sm text-gray-600">ID платежа:</span>
+                      <span className="text-sm text-gray-600">{t("payment.callback.paymentIdLabel")}:</span>
                       <code className="text-xs font-mono bg-white px-2 py-1 rounded">
                         {paymentId}
                       </code>
@@ -186,7 +178,7 @@ function PaymentCallbackContent() {
 
                     {paymentStatus && (
                       <div className="flex items-center justify-between p-3 bg-gray-50 rounded-lg">
-                        <span className="text-sm text-gray-600">Статус:</span>
+                        <span className="text-sm text-gray-600">{t("payment.callback.statusLabel")}:</span>
                         <Badge className={getStatusColor(paymentStatus)}>
                           {getStatusLabel(paymentStatus)}
                         </Badge>
@@ -195,32 +187,29 @@ function PaymentCallbackContent() {
                   </div>
                 )}
 
-                {/* Индикатор загрузки */}
                 {isLoading && !error && (
                   <div className="text-center space-y-2">
                     <p className="text-sm text-gray-600">
-                      Проверка статуса платежа...
+                      {t("payment.callback.checking")}
                     </p>
                   </div>
                 )}
 
-                {/* Сообщение об успехе */}
                 {paymentStatus === PaymentStatus.SUCCEEDED && (
                   <div className="w-full p-4 bg-green-50 border border-green-200 rounded-lg">
                     <p className="text-center text-green-800">
-                      Платеж успешно обработан! Вы будете перенаправлены...
+                      {t("payment.callback.successMessage")}
                     </p>
                   </div>
                 )}
 
-                {/* Кнопки действий */}
                 <div className="flex space-x-4 w-full">
                   <Button
                     variant="outline"
                     onClick={() => router.push("/payment/test")}
                     className="flex-1"
                   >
-                    На страницу тестирования
+                    {t("payment.callback.goToTestPage")}
                   </Button>
                   {paymentId && (
                     <Button
@@ -228,7 +217,7 @@ function PaymentCallbackContent() {
                       className="flex-1"
                       disabled={isLoading}
                     >
-                      Подробнее о платеже
+                      {t("payment.callback.paymentDetails")}
                     </Button>
                   )}
                 </div>
@@ -250,11 +239,8 @@ export default function PaymentCallbackPage() {
             <Card>
               <CardHeader>
                 <CardTitle className="flex items-center justify-center">
-                  Обработка платежа
+                  {/* Static fallback — no t() in Suspense boundary */}
                 </CardTitle>
-                <CardDescription className="text-center">
-                  Загрузка...
-                </CardDescription>
               </CardHeader>
               <CardContent>
                 <div className="flex flex-col items-center space-y-6">

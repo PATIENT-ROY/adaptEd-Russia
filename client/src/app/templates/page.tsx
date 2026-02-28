@@ -1,10 +1,11 @@
 "use client";
 
-import { useState } from "react";
+import { useState, useCallback } from "react";
 import { Layout } from "@/components/layout/layout";
 import { ProtectedRoute } from "@/components/auth/ProtectedRoute";
 import { useAuth } from "@/contexts/AuthContext";
-import { useChat } from "@/hooks/useChat";
+import { useTranslation } from "@/hooks/useTranslation";
+import { apiClient } from "@/lib/api";
 import { Button } from "@/components/ui/button";
 import {
   Card,
@@ -30,6 +31,8 @@ import {
   Copy,
   RefreshCw,
   Sparkles,
+  X,
+  Pencil,
 } from "lucide-react";
 import Link from "next/link";
 import ReactMarkdown from "react-markdown";
@@ -240,47 +243,109 @@ ${values.audience ? `Аудитория: ${values.audience}` : ""}
   },
 ];
 
+type Step = "choose" | "fill" | "result";
+
+function StepIndicator({ current, t }: { current: Step; t: (key: string) => string }) {
+  const steps: { key: Step; label: string }[] = [
+    { key: "choose", label: t("templates.step.choose") },
+    { key: "fill", label: t("templates.step.fill") },
+    { key: "result", label: t("templates.step.result") },
+  ];
+  const currentIndex = steps.findIndex(s => s.key === current);
+
+  return (
+    <div className="flex items-center justify-center space-x-2 sm:space-x-3" aria-label="Progress">
+      {steps.map((step, i) => (
+        <div key={step.key} className="flex items-center space-x-2 sm:space-x-3">
+          <div className="flex items-center space-x-1.5">
+            <div className={`w-6 h-6 sm:w-7 sm:h-7 rounded-full flex items-center justify-center text-xs font-bold transition-colors ${
+              i <= currentIndex
+                ? "bg-purple-600 text-white"
+                : "bg-gray-200 text-gray-500"
+            }`}>
+              {i < currentIndex ? (
+                <CheckCircle className="h-3.5 w-3.5" />
+              ) : (
+                i + 1
+              )}
+            </div>
+            <span className={`text-xs sm:text-sm font-medium hidden sm:inline ${
+              i <= currentIndex ? "text-purple-700" : "text-gray-400"
+            }`}>
+              {step.label}
+            </span>
+          </div>
+          {i < steps.length - 1 && (
+            <div className={`w-6 sm:w-10 h-0.5 ${
+              i < currentIndex ? "bg-purple-600" : "bg-gray-200"
+            }`} />
+          )}
+        </div>
+      ))}
+    </div>
+  );
+}
+
 export default function TemplatesPage() {
   const { user } = useAuth();
-  const { sendMessage, loading } = useChat(user?.id || "");
+  const { t } = useTranslation();
   const [selectedTemplate, setSelectedTemplate] = useState<Template | null>(null);
   const [formValues, setFormValues] = useState<Record<string, string>>({});
   const [generatedContent, setGeneratedContent] = useState<string | null>(null);
   const [isGenerating, setIsGenerating] = useState(false);
   const [copied, setCopied] = useState(false);
+  const [fieldErrors, setFieldErrors] = useState<Set<string>>(new Set());
+  const [toastMessage, setToastMessage] = useState<string | null>(null);
+  const [toastType, setToastType] = useState<"success" | "error">("success");
 
-  const handleSelectTemplate = (template: Template) => {
+  const showToast = useCallback((msg: string, type: "success" | "error" = "success") => {
+    setToastMessage(msg);
+    setToastType(type);
+    setTimeout(() => setToastMessage(null), 3000);
+  }, []);
+
+  const currentStep: Step = !selectedTemplate ? "choose" : !generatedContent ? "fill" : "result";
+
+  const handleSelectTemplate = useCallback((template: Template) => {
     setSelectedTemplate(template);
     setFormValues({});
     setGeneratedContent(null);
-  };
+    setFieldErrors(new Set());
+  }, []);
 
-  const handleFieldChange = (fieldId: string, value: string) => {
+  const handleFieldChange = useCallback((fieldId: string, value: string) => {
     setFormValues((prev) => ({ ...prev, [fieldId]: value }));
-  };
+    setFieldErrors((prev) => {
+      if (!prev.has(fieldId)) return prev;
+      const next = new Set(prev);
+      next.delete(fieldId);
+      return next;
+    });
+  }, []);
 
-  const handleGenerate = async () => {
+  const handleGenerate = useCallback(async () => {
     if (!selectedTemplate) return;
 
     const requiredFields = selectedTemplate.fields.filter((f) => f.required);
-    const missingFields = requiredFields.filter((f) => !formValues[f.id]?.trim());
+    const missing = requiredFields.filter((f) => !formValues[f.id]?.trim());
 
-    if (missingFields.length > 0) {
-      alert(`Пожалуйста, заполните обязательные поля: ${missingFields.map((f) => f.label).join(", ")}`);
+    if (missing.length > 0) {
+      setFieldErrors(new Set(missing.map(f => f.id)));
+      showToast(t("templates.requiredError"), "error");
       return;
     }
 
+    setFieldErrors(new Set());
     setIsGenerating(true);
     try {
       const prompt = selectedTemplate.promptBuilder(formValues);
-      const response = await sendMessage(prompt);
-      
-      // response может быть в формате { aiMessage: {...} } или { id, content, ... }
+      const response = await apiClient.sendMessage(prompt, "generator");
+
       interface ChatResponse {
         aiMessage?: { content: string };
         content?: string;
       }
-      
+
       if (response) {
         const chatResponse = response as ChatResponse;
         if (chatResponse.aiMessage?.content) {
@@ -291,36 +356,42 @@ export default function TemplatesPage() {
       }
     } catch (error) {
       console.error("Error generating content:", error);
-      alert("Ошибка при генерации. Попробуйте ещё раз.");
+      showToast(t("templates.generateError"), "error");
     } finally {
       setIsGenerating(false);
     }
-  };
+  }, [selectedTemplate, formValues, showToast, t]);
 
-  const handleCopy = async () => {
+  const handleCopy = useCallback(async () => {
     if (!generatedContent) return;
     try {
       await navigator.clipboard.writeText(generatedContent);
       setCopied(true);
+      showToast(t("templates.copied"));
       setTimeout(() => setCopied(false), 2000);
     } catch (error) {
       console.error("Copy failed:", error);
     }
-  };
+  }, [generatedContent, showToast, t]);
 
-  const handleRegenerate = () => {
+  const handleRegenerate = useCallback(() => {
     setGeneratedContent(null);
     handleGenerate();
-  };
+  }, [handleGenerate]);
 
-  const handleBack = () => {
+  const handleBack = useCallback(() => {
     if (generatedContent) {
       setGeneratedContent(null);
     } else {
       setSelectedTemplate(null);
       setFormValues({});
+      setFieldErrors(new Set());
     }
-  };
+  }, [generatedContent]);
+
+  const handleEditFromResult = useCallback(() => {
+    setGeneratedContent(null);
+  }, []);
 
   if (!user) {
     return (
@@ -337,9 +408,9 @@ export default function TemplatesPage() {
   return (
     <ProtectedRoute>
       <Layout>
-        <div className="space-y-6">
+        <div className="space-y-4 sm:space-y-6">
           {/* Header */}
-          <div className="bg-white rounded-2xl sm:rounded-3xl p-4 sm:p-6 shadow-sm">
+          <div className="bg-white rounded-2xl sm:rounded-3xl p-4 sm:p-6 shadow-sm space-y-4">
             <div className="flex flex-col sm:flex-row sm:items-center space-y-3 sm:space-y-0 sm:space-x-4">
               {(selectedTemplate || generatedContent) && (
                 <Button
@@ -349,7 +420,7 @@ export default function TemplatesPage() {
                   className="w-fit"
                 >
                   <ArrowLeft className="h-4 w-4 mr-2" />
-                  Назад
+                  {t("templates.back")}
                 </Button>
               )}
               <div className="flex-1">
@@ -359,12 +430,12 @@ export default function TemplatesPage() {
                   </div>
                   <div>
                     <h1 className="text-xl sm:text-2xl font-bold text-gray-900">
-                      {selectedTemplate ? selectedTemplate.name : "Шаблоны для генерации"}
+                      {selectedTemplate ? selectedTemplate.name : t("templates.page.title")}
                     </h1>
                     <p className="text-sm sm:text-base text-gray-600">
                       {selectedTemplate
                         ? selectedTemplate.description
-                        : "Готовые формы для создания текстов с помощью AI"}
+                        : t("templates.page.subtitle")}
                     </p>
                   </div>
                 </div>
@@ -374,9 +445,14 @@ export default function TemplatesPage() {
                 className="inline-flex items-center px-4 py-2 border border-gray-200 rounded-lg hover:bg-gray-50 transition-all text-sm font-medium"
               >
                 <Sparkles className="h-4 w-4 mr-2 text-purple-500" />
-                AI Помощник
+                {t("templates.aiHelper")}
               </Link>
             </div>
+
+            {/* Step Indicator */}
+            {selectedTemplate && (
+              <StepIndicator current={currentStep} t={t} />
+            )}
           </div>
 
           {/* Content */}
@@ -386,26 +462,31 @@ export default function TemplatesPage() {
               {TEMPLATES.map((template) => {
                 const Icon = template.icon;
                 return (
-                  <Card
+                  <button
                     key={template.id}
-                    className={`cursor-pointer transition-all hover:shadow-lg hover:scale-[1.02] border-2 hover:border-current ${template.bgColor}`}
+                    type="button"
                     onClick={() => handleSelectTemplate(template)}
+                    className={`text-left w-full h-full rounded-xl border-2 transition-all hover:shadow-lg hover:scale-[1.02] ${template.bgColor} hover:border-current p-0 cursor-pointer`}
                   >
-                    <CardHeader>
-                      <div className={`w-12 h-12 rounded-xl ${template.bgColor} flex items-center justify-center mb-3`}>
-                        <Icon className={`h-6 w-6 ${template.color}`} />
-                      </div>
-                      <CardTitle className={`text-lg ${template.color}`}>
-                        {template.name}
-                      </CardTitle>
-                      <CardDescription>{template.description}</CardDescription>
-                    </CardHeader>
-                    <CardContent>
-                      <div className="flex items-center text-sm text-gray-500">
-                        <span>{template.fields.length} полей для заполнения</span>
-                      </div>
-                    </CardContent>
-                  </Card>
+                    <Card className="border-0 bg-transparent shadow-none h-full flex flex-col">
+                      <CardHeader className="flex-1">
+                        <div className={`w-12 h-12 rounded-xl ${template.bgColor} flex items-center justify-center mb-3`}>
+                          <Icon className={`h-6 w-6 ${template.color}`} />
+                        </div>
+                        <CardTitle className={`text-lg ${template.color}`}>
+                          {template.name}
+                        </CardTitle>
+                        <CardDescription className="line-clamp-2">{template.description}</CardDescription>
+                      </CardHeader>
+                      <CardContent className="pt-0">
+                        <div className="flex items-center text-sm text-gray-500">
+                          <span>
+                            {template.fields.filter(f => f.required).length} / {template.fields.length} {t("templates.fieldsCount")}
+                          </span>
+                        </div>
+                      </CardContent>
+                    </Card>
+                  </button>
                 );
               })}
             </div>
@@ -419,49 +500,67 @@ export default function TemplatesPage() {
                   </div>
                   <div>
                     <CardTitle>{selectedTemplate.name}</CardTitle>
-                    <CardDescription>Заполните поля для генерации</CardDescription>
+                    <CardDescription>{t("templates.fillFields")}</CardDescription>
                   </div>
                 </div>
               </CardHeader>
               <CardContent className="space-y-4">
-                {selectedTemplate.fields.map((field) => (
-                  <div key={field.id} className="space-y-2">
-                    <label className="text-sm font-medium text-gray-700">
-                      {field.label}
-                      {field.required && <span className="text-red-500 ml-1">*</span>}
-                    </label>
-                    {field.type === "textarea" ? (
-                      <textarea
-                        className="w-full min-h-[100px] px-3 py-2 border border-gray-300 rounded-lg focus:outline-none focus:ring-2 focus:ring-purple-500 focus:border-transparent resize-y"
-                        placeholder={field.placeholder}
-                        value={formValues[field.id] || ""}
-                        onChange={(e) => handleFieldChange(field.id, e.target.value)}
-                      />
-                    ) : (
-                      <Input
-                        placeholder={field.placeholder}
-                        value={formValues[field.id] || ""}
-                        onChange={(e) => handleFieldChange(field.id, e.target.value)}
-                      />
-                    )}
-                  </div>
-                ))}
+                <fieldset disabled={isGenerating}>
+                  {selectedTemplate.fields.map((field) => {
+                    const hasError = fieldErrors.has(field.id);
+                    const fieldId = `field-${field.id}`;
+                    return (
+                      <div key={field.id} className="space-y-1.5 mb-4 last:mb-0">
+                        <label htmlFor={fieldId} className="text-sm font-medium text-gray-700">
+                          {field.label}
+                          {field.required && <span className="text-red-500 ml-1">*</span>}
+                        </label>
+                        {field.type === "textarea" ? (
+                          <textarea
+                            id={fieldId}
+                            className={`w-full min-h-[100px] px-3 py-2 text-sm rounded-md border bg-background ring-offset-background placeholder:text-muted-foreground focus-visible:outline-none focus-visible:ring-2 focus-visible:ring-ring focus-visible:ring-offset-2 disabled:cursor-not-allowed disabled:opacity-50 resize-y ${
+                              hasError
+                                ? "border-red-500 focus-visible:ring-red-500"
+                                : "border-input"
+                            }`}
+                            placeholder={field.placeholder}
+                            value={formValues[field.id] || ""}
+                            onChange={(e) => handleFieldChange(field.id, e.target.value)}
+                          />
+                        ) : (
+                          <Input
+                            id={fieldId}
+                            placeholder={field.placeholder}
+                            value={formValues[field.id] || ""}
+                            onChange={(e) => handleFieldChange(field.id, e.target.value)}
+                            className={hasError ? "border-red-500 focus-visible:ring-red-500" : ""}
+                          />
+                        )}
+                        {hasError && (
+                          <p className="text-xs text-red-500" role="alert">
+                            {field.label} — обязательное поле
+                          </p>
+                        )}
+                      </div>
+                    );
+                  })}
+                </fieldset>
 
-                <div className="pt-4">
+                <div className="pt-2">
                   <Button
                     onClick={handleGenerate}
-                    disabled={isGenerating || loading}
+                    disabled={isGenerating}
                     className="w-full bg-gradient-to-r from-purple-500 to-pink-500 hover:from-purple-600 hover:to-pink-600"
                   >
-                    {isGenerating || loading ? (
+                    {isGenerating ? (
                       <>
                         <LoadingSpinner size="sm" className="mr-2" />
-                        Генерация...
+                        {t("templates.generating")}
                       </>
                     ) : (
                       <>
                         <Send className="h-4 w-4 mr-2" />
-                        Сгенерировать
+                        {t("templates.generate")}
                       </>
                     )}
                   </Button>
@@ -472,17 +571,25 @@ export default function TemplatesPage() {
             /* Result */
             <Card className="max-w-3xl mx-auto">
               <CardHeader>
-                <div className="flex items-center justify-between">
+                <div className="flex flex-col sm:flex-row sm:items-center justify-between gap-3">
                   <div className="flex items-center space-x-3">
-                    <div className="w-10 h-10 rounded-lg bg-green-50 flex items-center justify-center">
+                    <div className="w-10 h-10 rounded-lg bg-green-50 flex items-center justify-center flex-shrink-0">
                       <CheckCircle className="h-5 w-5 text-green-600" />
                     </div>
                     <div>
-                      <CardTitle>Результат генерации</CardTitle>
+                      <CardTitle>{t("templates.result.title")}</CardTitle>
                       <CardDescription>{selectedTemplate.name}</CardDescription>
                     </div>
                   </div>
-                  <div className="flex space-x-2">
+                  <div className="flex flex-wrap gap-2">
+                    <Button
+                      variant="outline"
+                      size="sm"
+                      onClick={handleEditFromResult}
+                    >
+                      <Pencil className="h-4 w-4 mr-2" />
+                      {t("templates.edit")}
+                    </Button>
                     <Button
                       variant="outline"
                       size="sm"
@@ -492,12 +599,12 @@ export default function TemplatesPage() {
                       {copied ? (
                         <>
                           <CheckCircle className="h-4 w-4 mr-2" />
-                          Скопировано
+                          {t("templates.copied")}
                         </>
                       ) : (
                         <>
                           <Copy className="h-4 w-4 mr-2" />
-                          Копировать
+                          {t("templates.copy")}
                         </>
                       )}
                     </Button>
@@ -505,10 +612,10 @@ export default function TemplatesPage() {
                       variant="outline"
                       size="sm"
                       onClick={handleRegenerate}
-                      disabled={isGenerating || loading}
+                      disabled={isGenerating}
                     >
                       <RefreshCw className={`h-4 w-4 mr-2 ${isGenerating ? "animate-spin" : ""}`} />
-                      Заново
+                      {t("templates.regenerate")}
                     </Button>
                   </div>
                 </div>
@@ -518,39 +625,25 @@ export default function TemplatesPage() {
                   <ReactMarkdown
                     components={{
                       p: ({ children, ...props }: React.ComponentProps<'p'>) => (
-                        <p className="mb-3 last:mb-0" {...props}>
-                          {children}
-                        </p>
+                        <p className="mb-3 last:mb-0" {...props}>{children}</p>
                       ),
                       ul: ({ children, ...props }: React.ComponentProps<'ul'>) => (
-                        <ul className="list-disc list-inside mb-3 space-y-1" {...props}>
-                          {children}
-                        </ul>
+                        <ul className="list-disc list-inside mb-3 space-y-1" {...props}>{children}</ul>
                       ),
                       ol: ({ children, ...props }: React.ComponentProps<'ol'>) => (
-                        <ol className="list-decimal list-inside mb-3 space-y-1" {...props}>
-                          {children}
-                        </ol>
+                        <ol className="list-decimal list-inside mb-3 space-y-1" {...props}>{children}</ol>
                       ),
                       h1: ({ children, ...props }: React.ComponentProps<'h1'>) => (
-                        <h1 className="text-xl font-bold mb-3 mt-4 first:mt-0" {...props}>
-                          {children}
-                        </h1>
+                        <h1 className="text-xl font-bold mb-3 mt-4 first:mt-0" {...props}>{children}</h1>
                       ),
                       h2: ({ children, ...props }: React.ComponentProps<'h2'>) => (
-                        <h2 className="text-lg font-bold mb-2 mt-4" {...props}>
-                          {children}
-                        </h2>
+                        <h2 className="text-lg font-bold mb-2 mt-4" {...props}>{children}</h2>
                       ),
                       h3: ({ children, ...props }: React.ComponentProps<'h3'>) => (
-                        <h3 className="text-base font-bold mb-2 mt-3" {...props}>
-                          {children}
-                        </h3>
+                        <h3 className="text-base font-bold mb-2 mt-3" {...props}>{children}</h3>
                       ),
                       strong: ({ children, ...props }: React.ComponentProps<'strong'>) => (
-                        <strong className="font-semibold" {...props}>
-                          {children}
-                        </strong>
+                        <strong className="font-semibold" {...props}>{children}</strong>
                       ),
                     } as React.ComponentProps<typeof ReactMarkdown>['components']}
                   >
@@ -561,6 +654,28 @@ export default function TemplatesPage() {
             </Card>
           )}
         </div>
+
+        {/* Toast */}
+        {toastMessage && (
+          <div className={`fixed bottom-6 left-1/2 -translate-x-1/2 z-50 px-6 py-3 rounded-xl shadow-2xl text-sm animate-in slide-in-from-bottom-4 duration-300 flex items-center gap-2 ${
+            toastType === "error"
+              ? "bg-red-600 text-white"
+              : "bg-slate-900 text-white"
+          }`}>
+            {toastType === "error" ? (
+              <X className="h-4 w-4 text-red-200 flex-shrink-0" />
+            ) : (
+              <CheckCircle className="h-4 w-4 text-green-400 flex-shrink-0" />
+            )}
+            {toastMessage}
+            <button
+              onClick={() => setToastMessage(null)}
+              className="ml-2 text-white/60 hover:text-white"
+            >
+              <X className="h-3.5 w-3.5" />
+            </button>
+          </div>
+        )}
       </Layout>
     </ProtectedRoute>
   );

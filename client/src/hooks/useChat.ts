@@ -55,7 +55,7 @@ export function useChat(userId: string) {
     };
   }, [userId]);
 
-  const sendMessage = useCallback(async (text: string) => {
+  const sendMessage = useCallback(async (text: string, mode?: string) => {
     if (!text.trim()) {
       setError('Введите сообщение');
       return;
@@ -81,7 +81,7 @@ export function useChat(userId: string) {
       
       setMessages(prev => [...prev, userMessage]);
 
-      const response = await apiClient.sendMessage(text);
+      const response = await apiClient.sendMessage(text, mode);
       
       if (!isMountedRef.current) return;
       
@@ -146,7 +146,12 @@ export function useChat(userId: string) {
     }
   }, [userId]);
 
-  const clearChat = useCallback(() => {
+  const clearChat = useCallback(async () => {
+    try {
+      await apiClient.clearChatHistory();
+    } catch (err) {
+      console.error('Failed to clear chat on server:', err);
+    }
     setMessages([]);
     setError(null);
   }, []);

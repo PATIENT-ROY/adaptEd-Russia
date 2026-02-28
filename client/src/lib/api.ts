@@ -139,24 +139,31 @@ class ApiClient {
 
       log('API request - Response status:', response.status);
 
+      const text = await response.text();
+
+      if (!response.ok) {
+        let serverMessage: string | undefined;
+        try {
+          const parsed = text ? JSON.parse(text) : {};
+          serverMessage = parsed.error || parsed.message;
+          
+          if (response.status === 401 || serverMessage?.includes('токен') || serverMessage?.includes('token')) {
+            this.handleUnauthorized();
+          }
+        } catch {
+          // Non-JSON error body (e.g. rate limiter plain text)
+        }
+        
+        logError('API request - Error response:', response.status, serverMessage);
+        throw new Error(this.getErrorMessage(response.status, serverMessage));
+      }
+
       let data;
       try {
-        const text = await response.text();
         data = text ? JSON.parse(text) : {};
       } catch (parseError) {
         logError('API request - JSON parse error:', parseError);
         throw new Error('Не удалось распарсить ответ сервера');
-      }
-
-      if (!response.ok) {
-        logError('API request - Error response:', response.status, data?.error);
-        
-        // Если недействительный токен, очищаем его и отправляем событие
-        if (response.status === 401 || data.error?.includes('токен') || data.error?.includes('token')) {
-          this.handleUnauthorized();
-        }
-        
-        throw new Error(this.getErrorMessage(response.status, data.error || data.message));
       }
 
       return data;
@@ -347,10 +354,10 @@ class ApiClient {
   }
 
   // Чат
-  async sendMessage(content: string): Promise<ChatMessageResponse | ChatMessage> {
+  async sendMessage(content: string, mode?: string): Promise<ChatMessageResponse | ChatMessage> {
     const response = await this.request<ChatMessageResponse | ChatMessage>('/chat/messages', {
       method: 'POST',
-      body: JSON.stringify({ content }),
+      body: JSON.stringify({ content, mode }),
     });
     const data = response.data ?? response;
     return data as ChatMessageResponse | ChatMessage;
@@ -359,6 +366,10 @@ class ApiClient {
   async getChatHistory(): Promise<ChatMessage[]> {
     const response = await this.requestWithRetry<ChatMessage[]>('/chat/messages');
     return this.ensureData(response, 'Не удалось загрузить историю чата');
+  }
+
+  async clearChatHistory(): Promise<void> {
+    await this.request<null>('/chat/messages', { method: 'DELETE' });
   }
 
   // Проверка подключения

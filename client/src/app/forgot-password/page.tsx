@@ -22,8 +22,10 @@ import {
   Globe,
   Users,
 } from "lucide-react";
+import { useTranslation } from "@/hooks/useTranslation";
 
 export default function ForgotPasswordPage() {
+  const { t } = useTranslation();
   const [email, setEmail] = useState("");
   const [error, setError] = useState("");
   const [isLoading, setIsLoading] = useState(false);
@@ -35,12 +37,10 @@ export default function ForgotPasswordPage() {
     setIsLoading(true);
 
     try {
-      // Здесь будет API запрос для восстановления пароля
-      // Пока что просто симулируем успешную отправку
       await new Promise((resolve) => setTimeout(resolve, 1000));
       setIsSubmitted(true);
     } catch {
-      setError("Произошла ошибка при отправке запроса");
+      setError(t("forgotPassword.error.sendFailed"));
     } finally {
       setIsLoading(false);
     }
@@ -63,32 +63,31 @@ export default function ForgotPasswordPage() {
           </div>
 
           {/* Success Card */}
-          <Card className="border-0 shadow-2xl animate-fade-in-up">
+          <Card className="border-0 shadow-2xl">
             <CardHeader className="text-center pb-6">
               <div className="w-16 h-16 rounded-2xl bg-gradient-to-br from-green-500 to-emerald-600 flex items-center justify-center mx-auto mb-4 shadow-lg">
                 <CheckCircle className="h-8 w-8 text-white" />
               </div>
               <CardTitle className="text-2xl font-bold text-slate-900">
-                Проверьте вашу почту
+                {t("forgotPassword.success.title")}
               </CardTitle>
               <CardDescription className="text-slate-600">
-                Мы отправили инструкции по восстановлению пароля на ваш email
+                {t("forgotPassword.success.description")}
               </CardDescription>
             </CardHeader>
 
             <CardContent className="space-y-6">
               <div className="text-center space-y-4">
                 <p className="text-slate-600">
-                  Если вы не получили письмо, проверьте папку &ldquo;Спам&rdquo;
-                  или попробуйте еще раз.
+                  {t("forgotPassword.success.spamNote")}
                 </p>
 
                 <div className="space-y-3">
                   <Button
                     onClick={() => setIsSubmitted(false)}
-                    className="w-full h-12 bg-gradient-to-r from-blue-500 to-purple-600 hover:from-blue-600 hover:to-purple-700 text-white shadow-lg hover:shadow-xl transform hover:scale-105 transition-all duration-300"
+                    className="w-full h-12 bg-gradient-to-r from-blue-500 to-purple-600 hover:from-blue-600 hover:to-purple-700 text-white shadow-lg hover:shadow-xl transform sm:hover:scale-105 transition-all duration-300"
                   >
-                    Отправить еще раз
+                    {t("forgotPassword.success.resend")}
                   </Button>
 
                   <Link href="/login" className="block">
@@ -97,7 +96,7 @@ export default function ForgotPasswordPage() {
                       className="mt-2 w-full h-12 border-slate-200 hover:border-blue-500 hover:bg-blue-50"
                     >
                       <ArrowLeft className="mr-2 h-4 w-4" />
-                      Вернуться к входу
+                      {t("forgotPassword.success.backToLogin")}
                     </Button>
                   </Link>
                 </div>
@@ -125,17 +124,16 @@ export default function ForgotPasswordPage() {
         </div>
 
         {/* Forgot Password Card */}
-        <Card className="border-0 shadow-2xl animate-fade-in-up">
+        <Card className="border-0 shadow-2xl">
           <CardHeader className="text-center pb-6">
             <div className="w-16 h-16 rounded-2xl bg-gradient-to-br from-blue-500 to-purple-600 flex items-center justify-center mx-auto mb-4 shadow-lg">
               <Mail className="h-8 w-8 text-white" />
             </div>
             <CardTitle className="text-2xl font-bold text-slate-900">
-              Восстановление пароля
+              {t("forgotPassword.title")}
             </CardTitle>
             <CardDescription className="text-slate-600">
-              Введите ваш email для получения инструкций по восстановлению
-              пароля
+              {t("forgotPassword.subtitle")}
             </CardDescription>
           </CardHeader>
 
@@ -147,14 +145,14 @@ export default function ForgotPasswordPage() {
                   htmlFor="email"
                   className="text-sm font-medium text-slate-700"
                 >
-                  Email
+                  {t("forgotPassword.email")}
                 </label>
                 <div className="relative">
                   <Mail className="absolute left-3 top-1/2 transform -translate-y-1/2 h-4 w-4 text-slate-400" />
                   <Input
                     id="email"
                     type="email"
-                    placeholder="your@email.com"
+                    placeholder={t("forgotPassword.emailPlaceholder")}
                     value={email}
                     onChange={(e) => setEmail(e.target.value)}
                     className="pl-10 h-12 border-slate-200 focus:border-blue-500 focus:ring-blue-500"
@@ -175,17 +173,17 @@ export default function ForgotPasswordPage() {
               <Button
                 type="submit"
                 disabled={isLoading}
-                className="w-full h-12 bg-gradient-to-r from-blue-500 to-purple-600 hover:from-blue-600 hover:to-purple-700 text-white shadow-lg hover:shadow-xl transform hover:scale-105 transition-all duration-300"
+                className="w-full h-12 bg-gradient-to-r from-blue-500 to-purple-600 hover:from-blue-600 hover:to-purple-700 text-white shadow-lg hover:shadow-xl transform sm:hover:scale-105 transition-all duration-300"
               >
                 {isLoading ? (
                   <>
                     <Loader2 className="mr-2 h-4 w-4 animate-spin" />
-                    Отправка...
+                    {t("forgotPassword.submitting")}
                   </>
                 ) : (
                   <>
                     <Mail className="mr-2 h-4 w-4" />
-                    Отправить инструкции
+                    {t("forgotPassword.submit")}
                   </>
                 )}
               </Button>
@@ -198,7 +196,7 @@ export default function ForgotPasswordPage() {
                 className="inline-flex items-center text-blue-600 hover:text-blue-700 font-medium"
               >
                 <ArrowLeft className="mr-2 h-4 w-4" />
-                Вернуться к входу
+                {t("forgotPassword.backToLogin")}
               </Link>
             </div>
           </CardContent>
@@ -208,15 +206,15 @@ export default function ForgotPasswordPage() {
         <div className="mt-8 grid grid-cols-3 gap-4">
           <div className="text-center p-4 rounded-xl bg-white/50 backdrop-blur-sm border border-white/20">
             <BookOpen className="h-6 w-6 text-blue-600 mx-auto mb-2" />
-            <p className="text-xs text-slate-600">Образовательные гайды</p>
+            <p className="text-xs text-slate-600">{t("forgotPassword.features.guides")}</p>
           </div>
           <div className="text-center p-4 rounded-xl bg-white/50 backdrop-blur-sm border border-white/20">
             <Globe className="h-6 w-6 text-green-600 mx-auto mb-2" />
-            <p className="text-xs text-slate-600">Адаптация к жизни</p>
+            <p className="text-xs text-slate-600">{t("forgotPassword.features.adaptation")}</p>
           </div>
           <div className="text-center p-4 rounded-xl bg-white/50 backdrop-blur-sm border border-white/20">
             <Users className="h-6 w-6 text-purple-600 mx-auto mb-2" />
-            <p className="text-xs text-slate-600">Сообщество студентов</p>
+            <p className="text-xs text-slate-600">{t("forgotPassword.features.community")}</p>
           </div>
         </div>
       </div>

@@ -10,7 +10,14 @@ const router = Router();
 // Схема валидации для отправки сообщения
 const sendMessageSchema = z.object({
   content: z.string().min(1, 'Сообщение не может быть пустым'),
+  mode: z.enum(['study', 'life', 'generator']).optional().default('study'),
 });
+
+const SYSTEM_PROMPTS: Record<string, string> = {
+  study: 'Ты AI-помощник для иностранных студентов в России. Специализируешься на помощи с учёбой: экзамены, курсовые работы, задачи, объяснение тем. Отвечай кратко, понятно и дружелюбно. Если вопрос задан на другом языке, отвечай на том же языке.',
+  life: 'Ты AI-помощник для иностранных студентов в России. Специализируешься на вопросах адаптации: документы, регистрация, общежитие, быт, культура, правила. Отвечай кратко, понятно и дружелюбно. Если вопрос задан на другом языке, отвечай на том же языке.',
+  generator: 'Ты AI-помощник для иностранных студентов в России. Специализируешься на генерации текстов: планы курсовых, резюме, официальные письма, переводы. Генерируй качественный структурированный текст. Если вопрос задан на другом языке, отвечай на том же языке.',
+};
 
 // Получить историю чата с пагинацией
 router.get('/messages', authMiddleware, async (req: Request, res: Response) => {
@@ -88,8 +95,8 @@ router.post('/messages', authMiddleware, async (req: Request, res: Response) => 
       },
     });
 
-    // Генерируем ответ AI (пока моковый)
-    const aiResponse = await generateAIResponse(validatedData.content);
+    // Генерируем ответ AI
+    const aiResponse = await generateAIResponse(validatedData.content, validatedData.mode);
 
     // Сохраняем ответ AI
     const aiMessage = await prisma.chatMessage.create({
@@ -143,8 +150,31 @@ router.post('/messages', authMiddleware, async (req: Request, res: Response) => 
   }
 });
 
+// Удалить историю чата
+router.delete('/messages', authMiddleware, async (req: Request, res: Response) => {
+  try {
+    const user = (req as any).user;
+
+    await prisma.chatMessage.deleteMany({
+      where: { userId: user.userId },
+    });
+
+    res.json({
+      success: true,
+      data: null,
+      message: 'История чата очищена',
+    } as ApiResponse);
+  } catch (error) {
+    console.error('Clear chat history error:', error);
+    res.status(500).json({
+      success: false,
+      error: 'Внутренняя ошибка сервера',
+    } as ApiResponse);
+  }
+});
+
 // Функция для генерации ответа AI через DeepSeek API с ротацией ключей
-async function generateAIResponse(userMessage: string): Promise<string> {
+async function generateAIResponse(userMessage: string, mode: string = 'study'): Promise<string> {
   const DEEPSEEK_API_URL = 'https://api.deepseek.com/v1/chat/completions';
   const MAX_RETRIES = 3; // Максимальное количество попыток с разными ключами
   
@@ -173,7 +203,7 @@ async function generateAIResponse(userMessage: string): Promise<string> {
           messages: [
             {
               role: 'system',
-              content: 'Ты AI-помощник для иностранных студентов в России. Помогаешь с адаптацией, учёбой и бытовыми вопросами. Отвечай кратко, понятно и дружелюбно на русском языке. Если вопрос задан на другом языке, отвечай на том же языке, но можешь добавить перевод на русский.'
+              content: SYSTEM_PROMPTS[mode] || SYSTEM_PROMPTS.study,
             },
             {
               role: 'user',

@@ -2,13 +2,15 @@
 
 import { Card, CardContent, CardHeader, CardTitle } from "@/components/ui/card";
 import { DailyQuest } from "@/types";
-import { CheckCircle, Circle, Zap, Star } from "lucide-react";
+import { CheckCircle, Circle, Zap, Star, Trophy } from "lucide-react";
+import { useTranslation } from "@/hooks/useTranslation";
 
 interface DailyQuestsProps {
   quests: DailyQuest[];
 }
 
 export function DailyQuestsComponent({ quests }: DailyQuestsProps) {
+  const { t } = useTranslation();
   const completedQuests = quests.filter((q) => q.completed).length;
   const totalQuests = quests.length;
   const completionPercentage =
@@ -20,7 +22,7 @@ export function DailyQuestsComponent({ quests }: DailyQuestsProps) {
         <div className="flex items-center justify-between">
           <CardTitle className="text-lg sm:text-xl flex items-center space-x-2">
             <Star className="h-5 w-5 sm:h-6 sm:w-6 text-yellow-600" />
-            <span>Сегодняшние квесты</span>
+            <span>{t("dailyQuests.title")}</span>
           </CardTitle>
           <div className="text-xs sm:text-sm font-semibold text-yellow-700 bg-yellow-100 px-2 sm:px-3 py-1 rounded-full">
             {completedQuests}/{totalQuests}
@@ -32,24 +34,29 @@ export function DailyQuestsComponent({ quests }: DailyQuestsProps) {
           <div className="text-center py-6">
             <Zap className="h-12 w-12 text-gray-400 mx-auto mb-2" />
             <p className="text-sm text-gray-600">
-              Сегодня нет активных квестов
+              {t("dailyQuests.empty")}
             </p>
           </div>
         ) : (
           <>
-            {/* Progress Bar */}
-            <div className="w-full bg-gray-200 rounded-full h-2 overflow-hidden mb-2">
+            <div
+              className="w-full bg-gray-200 rounded-full h-2 overflow-hidden mb-2"
+              role="progressbar"
+              aria-valuenow={completedQuests}
+              aria-valuemin={0}
+              aria-valuemax={totalQuests}
+              aria-label={`${completedQuests} / ${totalQuests} ${t("dailyQuests.title")}`}
+            >
               <div
                 className="h-full bg-gradient-to-r from-yellow-500 to-orange-500 transition-all duration-500"
                 style={{ width: `${completionPercentage}%` }}
               />
             </div>
 
-            {/* Quests List */}
             {quests.map((quest) => {
               const progressPercentage = Math.min(
                 (quest.progress / quest.target) * 100,
-                100
+                100,
               );
 
               return (
@@ -89,16 +96,22 @@ export function DailyQuestsComponent({ quests }: DailyQuestsProps) {
                         {quest.description}
                       </p>
 
-                      {/* Progress */}
                       {!quest.completed && (
                         <div className="mt-2">
                           <div className="flex items-center justify-between text-xs text-gray-600 mb-1">
-                            <span>Прогресс</span>
+                            <span>{t("dailyQuests.progress")}</span>
                             <span className="font-medium">
                               {quest.progress}/{quest.target}
                             </span>
                           </div>
-                          <div className="w-full bg-gray-200 rounded-full h-1.5 overflow-hidden">
+                          <div
+                            className="w-full bg-gray-200 rounded-full h-1.5 overflow-hidden"
+                            role="progressbar"
+                            aria-valuenow={quest.progress}
+                            aria-valuemin={0}
+                            aria-valuemax={quest.target}
+                            aria-label={`${quest.title}: ${quest.progress}/${quest.target}`}
+                          >
                             <div
                               className="h-full bg-gradient-to-r from-yellow-500 to-orange-500 transition-all duration-300"
                               style={{ width: `${progressPercentage}%` }}
@@ -112,19 +125,14 @@ export function DailyQuestsComponent({ quests }: DailyQuestsProps) {
               );
             })}
 
-            {/* Completion Bonus */}
             {completedQuests === totalQuests && totalQuests > 0 && (
-              <div className="bg-gradient-to-r from-yellow-500 to-orange-500 text-white p-4 rounded-xl text-center relative overflow-hidden">
-                <div className="absolute top-2 left-2 text-2xl animate-bounce delay-100">✨</div>
-                <div className="absolute top-2 right-2 text-2xl animate-bounce delay-200">⭐</div>
-                <div className="absolute bottom-2 left-4 text-2xl animate-bounce delay-300">🎊</div>
-                <div className="absolute bottom-2 right-4 text-2xl animate-bounce delay-400">💫</div>
-                <div className="text-4xl sm:text-5xl mb-2 animate-bounce relative z-10">🎉</div>
-                <p className="font-bold text-sm sm:text-base relative z-10">
-                  Все квесты выполнены!
+              <div className="bg-gradient-to-r from-yellow-500 to-orange-500 text-white p-4 rounded-xl text-center">
+                <Trophy className="h-10 w-10 sm:h-12 sm:w-12 mx-auto mb-2 text-white" />
+                <p className="font-bold text-sm sm:text-base">
+                  {t("dailyQuests.allCompleted.title")}
                 </p>
-                <p className="text-xs sm:text-sm opacity-90 relative z-10">
-                  Возвращайтесь завтра за новыми заданиями
+                <p className="text-xs sm:text-sm opacity-90">
+                  {t("dailyQuests.allCompleted.subtitle")}
                 </p>
               </div>
             )}

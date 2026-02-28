@@ -1497,12 +1497,12 @@ export default function LifeGuidePage() {
           </h2>
           <div className="grid grid-cols-1 md:grid-cols-2 lg:grid-cols-4 gap-4">
             {emergencyContacts.map((contact) => (
-              <Card key={contact.id} className="border-red-200 no-hover">
-                <CardContent className="p-4">
-                  <h3 className="font-medium text-red-900">
+              <Card key={contact.id} className="border-red-200 h-full">
+                <CardContent className="p-4 h-full flex flex-col">
+                  <h3 className="font-medium text-red-900 flex-shrink-0 mb-auto">
                     {t(`lifeGuide.emergencyContacts.${contact.id}.title`)}
                   </h3>
-                  <p className="text-2xl font-bold text-red-600">
+                  <p className="text-2xl font-bold text-red-600 flex-shrink-0">
                     {contact.number}
                   </p>
                   <p className="text-sm text-red-700">
@@ -1603,11 +1603,7 @@ export default function LifeGuidePage() {
               {filteredGuides.map((guide, index) => (
                 <div
                   key={`guide-${guide.id}`}
-                  className="h-[280px] animate-fade-in"
-                  style={{
-                    animationDelay: `${index * 100}ms`,
-                    animationFillMode: "both",
-                  }}
+                  className="h-[280px]"
                 >
                   <GuideCard guide={guide} />
                 </div>
@@ -1617,10 +1613,10 @@ export default function LifeGuidePage() {
             <div className="text-center py-12 animate-fade-in">
               <Home className="h-12 w-12 text-gray-400 mx-auto mb-4 transition-all duration-300" />
               <h3 className="text-lg font-medium text-gray-900 mb-2">
-                Инструкции не найдены
+                {t("lifeGuide.guides.empty.title")}
               </h3>
               <p className="text-gray-600">
-                Попробуйте изменить поисковый запрос или фильтры
+                {t("lifeGuide.guides.empty.description")}
               </p>
             </div>
           )}

@@ -53,8 +53,8 @@ const ENABLE_RATE_LIMIT = process.env.RATE_LIMIT !== 'false';
 
 // Стандартный лимитер для большинства API
 const standardLimiter = rateLimit({
-  windowMs: 15 * 60 * 1000, // 15 минут
-  max: 100, // максимум 100 запросов с одного IP
+  windowMs: 15 * 60 * 1000,
+  max: process.env.NODE_ENV === 'production' ? 100 : 1000,
   message: 'Слишком много запросов с этого IP, попробуйте позже.',
   standardHeaders: true,
   legacyHeaders: false,

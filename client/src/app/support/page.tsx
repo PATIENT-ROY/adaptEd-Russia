@@ -2,7 +2,6 @@
 
 import { useState, useEffect } from "react";
 import Link from "next/link";
-import { useRouter } from "next/navigation";
 import {
   Card,
   CardContent,
@@ -15,6 +14,7 @@ import { Input } from "@/components/ui/input";
 
 import { useSupport } from "@/hooks/useSupport";
 import { useAuth } from "@/contexts/AuthContext";
+import { useTranslation } from "@/hooks/useTranslation";
 import { API_BASE_URL } from "@/lib/api";
 import type { FAQItem } from "@/types";
 import { Badge } from "@/components/ui/badge";
@@ -53,7 +53,7 @@ interface SupportTicket {
 }
 
 export default function SupportPage() {
-  const router = useRouter();
+  const { t } = useTranslation();
   const { user } = useAuth();
   const { submitSupportForm, getFAQ } = useSupport();
   const [formData, setFormData] = useState({
@@ -71,7 +71,6 @@ export default function SupportPage() {
   const [myTickets, setMyTickets] = useState<SupportTicket[]>([]);
   const [expandedTicketId, setExpandedTicketId] = useState<string | null>(null);
 
-  // Загрузка своих обращений
   const loadMyTickets = async () => {
     if (!user) return;
     
@@ -88,11 +87,10 @@ export default function SupportPage() {
         setMyTickets(data.data || []);
       }
     } catch (error) {
-      console.error("Ошибка при загрузке обращений:", error);
+      console.error("Error loading tickets:", error);
     }
   };
 
-  // Загружаем обращения при авторизации
   useEffect(() => {
     if (user) {
       loadMyTickets();
@@ -102,13 +100,13 @@ export default function SupportPage() {
   const getStatusBadge = (status: string) => {
     switch (status) {
       case "OPEN":
-        return <Badge className="bg-red-100 text-red-700">Открыто</Badge>;
+        return <Badge className="bg-red-100 text-red-700">{t("support.tickets.status.open")}</Badge>;
       case "IN_PROGRESS":
-        return <Badge className="bg-yellow-100 text-yellow-700">В работе</Badge>;
+        return <Badge className="bg-yellow-100 text-yellow-700">{t("support.tickets.status.inProgress")}</Badge>;
       case "RESOLVED":
-        return <Badge className="bg-green-100 text-green-700">Решено</Badge>;
+        return <Badge className="bg-green-100 text-green-700">{t("support.tickets.status.resolved")}</Badge>;
       case "CLOSED":
-        return <Badge className="bg-gray-100 text-gray-700">Закрыто</Badge>;
+        return <Badge className="bg-gray-100 text-gray-700">{t("support.tickets.status.closed")}</Badge>;
       default:
         return <Badge>{status}</Badge>;
     }
@@ -119,21 +117,20 @@ export default function SupportPage() {
     setSubmitError(null);
 
     if (!privacyConsent) {
-      setSubmitError("Необходимо согласиться с политикой обработки персональных данных");
+      setSubmitError(t("support.form.error.privacyRequired"));
       return;
     }
 
-    // Клиентская валидация
     if (formData.name.length < 2) {
-      setSubmitError("Имя должно содержать минимум 2 символа");
+      setSubmitError(t("support.form.error.nameMin"));
       return;
     }
     if (formData.subject.length < 5) {
-      setSubmitError("Тема должна содержать минимум 5 символов");
+      setSubmitError(t("support.form.error.subjectMin"));
       return;
     }
     if (formData.message.length < 10) {
-      setSubmitError("Сообщение должно содержать минимум 10 символов");
+      setSubmitError(t("support.form.error.messageMin"));
       return;
     }
 
@@ -144,11 +141,10 @@ export default function SupportPage() {
       setIsSubmitted(true);
       setFormData({ name: "", email: "", subject: "", message: "" });
       setPrivacyConsent(false);
-      // Перезагружаем обращения
       loadMyTickets();
     } catch (err) {
-      console.error("Ошибка при отправке формы:", err);
-      setSubmitError(err instanceof Error ? err.message : "Ошибка при отправке формы");
+      console.error("Error submitting form:", err);
+      setSubmitError(err instanceof Error ? err.message : t("support.form.error.generic"));
     } finally {
       setIsSubmitting(false);
     }
@@ -163,14 +159,13 @@ export default function SupportPage() {
     });
   };
 
-  // Загружаем данные при монтировании компонента
   useEffect(() => {
     const loadData = async () => {
       try {
         const faqData = await getFAQ();
         setFaqItems(faqData);
       } catch (err) {
-        console.error("Ошибка при загрузке данных:", err);
+        console.error("Error loading FAQ:", err);
       } finally {
         setIsInitialLoading(false);
       }
@@ -178,9 +173,8 @@ export default function SupportPage() {
 
     loadData();
     // eslint-disable-next-line react-hooks/exhaustive-deps
-  }, []); // Запускаем только один раз при монтировании
+  }, []);
 
-  // Fallback данные, если API недоступен
   const fallbackFaqItems = [
     {
       question: "Как зарегистрироваться в системе?",
@@ -217,25 +211,24 @@ export default function SupportPage() {
   const contactMethods = [
     {
       icon: Mail,
-      title: "Email поддержка",
+      title: t("support.contact.email.title"),
       description: "support@adapted-russia.ru",
-      response: "Ответ в течение 24 часов",
+      response: t("support.contact.email.response"),
     },
     {
       icon: Phone,
-      title: "Телефон",
+      title: t("support.contact.phone.title"),
       description: "+7 (800) 555-0123",
-      response: "Пн-Пт 9:00-18:00 МСК",
+      response: t("support.contact.phone.response"),
     },
     {
       icon: MessageSquare,
-      title: "Онлайн чат",
-      description: "Доступен 24/7",
-      response: "Мгновенный ответ",
+      title: t("support.contact.chat.title"),
+      description: t("support.contact.chat.description"),
+      response: t("support.contact.chat.response"),
     },
   ];
 
-  // Skeleton при начальной загрузке
   if (isInitialLoading) {
     return (
       <div className="min-h-screen bg-gradient-to-br from-blue-50 via-white to-purple-50 py-8">
@@ -306,50 +299,50 @@ export default function SupportPage() {
             <Card className="text-center p-8">
               <CheckCircle className="h-16 w-16 text-green-500 mx-auto mb-4" />
               <CardTitle className="text-2xl mb-2">
-                Сообщение отправлено!
+                {t("support.submitted.title")}
               </CardTitle>
               <CardDescription className="text-lg">
-                Спасибо за обращение. Мы ответим вам в ближайшее время.
+                {t("support.submitted.description")}
               </CardDescription>
               <Button onClick={() => setIsSubmitted(false)} className="mt-6">
-                Отправить еще одно сообщение
+                {t("support.submitted.sendAnother")}
               </Button>
             </Card>
           </div>
         ) : (
           <>
             {/* Back Button */}
-            <Button
-              variant="ghost"
-              className="mb-6 hover:bg-blue-100"
-              onClick={() => router.back()}
-            >
-              <ArrowLeft className="h-4 w-4 mr-2" />
-              Назад
-            </Button>
+            <Link href="/">
+              <Button
+                variant="ghost"
+                className="mb-6 hover:bg-blue-100"
+              >
+                <ArrowLeft className="h-4 w-4 mr-2" />
+                {t("support.back")}
+              </Button>
+            </Link>
 
-            {/* Заголовок */}
+            {/* Header */}
             <div className="text-center mb-12">
               <h1 className="text-4xl font-bold text-gray-900 mb-4">
-                Служба поддержки
+                {t("support.title")}
               </h1>
               <p className="text-xl text-gray-600 max-w-2xl mx-auto">
-                Мы здесь, чтобы помочь вам с любыми вопросами по адаптации в
-                России
+                {t("support.subtitle")}
               </p>
             </div>
 
             <div className="grid lg:grid-cols-3 gap-8">
-              {/* Форма обратной связи */}
+              {/* Feedback Form */}
               <div className="lg:col-span-2">
                 <Card className="h-fit">
                   <CardHeader>
                     <CardTitle className="flex items-center gap-2">
                       <MessageSquare className="h-5 w-5" />
-                      Обратная связь
+                      {t("support.form.title")}
                     </CardTitle>
                     <CardDescription>
-                      Отправьте нам сообщение, и мы ответим в ближайшее время
+                      {t("support.form.subtitle")}
                     </CardDescription>
                   </CardHeader>
                   <CardContent>
@@ -360,7 +353,7 @@ export default function SupportPage() {
                             htmlFor="name"
                             className="block text-sm font-medium text-gray-700 mb-1"
                           >
-                            Имя *
+                            {t("support.form.name")}
                           </label>
                           <Input
                             id="name"
@@ -370,7 +363,7 @@ export default function SupportPage() {
                             minLength={2}
                             value={formData.name}
                             onChange={handleInputChange}
-                            placeholder="Ваше имя (мин. 2 символа)"
+                            placeholder={t("support.form.namePlaceholder")}
                           />
                         </div>
                         <div>
@@ -378,7 +371,7 @@ export default function SupportPage() {
                             htmlFor="email"
                             className="block text-sm font-medium text-gray-700 mb-1"
                           >
-                            Email *
+                            {t("support.form.email")}
                           </label>
                           <Input
                             id="email"
@@ -397,7 +390,7 @@ export default function SupportPage() {
                           htmlFor="subject"
                           className="block text-sm font-medium text-gray-700 mb-1"
                         >
-                          Тема *
+                          {t("support.form.subject")}
                         </label>
                         <Input
                           id="subject"
@@ -407,7 +400,7 @@ export default function SupportPage() {
                           minLength={5}
                           value={formData.subject}
                           onChange={handleInputChange}
-                          placeholder="Кратко опишите проблему (мин. 5 символов)"
+                          placeholder={t("support.form.subjectPlaceholder")}
                         />
                       </div>
 
@@ -416,7 +409,7 @@ export default function SupportPage() {
                           htmlFor="message"
                           className="block text-sm font-medium text-gray-700 mb-1"
                         >
-                          Сообщение *
+                          {t("support.form.message")}
                         </label>
                         <textarea
                           id="message"
@@ -427,11 +420,10 @@ export default function SupportPage() {
                           onChange={handleInputChange}
                           rows={6}
                           className="w-full px-3 py-2 border border-gray-300 rounded-lg focus:ring-2 focus:ring-blue-500 focus:border-transparent resize-none"
-                          placeholder="Подробно опишите ваш вопрос или проблему (мин. 10 символов)..."
+                          placeholder={t("support.form.messagePlaceholder")}
                         />
                       </div>
 
-                      {/* Ошибка */}
                       {submitError && (
                         <div className="flex items-center gap-2 p-3 bg-red-50 border border-red-200 rounded-lg text-red-700 text-sm">
                           <AlertCircle className="h-4 w-4 flex-shrink-0" />
@@ -439,7 +431,7 @@ export default function SupportPage() {
                         </div>
                       )}
 
-                      {/* Согласие с политикой обработки персональных данных */}
+                      {/* Privacy consent */}
                       <div className="flex items-start space-x-3 p-3 bg-blue-50 rounded-lg border border-blue-200">
                         <input
                           type="checkbox"
@@ -452,14 +444,14 @@ export default function SupportPage() {
                           htmlFor="privacy-consent"
                           className="text-sm text-blue-800 cursor-pointer"
                         >
-                          Отправляя сообщение, вы соглашаетесь с{" "}
+                          {t("support.form.privacyConsent")}{" "}
                           <a
                             href="/privacy-policy"
                             className="text-blue-600 hover:text-blue-700 underline font-medium"
                             target="_blank"
                             rel="noopener noreferrer"
                           >
-                            политикой обработки персональных данных
+                            {t("support.form.privacyPolicy")}
                           </a>
                         </label>
                       </div>
@@ -472,12 +464,12 @@ export default function SupportPage() {
                         {isSubmitting ? (
                           <>
                             <div className="animate-spin rounded-full h-4 w-4 border-b-2 border-white mr-2"></div>
-                            Отправка...
+                            {t("support.form.submitting")}
                           </>
                         ) : (
                           <>
                             <Send className="h-4 w-4 mr-2" />
-                            Отправить сообщение
+                            {t("support.form.submit")}
                           </>
                         )}
                       </Button>
@@ -486,13 +478,13 @@ export default function SupportPage() {
                 </Card>
               </div>
 
-              {/* Контактная информация */}
+              {/* Contact info sidebar */}
               <div className="space-y-6">
                 <Card>
                   <CardHeader>
                     <CardTitle className="flex items-center gap-2">
                       <Phone className="h-5 w-5" />
-                      Связаться с нами
+                      {t("support.contact.title")}
                     </CardTitle>
                   </CardHeader>
                   <CardContent className="space-y-4">
@@ -525,16 +517,15 @@ export default function SupportPage() {
                   <CardHeader>
                     <CardTitle className="flex items-center gap-2">
                       <Users className="h-5 w-5 text-blue-600" />
-                      Q&amp;A / живое общение
+                      {t("support.qa.title")}
                     </CardTitle>
                   </CardHeader>
                   <CardContent className="space-y-3">
                     <p className="text-sm text-gray-600">
-                      Задавайте вопросы сообществу и подключайтесь к живым
-                      сессиям с кураторами.
+                      {t("support.qa.description")}
                     </p>
                     <Link href="/community/questions">
-                      <Button className="w-full">Перейти в Q&amp;A</Button>
+                      <Button className="w-full">{t("support.qa.button")}</Button>
                     </Link>
                   </CardContent>
                 </Card>
@@ -543,28 +534,28 @@ export default function SupportPage() {
                   <CardHeader>
                     <CardTitle className="flex items-center gap-2">
                       <Clock className="h-5 w-5" />
-                      Время работы
+                      {t("support.hours.title")}
                     </CardTitle>
                   </CardHeader>
                   <CardContent>
                     <div className="space-y-2 text-sm">
                       <div className="flex justify-between">
-                        <span>Понедельник - Пятница:</span>
-                        <span className="font-medium">9:00 - 18:00</span>
+                        <span>{t("support.hours.weekdays")}</span>
+                        <span className="font-medium">{t("support.hours.weekdaysTime")}</span>
                       </div>
                       <div className="flex justify-between">
-                        <span>Суббота:</span>
-                        <span className="font-medium">10:00 - 16:00</span>
+                        <span>{t("support.hours.saturday")}</span>
+                        <span className="font-medium">{t("support.hours.saturdayTime")}</span>
                       </div>
                       <div className="flex justify-between">
-                        <span>Воскресенье:</span>
-                        <span className="font-medium">Выходной</span>
+                        <span>{t("support.hours.sunday")}</span>
+                        <span className="font-medium">{t("support.hours.sundayTime")}</span>
                       </div>
                     </div>
                     <div className="mt-4 p-3 bg-blue-50 rounded-lg">
                       <p className="text-sm text-blue-800">
                         <AlertCircle className="h-4 w-4 inline mr-1" />
-                        Экстренная поддержка доступна 24/7
+                        {t("support.hours.emergency")}
                       </p>
                     </div>
                   </CardContent>
@@ -572,13 +563,12 @@ export default function SupportPage() {
               </div>
             </div>
 
-            {/* FAQ */}
-            {/* Мои обращения */}
+            {/* My Tickets */}
             {user && myTickets.length > 0 && (
               <div className="mt-12">
                 <h2 className="text-2xl font-bold text-gray-900 mb-6 flex items-center gap-2">
                   <Inbox className="h-6 w-6 text-blue-600" />
-                  Мои обращения
+                  {t("support.tickets.title")}
                 </h2>
                 <div className="space-y-4">
                   {myTickets.map((ticket) => (
@@ -607,7 +597,7 @@ export default function SupportPage() {
                               })}
                               {ticket.responses.length > 0 && (
                                 <span className="ml-2 text-blue-600">
-                                  • {ticket.responses.length} {ticket.responses.length === 1 ? "ответ" : "ответа"}
+                                  • {ticket.responses.length} {ticket.responses.length === 1 ? t("support.tickets.response") : t("support.tickets.responses")}
                                 </span>
                               )}
                             </p>
@@ -622,13 +612,11 @@ export default function SupportPage() {
 
                       {expandedTicketId === ticket.id && (
                         <div className="border-t border-gray-100 p-4 bg-gray-50 space-y-4">
-                          {/* Оригинальное сообщение */}
                           <div className="bg-white rounded-lg p-3 border border-gray-200">
-                            <p className="text-sm text-gray-500 mb-1">Ваше сообщение:</p>
+                            <p className="text-sm text-gray-500 mb-1">{t("support.tickets.yourMessage")}</p>
                             <p className="text-gray-700">{ticket.message}</p>
                           </div>
 
-                          {/* Ответы */}
                           {ticket.responses.length > 0 ? (
                             <div className="space-y-3">
                               {ticket.responses.map((response) => (
@@ -645,7 +633,7 @@ export default function SupportPage() {
                                       <Reply className="h-4 w-4 text-blue-600" />
                                     )}
                                     <span className="text-sm font-medium text-gray-700">
-                                      {response.isAdmin ? "Поддержка" : "Вы"}
+                                      {response.isAdmin ? t("support.tickets.support") : t("support.tickets.you")}
                                     </span>
                                     <span className="text-xs text-gray-400">
                                       {new Date(response.createdAt).toLocaleString("ru-RU")}
@@ -657,7 +645,7 @@ export default function SupportPage() {
                             </div>
                           ) : (
                             <p className="text-sm text-gray-500 text-center py-2">
-                              Ответов пока нет. Мы скоро свяжемся с вами!
+                              {t("support.tickets.noResponses")}
                             </p>
                           )}
                         </div>
@@ -671,10 +659,10 @@ export default function SupportPage() {
             <div className="mt-16">
               <div className="text-center mb-8">
                 <h2 className="text-3xl font-bold text-gray-900 mb-4">
-                  Часто задаваемые вопросы
+                  {t("support.faq.title")}
                 </h2>
                 <p className="text-gray-600">
-                  Найдите ответы на самые популярные вопросы
+                  {t("support.faq.subtitle")}
                 </p>
               </div>
 
@@ -700,38 +688,38 @@ export default function SupportPage() {
               </div>
             </div>
 
-            {/* Дополнительная информация */}
+            {/* Resources */}
             <div className="mt-16">
               <Card>
                 <CardHeader>
                   <CardTitle className="text-center">
-                    Полезные ресурсы
+                    {t("support.resources.title")}
                   </CardTitle>
                 </CardHeader>
                 <CardContent>
                   <div className="grid sm:grid-cols-2 lg:grid-cols-4 gap-4">
                     <div className="text-center p-4 rounded-lg bg-blue-50">
                       <FileText className="h-8 w-8 text-blue-600 mx-auto mb-2" />
-                      <h4 className="font-medium">Документация</h4>
+                      <h4 className="font-medium">{t("support.resources.docs")}</h4>
                       <p className="text-sm text-gray-600">
-                        Подробные инструкции
+                        {t("support.resources.docsDesc")}
                       </p>
                     </div>
                     <div className="text-center p-4 rounded-lg bg-green-50">
                       <Users className="h-8 w-8 text-green-600 mx-auto mb-2" />
-                      <h4 className="font-medium">Сообщество</h4>
-                      <p className="text-sm text-gray-600">Форум студентов</p>
+                      <h4 className="font-medium">{t("support.resources.community")}</h4>
+                      <p className="text-sm text-gray-600">{t("support.resources.communityDesc")}</p>
                     </div>
                     <div className="text-center p-4 rounded-lg bg-purple-50">
                       <Globe className="h-8 w-8 text-purple-600 mx-auto mb-2" />
-                      <h4 className="font-medium">Блог</h4>
-                      <p className="text-sm text-gray-600">Полезные статьи</p>
+                      <h4 className="font-medium">{t("support.resources.blog")}</h4>
+                      <p className="text-sm text-gray-600">{t("support.resources.blogDesc")}</p>
                     </div>
                     <div className="text-center p-4 rounded-lg bg-orange-50">
                       <Shield className="h-8 w-8 text-orange-600 mx-auto mb-2" />
-                      <h4 className="font-medium">Безопасность</h4>
+                      <h4 className="font-medium">{t("support.resources.security")}</h4>
                       <p className="text-sm text-gray-600">
-                        Правила и рекомендации
+                        {t("support.resources.securityDesc")}
                       </p>
                     </div>
                   </div>

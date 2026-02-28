@@ -1,6 +1,6 @@
 "use client";
 
-import { useState } from "react";
+import { useState, useRef, useEffect } from "react";
 import {
   Card,
   CardContent,
@@ -17,8 +17,8 @@ import {
   ChevronDown,
   ChevronUp,
   Send,
-  User,
   Sparkles,
+  Trash2,
 } from "lucide-react";
 import type { Answer } from "@/hooks/useQuestions";
 
@@ -30,15 +30,33 @@ type QuestionCardProps = {
   likesCount: number;
   answers?: Answer[];
   author: string;
+  authorId?: string;
   time: string;
   isAnswered?: boolean;
   isExpanded?: boolean;
   onToggle?: () => void;
   onLike?: () => void;
   onAddAnswer?: (content: string) => Promise<void>;
+  onDelete?: () => void;
   isLiked?: boolean;
   isLoadingAnswers?: boolean;
+  isOwner?: boolean;
 };
+
+function AuthorAvatar({ name }: { name: string }) {
+  const initials = name
+    .split(" ")
+    .map((w) => w[0])
+    .join("")
+    .slice(0, 2)
+    .toUpperCase();
+
+  return (
+    <span className="inline-flex items-center justify-center h-5 w-5 sm:h-6 sm:w-6 rounded-full bg-indigo-100 text-indigo-600 text-[10px] sm:text-xs font-semibold flex-shrink-0">
+      {initials}
+    </span>
+  );
+}
 
 export function QuestionCard({
   title,
@@ -53,11 +71,22 @@ export function QuestionCard({
   onToggle,
   onLike,
   onAddAnswer,
+  onDelete,
   isLiked = false,
   isLoadingAnswers = false,
+  isOwner = false,
 }: QuestionCardProps) {
   const [answerText, setAnswerText] = useState("");
   const [isSubmitting, setIsSubmitting] = useState(false);
+  const [confirmDelete, setConfirmDelete] = useState(false);
+  const textareaRef = useRef<HTMLTextAreaElement>(null);
+
+  useEffect(() => {
+    if (textareaRef.current) {
+      textareaRef.current.style.height = "auto";
+      textareaRef.current.style.height = `${Math.min(textareaRef.current.scrollHeight, 120)}px`;
+    }
+  }, [answerText]);
 
   const handleSubmitAnswer = async (e: React.FormEvent) => {
     e.preventDefault();
@@ -72,32 +101,66 @@ export function QuestionCard({
     }
   };
 
+  const handleDelete = () => {
+    if (!confirmDelete) {
+      setConfirmDelete(true);
+      setTimeout(() => setConfirmDelete(false), 3000);
+      return;
+    }
+    onDelete?.();
+  };
+
   return (
     <Card className="relative overflow-hidden border-0 bg-white/80 backdrop-blur-sm shadow-lg shadow-slate-200/50">
-      
       <CardHeader className="p-3 sm:p-4 lg:p-6 pb-2 sm:pb-3">
-        <div className="flex items-center flex-wrap gap-1.5 sm:gap-2">
-          <Badge 
-            variant={isAnswered ? "success" : "info"} 
-            size="sm"
-            className={`text-[10px] sm:text-xs ${isAnswered 
-              ? "bg-emerald-100 text-emerald-700 border-emerald-200" 
-              : "bg-amber-100 text-amber-700 border-amber-200"
-            }`}
-          >
-            {isAnswered ? (
-              <>
-                <Sparkles className="w-2.5 h-2.5 sm:w-3 sm:h-3 mr-0.5 sm:mr-1" />
-                Есть ответ
-              </>
-            ) : (
-              "Открыт"
-            )}
-          </Badge>
-          {answersCount >= 3 && (
-            <Badge variant="outline" size="sm" className="text-[10px] sm:text-xs bg-purple-50 text-purple-600 border-purple-200">
-              🔥 Популярный
+        <div className="flex items-center justify-between">
+          <div className="flex items-center flex-wrap gap-1.5 sm:gap-2">
+            <Badge
+              variant={isAnswered ? "success" : "info"}
+              size="sm"
+              className={`text-xs ${
+                isAnswered
+                  ? "bg-emerald-100 text-emerald-700 border-emerald-200"
+                  : "bg-amber-100 text-amber-700 border-amber-200"
+              }`}
+            >
+              {isAnswered ? (
+                <>
+                  <Sparkles className="w-3 h-3 mr-0.5 sm:mr-1" />
+                  Есть ответ
+                </>
+              ) : (
+                "Открыт"
+              )}
             </Badge>
+            {answersCount >= 3 && (
+              <Badge
+                variant="outline"
+                size="sm"
+                className="text-xs bg-purple-50 text-purple-600 border-purple-200"
+              >
+                Популярный
+              </Badge>
+            )}
+          </div>
+          {isOwner && onDelete && (
+            <button
+              type="button"
+              onClick={handleDelete}
+              className={`p-1.5 rounded-lg transition-colors text-xs flex items-center gap-1 ${
+                confirmDelete
+                  ? "bg-red-100 text-red-600 hover:bg-red-200"
+                  : "text-slate-400 hover:text-red-500 hover:bg-red-50"
+              }`}
+              title={
+                confirmDelete
+                  ? "Нажмите ещё раз для удаления"
+                  : "Удалить вопрос"
+              }
+            >
+              <Trash2 className="h-3.5 w-3.5" />
+              {confirmDelete && <span>Удалить?</span>}
+            </button>
           )}
         </div>
         <CardTitle className="text-base sm:text-lg lg:text-xl font-semibold text-slate-900 leading-tight mt-1.5 sm:mt-2">
@@ -111,18 +174,22 @@ export function QuestionCard({
       </CardHeader>
 
       <CardContent className="p-3 sm:p-4 lg:p-6 pt-0">
-        {/* Actions row - stack on mobile */}
         <div className="flex flex-col sm:flex-row sm:items-center sm:justify-between gap-2 sm:gap-3">
           <div className="flex items-center gap-2 sm:gap-3">
             <button
               type="button"
               onClick={onToggle}
+              aria-expanded={isExpanded}
               className="inline-flex items-center gap-1 sm:gap-1.5 px-2 sm:px-3 py-1 sm:py-1.5 rounded-full text-xs sm:text-sm font-medium text-slate-600 bg-slate-100 hover:bg-indigo-100 hover:text-indigo-700 transition-colors"
             >
               <MessageSquare className="h-3 w-3 sm:h-4 sm:w-4" />
               <span>{answersCount}</span>
               <span className="hidden xs:inline">
-                {answersCount === 1 ? "ответ" : answersCount < 5 ? "ответа" : "ответов"}
+                {answersCount === 1
+                  ? "ответ"
+                  : answersCount < 5
+                    ? "ответа"
+                    : "ответов"}
               </span>
               {isExpanded ? (
                 <ChevronUp className="h-3 w-3 sm:h-4 sm:w-4" />
@@ -135,21 +202,25 @@ export function QuestionCard({
               variant={isLiked ? "default" : "outline"}
               size="sm"
               className={`h-7 sm:h-8 px-2 sm:px-3 rounded-full transition-all text-xs sm:text-sm ${
-                isLiked 
-                  ? "bg-gradient-to-r from-pink-500 to-rose-500 text-white border-0 shadow-md shadow-pink-200" 
+                isLiked
+                  ? "bg-gradient-to-r from-pink-500 to-rose-500 text-white border-0 shadow-md shadow-pink-200"
                   : "hover:bg-pink-50 hover:text-pink-600 hover:border-pink-200"
               }`}
               onClick={onLike}
             >
-              <ThumbsUp className={`h-3 w-3 sm:h-4 sm:w-4 mr-1 ${isLiked ? "fill-current" : ""}`} />
+              <ThumbsUp
+                className={`h-3 w-3 sm:h-4 sm:w-4 mr-1 ${isLiked ? "fill-current" : ""}`}
+              />
               {likesCount}
             </Button>
           </div>
 
           <div className="flex items-center gap-2 sm:gap-3 text-xs sm:text-sm text-slate-500">
             <span className="inline-flex items-center gap-1 sm:gap-1.5 font-medium">
-              <User className="h-3 w-3 sm:h-4 sm:w-4 text-indigo-400" />
-              <span className="truncate max-w-[80px] sm:max-w-none">{author}</span>
+              <AuthorAvatar name={author} />
+              <span className="truncate max-w-[100px] sm:max-w-none">
+                {author}
+              </span>
             </span>
             <span className="inline-flex items-center gap-1 text-slate-400">
               <Clock className="h-3 w-3 sm:h-3.5 sm:w-3.5" />
@@ -164,7 +235,9 @@ export function QuestionCard({
             {isLoadingAnswers ? (
               <div className="flex items-center justify-center py-6 sm:py-8">
                 <div className="animate-spin rounded-full h-5 w-5 sm:h-6 sm:w-6 border-b-2 border-indigo-600" />
-                <span className="ml-2 text-xs sm:text-sm text-slate-500">Загрузка...</span>
+                <span className="ml-2 text-xs sm:text-sm text-slate-500">
+                  Загрузка...
+                </span>
               </div>
             ) : answers && answers.length > 0 ? (
               <div className="space-y-2 sm:space-y-3">
@@ -177,10 +250,15 @@ export function QuestionCard({
                     key={answer.id}
                     className="relative bg-gradient-to-br from-slate-50 to-slate-100/50 rounded-lg sm:rounded-xl px-3 sm:px-4 py-2.5 sm:py-3 text-xs sm:text-sm text-slate-700 border border-slate-100"
                   >
-                    <p className="leading-relaxed">{answer.content}</p>
-                    <div className="mt-1.5 sm:mt-2 flex items-center gap-2 sm:gap-3 text-[10px] sm:text-xs text-slate-400">
-                      <span className="font-medium text-slate-500">{answer.author}</span>
-                      <span>•</span>
+                    <p className="leading-relaxed whitespace-pre-wrap">
+                      {answer.content}
+                    </p>
+                    <div className="mt-1.5 sm:mt-2 flex items-center gap-2 sm:gap-3 text-xs text-slate-400">
+                      <AuthorAvatar name={answer.author} />
+                      <span className="font-medium text-slate-500">
+                        {answer.author}
+                      </span>
+                      <span>&middot;</span>
                       <span>{answer.timeLabel}</span>
                     </div>
                   </div>
@@ -189,27 +267,36 @@ export function QuestionCard({
             ) : (
               <div className="text-center py-4 sm:py-6 text-slate-400">
                 <MessageSquare className="h-6 w-6 sm:h-8 sm:w-8 mx-auto mb-1.5 sm:mb-2 opacity-50" />
-                <p className="text-xs sm:text-sm">Пока нет ответов. Будьте первым!</p>
+                <p className="text-xs sm:text-sm">
+                  Пока нет ответов. Будьте первым!
+                </p>
               </div>
             )}
 
             {/* Answer form */}
             {onAddAnswer && (
               <form onSubmit={handleSubmitAnswer} className="mt-3 sm:mt-4">
-                <div className="flex gap-2">
-                  <input
-                    type="text"
+                <div className="flex gap-2 items-end">
+                  <textarea
+                    ref={textareaRef}
                     value={answerText}
                     onChange={(e) => setAnswerText(e.target.value)}
                     placeholder="Напишите ответ..."
-                    className="flex-1 px-3 sm:px-4 py-2 sm:py-2.5 text-xs sm:text-sm border border-slate-200 rounded-lg sm:rounded-xl focus:ring-2 focus:ring-indigo-500 focus:border-transparent bg-white placeholder:text-slate-400 transition-shadow"
+                    rows={1}
+                    className="flex-1 px-3 sm:px-4 py-2 sm:py-2.5 text-xs sm:text-sm border border-slate-200 rounded-lg sm:rounded-xl focus:ring-2 focus:ring-indigo-500 focus:border-transparent bg-white placeholder:text-slate-400 transition-shadow resize-none overflow-hidden"
                     disabled={isSubmitting}
+                    onKeyDown={(e) => {
+                      if (e.key === "Enter" && !e.shiftKey) {
+                        e.preventDefault();
+                        if (answerText.trim()) handleSubmitAnswer(e);
+                      }
+                    }}
                   />
                   <Button
                     type="submit"
                     size="sm"
                     disabled={!answerText.trim() || isSubmitting}
-                    className="px-3 sm:px-4 h-9 sm:h-10 bg-gradient-to-r from-indigo-600 to-purple-600 hover:from-indigo-700 hover:to-purple-700 text-white rounded-lg sm:rounded-xl shadow-md shadow-indigo-200 disabled:opacity-50 disabled:cursor-not-allowed"
+                    className="px-3 sm:px-4 h-9 sm:h-10 bg-gradient-to-r from-indigo-600 to-purple-600 hover:from-indigo-700 hover:to-purple-700 text-white rounded-lg sm:rounded-xl shadow-md shadow-indigo-200 disabled:opacity-50 disabled:cursor-not-allowed flex-shrink-0"
                   >
                     {isSubmitting ? (
                       <div className="animate-spin rounded-full h-3.5 w-3.5 sm:h-4 sm:w-4 border-b-2 border-white" />

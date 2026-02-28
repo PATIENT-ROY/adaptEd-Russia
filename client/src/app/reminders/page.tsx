@@ -1,12 +1,12 @@
 "use client";
 
-import { useState, useMemo, useEffect } from "react";
-import { useRouter } from "next/navigation";
+import { useState, useMemo, useCallback } from "react";
 import { Layout } from "@/components/layout/layout";
 import { Button } from "@/components/ui/button";
 import { Card, CardContent } from "@/components/ui/card";
 import { Input } from "@/components/ui/input";
 import { useAuth } from "@/contexts/AuthContext";
+import { ProtectedRoute } from "@/components/auth/ProtectedRoute";
 import { useReminders } from "@/hooks/useReminders";
 import { useTranslation } from "@/hooks/useTranslation";
 import {
@@ -17,7 +17,6 @@ import {
   AlertCircle,
   CheckCircle,
   XCircle,
-  Filter,
   Search,
   X,
   Save,
@@ -31,6 +30,8 @@ import {
   ReminderCategory,
   Language,
 } from "@/types";
+
+// ── helpers (pure, outside component) ───────────────────────────────
 
 const getStatusIcon = (status: Reminder["status"]) => {
   switch (status) {
@@ -75,56 +76,90 @@ const getTypeColor = (category: Reminder["category"]) => {
 
 const getCategoryLabel = (
   category: ReminderCategory,
-  t: (key: string) => string
+  t: (key: string) => string,
 ): string => {
-  switch (category) {
-    case ReminderCategory.EDUCATION:
-      return t("reminders.category.education");
-    case ReminderCategory.LIFE:
-      return t("reminders.category.life");
-    case ReminderCategory.DOCUMENTS:
-      return t("reminders.category.documents");
-    case ReminderCategory.HEALTH:
-      return t("reminders.category.health");
-    case ReminderCategory.OTHER:
-      return t("reminders.category.other");
-    default:
-      return t("reminders.category.other");
-  }
-};
-
-const getLocaleByLanguage = (language?: Language): string => {
-  switch (language) {
-    case Language.EN:
-      return "en-US";
-    case Language.FR:
-      return "fr-FR";
-    case Language.AR:
-      return "ar";
-    case Language.ZH:
-      return "zh-CN";
-    case Language.RU:
-    default:
-      return "ru-RU";
-  }
+  const map: Record<string, string> = {
+    [ReminderCategory.EDUCATION]: t("reminders.category.education"),
+    [ReminderCategory.LIFE]: t("reminders.category.life"),
+    [ReminderCategory.DOCUMENTS]: t("reminders.category.documents"),
+    [ReminderCategory.HEALTH]: t("reminders.category.health"),
+    [ReminderCategory.OTHER]: t("reminders.category.other"),
+  };
+  return map[category] ?? t("reminders.category.other");
 };
 
 const getCategoryBadgeColor = (category: ReminderCategory): string => {
-  switch (category) {
-    case ReminderCategory.EDUCATION:
-      return "bg-blue-100 text-blue-700";
-    case ReminderCategory.LIFE:
-      return "bg-green-100 text-green-700";
-    case ReminderCategory.DOCUMENTS:
-      return "bg-red-100 text-red-700";
-    case ReminderCategory.HEALTH:
-      return "bg-purple-100 text-purple-700";
-    default:
-      return "bg-gray-100 text-gray-700";
-  }
+  const map: Record<string, string> = {
+    [ReminderCategory.EDUCATION]: "bg-blue-100 text-blue-700",
+    [ReminderCategory.LIFE]: "bg-green-100 text-green-700",
+    [ReminderCategory.DOCUMENTS]: "bg-red-100 text-red-700",
+    [ReminderCategory.HEALTH]: "bg-purple-100 text-purple-700",
+  };
+  return map[category] ?? "bg-gray-100 text-gray-700";
 };
 
-// Компонент календаря
+const getLocaleByLanguage = (language?: Language): string => {
+  const map: Record<string, string> = {
+    [Language.EN]: "en-US",
+    [Language.FR]: "fr-FR",
+    [Language.AR]: "ar",
+    [Language.ZH]: "zh-CN",
+    [Language.RU]: "ru-RU",
+  };
+  return (language && map[language]) || "ru-RU";
+};
+
+function parseCategoryEnum(raw: unknown): ReminderCategory {
+  const str = String(raw ?? "").toUpperCase();
+  const map: Record<string, ReminderCategory> = {
+    EDUCATION: ReminderCategory.EDUCATION,
+    LIFE: ReminderCategory.LIFE,
+    DOCUMENTS: ReminderCategory.DOCUMENTS,
+    HEALTH: ReminderCategory.HEALTH,
+    OTHER: ReminderCategory.OTHER,
+  };
+  return map[str] ?? ReminderCategory.OTHER;
+}
+
+function formatDueDate(
+  dueDate: unknown,
+  locale: string,
+  fallback: string,
+): string {
+  try {
+    if (
+      !dueDate ||
+      dueDate === "null" ||
+      dueDate === "undefined" ||
+      dueDate === ""
+    )
+      return fallback;
+
+    const raw = String(dueDate).trim();
+    if (!raw || raw === "null" || raw === "undefined") return fallback;
+
+    let date: Date;
+    if (raw.includes("T")) {
+      date = new Date(raw);
+    } else if (/^\d{4}-\d{2}-\d{2}$/.test(raw)) {
+      date = new Date(`${raw}T00:00:00Z`);
+    } else {
+      date = new Date(raw);
+    }
+
+    if (isNaN(date.getTime())) return fallback;
+    return date.toLocaleDateString(locale, {
+      year: "numeric",
+      month: "long",
+      day: "numeric",
+    });
+  } catch {
+    return fallback;
+  }
+}
+
+// ── Calendar sub-component ──────────────────────────────────────────
+
 const CalendarView = ({ reminders }: { reminders: Reminder[] }) => {
   const { t, currentLanguage } = useTranslation();
   const locale = getLocaleByLanguage(currentLanguage);
@@ -134,32 +169,23 @@ const CalendarView = ({ reminders }: { reminders: Reminder[] }) => {
   const year = currentDate.getFullYear();
   const month = currentDate.getMonth();
 
-  // Получаем первый день месяца и количество дней
   const firstDay = new Date(year, month, 1);
   const lastDay = new Date(year, month + 1, 0);
   const daysInMonth = lastDay.getDate();
   const startingDayOfWeek = firstDay.getDay();
 
-  // Получаем напоминания для каждой даты
   const remindersByDate = useMemo(() => {
     const map = new Map<string, Reminder[]>();
     reminders.forEach((reminder) => {
       if (!reminder.dueDate) return;
       try {
-        const date = new Date(reminder.dueDate);
+        const date = new Date(reminder.dueDate as string);
         if (isNaN(date.getTime())) return;
-        const dateKey = `${date.getFullYear()}-${String(
-          date.getMonth() + 1
-        ).padStart(2, "0")}-${String(date.getDate()).padStart(2, "0")}`;
-        if (!map.has(dateKey)) {
-          map.set(dateKey, []);
-        }
+        const dateKey = `${date.getFullYear()}-${String(date.getMonth() + 1).padStart(2, "0")}-${String(date.getDate()).padStart(2, "0")}`;
+        if (!map.has(dateKey)) map.set(dateKey, []);
         map.get(dateKey)!.push(reminder);
-      } catch (error) {
-        console.error(
-          `Error processing date for reminder ${reminder.id}:`,
-          error
-        );
+      } catch {
+        // skip bad dates
       }
     });
     return map;
@@ -167,73 +193,51 @@ const CalendarView = ({ reminders }: { reminders: Reminder[] }) => {
 
   const navigateMonth = (direction: "prev" | "next") => {
     setCurrentDate((prev) => {
-      const newDate = new Date(prev);
-      if (direction === "prev") {
-        newDate.setMonth(prev.getMonth() - 1);
-      } else {
-        newDate.setMonth(prev.getMonth() + 1);
-      }
-      return newDate;
+      const d = new Date(prev);
+      d.setMonth(prev.getMonth() + (direction === "prev" ? -1 : 1));
+      return d;
     });
   };
 
   const weekDays = useMemo(() => {
-    const formatter = new Intl.DateTimeFormat(locale, { weekday: "short" });
-    const baseDate = new Date(2021, 7, 1); // 2021-08-01 is Sunday
-    return Array.from({ length: 7 }, (_, idx) =>
-      formatter.format(
-        new Date(
-          baseDate.getFullYear(),
-          baseDate.getMonth(),
-          baseDate.getDate() + idx
-        )
-      )
+    const fmt = new Intl.DateTimeFormat(locale, { weekday: "short" });
+    const base = new Date(2021, 7, 1);
+    return Array.from({ length: 7 }, (_, i) =>
+      fmt.format(new Date(base.getFullYear(), base.getMonth(), base.getDate() + i)),
     );
   }, [locale]);
 
   const getRemindersForDate = (day: number): Reminder[] => {
-    const dateKey = `${year}-${String(month + 1).padStart(2, "0")}-${String(
-      day
-    ).padStart(2, "0")}`;
-    return remindersByDate.get(dateKey) || [];
+    const key = `${year}-${String(month + 1).padStart(2, "0")}-${String(day).padStart(2, "0")}`;
+    return remindersByDate.get(key) || [];
   };
 
-  const isToday = (day: number): boolean => {
-    const today = new Date();
-    return (
-      today.getDate() === day &&
-      today.getMonth() === month &&
-      today.getFullYear() === year
-    );
+  const isToday = (day: number) => {
+    const now = new Date();
+    return now.getDate() === day && now.getMonth() === month && now.getFullYear() === year;
   };
 
-  const isSelected = (day: number): boolean => {
-    if (!selectedDate) return false;
-    return (
-      selectedDate.getDate() === day &&
-      selectedDate.getMonth() === month &&
-      selectedDate.getFullYear() === year
-    );
-  };
+  const isSelected = (day: number) =>
+    selectedDate
+      ? selectedDate.getDate() === day &&
+        selectedDate.getMonth() === month &&
+        selectedDate.getFullYear() === year
+      : false;
 
-  const selectedDateReminders = selectedDate
-    ? getRemindersForDate(selectedDate.getDate())
-    : [];
+  const selectedDateReminders = selectedDate ? getRemindersForDate(selectedDate.getDate()) : [];
 
   return (
     <div>
-      {/* Заголовок календаря с навигацией */}
       <div className="flex items-center justify-between mb-4">
         <button
           onClick={() => navigateMonth("prev")}
           className="p-2 hover:bg-gray-100 rounded-lg transition-colors"
+          aria-label={t("reminders.calendar.noRemindersOnDate")}
         >
           <ChevronLeft className="h-5 w-5 text-gray-600" />
         </button>
         <h3 className="text-lg font-semibold text-gray-900">
-          {new Intl.DateTimeFormat(locale, { month: "long" }).format(
-            new Date(year, month, 1)
-          )}{" "}
+          {new Intl.DateTimeFormat(locale, { month: "long" }).format(new Date(year, month, 1))}{" "}
           {year}
         </h3>
         <button
@@ -244,26 +248,19 @@ const CalendarView = ({ reminders }: { reminders: Reminder[] }) => {
         </button>
       </div>
 
-      {/* Дни недели */}
       <div className="grid grid-cols-7 gap-1 mb-2">
         {weekDays.map((day) => (
-          <div
-            key={day}
-            className="text-center text-xs font-medium text-gray-500 py-2"
-          >
+          <div key={day} className="text-center text-xs font-medium text-gray-500 py-2">
             {day}
           </div>
         ))}
       </div>
 
-      {/* Календарная сетка */}
       <div className="grid grid-cols-7 gap-1">
-        {/* Пустые ячейки в начале месяца */}
-        {Array.from({ length: startingDayOfWeek }).map((_, idx) => (
-          <div key={`empty-${idx}`} className="aspect-square" />
+        {Array.from({ length: startingDayOfWeek }).map((_, i) => (
+          <div key={`empty-${i}`} className="aspect-square" />
         ))}
 
-        {/* Дни месяца */}
         {Array.from({ length: daysInMonth }).map((_, idx) => {
           const day = idx + 1;
           const dayReminders = getRemindersForDate(day);
@@ -279,42 +276,39 @@ const CalendarView = ({ reminders }: { reminders: Reminder[] }) => {
                 selected
                   ? "bg-purple-600 text-white"
                   : today && hasReminders
-                  ? "border-2 border-purple-400 bg-purple-50 text-purple-900 font-semibold"
-                  : today && !hasReminders
-                  ? "border border-gray-300 bg-gray-50 text-gray-700"
-                  : hasReminders
-                  ? "bg-blue-50 hover:bg-blue-100 text-gray-900"
-                  : "hover:bg-gray-100 text-gray-700"
+                    ? "border-2 border-purple-400 bg-purple-50 text-purple-900 font-semibold"
+                    : today
+                      ? "border border-gray-300 bg-gray-50 text-gray-700"
+                      : hasReminders
+                        ? "bg-blue-50 hover:bg-blue-100 text-gray-900"
+                        : "hover:bg-gray-100 text-gray-700"
               }`}
             >
               <div className="text-xs font-medium">{day}</div>
-              {hasReminders ? (
+              {hasReminders && (
                 <div className="flex justify-center gap-0.5 mt-0.5">
-                  {dayReminders.slice(0, 3).map((reminder, i) => (
+                  {dayReminders.slice(0, 3).map((r, i) => (
                     <div
                       key={i}
                       className={`w-1 h-1 rounded-full ${
                         selected
                           ? "bg-white"
-                          : reminder.priority === ReminderPriority.HIGH
-                          ? "bg-red-500"
-                          : reminder.priority === ReminderPriority.MEDIUM
-                          ? "bg-yellow-500"
-                          : "bg-green-500"
+                          : r.priority === ReminderPriority.HIGH
+                            ? "bg-red-500"
+                            : r.priority === ReminderPriority.MEDIUM
+                              ? "bg-yellow-500"
+                              : "bg-green-500"
                       }`}
                     />
                   ))}
-                  {dayReminders.length > 3 && (
-                    <div className="text-[6px] font-bold">+</div>
-                  )}
+                  {dayReminders.length > 3 && <div className="text-[6px] font-bold">+</div>}
                 </div>
-              ) : null}
+              )}
             </button>
           );
         })}
       </div>
 
-      {/* Напоминания выбранной даты */}
       {selectedDate && selectedDateReminders.length > 0 && (
         <div className="mt-6 pt-4 border-t border-gray-200">
           <h4 className="text-sm font-semibold text-gray-900 mb-3">
@@ -324,22 +318,15 @@ const CalendarView = ({ reminders }: { reminders: Reminder[] }) => {
                 day: "numeric",
                 month: "long",
                 year: "numeric",
-              })
+              }),
             )}
           </h4>
           <div className="space-y-2">
             {selectedDateReminders.map((reminder) => (
-              <div
-                key={reminder.id}
-                className="p-2 bg-gray-50 rounded-lg text-sm"
-              >
-                <div className="font-medium text-gray-900">
-                  {reminder.title}
-                </div>
+              <div key={reminder.id} className="p-2 bg-gray-50 rounded-lg text-sm">
+                <div className="font-medium text-gray-900">{reminder.title}</div>
                 {reminder.description && (
-                  <div className="text-xs text-gray-500 mt-1">
-                    {reminder.description}
-                  </div>
+                  <div className="text-xs text-gray-500 mt-1">{reminder.description}</div>
                 )}
               </div>
             ))}
@@ -355,7 +342,7 @@ const CalendarView = ({ reminders }: { reminders: Reminder[] }) => {
               day: "numeric",
               month: "long",
               year: "numeric",
-            })
+            }),
           )}
         </div>
       )}
@@ -363,22 +350,114 @@ const CalendarView = ({ reminders }: { reminders: Reminder[] }) => {
   );
 };
 
-export default function RemindersPage() {
-  const { user, isLoading: authLoading } = useAuth();
-  const router = useRouter();
+// ── Notification icon helper ────────────────────────────────────────
+
+const NotificationBadge = ({
+  method,
+  t,
+}: {
+  method: string | undefined;
+  t: (key: string) => string;
+}) => {
+  if (method === "telegram") {
+    return (
+      <span className="flex items-center space-x-1">
+        <div className="w-4 h-4 bg-blue-500 rounded-full flex items-center justify-center flex-shrink-0">
+          <svg className="w-2.5 h-2.5 text-white" fill="currentColor" viewBox="0 0 24 24">
+            <path d="M9.78 18.65l.28-4.23 7.68-6.92c.34-.31-.07-.46-.52-.19L7.74 13.3 3.64 12c-.88-.25-.89-.86.2-1.3l15.97-6.16c.73-.33 1.43.18 1.15 1.3l-2.72 12.81c-.19.91-.74 1.13-1.5.71L12.6 16.3l-1.99 1.93c-.23.23-.42.42-.83.42z" />
+          </svg>
+        </div>
+        <span>{t("reminders.notification.telegram")}</span>
+      </span>
+    );
+  }
+  if (method === "vk") {
+    return (
+      <span className="flex items-center space-x-1">
+        <div className="w-4 h-4 bg-blue-600 rounded-lg flex items-center justify-center flex-shrink-0">
+          <span className="text-white text-[8px] font-bold leading-none">VK</span>
+        </div>
+        <span>{t("reminders.notification.vkShort")}</span>
+      </span>
+    );
+  }
+  return (
+    <span className="flex items-center space-x-1">
+      <div className="w-4 h-4 bg-gray-600 rounded-full flex items-center justify-center flex-shrink-0">
+        <svg className="w-2.5 h-2.5 text-white" fill="none" stroke="currentColor" viewBox="0 0 24 24">
+          <path strokeLinecap="round" strokeLinejoin="round" strokeWidth={2} d="M3 8l7.89 5.26a2 2 0 002.22 0L21 8M5 19h14a2 2 0 002-2V7a2 2 0 00-2-2H5a2 2 0 00-2 2v10a2 2 0 002 2z" />
+        </svg>
+      </div>
+      <span>{t("reminders.notification.email")}</span>
+    </span>
+  );
+};
+
+// ── Loading skeleton ────────────────────────────────────────────────
+
+const RemindersSkeleton = () => (
+  <Layout>
+    <div className="space-y-8">
+      <div className="bg-white rounded-2xl sm:rounded-3xl p-4 sm:p-6 shadow-sm">
+        <div className="flex flex-col sm:flex-row sm:items-center justify-between space-y-4 sm:space-y-0">
+          <div className="flex items-center space-x-3">
+            <div className="w-12 h-12 bg-gray-200 rounded-lg animate-pulse" />
+            <div>
+              <div className="h-6 w-48 bg-gray-200 rounded animate-pulse mb-2" />
+              <div className="h-4 w-64 bg-gray-200 rounded animate-pulse" />
+            </div>
+          </div>
+          <div className="h-10 w-40 bg-gray-200 rounded animate-pulse" />
+        </div>
+      </div>
+      <div className="bg-white rounded-2xl sm:rounded-3xl p-4 sm:p-6 shadow-sm">
+        <div className="h-10 flex-1 bg-gray-200 rounded animate-pulse" />
+      </div>
+      <div className="grid grid-cols-1 sm:grid-cols-2 lg:grid-cols-3 gap-4">
+        {[1, 2, 3].map((i) => (
+          <div key={i} className="bg-white rounded-2xl sm:rounded-3xl p-4 sm:p-6 shadow-sm">
+            <div className="flex items-center space-x-3">
+              <div className="w-12 h-12 bg-gray-200 rounded-lg animate-pulse" />
+              <div className="flex-1">
+                <div className="h-4 w-20 bg-gray-200 rounded animate-pulse mb-2" />
+                <div className="h-8 w-12 bg-gray-200 rounded animate-pulse" />
+              </div>
+            </div>
+          </div>
+        ))}
+      </div>
+      <div>
+        <div className="h-6 w-48 bg-gray-200 rounded animate-pulse mb-4" />
+        <div className="space-y-3 sm:space-y-4">
+          {[1, 2, 3].map((i) => (
+            <div key={i} className="bg-white rounded-2xl sm:rounded-3xl p-4 shadow-sm border-l-4 border-l-blue-500">
+              <div className="h-5 w-3/4 bg-gray-200 rounded animate-pulse mb-2" />
+              <div className="h-4 w-1/2 bg-gray-200 rounded animate-pulse mb-2" />
+              <div className="h-3 w-1/3 bg-gray-200 rounded animate-pulse" />
+            </div>
+          ))}
+        </div>
+      </div>
+    </div>
+  </Layout>
+);
+
+// ── Main page component ─────────────────────────────────────────────
+
+function RemindersContent() {
+  const { user } = useAuth();
   const { reminders, loading, createReminder, updateReminder, deleteReminder } =
     useReminders(user?.id || "");
   const { t, currentLanguage } = useTranslation();
   const locale = getLocaleByLanguage(currentLanguage);
 
-  // Автоматическое перенаправление на /login если не авторизован
-  useEffect(() => {
-    if (!authLoading && !user) {
-      router.push("/login");
-    }
-  }, [user, authLoading, router]);
   const [showAddForm, setShowAddForm] = useState(false);
   const [searchTerm, setSearchTerm] = useState("");
+  const [isSubmitting, setIsSubmitting] = useState(false);
+  const [deletingId, setDeletingId] = useState<string | null>(null);
+  const [toastMessage, setToastMessage] = useState("");
+  const [toastType, setToastType] = useState<"success" | "error">("success");
+  const [fieldErrors, setFieldErrors] = useState<Record<string, string>>({});
   const [newReminder, setNewReminder] = useState({
     title: "",
     description: "",
@@ -388,251 +467,153 @@ export default function RemindersPage() {
     notificationMethod: "email" as "email" | "telegram" | "vk",
   });
 
+  const showToast = useCallback((msg: string, type: "success" | "error" = "success") => {
+    setToastMessage(msg);
+    setToastType(type);
+    setTimeout(() => setToastMessage(""), 3000);
+  }, []);
+
   const filteredReminders = useMemo(() => {
-    return reminders.filter((r) => {
-      if (searchTerm) {
-        const searchLower = searchTerm.toLowerCase();
-        return (
-          r.title.toLowerCase().includes(searchLower) ||
-          r.description?.toLowerCase().includes(searchLower) ||
-          false
-        );
-      }
-      return true;
-    });
+    if (!searchTerm) return reminders;
+    const q = searchTerm.toLowerCase();
+    return reminders.filter(
+      (r) =>
+        r.title.toLowerCase().includes(q) || r.description?.toLowerCase().includes(q),
+    );
   }, [reminders, searchTerm]);
 
-  // Фильтруем активные напоминания
-  const pendingReminders = filteredReminders.filter((r) => {
-    if (!r.status) return false;
-    const status = String(r.status).toUpperCase();
-    return status === "PENDING" || status === ReminderStatus.PENDING;
-  });
+  const pendingReminders = useMemo(
+    () =>
+      filteredReminders.filter((r) => {
+        const s = String(r.status ?? "").toUpperCase();
+        return s === "PENDING" || s === ReminderStatus.PENDING;
+      }),
+    [filteredReminders],
+  );
 
-  const completedReminders = filteredReminders.filter((r) => {
-    const status = String(r.status || "").toUpperCase();
-    return status === "COMPLETED" || status === ReminderStatus.COMPLETED;
-  });
+  const completedReminders = useMemo(
+    () =>
+      filteredReminders.filter((r) => {
+        const s = String(r.status ?? "").toUpperCase();
+        return s === "COMPLETED" || s === ReminderStatus.COMPLETED;
+      }),
+    [filteredReminders],
+  );
 
-  const handleAddReminder = async (e: React.FormEvent) => {
-    e.preventDefault();
+  const handleFieldChange = useCallback(
+    (field: string, value: string) => {
+      setNewReminder((prev) => ({ ...prev, [field]: value }));
+      if (fieldErrors[field]) {
+        setFieldErrors((prev) => {
+          const next = { ...prev };
+          delete next[field];
+          return next;
+        });
+      }
+    },
+    [fieldErrors],
+  );
 
-    if (!newReminder.title || !newReminder.date || !user?.id) {
-      alert(t("reminders.validation.requiredFields"));
-      return;
-    }
+  const handleAddReminder = useCallback(
+    async (e: React.FormEvent) => {
+      e.preventDefault();
+      if (isSubmitting) return;
 
-    try {
-      // Формируем дату правильно - добавляем время, чтобы получить корректную ISO строку
-      const dateInput = newReminder.date; // Формат: YYYY-MM-DD
-      const dateWithTime = dateInput
-        ? `${dateInput}T00:00:00.000Z`
-        : new Date().toISOString();
+      const errors: Record<string, string> = {};
+      if (!newReminder.title.trim()) errors.title = t("reminders.validation.requiredFields");
+      if (!newReminder.date) errors.date = t("reminders.validation.chooseDate");
+      if (!Object.values(ReminderCategory).includes(newReminder.category))
+        errors.category = t("reminders.validation.invalidCategory");
 
-      // Проверяем, что категория и дата заполнены
-      if (!newReminder.category) {
-        alert(t("reminders.validation.chooseCategory"));
+      if (Object.keys(errors).length > 0) {
+        setFieldErrors(errors);
+        showToast(t("reminders.validation.requiredFields"), "error");
         return;
       }
 
-      if (!dateInput) {
-        alert(t("reminders.validation.chooseDate"));
-        return;
-      }
-
-      // НЕ отправляем userId - сервер берёт его из токена
-      const reminderData: Omit<
-        Reminder,
-        "id" | "createdAt" | "updatedAt" | "userId"
-      > = {
-        title: newReminder.title,
-        description: newReminder.description || undefined,
-        dueDate: dateWithTime,
-        category: newReminder.category,
-        priority: newReminder.priority,
-        status: ReminderStatus.PENDING,
-        notificationMethod: newReminder.notificationMethod || "email",
-      };
-
-      // Проверяем, что категория - это строка enum
-      if (
-        !Object.values(ReminderCategory).includes(
-          newReminder.category as ReminderCategory
-        )
-      ) {
-        console.error("Invalid category:", newReminder.category);
-        alert(t("reminders.validation.invalidCategory"));
-        return;
-      }
-
-      // Проверяем, что дата валидна
-      if (!dateWithTime || dateWithTime === "") {
-        console.error("Invalid date:", dateWithTime);
-        alert(t("reminders.validation.invalidDate"));
-        return;
-      }
-
+      setIsSubmitting(true);
       try {
-        const createdReminder = await createReminder(reminderData);
+        const dateWithTime = `${newReminder.date}T00:00:00.000Z`;
 
+        await createReminder({
+          title: newReminder.title,
+          description: newReminder.description || undefined,
+          dueDate: dateWithTime,
+          category: newReminder.category,
+          priority: newReminder.priority,
+          status: ReminderStatus.PENDING,
+          notificationMethod: newReminder.notificationMethod || "email",
+        });
+
+        setNewReminder({
+          title: "",
+          description: "",
+          date: "",
+          category: ReminderCategory.OTHER,
+          priority: ReminderPriority.MEDIUM,
+          notificationMethod: "email",
+        });
+        setFieldErrors({});
+        setShowAddForm(false);
+        showToast(t("reminders.toast.created"));
       } catch (error) {
         console.error("Error creating reminder:", error);
-        alert(t("reminders.validation.createError"));
+        showToast(t("reminders.validation.createError"), "error");
+      } finally {
+        setIsSubmitting(false);
+      }
+    },
+    [newReminder, isSubmitting, createReminder, showToast, t],
+  );
+
+  const handleMarkCompleted = useCallback(
+    async (reminderId: string) => {
+      try {
+        await updateReminder(reminderId, { status: ReminderStatus.COMPLETED });
+        showToast(t("reminders.toast.completed"));
+      } catch (error) {
+        console.error("Error updating reminder:", error);
+        showToast(t("reminders.toast.error"), "error");
+      }
+    },
+    [updateReminder, showToast, t],
+  );
+
+  const handleDeleteReminder = useCallback(
+    async (reminderId: string) => {
+      if (deletingId !== reminderId) {
+        setDeletingId(reminderId);
+        setTimeout(() => setDeletingId(null), 3000);
         return;
       }
+      try {
+        await deleteReminder(reminderId);
+        setDeletingId(null);
+        showToast(t("reminders.toast.deleted"));
+      } catch (error) {
+        console.error("Error deleting reminder:", error);
+        showToast(t("reminders.toast.error"), "error");
+      }
+    },
+    [deletingId, deleteReminder, showToast, t],
+  );
 
-      setNewReminder({
-        title: "",
-        description: "",
-        date: "",
-        category: ReminderCategory.OTHER,
-        priority: ReminderPriority.MEDIUM,
-        notificationMethod: "email",
-      });
-      setShowAddForm(false);
-    } catch (error) {
-      console.error("Error creating reminder:", error);
-    }
-  };
-
-  const handleMarkCompleted = async (reminderId: string) => {
-    try {
-      await updateReminder(reminderId, { status: ReminderStatus.COMPLETED });
-    } catch (error) {
-      console.error("Error updating reminder:", error);
-    }
-  };
-
-  const handleDeleteReminder = async (reminderId: string) => {
-    try {
-      await deleteReminder(reminderId);
-    } catch (error) {
-      console.error("Error deleting reminder:", error);
-    }
-  };
-
-  // Показываем скелетон загрузки, если идет загрузка авторизации или напоминаний
-  if (authLoading || loading) {
-    return (
-      <Layout>
-        <div className="space-y-8">
-          {/* Header Skeleton */}
-          <div className="bg-white rounded-2xl sm:rounded-3xl p-4 sm:p-6 shadow-sm">
-            <div className="flex flex-col sm:flex-row sm:items-center justify-between space-y-4 sm:space-y-0">
-              <div className="flex items-center space-x-3">
-                <div className="w-12 h-12 bg-gray-200 rounded-lg animate-pulse"></div>
-                <div>
-                  <div className="h-6 w-48 bg-gray-200 rounded animate-pulse mb-2"></div>
-                  <div className="h-4 w-64 bg-gray-200 rounded animate-pulse"></div>
-                </div>
-              </div>
-              <div className="h-10 w-40 bg-gray-200 rounded animate-pulse"></div>
-            </div>
-          </div>
-
-          {/* Search and Filters Skeleton */}
-          <div className="bg-white rounded-2xl sm:rounded-3xl p-4 sm:p-6 shadow-sm">
-            <div className="flex flex-col sm:flex-row gap-4">
-              <div className="h-10 flex-1 bg-gray-200 rounded animate-pulse"></div>
-              <div className="h-10 w-32 bg-gray-200 rounded animate-pulse"></div>
-            </div>
-          </div>
-
-          {/* Statistics Skeleton */}
-          <div className="grid grid-cols-1 sm:grid-cols-2 lg:grid-cols-3 gap-4">
-            {[1, 2, 3].map((i) => (
-              <div key={i} className="bg-white rounded-2xl sm:rounded-3xl p-4 sm:p-6 shadow-sm">
-                <div className="flex items-center space-x-3">
-                  <div className="w-12 h-12 bg-gray-200 rounded-lg animate-pulse"></div>
-                  <div className="flex-1">
-                    <div className="h-4 w-20 bg-gray-200 rounded animate-pulse mb-2"></div>
-                    <div className="h-8 w-12 bg-gray-200 rounded animate-pulse"></div>
-                  </div>
-                </div>
-              </div>
-            ))}
-          </div>
-
-          {/* Reminders Skeleton */}
-          <div>
-            <div className="h-6 w-48 bg-gray-200 rounded animate-pulse mb-4"></div>
-            <div className="space-y-3 sm:space-y-4">
-              {[1, 2, 3].map((i) => (
-                <div
-                  key={i}
-                  className="bg-white rounded-2xl sm:rounded-3xl p-4 shadow-sm border-l-4 border-l-blue-500"
-                >
-                  <div className="flex items-start space-x-3">
-                    <div className="w-4 h-4 bg-gray-200 rounded animate-pulse"></div>
-                    <div className="flex-1 min-w-0">
-                      <div className="h-5 w-3/4 bg-gray-200 rounded animate-pulse mb-2"></div>
-                      <div className="h-4 w-1/2 bg-gray-200 rounded animate-pulse mb-2"></div>
-                      <div className="h-3 w-1/3 bg-gray-200 rounded animate-pulse mb-1"></div>
-                      <div className="h-3 w-24 bg-gray-200 rounded animate-pulse"></div>
-                    </div>
-                  </div>
-                  <div className="flex items-center space-x-2 mt-3">
-                    <div className="h-6 w-16 bg-gray-200 rounded-full animate-pulse"></div>
-                    <div className="h-8 w-24 bg-gray-200 rounded animate-pulse"></div>
-                    <div className="h-8 w-8 bg-gray-200 rounded animate-pulse"></div>
-                  </div>
-                </div>
-              ))}
-            </div>
-          </div>
-
-          {/* Calendar Skeleton */}
-          <div>
-            <div className="h-6 w-32 bg-gray-200 rounded animate-pulse mb-4"></div>
-            <div className="bg-white rounded-2xl sm:rounded-3xl p-4 sm:p-6 shadow-sm">
-              <div className="space-y-4">
-                <div className="flex items-center justify-between mb-4">
-                  <div className="h-8 w-8 bg-gray-200 rounded animate-pulse"></div>
-                  <div className="h-6 w-40 bg-gray-200 rounded animate-pulse"></div>
-                  <div className="h-8 w-8 bg-gray-200 rounded animate-pulse"></div>
-                </div>
-                <div className="grid grid-cols-7 gap-1 mb-2">
-                  {Array.from({ length: 7 }).map((_, i) => (
-                    <div
-                      key={i}
-                      className="h-8 bg-gray-200 rounded animate-pulse"
-                    ></div>
-                  ))}
-                </div>
-                <div className="grid grid-cols-7 gap-1">
-                  {Array.from({ length: 35 }).map((_, i) => (
-                    <div
-                      key={i}
-                      className="aspect-square bg-gray-200 rounded-lg animate-pulse"
-                    ></div>
-                  ))}
-                </div>
-              </div>
-            </div>
-          </div>
-        </div>
-      </Layout>
-    );
-  }
-
-  // Показываем загрузку пока проверяем авторизацию или перенаправляем
-  if (authLoading || !user) {
-    return (
-      <Layout>
-        <div className="flex items-center justify-center min-h-screen">
-          <div className="text-center">
-            <div className="animate-spin rounded-full h-8 w-8 border-b-2 border-blue-600 mx-auto mb-4"></div>
-            <p className="text-gray-600">
-              {t("reminders.authChecking")}
-            </p>
-          </div>
-        </div>
-      </Layout>
-    );
-  }
+  if (loading) return <RemindersSkeleton />;
 
   return (
     <Layout>
+      {/* Toast */}
+      {toastMessage && (
+        <div
+          className={`fixed top-4 right-4 z-50 px-4 py-3 rounded-lg shadow-lg text-white text-sm transition-all ${
+            toastType === "error" ? "bg-red-500" : "bg-green-500"
+          }`}
+          role="alert"
+        >
+          {toastMessage}
+        </div>
+      )}
+
       <div className="space-y-8">
         {/* Header */}
         <div className="bg-white rounded-2xl sm:rounded-3xl p-4 sm:p-6 shadow-sm">
@@ -671,281 +652,185 @@ export default function RemindersPage() {
                 <Button
                   variant="outline"
                   size="sm"
-                  onClick={() => setShowAddForm(false)}
+                  onClick={() => {
+                    setShowAddForm(false);
+                    setFieldErrors({});
+                  }}
+                  aria-label={t("reminders.actions.close")}
                 >
                   <X className="h-4 w-4" />
                 </Button>
               </div>
 
               <form onSubmit={handleAddReminder} className="space-y-4">
-                <div>
-                  <label className="block text-sm font-medium text-gray-700 mb-1">
-                    {t("reminders.form.fields.title")}
-                  </label>
-                  <Input
-                    type="text"
-                    value={newReminder.title}
-                    onChange={(e) =>
-                      setNewReminder((prev) => ({
-                        ...prev,
-                        title: e.target.value,
-                      }))
-                    }
-                    placeholder={t("reminders.form.placeholders.title")}
-                    required
-                  />
-                </div>
-
-                <div>
-                  <label className="block text-sm font-medium text-gray-700 mb-1">
-                    {t("reminders.form.fields.description")}
-                  </label>
-                  <textarea
-                    value={newReminder.description}
-                    onChange={(e) =>
-                      setNewReminder((prev) => ({
-                        ...prev,
-                        description: e.target.value,
-                      }))
-                    }
-                    placeholder={t("reminders.form.placeholders.description")}
-                    className="w-full px-3 py-2 border border-gray-300 rounded-md focus:ring-2 focus:ring-purple-500 focus:border-transparent"
-                    rows={3}
-                  />
-                </div>
-
-                <div className="grid grid-cols-1 sm:grid-cols-2 lg:grid-cols-3 gap-4">
+                <fieldset disabled={isSubmitting} className="space-y-4">
                   <div>
-                    <label className="block text-sm font-medium text-gray-700 mb-1">
-                      {t("reminders.form.fields.date")}
+                    <label
+                      htmlFor="reminder-title"
+                      className="block text-sm font-medium text-gray-700 mb-1"
+                    >
+                      {t("reminders.form.fields.title")}
                     </label>
                     <Input
-                      type="date"
-                      value={newReminder.date}
-                      onChange={(e) =>
-                        setNewReminder((prev) => ({
-                          ...prev,
-                          date: e.target.value,
-                        }))
-                      }
-                      required
+                      id="reminder-title"
+                      type="text"
+                      value={newReminder.title}
+                      onChange={(e) => handleFieldChange("title", e.target.value)}
+                      placeholder={t("reminders.form.placeholders.title")}
+                      className={fieldErrors.title ? "border-red-500" : ""}
+                    />
+                    {fieldErrors.title && (
+                      <p className="text-xs text-red-500 mt-1" role="alert">
+                        {fieldErrors.title}
+                      </p>
+                    )}
+                  </div>
+
+                  <div>
+                    <label
+                      htmlFor="reminder-description"
+                      className="block text-sm font-medium text-gray-700 mb-1"
+                    >
+                      {t("reminders.form.fields.description")}
+                    </label>
+                    <textarea
+                      id="reminder-description"
+                      value={newReminder.description}
+                      onChange={(e) => handleFieldChange("description", e.target.value)}
+                      placeholder={t("reminders.form.placeholders.description")}
+                      className="w-full px-3 py-2 border border-gray-300 rounded-md text-sm focus:ring-2 focus:ring-purple-500 focus:border-transparent bg-white"
+                      rows={3}
                     />
                   </div>
 
-                  <div>
-                    <label className="block text-sm font-medium text-gray-700 mb-1">
-                      {t("reminders.form.fields.category")}
-                    </label>
-                    <div className="relative">
-                      <select
-                        value={newReminder.category}
-                        onChange={(e) =>
-                          setNewReminder((prev) => ({
-                            ...prev,
-                            category: e.target.value as ReminderCategory,
-                          }))
-                        }
-                        className="w-full px-3 py-2 border border-gray-300 rounded-md focus:ring-2 focus:ring-purple-500 focus:border-transparent appearance-none"
+                  <div className="grid grid-cols-1 sm:grid-cols-2 lg:grid-cols-3 gap-4">
+                    <div>
+                      <label
+                        htmlFor="reminder-date"
+                        className="block text-sm font-medium text-gray-700 mb-1"
                       >
-                        <option value={ReminderCategory.EDUCATION}>
-                          {t("reminders.category.education")}
-                        </option>
-                        <option value={ReminderCategory.LIFE}>
-                          {t("reminders.category.life")}
-                        </option>
-                        <option value={ReminderCategory.DOCUMENTS}>
-                          {t("reminders.category.documents")}
-                        </option>
-                        <option value={ReminderCategory.HEALTH}>
-                          {t("reminders.category.health")}
-                        </option>
-                        <option value={ReminderCategory.OTHER}>
-                          {t("reminders.category.other")}
-                        </option>
-                      </select>
-                      <div className="absolute right-3 top-1/2 transform -translate-y-1/2 pointer-events-none">
-                        <svg
-                          className="h-4 w-4 text-gray-400"
-                          fill="none"
-                          stroke="currentColor"
-                          viewBox="0 0 24 24"
+                        {t("reminders.form.fields.date")}
+                      </label>
+                      <Input
+                        id="reminder-date"
+                        type="date"
+                        value={newReminder.date}
+                        onChange={(e) => handleFieldChange("date", e.target.value)}
+                        className={fieldErrors.date ? "border-red-500" : ""}
+                      />
+                      {fieldErrors.date && (
+                        <p className="text-xs text-red-500 mt-1" role="alert">
+                          {fieldErrors.date}
+                        </p>
+                      )}
+                    </div>
+
+                    <div>
+                      <label
+                        htmlFor="reminder-category"
+                        className="block text-sm font-medium text-gray-700 mb-1"
+                      >
+                        {t("reminders.form.fields.category")}
+                      </label>
+                      <div className="relative">
+                        <select
+                          id="reminder-category"
+                          value={newReminder.category}
+                          onChange={(e) => handleFieldChange("category", e.target.value)}
+                          className="w-full px-3 py-2 border border-gray-300 rounded-md text-sm focus:ring-2 focus:ring-purple-500 focus:border-transparent appearance-none bg-white"
                         >
-                          <path
-                            strokeLinecap="round"
-                            strokeLinejoin="round"
-                            strokeWidth={2}
-                            d="M19 9l-7 7-7-7"
-                          />
-                        </svg>
+                          <option value={ReminderCategory.EDUCATION}>
+                            {t("reminders.category.education")}
+                          </option>
+                          <option value={ReminderCategory.LIFE}>
+                            {t("reminders.category.life")}
+                          </option>
+                          <option value={ReminderCategory.DOCUMENTS}>
+                            {t("reminders.category.documents")}
+                          </option>
+                          <option value={ReminderCategory.HEALTH}>
+                            {t("reminders.category.health")}
+                          </option>
+                          <option value={ReminderCategory.OTHER}>
+                            {t("reminders.category.other")}
+                          </option>
+                        </select>
+                        <div className="absolute right-3 top-1/2 -translate-y-1/2 pointer-events-none">
+                          <svg className="h-4 w-4 text-gray-400" fill="none" stroke="currentColor" viewBox="0 0 24 24">
+                            <path strokeLinecap="round" strokeLinejoin="round" strokeWidth={2} d="M19 9l-7 7-7-7" />
+                          </svg>
+                        </div>
+                      </div>
+                    </div>
+
+                    <div>
+                      <label
+                        htmlFor="reminder-priority"
+                        className="block text-sm font-medium text-gray-700 mb-1"
+                      >
+                        {t("reminders.form.fields.priority")}
+                      </label>
+                      <div className="relative">
+                        <select
+                          id="reminder-priority"
+                          value={newReminder.priority}
+                          onChange={(e) => handleFieldChange("priority", e.target.value)}
+                          className="w-full px-3 py-2 border border-gray-300 rounded-md text-sm focus:ring-2 focus:ring-purple-500 focus:border-transparent appearance-none bg-white"
+                        >
+                          <option value={ReminderPriority.LOW}>{t("reminders.priority.low")}</option>
+                          <option value={ReminderPriority.MEDIUM}>{t("reminders.priority.medium")}</option>
+                          <option value={ReminderPriority.HIGH}>{t("reminders.priority.high")}</option>
+                        </select>
+                        <div className="absolute right-3 top-1/2 -translate-y-1/2 pointer-events-none">
+                          <svg className="h-4 w-4 text-gray-400" fill="none" stroke="currentColor" viewBox="0 0 24 24">
+                            <path strokeLinecap="round" strokeLinejoin="round" strokeWidth={2} d="M19 9l-7 7-7-7" />
+                          </svg>
+                        </div>
                       </div>
                     </div>
                   </div>
 
                   <div>
                     <label className="block text-sm font-medium text-gray-700 mb-1">
-                      {t("reminders.form.fields.priority")}
+                      {t("reminders.form.fields.notificationMethod")}
                     </label>
-                    <div className="relative">
-                      <select
-                        value={newReminder.priority}
-                        onChange={(e) =>
-                          setNewReminder((prev) => ({
-                            ...prev,
-                            priority: e.target.value as Reminder["priority"],
-                          }))
-                        }
-                        className="w-full px-3 py-2 border border-gray-300 rounded-md focus:ring-2 focus:ring-purple-500 focus:border-transparent appearance-none"
-                      >
-                        <option value={ReminderPriority.LOW}>
-                          {t("reminders.priority.low")}
-                        </option>
-                        <option value={ReminderPriority.MEDIUM}>
-                          {t("reminders.priority.medium")}
-                        </option>
-                        <option value={ReminderPriority.HIGH}>
-                          {t("reminders.priority.high")}
-                        </option>
-                      </select>
-                      <div className="absolute right-3 top-1/2 transform -translate-y-1/2 pointer-events-none">
-                        <svg
-                          className="h-4 w-4 text-gray-400"
-                          fill="none"
-                          stroke="currentColor"
-                          viewBox="0 0 24 24"
-                        >
-                          <path
-                            strokeLinecap="round"
-                            strokeLinejoin="round"
-                            strokeWidth={2}
-                            d="M19 9l-7 7-7-7"
+                    <div className="space-y-2">
+                      {(["email", "telegram", "vk"] as const).map((method) => (
+                        <label key={method} className="flex items-center space-x-2 cursor-pointer">
+                          <input
+                            type="radio"
+                            name="notificationMethod"
+                            value={method}
+                            checked={newReminder.notificationMethod === method}
+                            onChange={(e) => handleFieldChange("notificationMethod", e.target.value)}
+                            className="h-4 w-4 text-purple-600 border-gray-300 focus:ring-purple-500"
                           />
-                        </svg>
-                      </div>
+                          <NotificationBadge method={method} t={t} />
+                        </label>
+                      ))}
                     </div>
                   </div>
-                </div>
-
-                <div>
-                  <label className="block text-sm font-medium text-gray-700 mb-1">
-                    {t("reminders.form.fields.notificationMethod")}
-                  </label>
-                  <div className="space-y-2">
-                    <label className="flex items-center space-x-2 cursor-pointer">
-                      <input
-                        type="radio"
-                        name="notificationMethod"
-                        value="email"
-                        checked={newReminder.notificationMethod === "email"}
-                        onChange={(e) =>
-                          setNewReminder((prev) => ({
-                            ...prev,
-                            notificationMethod: e.target.value as
-                              | "email"
-                              | "telegram"
-                              | "vk",
-                          }))
-                        }
-                        className="h-4 w-4 text-purple-600 border-gray-300 focus:ring-purple-500"
-                      />
-                      <div className="flex items-center space-x-2">
-                        <div className="w-5 h-5 bg-gray-600 rounded-full flex items-center justify-center">
-                          <svg
-                            className="w-3 h-3 text-white"
-                            fill="none"
-                            stroke="currentColor"
-                            viewBox="0 0 24 24"
-                          >
-                            <path
-                              strokeLinecap="round"
-                              strokeLinejoin="round"
-                              strokeWidth={2}
-                              d="M3 8l7.89 5.26a2 2 0 002.22 0L21 8M5 19h14a2 2 0 002-2V7a2 2 0 00-2-2H5a2 2 0 00-2 2v10a2 2 0 002 2z"
-                            />
-                          </svg>
-                        </div>
-                        <span className="text-sm text-gray-700">
-                          {t("reminders.notification.email")}
-                        </span>
-                      </div>
-                    </label>
-                    <label className="flex items-center space-x-2 cursor-pointer">
-                      <input
-                        type="radio"
-                        name="notificationMethod"
-                        value="telegram"
-                        checked={newReminder.notificationMethod === "telegram"}
-                        onChange={(e) =>
-                          setNewReminder((prev) => ({
-                            ...prev,
-                            notificationMethod: e.target.value as
-                              | "email"
-                              | "telegram"
-                              | "vk",
-                          }))
-                        }
-                        className="h-4 w-4 text-purple-600 border-gray-300 focus:ring-purple-500"
-                      />
-                      <div className="flex items-center space-x-2">
-                        <div className="w-5 h-5 bg-blue-500 rounded-full flex items-center justify-center">
-                          <svg
-                            className="w-3 h-3 text-white"
-                            fill="currentColor"
-                            viewBox="0 0 24 24"
-                          >
-                            <path d="M9.78 18.65l.28-4.23 7.68-6.92c.34-.31-.07-.46-.52-.19L7.74 13.3 3.64 12c-.88-.25-.89-.86.2-1.3l15.97-6.16c.73-.33 1.43.18 1.15 1.3l-2.72 12.81c-.19.91-.74 1.13-1.5.71L12.6 16.3l-1.99 1.93c-.23.23-.42.42-.83.42z" />
-                          </svg>
-                        </div>
-                        <span className="text-sm text-gray-700">
-                          {t("reminders.notification.telegram")}
-                        </span>
-                      </div>
-                    </label>
-                    <label className="flex items-center space-x-2 cursor-pointer">
-                      <input
-                        type="radio"
-                        name="notificationMethod"
-                        value="vk"
-                        checked={newReminder.notificationMethod === "vk"}
-                        onChange={(e) =>
-                          setNewReminder((prev) => ({
-                            ...prev,
-                            notificationMethod: e.target.value as
-                              | "email"
-                              | "telegram"
-                              | "vk",
-                          }))
-                        }
-                        className="h-4 w-4 text-purple-600 border-gray-300 focus:ring-purple-500"
-                      />
-                      <div className="flex items-center space-x-2">
-                        <div className="w-5 h-5 bg-blue-600 rounded-lg flex items-center justify-center">
-                          <span className="text-white text-xs font-bold">
-                            VK
-                          </span>
-                        </div>
-                        <span className="text-sm text-gray-700">
-                          {t("reminders.notification.vk")}
-                        </span>
-                      </div>
-                    </label>
-                  </div>
-                </div>
+                </fieldset>
 
                 <div className="flex flex-col sm:flex-row justify-end space-y-2 sm:space-y-0 sm:space-x-3">
                   <Button
                     type="button"
                     variant="outline"
-                    onClick={() => setShowAddForm(false)}
+                    onClick={() => {
+                      setShowAddForm(false);
+                      setFieldErrors({});
+                    }}
                     className="w-full sm:w-auto"
                   >
                     {t("reminders.actions.cancel")}
                   </Button>
                   <Button
                     type="submit"
+                    disabled={isSubmitting}
                     className="flex items-center space-x-2 w-full sm:w-auto"
                   >
                     <Save className="h-4 w-4" />
-                    <span>{t("reminders.actions.save")}</span>
+                    <span>{isSubmitting ? "..." : t("reminders.actions.save")}</span>
                   </Button>
                 </div>
               </form>
@@ -953,26 +838,18 @@ export default function RemindersPage() {
           </Card>
         )}
 
-        {/* Search and Filters */}
+        {/* Search */}
         <div className="bg-white rounded-2xl sm:rounded-3xl p-4 sm:p-6 shadow-sm">
-          <div className="flex flex-col sm:flex-row gap-4">
-            <div className="flex-1 relative">
-              <Search className="absolute left-3 top-1/2 transform -translate-y-1/2 h-4 w-4 text-gray-400" />
-              <input
-                type="text"
-                placeholder={t("reminders.search.placeholder")}
-                value={searchTerm}
-                onChange={(e) => setSearchTerm(e.target.value)}
-                className="w-full pl-10 pr-4 py-2 border border-gray-300 rounded-md focus:ring-2 focus:ring-purple-500 focus:border-transparent"
-              />
-            </div>
-            <Button
-              variant="outline"
-              className="flex items-center space-x-2 w-full sm:w-auto"
-            >
-              <Filter className="h-4 w-4" />
-              <span>{t("reminders.search.filters")}</span>
-            </Button>
+          <div className="relative">
+            <Search className="absolute left-3 top-1/2 -translate-y-1/2 h-4 w-4 text-gray-400" />
+            <Input
+              type="text"
+              placeholder={t("reminders.search.placeholder")}
+              value={searchTerm}
+              onChange={(e) => setSearchTerm(e.target.value)}
+              className="pl-10"
+              aria-label={t("reminders.search.placeholder")}
+            />
           </div>
         </div>
 
@@ -985,17 +862,11 @@ export default function RemindersPage() {
                   <AlertCircle className="h-5 w-5 sm:h-6 sm:w-6 text-red-600" />
                 </div>
                 <div>
-                  <p className="text-sm font-medium text-gray-600">
-                    {t("reminders.stats.urgent")}
-                  </p>
+                  <p className="text-sm font-medium text-gray-600">{t("reminders.stats.urgent")}</p>
                   <p className="text-xl sm:text-2xl font-bold text-gray-900">
-                    {
-                      reminders.filter(
-                        (r) =>
-                          r.priority === ReminderPriority.HIGH &&
-                          r.status === ReminderStatus.PENDING
-                      ).length
-                    }
+                    {reminders.filter(
+                      (r) => r.priority === ReminderPriority.HIGH && r.status === ReminderStatus.PENDING,
+                    ).length}
                   </p>
                 </div>
               </div>
@@ -1009,9 +880,7 @@ export default function RemindersPage() {
                   <Clock className="h-5 w-5 sm:h-6 sm:w-6 text-blue-600" />
                 </div>
                 <div>
-                  <p className="text-sm font-medium text-gray-600">
-                    {t("reminders.stats.active")}
-                  </p>
+                  <p className="text-sm font-medium text-gray-600">{t("reminders.stats.active")}</p>
                   <p className="text-xl sm:text-2xl font-bold text-gray-900">
                     {pendingReminders.length}
                   </p>
@@ -1027,9 +896,7 @@ export default function RemindersPage() {
                   <CheckCircle className="h-5 w-5 sm:h-6 sm:w-6 text-green-600" />
                 </div>
                 <div>
-                  <p className="text-sm font-medium text-gray-600">
-                    {t("reminders.stats.completed")}
-                  </p>
+                  <p className="text-sm font-medium text-gray-600">{t("reminders.stats.completed")}</p>
                   <p className="text-xl sm:text-2xl font-bold text-gray-900">
                     {completedReminders.length}
                   </p>
@@ -1040,39 +907,33 @@ export default function RemindersPage() {
         </div>
 
         {/* Active Reminders */}
-        {!authLoading && !loading && (
-          <div>
-            <h2 className="text-lg sm:text-xl font-semibold text-gray-900 mb-4">
-              {t("reminders.sections.active")}
-              {pendingReminders.length > 0 && (
-                <span className="ml-2 text-purple-600">
-                  ({pendingReminders.length})
-                </span>
-              )}
-            </h2>
-            {pendingReminders.length === 0 ? (
-              <Card>
-                <CardContent className="p-6 sm:p-8 text-center">
-                  <Bell className="h-12 w-12 text-gray-400 mx-auto mb-4" />
-                  <h3 className="text-lg font-medium text-gray-900 mb-2">
-                    {t("reminders.empty.active.title")}
-                  </h3>
-                  <p className="text-gray-600 mb-4">
-                    {t("reminders.empty.active.description")}
-                  </p>
-                  <Button onClick={() => setShowAddForm(true)}>
-                    <Plus className="h-4 w-4 mr-2" />
-                    {t("reminders.actions.add")}
-                  </Button>
-                </CardContent>
-              </Card>
-            ) : (
-              <div className="space-y-3 sm:space-y-4">
-                {pendingReminders.map((reminder) => (
-                  <Card
-                    key={reminder.id}
-                    className={`${getTypeColor(reminder.category)}`}
-                  >
+        <div>
+          <h2 className="text-lg sm:text-xl font-semibold text-gray-900 mb-4">
+            {t("reminders.sections.active")}
+            {pendingReminders.length > 0 && (
+              <span className="ml-2 text-purple-600">({pendingReminders.length})</span>
+            )}
+          </h2>
+          {pendingReminders.length === 0 ? (
+            <Card>
+              <CardContent className="p-6 sm:p-8 text-center">
+                <Bell className="h-12 w-12 text-gray-400 mx-auto mb-4" />
+                <h3 className="text-lg font-medium text-gray-900 mb-2">
+                  {t("reminders.empty.active.title")}
+                </h3>
+                <p className="text-gray-600 mb-4">{t("reminders.empty.active.description")}</p>
+                <Button onClick={() => setShowAddForm(true)}>
+                  <Plus className="h-4 w-4 mr-2" />
+                  {t("reminders.actions.add")}
+                </Button>
+              </CardContent>
+            </Card>
+          ) : (
+            <div className="space-y-3 sm:space-y-4">
+              {pendingReminders.map((reminder) => {
+                const catEnum = parseCategoryEnum(reminder.category);
+                return (
+                  <Card key={reminder.id} className={getTypeColor(reminder.category)}>
                     <CardContent className="p-3 sm:p-4">
                       <div className="flex flex-col sm:flex-row sm:items-center justify-between space-y-3 sm:space-y-0">
                         <div className="flex items-start sm:items-center space-x-3">
@@ -1087,332 +948,138 @@ export default function RemindersPage() {
                               </p>
                             )}
                             <p className="text-xs sm:text-sm text-gray-500 mt-1">
-                              {(() => {
-                                try {
-                                  const dueDateValue = reminder.dueDate;
-                                  if (
-                                    !dueDateValue ||
-                                    dueDateValue === null ||
-                                    dueDateValue === undefined ||
-                                    dueDateValue === "null" ||
-                                    dueDateValue === ""
-                                  ) {
-                                    return t("reminders.dateNotSpecified");
-                                  }
-
-                                  let date: Date;
-                                  if (typeof dueDateValue === "string") {
-                                    // Проверяем пустую строку
-                                    if (
-                                      dueDateValue.trim() === "" ||
-                                      dueDateValue === "null" ||
-                                      dueDateValue === "undefined"
-                                    ) {
-                                      return t("reminders.dateNotSpecified");
-                                    }
-                                    if (dueDateValue.includes("T")) {
-                                      date = new Date(dueDateValue);
-                                    } else if (
-                                      dueDateValue.match(/^\d{4}-\d{2}-\d{2}$/)
-                                    ) {
-                                      date = new Date(
-                                        `${dueDateValue}T00:00:00Z`
-                                      );
-                                    } else {
-                                      date = new Date(dueDateValue);
-                                    }
-                                  } else {
-                                    // Пробуем создать дату из любого значения
-                                    date = new Date(String(dueDateValue));
-                                  }
-
-                                  if (isNaN(date.getTime())) {
-                                    return t("reminders.dateNotSpecified");
-                                  }
-
-                                  const formatted = date.toLocaleDateString(
-                                    locale,
-                                    {
-                                      year: "numeric",
-                                      month: "long",
-                                      day: "numeric",
-                                    }
-                                  );
-                                  return formatted;
-                                } catch (error) {
-                                  console.error(
-                                    "Date formatting error:",
-                                    error,
-                                    "dueDate:",
-                                    reminder.dueDate
-                                  );
-                                  return t("reminders.dateNotSpecified");
-                                }
-                              })()}
+                              {formatDueDate(reminder.dueDate, locale, t("reminders.dateNotSpecified"))}
                             </p>
                             <div className="text-xs text-gray-400 mt-1 flex items-center space-x-2">
                               <span>{t("reminders.notification.label")}</span>
-                              {reminder.notificationMethod === "email" ? (
-                                <span className="flex items-center space-x-1">
-                                  <div className="w-4 h-4 bg-gray-600 rounded-full flex items-center justify-center flex-shrink-0">
-                                    <svg
-                                      className="w-2.5 h-2.5 text-white"
-                                      fill="none"
-                                      stroke="currentColor"
-                                      viewBox="0 0 24 24"
-                                    >
-                                      <path
-                                        strokeLinecap="round"
-                                        strokeLinejoin="round"
-                                        strokeWidth={2}
-                                        d="M3 8l7.89 5.26a2 2 0 002.22 0L21 8M5 19h14a2 2 0 002-2V7a2 2 0 00-2-2H5a2 2 0 00-2 2v10a2 2 0 002 2z"
-                                      />
-                                    </svg>
-                                  </div>
-                                  <span>{t("reminders.notification.email")}</span>
-                                </span>
-                              ) : reminder.notificationMethod === "telegram" ? (
-                                <span className="flex items-center space-x-1">
-                                  <div className="w-4 h-4 bg-blue-500 rounded-full flex items-center justify-center flex-shrink-0">
-                                    <svg
-                                      className="w-2.5 h-2.5 text-white"
-                                      fill="currentColor"
-                                      viewBox="0 0 24 24"
-                                    >
-                                      <path d="M9.78 18.65l.28-4.23 7.68-6.92c.34-.31-.07-.46-.52-.19L7.74 13.3 3.64 12c-.88-.25-.89-.86.2-1.3l15.97-6.16c.73-.33 1.43.18 1.15 1.3l-2.72 12.81c-.19.91-.74 1.13-1.5.71L12.6 16.3l-1.99 1.93c-.23.23-.42.42-.83.42z" />
-                                    </svg>
-                                  </div>
-                                  <span>{t("reminders.notification.telegram")}</span>
-                                </span>
-                              ) : reminder.notificationMethod === "vk" ? (
-                                <span className="flex items-center space-x-1">
-                                  <div className="w-4 h-4 bg-blue-600 rounded-lg flex items-center justify-center flex-shrink-0">
-                                    <span className="text-white text-[8px] font-bold leading-none">
-                                      VK
-                                    </span>
-                                  </div>
-                                  <span>{t("reminders.notification.vkShort")}</span>
-                                </span>
-                              ) : (
-                                <span className="flex items-center space-x-1">
-                                  <div className="w-4 h-4 bg-gray-600 rounded-full flex items-center justify-center flex-shrink-0">
-                                    <svg
-                                      className="w-2.5 h-2.5 text-white"
-                                      fill="none"
-                                      stroke="currentColor"
-                                      viewBox="0 0 24 24"
-                                    >
-                                      <path
-                                        strokeLinecap="round"
-                                        strokeLinejoin="round"
-                                        strokeWidth={2}
-                                        d="M3 8l7.89 5.26a2 2 0 002.22 0L21 8M5 19h14a2 2 0 002-2V7a2 2 0 00-2-2H5a2 2 0 00-2 2v10a2 2 0 002 2z"
-                                      />
-                                    </svg>
-                                  </div>
-                                  <span>{t("reminders.notification.email")}</span>
-                                </span>
-                              )}
+                              <NotificationBadge method={reminder.notificationMethod} t={t} />
                             </div>
                           </div>
                         </div>
                         <div className="flex flex-col sm:flex-row items-start sm:items-center space-y-2 sm:space-y-0 sm:space-x-2">
-                          {(() => {
-                            const rawCategory = reminder.category;
-                            let category = rawCategory;
-                            const rawCategoryStr = String(
-                              rawCategory || ""
-                            ).toUpperCase();
-                            if (
-                              !category ||
-                              rawCategoryStr === "OTHER" ||
-                              rawCategoryStr === ""
-                            ) {
-                              category = ReminderCategory.OTHER;
-                            }
-
-                            const catStr = String(category).toUpperCase();
-
-                            let catEnum: ReminderCategory =
-                              ReminderCategory.OTHER;
-                            if (catStr === "EDUCATION") {
-                              catEnum = ReminderCategory.EDUCATION;
-                            } else if (catStr === "LIFE") {
-                              catEnum = ReminderCategory.LIFE;
-                            } else if (catStr === "DOCUMENTS") {
-                              catEnum = ReminderCategory.DOCUMENTS;
-                            } else if (catStr === "HEALTH") {
-                              catEnum = ReminderCategory.HEALTH;
-                            } else if (catStr === "OTHER") {
-                              catEnum = ReminderCategory.OTHER;
-                            }
-
-                            const categoryLabel = getCategoryLabel(catEnum, t);
-
-                            return (
-                              <span
-                                className={`px-2 py-1 rounded-full text-xs font-medium ${getCategoryBadgeColor(
-                                  catEnum
-                                )}`}
-                                title={`Raw category: ${
-                                  rawCategory || "undefined"
-                                }`}
-                              >
-                                {categoryLabel}
-                              </span>
-                            );
-                          })()}
                           <span
-                            className={`px-2 py-1 rounded-full text-xs font-medium ${getPriorityColor(
-                              reminder.priority as Reminder["priority"]
-                            )}`}
+                            className={`px-2 py-1 rounded-full text-xs font-medium ${getCategoryBadgeColor(catEnum)}`}
+                          >
+                            {getCategoryLabel(catEnum, t)}
+                          </span>
+                          <span
+                            className={`px-2 py-1 rounded-full text-xs font-medium ${getPriorityColor(reminder.priority as Reminder["priority"])}`}
                           >
                             {reminder.priority === ReminderPriority.HIGH
                               ? t("reminders.priorityLabels.urgent")
                               : reminder.priority === ReminderPriority.MEDIUM
-                              ? t("reminders.priorityLabels.important")
-                              : t("reminders.priorityLabels.normal")}
+                                ? t("reminders.priorityLabels.important")
+                                : t("reminders.priorityLabels.normal")}
                           </span>
-                          <div className="flex space-x-2 relative">
+                          <div className="flex space-x-2">
                             <Button
                               variant="outline"
                               size="sm"
                               onClick={() => handleMarkCompleted(reminder.id)}
-                              className="text-xs sm:text-sm relative group"
+                              className="text-xs sm:text-sm"
+                              aria-label={t("reminders.actions.complete")}
                             >
-                              <span className="absolute -top-1 -right-1 text-sm opacity-0 group-hover:opacity-100 transition-opacity animate-bounce">✅</span>
+                              <CheckCircle className="h-3 w-3 mr-1" />
                               {t("reminders.actions.complete")}
                             </Button>
                             <Button
                               variant="outline"
                               size="sm"
                               onClick={() => handleDeleteReminder(reminder.id)}
+                              className={
+                                deletingId === reminder.id
+                                  ? "border-red-300 text-red-600 hover:bg-red-50"
+                                  : ""
+                              }
+                              aria-label={
+                                deletingId === reminder.id
+                                  ? t("reminders.actions.confirmDelete")
+                                  : t("reminders.actions.delete")
+                              }
                             >
                               <X className="h-3 w-3 sm:h-4 sm:w-4" />
+                              {deletingId === reminder.id && (
+                                <span className="ml-1 text-xs">{t("reminders.actions.confirmDelete")}</span>
+                              )}
                             </Button>
                           </div>
                         </div>
                       </div>
                     </CardContent>
                   </Card>
-                ))}
-              </div>
-            )}
-          </div>
-        )}
+                );
+              })}
+            </div>
+          )}
+        </div>
 
         {/* Completed Reminders */}
-        {!loading && completedReminders.length > 0 && (
+        {completedReminders.length > 0 && (
           <div>
             <h2 className="text-lg sm:text-xl font-semibold text-gray-900 mb-4">
               {t("reminders.sections.completed")}
             </h2>
             <div className="space-y-3 sm:space-y-4">
-              {completedReminders.map((reminder) => (
-                <Card key={reminder.id} className="opacity-75">
-                  <CardContent className="p-3 sm:p-4">
-                    <div className="flex flex-col sm:flex-row sm:items-center justify-between space-y-3 sm:space-y-0">
-                      <div className="flex items-start sm:items-center space-x-3">
-                        {getStatusIcon(reminder.status as Reminder["status"])}
-                        <div className="flex-1 min-w-0">
-                          <h3 className="font-medium text-gray-900 line-through text-sm sm:text-base">
-                            {reminder.title}
-                          </h3>
-                          {reminder.description && (
-                            <p className="text-xs sm:text-sm text-gray-500 mt-1 line-through">
-                              {reminder.description}
+              {completedReminders.map((reminder) => {
+                const catEnum = parseCategoryEnum(reminder.category);
+                return (
+                  <Card key={reminder.id} className="opacity-75">
+                    <CardContent className="p-3 sm:p-4">
+                      <div className="flex flex-col sm:flex-row sm:items-center justify-between space-y-3 sm:space-y-0">
+                        <div className="flex items-start sm:items-center space-x-3">
+                          {getStatusIcon(reminder.status as Reminder["status"])}
+                          <div className="flex-1 min-w-0">
+                            <h3 className="font-medium text-gray-900 line-through text-sm sm:text-base">
+                              {reminder.title}
+                            </h3>
+                            {reminder.description && (
+                              <p className="text-xs sm:text-sm text-gray-500 mt-1 line-through">
+                                {reminder.description}
+                              </p>
+                            )}
+                            <p className="text-xs sm:text-sm text-gray-500 mt-1">
+                              {formatDueDate(reminder.dueDate, locale, t("reminders.dateNotSpecified"))}
                             </p>
-                          )}
-                          <p className="text-xs sm:text-sm text-gray-500 mt-1">
-                            {(() => {
-                              try {
-                                if (!reminder.dueDate) {
-                                  return t("reminders.dateNotSpecified");
-                                }
-                                let date: Date;
-                                const dueDateValue = reminder.dueDate;
-                                if (typeof dueDateValue === "string") {
-                                  if (dueDateValue.includes("T")) {
-                                    date = new Date(dueDateValue);
-                                  } else if (
-                                    dueDateValue.match(/^\d{4}-\d{2}-\d{2}$/)
-                                  ) {
-                                    date = new Date(
-                                      `${dueDateValue}T00:00:00Z`
-                                    );
-                                  } else {
-                                    date = new Date(dueDateValue);
-                                  }
-                                } else {
-                                  date = new Date(String(dueDateValue));
-                                }
-                                if (isNaN(date.getTime())) {
-                                  return t("reminders.dateNotSpecified");
-                                }
-                                return date.toLocaleDateString(locale, {
-                                  year: "numeric",
-                                  month: "long",
-                                  day: "numeric",
-                                });
-                              } catch {
-                                return t("reminders.dateNotSpecified");
-                              }
-                            })()}
-                          </p>
+                          </div>
+                        </div>
+                        <div className="flex items-center space-x-2">
+                          <span className={`px-2 py-1 rounded-full text-xs font-medium ${getCategoryBadgeColor(catEnum)}`}>
+                            {getCategoryLabel(catEnum, t)}
+                          </span>
+                          <span className="px-2 py-1 rounded-full text-xs font-medium bg-green-100 text-green-700">
+                            {t("reminders.status.completed")}
+                          </span>
+                          <Button
+                            variant="outline"
+                            size="sm"
+                            onClick={() => handleDeleteReminder(reminder.id)}
+                            className={
+                              deletingId === reminder.id
+                                ? "border-red-300 text-red-600 hover:bg-red-50"
+                                : ""
+                            }
+                            aria-label={
+                              deletingId === reminder.id
+                                ? t("reminders.actions.confirmDelete")
+                                : t("reminders.actions.delete")
+                            }
+                          >
+                            <X className="h-3 w-3 sm:h-4 sm:w-4" />
+                            {deletingId === reminder.id && (
+                              <span className="ml-1 text-xs">{t("reminders.actions.confirmDelete")}</span>
+                            )}
+                          </Button>
                         </div>
                       </div>
-                      <div className="flex items-center space-x-2">
-                        {(() => {
-                          const rawCategory = reminder.category;
-                          const category =
-                            rawCategory || ReminderCategory.OTHER;
-                          const catStr = String(category).toUpperCase();
-
-                          let catEnum: ReminderCategory =
-                            ReminderCategory.OTHER;
-                          if (catStr === "EDUCATION")
-                            catEnum = ReminderCategory.EDUCATION;
-                          else if (catStr === "LIFE")
-                            catEnum = ReminderCategory.LIFE;
-                          else if (catStr === "DOCUMENTS")
-                            catEnum = ReminderCategory.DOCUMENTS;
-                          else if (catStr === "HEALTH")
-                            catEnum = ReminderCategory.HEALTH;
-                          else if (catStr === "OTHER")
-                            catEnum = ReminderCategory.OTHER;
-
-                          const categoryLabel = getCategoryLabel(catEnum, t);
-
-                          return (
-                            <span
-                              className={`px-2 py-1 rounded-full text-xs font-medium ${getCategoryBadgeColor(
-                                catEnum
-                              )}`}
-                            >
-                              {categoryLabel}
-                            </span>
-                          );
-                        })()}
-                        <span className="px-2 py-1 rounded-full text-xs font-medium bg-green-100 text-green-700">
-                          {t("reminders.status.completed")}
-                        </span>
-                        <Button
-                          variant="outline"
-                          size="sm"
-                          onClick={() => handleDeleteReminder(reminder.id)}
-                        >
-                          <X className="h-3 w-3 sm:h-4 sm:w-4" />
-                        </Button>
-                      </div>
-                    </div>
-                  </CardContent>
-                </Card>
-              ))}
+                    </CardContent>
+                  </Card>
+                );
+              })}
             </div>
           </div>
         )}
 
-        {/* Calendar Preview */}
+        {/* Calendar */}
         <div>
           <h2 className="text-lg sm:text-xl font-semibold text-gray-900 mb-4">
             {t("reminders.sections.calendar")}
@@ -1437,5 +1104,13 @@ export default function RemindersPage() {
         </div>
       </div>
     </Layout>
+  );
+}
+
+export default function RemindersPage() {
+  return (
+    <ProtectedRoute>
+      <RemindersContent />
+    </ProtectedRoute>
   );
 }

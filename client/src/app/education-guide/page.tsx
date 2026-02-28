@@ -2217,7 +2217,7 @@ export default function EducationGuidePage() {
                   <Search className="absolute left-3 top-1/2 transform -translate-y-1/2 text-gray-400 h-5 w-5" />
                   <input
                     type="text"
-                    placeholder="Поиск стипендий..."
+                    placeholder={t("educationGuide.grants.searchPlaceholder")}
                     value={grantSearchTerm}
                     onChange={(e) => setGrantSearchTerm(e.target.value)}
                     className="w-full pl-10 pr-4 py-3 border border-gray-300 rounded-lg focus:ring-2 focus:ring-blue-500 focus:border-transparent transition-all duration-300"
@@ -2231,7 +2231,7 @@ export default function EducationGuidePage() {
                   className="px-6 py-3"
                 >
                   <Filter className="h-5 w-5 mr-2" />
-                  Фильтры
+                  {t("educationGuide.grants.filters")}
                 </Button>
               </div>
 
@@ -2242,7 +2242,7 @@ export default function EducationGuidePage() {
                     {/* Type Filter */}
                     <div>
                       <h4 className="text-sm font-medium text-gray-700 mb-2">
-                        Тип стипендии
+                        {t("educationGuide.grants.grantType")}
                       </h4>
                       <div className="space-y-2">
                         {Object.values(GrantType).map((type) => (
@@ -2277,7 +2277,7 @@ export default function EducationGuidePage() {
                     {/* Level Filter */}
                     <div>
                       <h4 className="text-sm font-medium text-gray-700 mb-2">
-                        Уровень образования
+                        {t("educationGuide.grants.educationLevel")}
                       </h4>
                       <div className="space-y-2">
                         {Object.values(GrantLevel).map((level) => (
@@ -2312,7 +2312,7 @@ export default function EducationGuidePage() {
                     {/* Category Filter */}
                     <div>
                       <h4 className="text-sm font-medium text-gray-700 mb-2">
-                        Категория
+                        {t("educationGuide.grants.category")}
                       </h4>
                       <div className="space-y-2">
                         {Object.values(GrantCategory).map((category) => (
@@ -2349,7 +2349,7 @@ export default function EducationGuidePage() {
                     {/* Status Filter */}
                     <div>
                       <h4 className="text-sm font-medium text-gray-700 mb-2">
-                        Статус
+                        {t("educationGuide.grants.status")}
                       </h4>
                       <div className="space-y-2">
                         {Object.values(GrantStatus).map((status) => (
@@ -2389,7 +2389,7 @@ export default function EducationGuidePage() {
             {/* Results Count */}
             <div className="mb-4">
               <p className="text-gray-600">
-                Найдено стипендий: {filteredGrants.length}
+                {t("educationGuide.grants.foundCount")}: {filteredGrants.length}
               </p>
             </div>
 
@@ -2421,7 +2421,7 @@ export default function EducationGuidePage() {
                       {grant.isFeatured && (
                         <span className="inline-flex items-center space-x-1 text-xs text-yellow-600 font-medium">
                           <Star className="h-3 w-3 sm:h-4 sm:w-4 text-yellow-500 fill-yellow-500" />
-                          <span>Рекомендуемый</span>
+                          <span>{t("educationGuide.grants.featured")}</span>
                         </span>
                       )}
                     </>
@@ -2430,13 +2430,13 @@ export default function EducationGuidePage() {
                   meta={[
                     {
                       icon: <DollarSign className="h-3 w-3 sm:h-4 sm:w-4" />,
-                      label: "Сумма:",
+                      label: t("educationGuide.grants.amount"),
                       value: formatAmount(grant.amount, grant.currency),
                       valueClassName: "text-green-600",
                     },
                     {
                       icon: <Calendar className="h-3 w-3 sm:h-4 sm:w-4" />,
-                      label: "Дедлайн:",
+                      label: t("educationGuide.grants.deadline"),
                       value: new Date(
                         grant.applicationDeadline
                       ).toLocaleDateString("ru-RU"),
@@ -2444,7 +2444,7 @@ export default function EducationGuidePage() {
                     },
                     {
                       icon: <GraduationCap className="h-3 w-3 sm:h-4 sm:w-4" />,
-                      label: "Уровень:",
+                      label: t("educationGuide.grants.level"),
                       value: grant.level,
                       valueClassName: "text-gray-700",
                     },
@@ -2474,7 +2474,7 @@ export default function EducationGuidePage() {
                       <div className="flex space-x-2">
                         <Button className="bg-gradient-to-r from-blue-600 to-purple-600 hover:from-blue-700 hover:to-purple-700 text-xs sm:text-sm">
                           <Eye className="h-3 w-3 sm:h-4 sm:w-4 mr-1 sm:mr-2" />
-                          Подробнее
+                          {t("educationGuide.grants.details")}
                         </Button>
                         <Button variant="outline" className="px-2 sm:px-3">
                           <TrendingUp className="h-3 w-3 sm:h-4 sm:w-4" />
@@ -2491,10 +2491,10 @@ export default function EducationGuidePage() {
               <div className="text-center py-12">
                 <Award className="h-16 w-16 text-gray-400 mx-auto mb-4" />
                 <h3 className="text-lg font-medium text-gray-900 mb-2">
-                  Стипендии не найдены
+                  {t("educationGuide.grants.notFound")}
                 </h3>
                 <p className="text-gray-600 mb-4">
-                  Попробуйте изменить параметры поиска или фильтры
+                  {t("educationGuide.grants.tryChangeFilters")}
                 </p>
                 <Button
                   onClick={() => {
@@ -2517,29 +2517,25 @@ export default function EducationGuidePage() {
                     <Clock className="h-12 w-12 text-blue-600 mx-auto" />
                   </div>
                   <h3 className="text-lg font-medium text-gray-900 mb-2">
-                    Поиск расписания...
+                    {t("educationGuide.schedule.searching")}
                   </h3>
                   <p className="text-gray-600">
-                    Пожалуйста, подождите, мы ищем ваше расписание
+                    {t("educationGuide.schedule.pleaseWait")}
                   </p>
                 </div>
               </div>
             )}
             {showSchedule && (
-              <div className="bg-white rounded-2xl sm:rounded-3xl p-6 shadow-sm animate-fade-in-up">
+              <div className="bg-white rounded-2xl sm:rounded-3xl p-6 shadow-sm">
                 <div className="text-center py-12">
-                  <div className="animate-bounce mb-4">
+                  <div className="mb-4">
                     <Clock className="h-12 w-12 text-gray-400 mx-auto" />
                   </div>
-                  <h3 className="text-lg font-medium text-gray-900 mb-2 animate-fade-in">
-                    Ничего не найдено
+                  <h3 className="text-lg font-medium text-gray-900 mb-2">
+                    {t("educationGuide.schedule.notFound")}
                   </h3>
-                  <p
-                    className="text-gray-600 animate-fade-in"
-                    style={{ animationDelay: "0.2s" }}
-                  >
-                    По вашему запросу расписание не найдено. Попробуйте изменить
-                    параметры поиска.
+                  <p className="text-gray-600">
+                    {t("educationGuide.schedule.notFoundDescription")}
                   </p>
                 </div>
               </div>
@@ -2572,14 +2568,10 @@ export default function EducationGuidePage() {
             </div>
             {filteredGuides.length > 0 ? (
               <div className="grid grid-cols-1 sm:grid-cols-2 lg:grid-cols-3 gap-4 sm:gap-6 transition-all duration-500 ease-out">
-                {filteredGuides.map((guide, index) => (
+                {filteredGuides.map((guide) => (
                   <div
                     key={`guide-${guide.id}`}
-                    className="h-[280px] animate-fade-in"
-                    style={{
-                      animationDelay: `${index * 100}ms`,
-                      animationFillMode: "both",
-                    }}
+                    className="h-[280px]"
                   >
                     <GuideCard guide={guide} />
                   </div>
@@ -2589,10 +2581,10 @@ export default function EducationGuidePage() {
               <div className="text-center py-12 animate-fade-in">
                 <BookOpen className="h-12 w-12 text-gray-400 mx-auto mb-4 transition-all duration-300" />
                 <h3 className="text-lg font-medium text-gray-900 mb-2">
-                  Гайды не найдены
+                  {t("educationGuide.guides.notFound")}
                 </h3>
                 <p className="text-gray-600">
-                  Попробуйте изменить поисковый запрос или фильтры
+                  {t("educationGuide.guides.tryChangeSearch")}
                 </p>
               </div>
             )}

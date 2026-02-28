@@ -25,50 +25,6 @@ import { useCallback, useEffect, useMemo, useState } from "react";
 import Link from "next/link";
 import { fetchAchievementsOverview } from "@/lib/api";
 
-const CATEGORY_INFO = {
-  [AchievementCategory.GETTING_STARTED]: {
-    title: "Начало пути",
-    icon: Sparkles,
-    color: "from-blue-500 to-blue-600",
-  },
-  [AchievementCategory.EDUCATION]: {
-    title: "Учёба",
-    icon: BookOpen,
-    color: "from-purple-500 to-purple-600",
-  },
-  [AchievementCategory.LIFE]: {
-    title: "Быт",
-    icon: Home,
-    color: "from-green-500 to-green-600",
-  },
-  [AchievementCategory.ACTIVITY]: {
-    title: "Активность",
-    icon: Zap,
-    color: "from-orange-500 to-orange-600",
-  },
-  [AchievementCategory.EXPERT]: {
-    title: "Эксперт",
-    icon: Award,
-    color: "from-red-500 to-red-600",
-  },
-};
-
-const RARITY_CONFIG = {
-  common: {
-    color: "bg-gray-100 text-gray-700 border-gray-300",
-    label: "Обычное",
-  },
-  rare: { color: "bg-blue-100 text-blue-700 border-blue-300", label: "Редкое" },
-  epic: {
-    color: "bg-purple-100 text-purple-700 border-purple-300",
-    label: "Эпическое",
-  },
-  legendary: {
-    color: "bg-yellow-100 text-yellow-700 border-yellow-300",
-    label: "Легендарное",
-  },
-};
-
 const FALLBACK_OVERVIEW: AchievementsOverview = {
   achievements: [
     {
@@ -161,6 +117,54 @@ const FALLBACK_OVERVIEW: AchievementsOverview = {
 
 export default function AchievementsPage() {
   const { t } = useTranslation();
+
+  const CATEGORY_INFO = useMemo(() => ({
+    [AchievementCategory.GETTING_STARTED]: {
+      title: t("achievements.category.gettingStarted"),
+      icon: Sparkles,
+      color: "from-blue-500 to-blue-600",
+    },
+    [AchievementCategory.EDUCATION]: {
+      title: t("achievements.category.education"),
+      icon: BookOpen,
+      color: "from-purple-500 to-purple-600",
+    },
+    [AchievementCategory.LIFE]: {
+      title: t("achievements.category.life"),
+      icon: Home,
+      color: "from-green-500 to-green-600",
+    },
+    [AchievementCategory.ACTIVITY]: {
+      title: t("achievements.category.activity"),
+      icon: Zap,
+      color: "from-orange-500 to-orange-600",
+    },
+    [AchievementCategory.EXPERT]: {
+      title: t("achievements.category.expert"),
+      icon: Award,
+      color: "from-red-500 to-red-600",
+    },
+  }), [t]);
+
+  const RARITY_CONFIG = useMemo(() => ({
+    common: {
+      color: "bg-gray-100 text-gray-700 border-gray-300",
+      label: t("achievements.rarity.common"),
+    },
+    rare: {
+      color: "bg-blue-100 text-blue-700 border-blue-300",
+      label: t("achievements.rarity.rare"),
+    },
+    epic: {
+      color: "bg-purple-100 text-purple-700 border-purple-300",
+      label: t("achievements.rarity.epic"),
+    },
+    legendary: {
+      color: "bg-yellow-100 text-yellow-700 border-yellow-300",
+      label: t("achievements.rarity.legendary"),
+    },
+  }), [t]);
+
   const [overview, setOverview] = useState<AchievementsOverview | null>(null);
   const [selectedCategory, setSelectedCategory] = useState<AchievementCategory | "all">("all");
   const [isLoading, setIsLoading] = useState(true);
@@ -180,7 +184,7 @@ export default function AchievementsPage() {
       } catch (err) {
         if (controller?.cancelled) return;
         const message =
-          err instanceof Error ? err.message : "Не удалось загрузить достижения";
+          err instanceof Error ? err.message : t("achievements.error.load");
         setError(message);
         setOverview(FALLBACK_OVERVIEW);
       } finally {
@@ -239,12 +243,12 @@ export default function AchievementsPage() {
   const metrics = overview?.metrics;
   const metricItems = metrics
     ? [
-        { label: "Гайды", value: metrics.guidesRead },
-        { label: "Вопросы AI", value: metrics.aiQuestions },
-        { label: "Создано напоминаний", value: metrics.remindersCreated },
-        { label: "Завершено напоминаний", value: metrics.remindersCompleted },
-        { label: "DocScan", value: metrics.docScanCount },
-        { label: "Серия дней", value: metrics.streak },
+        { label: t("achievements.metrics.guides"), value: metrics.guidesRead },
+        { label: t("achievements.metrics.aiQuestions"), value: metrics.aiQuestions },
+        { label: t("achievements.metrics.remindersCreated"), value: metrics.remindersCreated },
+        { label: t("achievements.metrics.remindersCompleted"), value: metrics.remindersCompleted },
+        { label: t("achievements.metrics.docScan"), value: metrics.docScanCount },
+        { label: t("achievements.metrics.streak"), value: metrics.streak },
       ]
     : [];
 
@@ -289,7 +293,7 @@ export default function AchievementsPage() {
                   className="flex items-center space-x-2"
                 >
                   <ArrowLeft className="h-4 w-4" />
-                  <span>Назад</span>
+                  <span>{t("achievements.back")}</span>
                 </Button>
               </Link>
               <div className="rounded-lg bg-yellow-50 p-3 w-fit">
@@ -316,13 +320,13 @@ export default function AchievementsPage() {
                     </div>
                     <div>
                       <h2 className="text-sm sm:text-base font-semibold text-red-700">
-                        Не удалось загрузить достижения
+                        {t("achievements.error.load")}
                       </h2>
                       <p className="text-sm text-red-600/80">{error}</p>
                     </div>
                   </div>
                   <Button variant="outline" onClick={() => loadAchievements()}>
-                    Повторить попытку
+                    {t("achievements.error.retry")}
                   </Button>
                 </div>
               </CardContent>
@@ -338,15 +342,15 @@ export default function AchievementsPage() {
                     </div>
                     <div>
                       <h2 className="text-sm sm:text-base font-semibold text-yellow-800">
-                        Показаны демо-данные
+                        {t("achievements.demo")}
                       </h2>
                       <p className="text-sm text-yellow-700/80">
-                        API недоступен: {error}
+                        {t("achievements.error.api")} {error}
                       </p>
                     </div>
                   </div>
                   <Button variant="outline" onClick={() => loadAchievements()}>
-                    Повторить попытку
+                    {t("achievements.error.retry")}
                   </Button>
                 </div>
               </CardContent>
@@ -358,24 +362,30 @@ export default function AchievementsPage() {
             <CardContent className="p-4 sm:p-6">
               <div className="flex flex-col sm:flex-row items-center justify-between space-y-4 sm:space-y-0">
                 <div className="flex items-center space-x-4">
-                  <div className="w-16 h-16 sm:w-20 sm:h-20 rounded-2xl bg-gradient-to-br from-yellow-500 to-orange-500 flex items-center justify-center text-3xl sm:text-4xl shadow-lg">
-                    🏆
+                  <div className="w-16 h-16 sm:w-20 sm:h-20 rounded-2xl bg-gradient-to-br from-yellow-500 to-orange-500 flex items-center justify-center shadow-lg">
+                    <Trophy className="h-8 w-8 sm:h-10 sm:w-10 text-white" />
                   </div>
                   <div>
                     <div className="text-2xl sm:text-3xl font-bold text-gray-900">
                       {earnedCount}/{totalCount}
                     </div>
                     <p className="text-sm sm:text-base text-gray-600">
-                      Получено достижений
+                      {t("achievements.earned")}
                     </p>
                   </div>
                 </div>
                 <div className="w-full sm:w-64">
                   <div className="flex justify-between text-sm font-medium text-gray-700 mb-2">
-                    <span>Прогресс</span>
+                    <span>{t("achievements.progress")}</span>
                     <span>{completionPercentage}%</span>
                   </div>
-                  <div className="w-full bg-gray-200 rounded-full h-4 overflow-hidden">
+                  <div
+                    className="w-full bg-gray-200 rounded-full h-4 overflow-hidden"
+                    role="progressbar"
+                    aria-valuenow={completionPercentage}
+                    aria-valuemin={0}
+                    aria-valuemax={100}
+                  >
                     <div
                       className="h-full bg-gradient-to-r from-yellow-500 to-orange-500 transition-all duration-500"
                       style={{ width: `${completionPercentage}%` }}
@@ -385,7 +395,7 @@ export default function AchievementsPage() {
               </div>
               {overview && (
                 <div className="mt-4 text-sm text-gray-600">
-                  Всего получено XP{" "}
+                  {t("achievements.totalXP")}{" "}
                   <span className="font-semibold text-gray-900">
                     {overview.totalXP}
                   </span>
@@ -421,7 +431,7 @@ export default function AchievementsPage() {
                   : "bg-white text-gray-700 hover:bg-gray-100 border border-gray-300"
               }`}
             >
-              Все ({totalCount})
+              {t("achievements.all")} ({totalCount})
             </button>
             {Object.entries(CATEGORY_INFO).map(([key, info]) => {
               const count = categoryCounts[key as AchievementCategory] ?? 0;
@@ -509,16 +519,16 @@ export default function AchievementsPage() {
                       </div>
                       {isEarned ? (
                         <div className="w-full pt-2 border-t border-gray-200 relative">
-                          <div className="absolute -top-1 -right-1 text-lg animate-bounce">🎉</div>
+                          <div className="absolute -top-1 -right-1 text-lg">🎉</div>
                           <div className="flex items-center justify-center space-x-1 text-xs text-green-600 font-medium">
                             <Trophy className="h-3 w-3" />
-                            <span>Получено!</span>
+                            <span>{t("achievements.unlocked")}</span>
                           </div>
                         </div>
                       ) : showProgress ? (
                         <div className="w-full pt-2 border-t border-gray-200">
                           <div className="flex items-center justify-between text-xs text-gray-500 mb-1">
-                            <span>Прогресс</span>
+                            <span>{t("achievements.progress")}</span>
                             <span>
                               {displayCurrent}/{achievement.progressTarget}
                             </span>

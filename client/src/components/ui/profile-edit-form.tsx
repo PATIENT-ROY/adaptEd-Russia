@@ -1,6 +1,6 @@
 "use client";
 
-import { useState } from "react";
+import { useState, useEffect } from "react";
 import { Button } from "./button";
 import { Input } from "./input";
 import {
@@ -45,6 +45,7 @@ export function ProfileEditForm({
   isVisible,
 }: ProfileEditFormProps) {
   const [formData, setFormData] = useState({
+    name: user.name || "",
     university: user.university || "",
     faculty: user.faculty || "",
     year: user.year || "",
@@ -54,6 +55,18 @@ export function ProfileEditForm({
   });
   const [isLoading, setIsLoading] = useState(false);
   const [error, setError] = useState("");
+
+  useEffect(() => {
+    setFormData({
+      name: user.name || "",
+      university: user.university || "",
+      faculty: user.faculty || "",
+      year: user.year || "",
+      phone: user.phone || "",
+      gender: user.gender || "",
+      city: user.city || "",
+    });
+  }, [user]);
 
   const handleChange = (
     e: React.ChangeEvent<HTMLInputElement | HTMLSelectElement>
@@ -71,6 +84,7 @@ export function ProfileEditForm({
 
     try {
       const success = await onSave({
+        name: formData.name,
         university: formData.university,
         faculty: formData.faculty,
         year: formData.year,
@@ -119,6 +133,28 @@ export function ProfileEditForm({
 
         <CardContent className="space-y-6">
           <form onSubmit={handleSubmit} className="space-y-4">
+            {/* Name */}
+            <div className="space-y-2">
+              <label
+                htmlFor="name"
+                className="text-sm font-medium text-slate-700"
+              >
+                Имя
+              </label>
+              <div className="relative">
+                <User className="absolute left-3 top-1/2 transform -translate-y-1/2 h-4 w-4 text-slate-400" />
+                <Input
+                  id="name"
+                  name="name"
+                  type="text"
+                  placeholder="Ваше имя"
+                  value={formData.name}
+                  onChange={handleChange}
+                  className="pl-10 h-12 border-slate-200 focus:border-blue-500 focus:ring-blue-500"
+                />
+              </div>
+            </div>
+
             {/* University */}
             <div className="space-y-2">
               <label

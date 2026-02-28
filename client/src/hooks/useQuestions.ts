@@ -1,4 +1,4 @@
-import { useState, useCallback } from "react";
+import { useState, useCallback, useRef } from "react";
 import { API_BASE_URL } from "@/lib/api";
 
 export interface Question {
@@ -10,6 +10,7 @@ export interface Question {
   author: string;
   authorId: string;
   isAnswered: boolean;
+  isLikedByCurrentUser: boolean;
   createdAt: number;
   timeLabel: string;
 }
@@ -28,6 +29,14 @@ export interface Answer {
   timeLabel: string;
 }
 
+interface PaginatedResponse<T> {
+  success: boolean;
+  data?: T;
+  meta?: { total: number; page: number; limit: number; hasMore: boolean };
+  message?: string;
+  errors?: unknown[];
+}
+
 interface ApiResponse<T> {
   success: boolean;
   data?: T;
@@ -38,7 +47,11 @@ interface ApiResponse<T> {
 export const useQuestions = () => {
   const [questions, setQuestions] = useState<Question[]>([]);
   const [isLoading, setIsLoading] = useState(false);
+  const [isLoadingMore, setIsLoadingMore] = useState(false);
   const [error, setError] = useState<string | null>(null);
+  const [hasMore, setHasMore] = useState(false);
+  const [totalCount, setTotalCount] = useState(0);
+  const pageRef = useRef(1);
 
   const getToken = () => {
     if (typeof window !== "undefined") {
@@ -60,216 +73,299 @@ export const useQuestions = () => {
     return headers;
   };
 
-  // Получить список вопросов
-  const fetchQuestions = useCallback(async (sort: "popular" | "new" = "popular") => {
-    setIsLoading(true);
-    setError(null);
-
-    try {
-      const response = await fetch(
-        `${API_BASE_URL}/questions?sort=${sort}`,
-        { headers: getHeaders() }
-      );
-
-      const data: ApiResponse<Question[]> = await response.json();
-
-      if (!response.ok || !data.success) {
-        throw new Error(data.message || "Ошибка загрузки вопросов");
+  const fetchQuestions = useCallback(
+    async (
+      sort: "popular" | "new" = "popular",
+      search?: string,
+      page = 1,
+    ) => {
+      const isAppend = page > 1;
+      if (isAppend) {
+        setIsLoadingMore(true);
+      } else {
+        setIsLoading(true);
       }
+      setError(null);
 
-      setQuestions(data.data || []);
-      return data.data || [];
-    } catch (err) {
-      const message = err instanceof Error ? err.message : "Неизвестная ошибка";
-      setError(message);
-      return [];
-    } finally {
-      setIsLoading(false);
-    }
-  }, []);
+      try {
+        const params = new URLSearchParams({
+          sort,
+          page: String(page),
+          limit: "20",
+        });
+        if (search?.trim()) params.set("search", search.trim());
 
-  // Получить вопрос с ответами
-  const fetchQuestion = useCallback(async (id: string): Promise<QuestionDetail | null> => {
-    setError(null);
+        const response = await fetch(
+          `${API_BASE_URL}/questions?${params}`,
+          { headers: getHeaders(true) },
+        );
 
-    try {
-      const response = await fetch(
-        `${API_BASE_URL}/questions/${id}`,
-        { headers: getHeaders() }
-      );
+        const data: PaginatedResponse<Question[]> = await response.json();
 
-      const data: ApiResponse<QuestionDetail> = await response.json();
+        if (!response.ok || !data.success) {
+          throw new Error(data.message || "Ошибка загрузки вопросов");
+        }
 
-      if (!response.ok || !data.success) {
-        throw new Error(data.message || "Вопрос не найден");
+        const fetched = data.data || [];
+        if (isAppend) {
+          setQuestions((prev) => [...prev, ...fetched]);
+        } else {
+          setQuestions(fetched);
+        }
+
+        pageRef.current = page;
+        setHasMore(data.meta?.hasMore ?? false);
+        setTotalCount(data.meta?.total ?? fetched.length);
+        return fetched;
+      } catch (err) {
+        const message =
+          err instanceof Error ? err.message : "Неизвестная ошибка";
+        setError(message);
+        return [];
+      } finally {
+        setIsLoading(false);
+        setIsLoadingMore(false);
       }
+    },
+    [],
+  );
 
-      return data.data || null;
-    } catch (err) {
-      const message = err instanceof Error ? err.message : "Неизвестная ошибка";
-      setError(message);
-      return null;
-    }
-  }, []);
+  const loadMore = useCallback(
+    async (sort: "popular" | "new", search?: string) => {
+      return fetchQuestions(sort, search, pageRef.current + 1);
+    },
+    [fetchQuestions],
+  );
 
-  // Создать вопрос
-  const createQuestion = useCallback(async (title: string, description?: string): Promise<Question | null> => {
-    setError(null);
+  const fetchQuestion = useCallback(
+    async (id: string): Promise<QuestionDetail | null> => {
+      setError(null);
 
-    try {
-      const response = await fetch(`${API_BASE_URL}/questions`, {
-        method: "POST",
-        headers: getHeaders(true),
-        body: JSON.stringify({ title, description }),
-      });
+      try {
+        const response = await fetch(`${API_BASE_URL}/questions/${id}`, {
+          headers: getHeaders(true),
+        });
 
-      const data: ApiResponse<Question> = await response.json();
+        const data: ApiResponse<QuestionDetail> = await response.json();
 
-      if (!response.ok || !data.success) {
-        throw new Error(data.message || "Ошибка создания вопроса");
+        if (!response.ok || !data.success) {
+          throw new Error(data.message || "Вопрос не найден");
+        }
+
+        return data.data || null;
+      } catch (err) {
+        const message =
+          err instanceof Error ? err.message : "Неизвестная ошибка";
+        setError(message);
+        return null;
       }
+    },
+    [],
+  );
 
-      if (data.data) {
-        setQuestions((prev) => [data.data!, ...prev]);
+  const createQuestion = useCallback(
+    async (
+      title: string,
+      description?: string,
+    ): Promise<Question | null> => {
+      setError(null);
+
+      try {
+        const response = await fetch(`${API_BASE_URL}/questions`, {
+          method: "POST",
+          headers: getHeaders(true),
+          body: JSON.stringify({ title, description }),
+        });
+
+        const data: ApiResponse<Question> = await response.json();
+
+        if (!response.ok || !data.success) {
+          throw new Error(data.message || "Ошибка создания вопроса");
+        }
+
+        if (data.data) {
+          setQuestions((prev) => [data.data!, ...prev]);
+        }
+
+        return data.data || null;
+      } catch (err) {
+        const message =
+          err instanceof Error ? err.message : "Неизвестная ошибка";
+        setError(message);
+        return null;
       }
+    },
+    [],
+  );
 
-      return data.data || null;
-    } catch (err) {
-      const message = err instanceof Error ? err.message : "Неизвестная ошибка";
-      setError(message);
-      return null;
-    }
-  }, []);
+  const addAnswer = useCallback(
+    async (
+      questionId: string,
+      content: string,
+    ): Promise<Answer | null> => {
+      setError(null);
 
-  // Добавить ответ
-  const addAnswer = useCallback(async (questionId: string, content: string): Promise<Answer | null> => {
-    setError(null);
+      try {
+        const response = await fetch(
+          `${API_BASE_URL}/questions/${questionId}/answers`,
+          {
+            method: "POST",
+            headers: getHeaders(true),
+            body: JSON.stringify({ content }),
+          },
+        );
 
-    try {
-      const response = await fetch(`${API_BASE_URL}/questions/${questionId}/answers`, {
-        method: "POST",
-        headers: getHeaders(true),
-        body: JSON.stringify({ content }),
-      });
+        const data: ApiResponse<Answer> = await response.json();
 
-      const data: ApiResponse<Answer> = await response.json();
+        if (!response.ok || !data.success) {
+          throw new Error(data.message || "Ошибка добавления ответа");
+        }
 
-      if (!response.ok || !data.success) {
-        throw new Error(data.message || "Ошибка добавления ответа");
-      }
-
-      // Обновляем счётчик ответов и статус
-      setQuestions((prev) =>
-        prev.map((q) =>
-          q.id === questionId
-            ? { ...q, answersCount: q.answersCount + 1, isAnswered: true }
-            : q
-        )
-      );
-
-      return data.data || null;
-    } catch (err) {
-      const message = err instanceof Error ? err.message : "Неизвестная ошибка";
-      setError(message);
-      return null;
-    }
-  }, []);
-
-  // Лайк
-  const likeQuestion = useCallback(async (questionId: string): Promise<{ likesCount: number; isLiked: boolean } | null> => {
-    setError(null);
-
-    try {
-      const response = await fetch(`${API_BASE_URL}/questions/${questionId}/like`, {
-        method: "POST",
-        headers: getHeaders(true),
-      });
-
-      const data: ApiResponse<{ likesCount: number; isLiked: boolean }> = await response.json();
-
-      if (!response.ok || !data.success) {
-        throw new Error(data.message || "Ошибка");
-      }
-
-      // Обновляем локально
-      if (data.data) {
         setQuestions((prev) =>
           prev.map((q) =>
-            q.id === questionId ? { ...q, likesCount: data.data!.likesCount } : q
-          )
+            q.id === questionId
+              ? { ...q, answersCount: q.answersCount + 1, isAnswered: true }
+              : q,
+          ),
         );
+
+        return data.data || null;
+      } catch (err) {
+        const message =
+          err instanceof Error ? err.message : "Неизвестная ошибка";
+        setError(message);
+        return null;
       }
+    },
+    [],
+  );
 
-      return data.data || null;
-    } catch (err) {
-      const message = err instanceof Error ? err.message : "Неизвестная ошибка";
-      setError(message);
-      return null;
-    }
-  }, []);
+  const likeQuestion = useCallback(
+    async (
+      questionId: string,
+    ): Promise<{ likesCount: number; isLiked: boolean } | null> => {
+      setError(null);
 
-  // Убрать лайк
-  const unlikeQuestion = useCallback(async (questionId: string): Promise<{ likesCount: number; isLiked: boolean } | null> => {
-    setError(null);
-
-    try {
-      const response = await fetch(`${API_BASE_URL}/questions/${questionId}/like`, {
-        method: "DELETE",
-        headers: getHeaders(true),
-      });
-
-      const data: ApiResponse<{ likesCount: number; isLiked: boolean }> = await response.json();
-
-      if (!response.ok || !data.success) {
-        throw new Error(data.message || "Ошибка");
-      }
-
-      if (data.data) {
-        setQuestions((prev) =>
-          prev.map((q) =>
-            q.id === questionId ? { ...q, likesCount: data.data!.likesCount } : q
-          )
+      try {
+        const response = await fetch(
+          `${API_BASE_URL}/questions/${questionId}/like`,
+          {
+            method: "POST",
+            headers: getHeaders(true),
+          },
         );
+
+        const data: ApiResponse<{ likesCount: number; isLiked: boolean }> =
+          await response.json();
+
+        if (!response.ok || !data.success) {
+          throw new Error(data.message || "Ошибка");
+        }
+
+        if (data.data) {
+          setQuestions((prev) =>
+            prev.map((q) =>
+              q.id === questionId
+                ? { ...q, likesCount: data.data!.likesCount }
+                : q,
+            ),
+          );
+        }
+
+        return data.data || null;
+      } catch (err) {
+        const message =
+          err instanceof Error ? err.message : "Неизвестная ошибка";
+        setError(message);
+        return null;
       }
+    },
+    [],
+  );
 
-      return data.data || null;
-    } catch (err) {
-      const message = err instanceof Error ? err.message : "Неизвестная ошибка";
-      setError(message);
-      return null;
-    }
-  }, []);
+  const unlikeQuestion = useCallback(
+    async (
+      questionId: string,
+    ): Promise<{ likesCount: number; isLiked: boolean } | null> => {
+      setError(null);
 
-  // Удалить вопрос
-  const deleteQuestion = useCallback(async (questionId: string): Promise<boolean> => {
-    setError(null);
+      try {
+        const response = await fetch(
+          `${API_BASE_URL}/questions/${questionId}/like`,
+          {
+            method: "DELETE",
+            headers: getHeaders(true),
+          },
+        );
 
-    try {
-      const response = await fetch(`${API_BASE_URL}/questions/${questionId}`, {
-        method: "DELETE",
-        headers: getHeaders(true),
-      });
+        const data: ApiResponse<{ likesCount: number; isLiked: boolean }> =
+          await response.json();
 
-      const data: ApiResponse<void> = await response.json();
+        if (!response.ok || !data.success) {
+          throw new Error(data.message || "Ошибка");
+        }
 
-      if (!response.ok || !data.success) {
-        throw new Error(data.message || "Ошибка удаления");
+        if (data.data) {
+          setQuestions((prev) =>
+            prev.map((q) =>
+              q.id === questionId
+                ? { ...q, likesCount: data.data!.likesCount }
+                : q,
+            ),
+          );
+        }
+
+        return data.data || null;
+      } catch (err) {
+        const message =
+          err instanceof Error ? err.message : "Неизвестная ошибка";
+        setError(message);
+        return null;
       }
+    },
+    [],
+  );
 
-      setQuestions((prev) => prev.filter((q) => q.id !== questionId));
-      return true;
-    } catch (err) {
-      const message = err instanceof Error ? err.message : "Неизвестная ошибка";
-      setError(message);
-      return false;
-    }
-  }, []);
+  const deleteQuestion = useCallback(
+    async (questionId: string): Promise<boolean> => {
+      setError(null);
+
+      try {
+        const response = await fetch(
+          `${API_BASE_URL}/questions/${questionId}`,
+          {
+            method: "DELETE",
+            headers: getHeaders(true),
+          },
+        );
+
+        const data: ApiResponse<void> = await response.json();
+
+        if (!response.ok || !data.success) {
+          throw new Error(data.message || "Ошибка удаления");
+        }
+
+        setQuestions((prev) => prev.filter((q) => q.id !== questionId));
+        return true;
+      } catch (err) {
+        const message =
+          err instanceof Error ? err.message : "Неизвестная ошибка";
+        setError(message);
+        return false;
+      }
+    },
+    [],
+  );
 
   return {
     questions,
     isLoading,
+    isLoadingMore,
     error,
+    hasMore,
+    totalCount,
     fetchQuestions,
+    loadMore,
     fetchQuestion,
     createQuestion,
     addAnswer,
@@ -279,4 +375,3 @@ export const useQuestions = () => {
     setQuestions,
   };
 };
-

@@ -73,7 +73,6 @@ export function UserProgressComponent({ progress }: UserProgressProps) {
     String(levelNumber),
   );
 
-  // Определяем следующий уровень
   const getNextLevel = () => {
     const levels = Object.values(UserLevel);
     const currentIndex = levels.indexOf(progress.level);
@@ -85,7 +84,7 @@ export function UserProgressComponent({ progress }: UserProgressProps) {
   const nextLevel = getNextLevel();
 
   return (
-    <Card className="bg-gradient-to-br from-blue-50 via-purple-50 to-pink-50 border-0 shadow-xl no-hover">
+    <Card className="bg-gradient-to-br from-blue-50 via-purple-50 to-pink-50 border-0 shadow-xl">
       <CardContent className="p-4 sm:p-6">
         <div className="flex flex-col space-y-4">
           {/* Header */}
@@ -130,7 +129,14 @@ export function UserProgressComponent({ progress }: UserProgressProps) {
                 {progress.level === UserLevel.LOCAL ? "∞" : currentLevel.maxXP}
               </span>
             </div>
-            <div className="w-full bg-gray-200 rounded-full h-3 sm:h-4 overflow-hidden shadow-inner">
+            <div
+              className="w-full bg-gray-200 rounded-full h-3 sm:h-4 overflow-hidden shadow-inner"
+              role="progressbar"
+              aria-valuenow={progress.xp}
+              aria-valuemin={currentLevel.minXP}
+              aria-valuemax={progress.level === UserLevel.LOCAL ? 9999 : currentLevel.maxXP}
+              aria-label={t("userProgress.xpLabel")}
+            >
               <div
                 className={`h-full bg-gradient-to-r ${currentLevel.color} transition-all duration-500 rounded-full flex items-center justify-end pr-1`}
                 style={{ width: `${progressPercentage}%` }}
@@ -160,7 +166,14 @@ export function UserProgressComponent({ progress }: UserProgressProps) {
                 {progress.adaptationProgress}%
               </span>
             </div>
-            <div className="w-full bg-gray-200 rounded-full h-3 sm:h-4 overflow-hidden shadow-inner">
+            <div
+              className="w-full bg-gray-200 rounded-full h-3 sm:h-4 overflow-hidden shadow-inner"
+              role="progressbar"
+              aria-valuenow={progress.adaptationProgress}
+              aria-valuemin={0}
+              aria-valuemax={100}
+              aria-label={t("userProgress.adaptationProgress")}
+            >
               <div
                 className="h-full bg-gradient-to-r from-green-500 to-emerald-600 transition-all duration-500 rounded-full"
                 style={{ width: `${progress.adaptationProgress}%` }}
@@ -225,11 +238,8 @@ export function UserProgressComponent({ progress }: UserProgressProps) {
 
           {/* Call to Action */}
           {progress.adaptationProgress < 100 && (
-            <div className="pt-2 border-t border-gray-200 relative">
-              <div className="absolute -left-2 top-0 text-2xl animate-float">
-                💡
-              </div>
-              <p className="text-xs text-gray-600 text-center mb-2 pl-6">
+            <div className="pt-2 border-t border-gray-200">
+              <p className="text-xs text-gray-600 text-center">
                 {t("userProgress.cta")}
               </p>
             </div>

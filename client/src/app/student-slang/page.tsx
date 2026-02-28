@@ -591,7 +591,7 @@ export default function StudentSlangPage() {
                 <CardContent className="space-y-3">
                   <div>
                     <p className="text-sm font-medium text-gray-700 mb-1">
-                      Значение:
+                      {t("studentSlang.meaning")}
                     </p>
                     <p className="text-sm text-gray-600">{term.meaning}</p>
                   </div>

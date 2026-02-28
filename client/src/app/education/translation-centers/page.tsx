@@ -346,13 +346,13 @@ export default function TranslationCentersPage() {
             <div className="flex-1">
               <h1 className="text-xl sm:text-2xl font-bold text-gray-900">
                 {user
-                  ? `Центры нотариального перевода в городе ${selectedCity}`
-                  : "Найдите ближайший центр нотариального перевода документов"}
+                  ? `${t("translationCenters.titleInCity")} ${selectedCity}`
+                  : t("translationCenters.titleGuest")}
               </h1>
               <p className="text-sm sm:text-base text-gray-600">
                 {user
-                  ? "Мы подобрали центры нотариального перевода документов рядом с вами на основе указанного города."
-                  : "Подбор проверенных центров нотариального перевода в вашем городе. Удобно для поступления, визы и официальных документов."}
+                  ? t("translationCenters.subtitleUser")
+                  : t("translationCenters.subtitleGuest")}
               </p>
             </div>
           </div>
@@ -450,7 +450,7 @@ export default function TranslationCentersPage() {
                             <div className="flex items-center gap-1.5 px-2 py-1 bg-green-50 border border-green-200 rounded-md">
                               <CheckCircle className="h-4 w-4 text-green-600" />
                               <span className="text-xs sm:text-sm font-medium text-green-700">
-                                Проверенный центр
+                                {t("translationCenters.verified")}
                               </span>
                             </div>
                           )}
@@ -464,7 +464,7 @@ export default function TranslationCentersPage() {
                               </div>
                               {center.reviewsCount && (
                                 <span className="text-xs sm:text-sm text-gray-500">
-                                  ({center.reviewsCount} отзывов)
+                                  ({center.reviewsCount} {t("translationCenters.reviews")})
                                 </span>
                               )}
                             </div>

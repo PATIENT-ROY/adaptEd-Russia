@@ -1,6 +1,6 @@
 import { Router, Request } from "express";
 import { z } from "zod";
-import { authMiddleware, JWTPayload } from "../lib/auth.js";
+import { authMiddleware, verifyToken, JWTPayload } from "../lib/auth.js";
 import { prisma } from "../lib/database.js";
 
 interface AuthenticatedRequest extends Request {
@@ -24,41 +24,63 @@ const querySchema = z.object({
   sort: z.enum(['popular', 'new']).default('popular'),
   page: z.coerce.number().int().positive().default(1),
   limit: z.coerce.number().int().min(1).max(100).default(20),
+  search: z.string().optional(),
 });
 
 // GET /api/questions - Получение списка вопросов
-router.get("/", async (req, res) => {
+router.get("/", async (req: AuthenticatedRequest, res) => {
   try {
-    const { sort, page, limit } = querySchema.parse(req.query);
+    const { sort, page, limit, search } = querySchema.parse(req.query);
 
-    const questions = await prisma.question.findMany({
-      include: {
-        author: {
-          select: {
-            id: true,
-            name: true,
-          },
-        },
-        answers: {
-          select: {
-            id: true,
-          },
-        },
-        likes: {
-          select: {
-            id: true,
-          },
-        },
-      },
-      orderBy:
-        sort === "new"
-          ? { createdAt: "desc" }
-          : { likes: { _count: "desc" } },
-      skip: (page - 1) * limit,
-      take: limit,
-    });
+    // Optional auth — resolve current user if token present
+    let currentUserId: string | null = null;
+    const authHeader = req.headers.authorization;
+    if (authHeader?.startsWith("Bearer ")) {
+      const payload = verifyToken(authHeader.substring(7));
+      if (payload) currentUserId = payload.userId;
+    }
 
-    // Форматируем ответ
+    const where = search
+      ? {
+          OR: [
+            { title: { contains: search, mode: "insensitive" as const } },
+            { description: { contains: search, mode: "insensitive" as const } },
+            { author: { name: { contains: search, mode: "insensitive" as const } } },
+          ],
+        }
+      : {};
+
+    const [questions, total] = await Promise.all([
+      prisma.question.findMany({
+        where,
+        include: {
+          author: {
+            select: {
+              id: true,
+              name: true,
+            },
+          },
+          answers: {
+            select: {
+              id: true,
+            },
+          },
+          likes: {
+            select: {
+              userId: true,
+            },
+          },
+        },
+        orderBy:
+          sort === "new"
+            ? { createdAt: "desc" }
+            : { likes: { _count: "desc" } },
+        skip: (page - 1) * limit,
+        take: limit,
+      }),
+      prisma.question.count({ where }),
+    ]);
+
     const formattedQuestions = questions.map((q) => ({
       id: q.id,
       title: q.title,
@@ -68,6 +90,9 @@ router.get("/", async (req, res) => {
       author: q.author.name,
       authorId: q.author.id,
       isAnswered: q.isAnswered,
+      isLikedByCurrentUser: currentUserId
+        ? q.likes.some((l) => l.userId === currentUserId)
+        : false,
       createdAt: q.createdAt.getTime(),
       timeLabel: getTimeLabel(q.createdAt),
     }));
@@ -75,6 +100,7 @@ router.get("/", async (req, res) => {
     res.json({
       success: true,
       data: formattedQuestions,
+      meta: { total, page, limit, hasMore: page * limit < total },
     });
   } catch (error) {
     console.error("Ошибка при получении вопросов:", error);
@@ -187,6 +213,7 @@ router.post("/", authMiddleware, async (req: AuthenticatedRequest, res) => {
         answersCount: 0,
         likesCount: 0,
         isAnswered: false,
+        isLikedByCurrentUser: false,
         createdAt: question.createdAt.getTime(),
         timeLabel: "только что",
       },

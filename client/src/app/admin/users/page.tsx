@@ -22,11 +22,10 @@ import {
 } from "lucide-react";
 import Link from "next/link";
 import { useAuth } from "@/contexts/AuthContext";
-import { useState, useEffect, useMemo } from "react";
+import { useState, useMemo } from "react";
 import { Language, Role } from "@/types";
 import { useTranslation } from "@/hooks/useTranslation";
 
-// Моковые данные пользователей
 const mockUsers = [
   {
     id: "1",
@@ -108,8 +107,18 @@ const roleColors: Record<string, string> = {
 };
 
 export default function AdminUsersPage() {
+  return (
+    <ProtectedRoute>
+      <AdminUsersContent />
+    </ProtectedRoute>
+  );
+}
+
+function AdminUsersContent() {
   const { user } = useAuth();
-  const [isAdmin, setIsAdmin] = useState(false);
+  const { t } = useTranslation();
+  const isAdmin = user?.role === Role.ADMIN;
+
   const [users, setUsers] = useState(mockUsers);
   const [searchTerm, setSearchTerm] = useState("");
   const [statusFilter, setStatusFilter] = useState("all");
@@ -125,13 +134,6 @@ export default function AdminUsersPage() {
     status: "active",
   });
   const [formError, setFormError] = useState<string>("");
-  const { t } = useTranslation();
-
-  useEffect(() => {
-    if (user?.role === Role.ADMIN) {
-      setIsAdmin(true);
-    }
-  }, [user]);
 
   const filteredUsers = useMemo(() => {
     return users.filter((user) => {
@@ -147,14 +149,6 @@ export default function AdminUsersPage() {
       return matchesSearch && matchesStatus && matchesRole;
     });
   }, [users, searchTerm, statusFilter, roleFilter]);
-
-  if (!user) {
-    return (
-      <ProtectedRoute>
-        <div>Loading...</div>
-      </ProtectedRoute>
-    );
-  }
 
   if (!isAdmin) {
     return (
@@ -178,26 +172,6 @@ export default function AdminUsersPage() {
       </Layout>
     );
   }
-
-  // const handleStatusChange = (userId: string, newStatus: string) => {
-  //   setUsers(
-  //     users.map((user) =>
-  //       user.id === userId
-  //         ? { ...user, status: newStatus as "active" | "pending" | "blocked" }
-  //         : user
-  //     )
-  //   );
-  // };
-
-  // const handleRoleChange = (userId: string, newRole: string) => {
-  //   setUsers(
-  //     users.map((user) =>
-  //       user.id === userId
-  //         ? { ...user, role: newRole as "student" | "admin" | "guest" }
-  //         : user
-  //     )
-  //   );
-  // };
 
   const handleDeleteUser = (userId: string) => {
     setUsers(users.filter((user) => user.id !== userId));
@@ -298,14 +272,14 @@ export default function AdminUsersPage() {
             <div className="flex items-center space-x-2">
               <Button variant="outline" className="flex items-center space-x-2">
                 <Download className="h-4 w-4" />
-                <span>Экспорт</span>
+                <span>{t("admin.users.export")}</span>
               </Button>
               <Button
                 className="flex items-center space-x-2"
                 onClick={() => setIsAddUserOpen(true)}
               >
                 <Plus className="h-4 w-4" />
-                <span>Добавить пользователя</span>
+                <span>{t("admin.users.addUser")}</span>
               </Button>
             </div>
           </div>
@@ -332,9 +306,9 @@ export default function AdminUsersPage() {
                   className="w-full appearance-none px-3 py-2 pr-9 border border-slate-300 rounded-lg focus:ring-2 focus:ring-blue-500 focus:border-blue-500"
               >
                 <option value="all">{t("admin.users.filters.status.all")}</option>
-                <option value="active">Активные</option>
-                <option value="pending">Ожидающие</option>
-                <option value="blocked">Заблокированные</option>
+                <option value="active">{t("admin.users.filters.status.active")}</option>
+                <option value="pending">{t("admin.users.filters.status.pending")}</option>
+                <option value="blocked">{t("admin.users.filters.status.blocked")}</option>
               </select>
                 <ChevronDown className="h-4 w-4 text-gray-400 pointer-events-none absolute right-3 top-1/2 -translate-y-1/2" />
               </div>
@@ -345,9 +319,9 @@ export default function AdminUsersPage() {
                   className="w-full appearance-none px-3 py-2 pr-9 border border-slate-300 rounded-lg focus:ring-2 focus:ring-blue-500 focus:border-blue-500"
               >
                 <option value="all">{t("admin.users.filters.role.all")}</option>
-                <option value="student">Студенты</option>
-                <option value="admin">Администраторы</option>
-                <option value="guest">Гости</option>
+                <option value="student">{t("admin.users.filters.role.student")}</option>
+                <option value="admin">{t("admin.users.filters.role.admin")}</option>
+                <option value="guest">{t("admin.users.filters.role.guest")}</option>
               </select>
                 <ChevronDown className="h-4 w-4 text-gray-400 pointer-events-none absolute right-3 top-1/2 -translate-y-1/2" />
               </div>
@@ -359,19 +333,19 @@ export default function AdminUsersPage() {
         <Card>
           <CardHeader>
             <CardTitle className="flex items-center justify-between">
-              <span>Пользователи ({filteredUsers.length})</span>
+              <span>{t("admin.users.table.title")} ({filteredUsers.length})</span>
               {selectedUsers.length > 0 && (
                 <div className="flex items-center space-x-2">
                   <span className="text-sm text-gray-600">
-                    Выбрано: {selectedUsers.length}
+                    {t("admin.users.table.selected")} {selectedUsers.length}
                   </span>
                   <Button variant="outline" size="sm">
                     <UserCheck className="h-4 w-4 mr-2" />
-                    Активировать
+                    {t("admin.users.table.activate")}
                   </Button>
                   <Button variant="outline" size="sm">
                     <UserX className="h-4 w-4 mr-2" />
-                    Заблокировать
+                    {t("admin.users.table.block")}
                   </Button>
                 </div>
               )}
@@ -394,50 +368,50 @@ export default function AdminUsersPage() {
                       />
                     </th>
                     <th className="text-left py-3 px-4 font-medium text-gray-900">
-                      Пользователь
+                      {t("admin.users.table.user")}
                     </th>
                     <th className="text-left py-3 px-4 font-medium text-gray-900">
-                      Роль
+                      {t("admin.users.table.role")}
                     </th>
                     <th className="text-left py-3 px-4 font-medium text-gray-900">
-                      Статус
+                      {t("admin.users.table.status")}
                     </th>
                     <th className="text-left py-3 px-4 font-medium text-gray-900">
-                      Активность
+                      {t("admin.users.table.activity")}
                     </th>
                     <th className="text-left py-3 px-4 font-medium text-gray-900">
-                      Действия
+                      {t("admin.users.table.actions")}
                     </th>
                   </tr>
                 </thead>
                 <tbody>
-                  {filteredUsers.map((user) => (
+                  {filteredUsers.map((u) => (
                     <tr
-                      key={user.id}
+                      key={u.id}
                       className="border-b border-gray-100 hover:bg-gray-50"
                     >
                       <td className="py-3 px-4">
                         <input
                           type="checkbox"
-                          checked={selectedUsers.includes(user.id)}
-                          onChange={() => handleSelectUser(user.id)}
+                          checked={selectedUsers.includes(u.id)}
+                          onChange={() => handleSelectUser(u.id)}
                           className="rounded border-gray-300"
                         />
                       </td>
                       <td className="py-3 px-4">
                         <div className="flex items-center space-x-3">
                           <div className="w-10 h-10 rounded-full bg-gradient-to-br from-blue-500 to-blue-600 flex items-center justify-center text-white font-bold">
-                            {user.name.charAt(0)}
+                            {u.name.charAt(0)}
                           </div>
                           <div>
                             <p className="font-medium text-gray-900">
-                              {user.name}
+                              {u.name}
                             </p>
                             <p className="text-sm text-gray-600">
-                              {user.email}
+                              {u.email}
                             </p>
                             <p className="text-xs text-gray-500">
-                              {user.country}
+                              {u.country}
                             </p>
                           </div>
                         </div>
@@ -445,39 +419,39 @@ export default function AdminUsersPage() {
                       <td className="py-3 px-4">
                         <span
                           className={`inline-flex items-center px-3 py-1 rounded-full text-xs font-semibold ${
-                            roleColors[user.role]
+                            roleColors[u.role]
                           }`}
                         >
-                          {user.role === "student"
-                            ? "Студент"
-                            : user.role === "admin"
-                            ? "Администратор"
-                            : "Гость"}
+                          {u.role === "student"
+                            ? t("admin.users.roles.student")
+                            : u.role === "admin"
+                            ? t("admin.users.roles.admin")
+                            : t("admin.users.roles.guest")}
                         </span>
                       </td>
                       <td className="py-3 px-4">
                         <span
                           className={`inline-flex items-center px-3 py-1 rounded-full text-xs font-semibold ${
-                            statusColors[user.status]
+                            statusColors[u.status]
                           }`}
                         >
-                          {user.status === "active"
-                            ? "Активен"
-                            : user.status === "pending"
-                            ? "Ожидает"
-                            : "Заблокирован"}
+                          {u.status === "active"
+                            ? t("admin.users.statuses.active")
+                            : u.status === "pending"
+                            ? t("admin.users.statuses.pending")
+                            : t("admin.users.statuses.blocked")}
                         </span>
                       </td>
                       <td className="py-3 px-4">
                         <div className="text-sm">
                           <p className="text-gray-900">
-                            {user.guidesRead} гайдов
+                            {u.guidesRead} {t("admin.users.activity.guides")}
                           </p>
                           <p className="text-gray-600">
-                            {user.aiQuestions} AI вопросов
+                            {u.aiQuestions} {t("admin.users.activity.aiQuestions")}
                           </p>
                           <p className="text-gray-500 text-xs">
-                            Последний вход: {user.lastLogin}
+                            {t("admin.users.activity.lastLogin")}: {u.lastLogin}
                           </p>
                         </div>
                       </td>
@@ -486,26 +460,23 @@ export default function AdminUsersPage() {
                           <Button
                             variant="outline"
                             size="sm"
-                            title="Просмотр"
-                            aria-label="Просмотр пользователя"
+                            aria-label={t("admin.common.view")}
                           >
                             <Eye className="h-4 w-4" />
                           </Button>
                           <Button
                             variant="outline"
                             size="sm"
-                            title="Редактировать"
-                            aria-label="Редактировать пользователя"
+                            aria-label={t("admin.common.edit")}
                           >
                             <Edit className="h-4 w-4" />
                           </Button>
                           <Button
                             variant="outline"
                             size="sm"
-                            onClick={() => handleDeleteUser(user.id)}
+                            onClick={() => handleDeleteUser(u.id)}
                             className="text-red-600 hover:text-red-700"
-                            title="Удалить"
-                            aria-label="Удалить пользователя"
+                            aria-label={t("admin.common.delete")}
                           >
                             <Trash2 className="h-4 w-4" />
                           </Button>
@@ -528,7 +499,7 @@ export default function AdminUsersPage() {
                   <UserCheck className="h-5 w-5 text-white" />
                 </div>
                 <div>
-                  <p className="text-sm font-medium text-gray-600">Активные</p>
+                  <p className="text-sm font-medium text-gray-600">{t("admin.users.stats.active")}</p>
                   <p className="text-xl font-bold text-gray-900">
                     {users.filter((u) => u.status === "active").length}
                   </p>
@@ -544,7 +515,7 @@ export default function AdminUsersPage() {
                   <Calendar className="h-5 w-5 text-white" />
                 </div>
                 <div>
-                  <p className="text-sm font-medium text-gray-600">Ожидающие</p>
+                  <p className="text-sm font-medium text-gray-600">{t("admin.users.stats.pending")}</p>
                   <p className="text-xl font-bold text-gray-900">
                     {users.filter((u) => u.status === "pending").length}
                   </p>
@@ -561,7 +532,7 @@ export default function AdminUsersPage() {
                 </div>
                 <div>
                   <p className="text-sm font-medium text-gray-600">
-                    Заблокированные
+                    {t("admin.users.stats.blocked")}
                   </p>
                   <p className="text-xl font-bold text-gray-900">
                     {users.filter((u) => u.status === "blocked").length}
@@ -579,7 +550,7 @@ export default function AdminUsersPage() {
                 </div>
                 <div>
                   <p className="text-sm font-medium text-gray-600">
-                    Администраторы
+                    {t("admin.users.stats.admins")}
                   </p>
                   <p className="text-xl font-bold text-gray-900">
                     {users.filter((u) => u.role === "admin").length}
@@ -596,29 +567,31 @@ export default function AdminUsersPage() {
             <CardHeader>
               <CardTitle className="flex items-center space-x-2">
                 <Plus className="h-5 w-5" />
-                <span>Новый пользователь</span>
+                <span>{t("admin.users.modal.title")}</span>
               </CardTitle>
             </CardHeader>
             <CardContent>
               <form className="space-y-4" onSubmit={handleAddUserSubmit}>
                 <div className="space-y-2">
-                  <label className="text-sm font-medium text-gray-700">
-                    Имя
+                  <label htmlFor="new-user-name" className="text-sm font-medium text-gray-700">
+                    {t("admin.users.modal.name")}
                   </label>
                   <Input
+                    id="new-user-name"
                     value={newUser.name}
                     onChange={(e) =>
                       setNewUser((prev) => ({ ...prev, name: e.target.value }))
                     }
-                    placeholder="Имя и фамилия"
+                    placeholder={t("admin.users.modal.namePlaceholder")}
                     required
                   />
                 </div>
                 <div className="space-y-2">
-                  <label className="text-sm font-medium text-gray-700">
-                    Email
+                  <label htmlFor="new-user-email" className="text-sm font-medium text-gray-700">
+                    {t("admin.users.modal.email")}
                   </label>
                   <Input
+                    id="new-user-email"
                     type="email"
                     value={newUser.email}
                     onChange={(e) =>
@@ -632,10 +605,11 @@ export default function AdminUsersPage() {
                   />
                 </div>
                 <div className="space-y-2">
-                  <label className="text-sm font-medium text-gray-700">
-                    Страна
+                  <label htmlFor="new-user-country" className="text-sm font-medium text-gray-700">
+                    {t("admin.users.modal.country")}
                   </label>
                   <Input
+                    id="new-user-country"
                     value={newUser.country}
                     onChange={(e) =>
                       setNewUser((prev) => ({
@@ -643,17 +617,18 @@ export default function AdminUsersPage() {
                         country: e.target.value,
                       }))
                     }
-                    placeholder="Страна проживания"
+                    placeholder={t("admin.users.modal.countryPlaceholder")}
                     required
                   />
                 </div>
                 <div className="grid grid-cols-1 sm:grid-cols-2 gap-3">
                   <div className="space-y-1">
-                    <label className="text-sm font-medium text-gray-700">
-                      Роль
+                    <label htmlFor="new-user-role" className="text-sm font-medium text-gray-700">
+                      {t("admin.users.modal.role")}
                     </label>
                     <div className="relative">
                       <select
+                        id="new-user-role"
                         value={newUser.role}
                         onChange={(e) =>
                           setNewUser((prev) => ({
@@ -663,19 +638,20 @@ export default function AdminUsersPage() {
                         }
                         className="w-full appearance-none px-3 py-2 pr-9 border border-slate-300 rounded-lg focus:ring-2 focus:ring-blue-500 focus:border-blue-500"
                       >
-                        <option value="student">Студент</option>
-                        <option value="admin">Администратор</option>
-                        <option value="guest">Гость</option>
+                        <option value="student">{t("admin.users.roles.student")}</option>
+                        <option value="admin">{t("admin.users.roles.admin")}</option>
+                        <option value="guest">{t("admin.users.roles.guest")}</option>
                       </select>
                       <ChevronDown className="h-4 w-4 text-gray-400 pointer-events-none absolute right-3 top-1/2 -translate-y-1/2" />
                     </div>
                   </div>
                   <div className="space-y-1">
-                    <label className="text-sm font-medium text-gray-700">
-                      Статус
+                    <label htmlFor="new-user-status" className="text-sm font-medium text-gray-700">
+                      {t("admin.users.modal.status")}
                     </label>
                     <div className="relative">
                       <select
+                        id="new-user-status"
                         value={newUser.status}
                         onChange={(e) =>
                           setNewUser((prev) => ({
@@ -685,9 +661,9 @@ export default function AdminUsersPage() {
                         }
                         className="w-full appearance-none px-3 py-2 pr-9 border border-slate-300 rounded-lg focus:ring-2 focus:ring-blue-500 focus:border-blue-500"
                       >
-                        <option value="active">Активен</option>
-                        <option value="pending">Ожидает</option>
-                        <option value="blocked">Заблокирован</option>
+                        <option value="active">{t("admin.users.statuses.active")}</option>
+                        <option value="pending">{t("admin.users.statuses.pending")}</option>
+                        <option value="blocked">{t("admin.users.statuses.blocked")}</option>
                       </select>
                       <ChevronDown className="h-4 w-4 text-gray-400 pointer-events-none absolute right-3 top-1/2 -translate-y-1/2" />
                     </div>
@@ -700,11 +676,11 @@ export default function AdminUsersPage() {
                 )}
                 <div className="flex items-center justify-end space-x-2">
                   <Button type="button" variant="outline" onClick={closeAddUserModal}>
-                    Отмена
+                    {t("admin.common.cancel")}
                   </Button>
                   <Button type="submit" className="flex items-center space-x-2">
                     <Plus className="h-4 w-4" />
-                    <span>Создать</span>
+                    <span>{t("admin.common.create")}</span>
                   </Button>
                 </div>
               </form>
