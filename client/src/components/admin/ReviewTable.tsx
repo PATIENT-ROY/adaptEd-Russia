@@ -18,6 +18,7 @@ export default function ReviewTable({ reviews, onApprove, onReject, onToggleFeat
         <thead>
           <tr className="border-b border-gray-200">
             <th className="text-left py-3 px-4">Автор</th>
+            <th className="text-left py-3 px-4">План</th>
             <th className="text-left py-3 px-4">Рейтинг</th>
             <th className="text-left py-3 px-4">Текст</th>
             <th className="text-left py-3 px-4">Статус</th>
@@ -44,17 +45,30 @@ export default function ReviewTable({ reviews, onApprove, onReject, onToggleFeat
                   </div>
                 </div>
               </td>
+              <td className="py-3 px-4">
+                <span
+                  className={`inline-flex items-center px-2 py-1 rounded-full text-xs font-medium ${
+                    r.user.plan === "PREMIUM"
+                      ? "bg-amber-100 text-amber-800"
+                      : "bg-slate-100 text-slate-700"
+                  }`}
+                >
+                  {r.user.plan === "PREMIUM" ? "PREMIUM" : "FREE"}
+                </span>
+              </td>
               <td className="py-3 px-4">{r.rating}</td>
               <td className="py-3 px-4">
                 <p className="text-sm text-gray-800 line-clamp-2">{r.text}</p>
               </td>
               <td className="py-3 px-4">
                 <span
-                  className={`inline-flex items-center px-2 py-1 rounded-full text-xs font-semibold  ${{
-                    PENDING: "bg-yellow-100 text-yellow-800",
-                    APPROVED: "bg-green-100 text-green-800",
-                    REJECTED: "bg-red-100 text-red-800",
-                  }[r.status]}`}
+                  className={`inline-flex items-center px-2 py-1 rounded-full text-xs font-semibold ${
+                    r.status === "PENDING"
+                      ? "bg-yellow-100 text-yellow-800"
+                      : r.status === "APPROVED"
+                        ? "bg-green-100 text-green-800"
+                        : "bg-red-100 text-red-800"
+                  }`}
                 >
                   {r.status}
                 </span>
@@ -75,7 +89,7 @@ export default function ReviewTable({ reviews, onApprove, onReject, onToggleFeat
           ))}
           {reviews.length === 0 && (
             <tr>
-              <td colSpan={6} className="py-6 text-center text-gray-500">
+              <td colSpan={7} className="py-6 text-center text-gray-500">
                 Нет отзывов
               </td>
             </tr>

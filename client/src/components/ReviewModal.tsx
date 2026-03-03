@@ -5,6 +5,10 @@ import { Button } from "@/components/ui/button";
 import { X } from "lucide-react";
 import { useTranslation } from "@/hooks/useTranslation";
 
+const TEXT_MIN = 20;
+const TEXT_MAX = 500;
+const PLACEHOLDER = "Например: Понравились гайды про сессию и напоминания…";
+
 interface ReviewModalProps {
   isOpen: boolean;
   onClose: () => void;
@@ -14,7 +18,6 @@ interface ReviewModalProps {
   saving: boolean;
   saveError: string | null;
   onSave: (data: { text: string; rating: number; allowPublication: boolean }) => Promise<void>;
-  statusMessage: string | null;
 }
 
 export function ReviewModal({
@@ -26,12 +29,17 @@ export function ReviewModal({
   saving,
   saveError,
   onSave,
-  statusMessage,
 }: ReviewModalProps) {
   const { t } = useTranslation();
   const [text, setText] = useState("");
   const [rating, setRating] = useState(0);
   const [allowPublication, setAllowPublication] = useState(true);
+  const [ratingTouched, setRatingTouched] = useState(false);
+
+  const tt = (key: string, fallback: string): string => {
+    const value = t(key);
+    return value === key ? fallback : value;
+  };
 
   useEffect(() => {
     if (review) {
@@ -48,16 +56,21 @@ export function ReviewModal({
       setText("");
       setRating(0);
       setAllowPublication(true);
+      setRatingTouched(false);
     } else {
       setTimeout(() => textareaRef.current?.focus(), 100);
     }
   }, [isOpen]);
 
+  const textTrimmed = text.trim();
+  const textValid = textTrimmed.length >= TEXT_MIN && textTrimmed.length <= TEXT_MAX;
+  const ratingValid = rating >= 1 && rating <= 5;
+  const canSubmit = ratingValid && textValid;
+
   const handleSubmit = async () => {
-    if (text.trim() === "" || rating < 1 || rating > 5) {
-      return;
-    }
-    await onSave({ text, rating, allowPublication });
+    setRatingTouched(true);
+    if (!ratingValid || !textValid) return;
+    await onSave({ text: textTrimmed, rating, allowPublication });
   };
 
   if (!isOpen) return null;
@@ -80,52 +93,65 @@ export function ReviewModal({
         <div className="flex justify-between items-center mb-4">
           <h2 className="text-lg font-bold">
             {review
-              ? t("profile.review.modal.title.edit")
-              : t("profile.review.modal.title.new")}
+              ? tt("profile.review.modal.title.edit", "Редактировать отзыв")
+              : tt("profile.review.modal.title.new", "Оставить отзыв")}
           </h2>
           <button onClick={onClose} className="text-gray-500 hover:text-gray-700">
             <X className="h-5 w-5" />
           </button>
         </div>
 
-        {statusMessage && (
-          <div className="mb-3 text-sm text-blue-700 bg-blue-100 p-2 rounded">
-            {statusMessage}
-          </div>
-        )}
-
         <div className="mb-4">
           <label className="block text-sm font-medium text-gray-700 mb-1">
-            {t("profile.review.modal.rating")}
+            {tt("profile.review.modal.rating", "Рейтинг")}
           </label>
-          <RatingStars value={rating} onChange={setRating} />
+          <div onClick={() => setRatingTouched(true)}>
+            <RatingStars value={rating} onChange={setRating} />
+          </div>
+          {ratingTouched && !ratingValid && (
+            <p className="mt-1 text-xs text-amber-600">Выберите рейтинг</p>
+          )}
         </div>
         <div className="mb-4">
           <label className="block text-sm font-medium text-gray-700 mb-1">
-            {t("profile.review.modal.text")}
+            {tt("profile.review.modal.text", "Текст отзыва")}
           </label>
           <textarea
             ref={textareaRef}
-            maxLength={500}
+            maxLength={TEXT_MAX}
             rows={4}
+            placeholder={PLACEHOLDER}
             className="w-full border border-gray-300 rounded-md p-2 focus:ring-2 focus:ring-blue-500"
             value={text}
             onChange={(e) => setText(e.target.value)}
           />
-          <div className="text-xs text-gray-500 text-right">
-            {text.length}/500
+          <div className="mt-1 flex justify-between items-center">
+            {textTrimmed.length > 0 && textTrimmed.length < TEXT_MIN && (
+              <p className="text-xs text-amber-600">
+                Минимум {TEXT_MIN} символов
+              </p>
+            )}
+            <span className="text-xs text-gray-500 ml-auto">
+              {text.length}/{TEXT_MAX}
+            </span>
           </div>
         </div>
-        <div className="mb-4 flex items-center">
+        <div className="mb-4 flex items-start gap-2">
           <input
             id="allowPub"
             type="checkbox"
             checked={allowPublication}
             onChange={(e) => setAllowPublication(e.target.checked)}
-            className="h-4 w-4 text-blue-600 border-gray-300 rounded"
+            className="h-4 w-4 mt-0.5 text-blue-600 border-gray-300 rounded"
           />
-          <label htmlFor="allowPub" className="ml-2 text-sm text-gray-700">
-            {t("profile.review.modal.allow")}
+          <label htmlFor="allowPub" className="text-sm text-gray-700">
+            {tt("profile.review.modal.allow", "Разрешить публикацию")}
+            <span className="block text-xs text-gray-500 mt-0.5">
+              {tt(
+                "profile.review.modal.allowHint",
+                "Ваше имя и страна могут быть показаны на сайте",
+              )}
+            </span>
           </label>
         </div>
         {error && <div className="text-sm text-red-600 mb-2">{error}</div>}
@@ -133,9 +159,11 @@ export function ReviewModal({
         <div className="flex justify-end">
           <Button
             onClick={handleSubmit}
-            disabled={saving || loading || rating < 1 || text.trim() === ""}
+            disabled={saving || loading || !canSubmit}
           >
-            {saving ? t("profile.review.modal.saving") : t("profile.review.modal.submit")}
+            {saving
+              ? tt("profile.review.modal.saving", "Сохранение...")
+              : tt("profile.review.modal.submit", "Отправить")}
           </Button>
         </div>
       </div>

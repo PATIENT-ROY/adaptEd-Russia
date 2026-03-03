@@ -1,5 +1,6 @@
 "use client";
 
+import dynamic from "next/dynamic";
 import { Layout } from "@/components/layout/layout";
 import { Card, CardContent, CardHeader, CardTitle } from "@/components/ui/card";
 import { Button } from "@/components/ui/button";
@@ -44,7 +45,6 @@ import Image from "next/image";
 import { useEffect, useMemo, useState, useRef, useCallback } from "react";
 import { useRouter } from "next/navigation";
 import { useAuth } from "@/contexts/AuthContext";
-import { ProfileEditForm } from "@/components/ui/profile-edit-form";
 import { fetchProfileOverview, API_BASE_URL } from "@/lib/api";
 import {
   User as UserType,
@@ -54,7 +54,16 @@ import {
   Role,
 } from "@/types";
 import { useReview } from "@/hooks/useReview";
-import { ReviewModal } from "@/components/ReviewModal";
+
+const ProfileEditForm = dynamic(
+  () => import("@/components/ui/profile-edit-form").then((m) => m.ProfileEditForm),
+  { ssr: false }
+);
+
+const ReviewModal = dynamic(
+  () => import("@/components/ReviewModal").then((m) => m.ReviewModal),
+  { ssr: false }
+);
 
 interface ExtendedUser extends UserType {
   university?: string;
@@ -324,6 +333,7 @@ export default function ProfilePage() {
   const [isEditFormVisible, setIsEditFormVisible] = useState(false);
   const [isBillingHistoryOpen, setIsBillingHistoryOpen] = useState(false);
   const [isReviewModalOpen, setIsReviewModalOpen] = useState(false);
+  const [deferBelowFold, setDeferBelowFold] = useState(false);
   const [profileOverview, setProfileOverview] =
     useState<ProfileOverview | null>(null);
   const [isProfileLoading, setIsProfileLoading] = useState(false);
@@ -417,6 +427,12 @@ export default function ProfilePage() {
   useEffect(() => {
     loadAvatar();
   }, [loadAvatar]);
+
+  // Отложенный рендер блоков под сгибом — улучшает Performance (меньше DOM при первой отрисовке)
+  useEffect(() => {
+    const id = requestAnimationFrame(() => setDeferBelowFold(true));
+    return () => cancelAnimationFrame(id);
+  }, []);
 
   useEffect(() => {
     let isMounted = true;
@@ -545,19 +561,26 @@ export default function ProfilePage() {
   const quickActionsToRender =
     profileOverview?.quickActions ?? fallbackQuickActions;
 
+  const reviewCardTitle = review ? "Редактировать отзыв" : "Оставить отзыв";
+  const reviewCardDescription =
+    !review
+      ? "Поделитесь своим мнением"
+      : review.status === "PENDING"
+        ? "Проверка обычно занимает до 24 часов"
+        : review.status === "APPROVED"
+          ? "Спасибо! Отзыв виден на главной"
+          : "Исправьте текст и отправьте заново";
+
   const customQuickActions = [
-    ...(!review
-      ? [
-          {
-            id: "leave-review",
-            title: "Оставить отзыв",
-            description: "Поделитесь своим мнением",
-            href: "#",
-            icon: "Star",
-            color: "from-yellow-400 to-amber-500 text-white",
-          },
-        ]
-      : []),
+    {
+      id: "leave-review",
+      title: reviewCardTitle,
+      description: reviewCardDescription,
+      href: "#",
+      icon: "Star",
+      color: "from-yellow-400 to-amber-500 text-white",
+      reviewStatus: review?.status,
+    },
     ...quickActionsToRender,
   ];
   const achievementsToRender = profileOverview?.achievements ?? [];
@@ -718,19 +741,6 @@ export default function ProfilePage() {
               {reviewError}
             </div>
           )}
-          {reviewStatusMessage && (
-            <div
-              className={`mb-4 p-3 rounded text-sm ${
-                review?.status === "REJECTED"
-                  ? "bg-red-50 text-red-700"
-                  : review?.status === "APPROVED"
-                    ? "bg-green-50 text-green-700"
-                    : "bg-blue-50 text-blue-700"
-              }`}
-            >
-              {reviewStatusMessage}
-            </div>
-          )}
           <div>
             <h2 className="text-xl sm:text-2xl font-bold text-slate-900 mb-4 sm:mb-6">
               Быстрые действия
@@ -739,6 +749,15 @@ export default function ProfilePage() {
               {customQuickActions.map((action) => {
                 const Icon = getIconByName(action.icon);
                 const isReviewAction = action.id === "leave-review";
+                const reviewStatus = "reviewStatus" in action ? (action as { reviewStatus?: string }).reviewStatus : undefined;
+                const statusBadge =
+                  reviewStatus === "PENDING"
+                    ? { label: "На модерации", className: "bg-amber-100 text-amber-800" }
+                    : reviewStatus === "APPROVED"
+                      ? { label: "Опубликован", className: "bg-green-100 text-green-800" }
+                      : reviewStatus === "REJECTED"
+                        ? { label: "Отклонён", className: "bg-red-100 text-red-800" }
+                        : null;
                 const card = (
                   <Card
                     className={`${profileCardClass} cursor-pointer h-full ${
@@ -747,17 +766,29 @@ export default function ProfilePage() {
                     style={profileCardStyle}
                   >
                     <CardContent className="p-2.5 sm:p-6 relative z-10 flex flex-col h-full">
+                      {statusBadge && (
+                        <span
+                          className={`absolute top-2.5 right-2.5 sm:top-4 sm:right-4 inline-flex items-center px-2 py-0.5 rounded-full text-xs font-medium ${statusBadge.className}`}
+                        >
+                          {statusBadge.label}
+                        </span>
+                      )}
                       <div
                         className={`w-9 h-9 sm:w-14 sm:h-14 md:w-16 md:h-16 rounded-lg sm:rounded-2xl bg-gradient-to-br ${action.color} flex items-center justify-center mb-1.5 sm:mb-4 shadow-lg flex-shrink-0`}
                       >
                         <Icon className="h-4 w-4 sm:h-7 sm:w-7 md:h-8 md:w-8 text-white" />
                       </div>
-                      <h3 className="text-xs sm:text-lg lg:text-xl font-bold text-slate-900 mb-1 sm:mb-2 flex-shrink-0 leading-tight line-clamp-2">
+                      <h3 className="text-xs sm:text-lg lg:text-xl font-bold text-slate-900 mb-1 sm:mb-2 flex-shrink-0 leading-tight line-clamp-2 pr-16 sm:pr-20">
                         {action.title}
                       </h3>
                       <p className="text-[11px] sm:text-sm lg:text-base text-slate-600 flex-grow overflow-hidden line-clamp-4 sm:line-clamp-none leading-snug">
                         {action.description}
                       </p>
+                      {review?.status === "APPROVED" && isReviewAction && (
+                        <p className="mt-2 text-sm text-green-700 bg-green-50 rounded-lg px-2 py-1.5">
+                          Ваш отзыв опубликован
+                        </p>
+                      )}
                     </CardContent>
                   </Card>
                 );
@@ -790,13 +821,15 @@ export default function ProfilePage() {
             error={reviewError}
             saving={reviewSaving}
             saveError={reviewSaveError}
-            statusMessage={reviewStatusMessage}
             onSave={async (data) => {
               await saveReview(data);
-              setTimeout(() => setIsReviewModalOpen(false), 2000);
+              showToast("Отзыв отправлен на модерацию");
+              setTimeout(() => setIsReviewModalOpen(false), 800);
             }}
           />
 
+          {deferBelowFold && (
+          <>
           {/* Billing & Invoices */}
           <div>
             <div className="flex flex-col sm:flex-row sm:items-center sm:justify-between gap-3 sm:gap-0 mb-4 sm:mb-6">
@@ -1197,6 +1230,9 @@ export default function ProfilePage() {
               </div>
             </div>
           </div>
+          </>
+          )}
+
         </div>
 
         {/* Profile Edit Form */}

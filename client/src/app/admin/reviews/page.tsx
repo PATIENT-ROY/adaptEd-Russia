@@ -28,6 +28,7 @@ function AdminReviewsContent() {
 
   const [reviews, setReviews] = useState<Review[]>([]);
   const [loading, setLoading] = useState(true);
+  const [toast, setToast] = useState<string | null>(null);
 
   const [statusFilter, setStatusFilter] = useState<string>("all");
   const [subscriptionFilter, setSubscriptionFilter] = useState<string>("all");
@@ -116,12 +117,24 @@ function AdminReviewsContent() {
     }
   };
 
+  const showToast = (msg: string) => {
+    setToast(msg);
+    setTimeout(() => setToast(null), 4000);
+  };
+
   const handleToggleFeatured = async (id: string) => {
     const curr = reviews.find((r) => r.id === id);
     if (!curr) return;
+    if (!curr.isFeatured) {
+      const featuredCount = reviews.filter((r) => r.isFeatured).length;
+      if (featuredCount >= 6) {
+        showToast("Можно выбрать максимум 6 избранных отзывов");
+        return;
+      }
+    }
     updateLocal(id, { isFeatured: !curr.isFeatured });
     try {
-      await fetch(`${API_BASE_URL}/admin/reviews/${id}`, {
+      const res = await fetch(`${API_BASE_URL}/admin/reviews/${id}`, {
         method: "PATCH",
         headers: {
           "Content-Type": "application/json",
@@ -129,6 +142,12 @@ function AdminReviewsContent() {
         },
         body: JSON.stringify({ isFeatured: !curr.isFeatured }),
       });
+      const body = await res.json().catch(() => ({}));
+      if (!res.ok && (body as { error?: string }).error) {
+        showToast((body as { error: string }).error);
+        await loadReviews();
+        return;
+      }
       await loadReviews();
     } catch (e) {
       console.error(e);
@@ -171,6 +190,14 @@ function AdminReviewsContent() {
   return (
     <Layout>
       <div className="space-y-6">
+        {toast && (
+          <div
+            role="alert"
+            className="fixed top-4 right-4 z-50 px-4 py-3 rounded-lg bg-amber-50 border border-amber-200 text-amber-800 text-sm shadow-lg"
+          >
+            {toast}
+          </div>
+        )}
         <div className="bg-white rounded-2xl p-4 shadow-sm">
           <div className="flex flex-col sm:flex-row sm:items-center justify-between space-y-4 sm:space-y-0">
             <div className="flex items-center space-x-3">

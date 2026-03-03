@@ -366,10 +366,12 @@ html {
 }
 
 
-/* Плавные переходы для всех элементов */
-
-* {
-    transition: all 0.3s ease;
+/* Плавные переходы только для интерактивных элементов (улучшение Performance) */
+button,
+a,
+input,
+[role="button"] {
+    transition: color 0.2s ease, background-color 0.2s ease, border-color 0.2s ease, box-shadow 0.2s ease, transform 0.2s ease;
 }
 
 

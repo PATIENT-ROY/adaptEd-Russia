@@ -1,7 +1,6 @@
 "use client";
 
 import { Layout } from "@/components/layout/layout";
-import { Button } from "@/components/ui/button";
 import {
   Card,
   CardContent,
@@ -40,11 +39,18 @@ import {
   organizationStructuredData,
 } from "@/components/seo/structured-data";
 import { useTranslation } from "@/hooks/useTranslation";
-import { useEffect, useState, useMemo } from "react";
+import { useEffect, useState, useMemo, useRef } from "react";
+import { API_BASE_URL } from "@/lib/api";
+import { PublicReview, TrustStats as TrustStatsType } from "@/types";
+import { TrustStats } from "@/components/home/TrustStats";
+import { ReviewCard } from "@/components/home/ReviewCard";
 
 export default function HomePage() {
   const { t } = useTranslation();
   const [showScrollIndicator, setShowScrollIndicator] = useState(true);
+  const [reviews, setReviews] = useState<PublicReview[]>([]);
+  const [trustStats, setTrustStats] = useState<TrustStatsType | null>(null);
+  const [reviewsLoading, setReviewsLoading] = useState(true);
 
   useEffect(() => {
     const handleScroll = () => {
@@ -54,6 +60,31 @@ export default function HomePage() {
     handleScroll();
     window.addEventListener("scroll", handleScroll, { passive: true });
     return () => window.removeEventListener("scroll", handleScroll);
+  }, []);
+
+  useEffect(() => {
+    let cancelled = false;
+    (async () => {
+      setReviewsLoading(true);
+      try {
+        const res = await fetch(`${API_BASE_URL}/reviews`);
+        if (!res.ok || cancelled) return;
+        const body = await res.json();
+        if (cancelled) return;
+        setReviews(Array.isArray(body.reviews) ? body.reviews : []);
+        setTrustStats(body.stats ?? null);
+      } catch {
+        if (!cancelled) {
+          setReviews([]);
+          setTrustStats(null);
+        }
+      } finally {
+        if (!cancelled) setReviewsLoading(false);
+      }
+    })();
+    return () => {
+      cancelled = true;
+    };
   }, []);
 
   const features = useMemo(
@@ -188,31 +219,67 @@ export default function HomePage() {
     [t]
   );
 
-  const stats = useMemo(
+  const slogans = useMemo(
     () => [
-      {
-        icon: Users,
-        value: t("home.stats.students.value"),
-        label: t("home.stats.students"),
-      },
-      {
-        icon: TrendingUp,
-        value: t("home.stats.success.value"),
-        label: t("home.stats.success"),
-      },
-      {
-        icon: Shield,
-        value: t("home.stats.support.value"),
-        label: t("home.stats.support"),
-      },
-      {
-        icon: Award,
-        value: t("home.stats.universities.value"),
-        label: t("home.stats.universities"),
-      },
+      t("home.slogan.1"),
+      t("home.slogan.2"),
+      t("home.slogan.3"),
+      t("home.slogan.4"),
     ],
     [t]
   );
+
+  const sloganRef = useRef<HTMLDivElement>(null);
+  const [sloganVisible, setSloganVisible] = useState(false);
+  const [sloganIndex, setSloganIndex] = useState(0);
+  const [displayText, setDisplayText] = useState("");
+  const [phase, setPhase] = useState<"typing" | "pause" | "deleting">("typing");
+
+  useEffect(() => {
+    const el = sloganRef.current;
+    if (!el) return;
+    const observer = new IntersectionObserver(
+      ([entry]) => setSloganVisible(entry.isIntersecting),
+      { threshold: 0.3 }
+    );
+    observer.observe(el);
+    return () => observer.disconnect();
+  }, []);
+
+  useEffect(() => {
+    if (!sloganVisible) return;
+
+    const current = slogans[sloganIndex];
+
+    if (phase === "typing") {
+      if (displayText.length < current.length) {
+        const timer = setTimeout(() => {
+          setDisplayText(current.slice(0, displayText.length + 1));
+        }, 55 + Math.random() * 35);
+        return () => clearTimeout(timer);
+      } else {
+        const timer = setTimeout(() => setPhase("pause"), 0);
+        return () => clearTimeout(timer);
+      }
+    }
+
+    if (phase === "pause") {
+      const timer = setTimeout(() => setPhase("deleting"), 2200);
+      return () => clearTimeout(timer);
+    }
+
+    if (phase === "deleting") {
+      if (displayText.length > 0) {
+        const timer = setTimeout(() => {
+          setDisplayText(current.slice(0, displayText.length - 1));
+        }, 25);
+        return () => clearTimeout(timer);
+      } else {
+        setSloganIndex((prev) => (prev + 1) % slogans.length);
+        setPhase("typing");
+      }
+    }
+  }, [displayText, phase, sloganIndex, slogans, sloganVisible]);
 
   const testimonials = useMemo(
     () => [
@@ -245,9 +312,10 @@ export default function HomePage() {
       <Layout>
         {/* Hero Section */}
         <div className="relative overflow-hidden bg-gradient-to-br from-blue-600 via-purple-600 to-indigo-700 py-8 sm:py-12 md:py-24 rounded-2xl sm:rounded-3xl mt-4 sm:mt-6 mb-6 sm:mb-8 lg:mb-10">
-          <div className="absolute inset-0 bg-black/10"></div>
+          <div className="absolute inset-0 bg-black/10" aria-hidden="true" />
           <div
             className="absolute inset-0"
+            aria-hidden="true"
             style={{
               backgroundImage: `url("data:image/svg+xml,%3Csvg width='60' height='60' viewBox='0 0 60 60' xmlns='http://www.w3.org/2000/svg'%3E%3Cg fill='none' fill-rule='evenodd'%3E%3Cg fill='%23ffffff' fill-opacity='0.05'%3E%3Ccircle cx='30' cy='30' r='4'/%3E%3C/g%3E%3C/g%3E%3C/svg%3E")`,
             }}
@@ -258,43 +326,73 @@ export default function HomePage() {
               <h1 className="text-2xl sm:text-3xl md:text-5xl lg:text-6xl xl:text-7xl font-bold tracking-tight text-white mb-4 sm:mb-6 px-4">
                 {t("home.title")}
               </h1>
-              <p className="text-sm sm:text-base md:text-lg lg:text-xl text-white/90 max-w-3xl mx-auto mb-6 sm:mb-8 leading-relaxed px-4">
+              <p className="text-sm sm:text-base md:text-lg lg:text-xl text-white max-w-3xl mx-auto mb-6 sm:mb-8 leading-relaxed px-4">
                 {t("home.subtitle")}
               </p>
 
               <div className="flex flex-col sm:flex-row gap-3 sm:gap-4 justify-center mb-8 sm:mb-12 max-w-2xl mx-auto">
-                <Link href="/register" className="w-full sm:w-auto">
-                  <Button className="w-full sm:w-auto text-sm sm:text-base lg:text-lg px-4 sm:px-6 lg:px-8 py-3 sm:py-4 border-2 bg-white/15 backdrop-blur-sm border-white/40 text-white sm:hover:bg-white/20 sm:hover:border-white/50 active:bg-white/30 active:scale-95 shadow-lg sm:hover:shadow-xl active:shadow-md transition-all duration-300">
-                    <Rocket className="mr-2 h-4 w-4 sm:h-5 sm:w-5" />
-                    {t("home.start")}
-                  </Button>
+                <Link
+                  href="/register"
+                  className="inline-flex items-center justify-center w-full sm:w-auto text-sm sm:text-base lg:text-lg px-4 sm:px-6 lg:px-8 py-3 sm:py-4 border-2 bg-white/15 backdrop-blur-sm border-white/40 text-white rounded-xl font-semibold sm:hover:bg-white/20 sm:hover:border-white/50 active:bg-white/30 active:scale-95 shadow-lg sm:hover:shadow-xl active:shadow-md transition-all duration-300 focus-visible:outline-none focus-visible:ring-2 focus-visible:ring-white focus-visible:ring-offset-2 focus-visible:ring-offset-transparent"
+                >
+                  <Rocket className="mr-2 h-4 w-4 sm:h-5 sm:w-5" aria-hidden="true" />
+                  {t("home.start")}
                 </Link>
-                <Link href="/education-guide" className="w-full sm:w-auto">
-                  <Button
-                    variant="outline"
-                    className="w-full sm:w-auto text-sm sm:text-base lg:text-lg px-4 sm:px-6 lg:px-8 py-3 sm:py-4 border-white/40 text-white bg-white/10 sm:hover:bg-white/90 sm:hover:text-indigo-700 sm:hover:border-white active:bg-white/30 active:scale-95 backdrop-blur-sm shadow-lg sm:hover:shadow-xl active:shadow-md transition-all duration-300"
-                  >
-                    <BookOpen className="mr-2 h-4 w-4 sm:h-5 sm:w-5" />
-                    {t("home.guides")}
-                  </Button>
+                <Link
+                  href="/education-guide"
+                  className="inline-flex items-center justify-center w-full sm:w-auto text-sm sm:text-base lg:text-lg px-4 sm:px-6 lg:px-8 py-3 sm:py-4 border-2 border-white/40 text-white bg-white/10 rounded-xl font-semibold sm:hover:bg-white/90 sm:hover:text-indigo-700 sm:hover:border-white active:bg-white/30 active:scale-95 backdrop-blur-sm shadow-lg sm:hover:shadow-xl active:shadow-md transition-all duration-300 focus-visible:outline-none focus-visible:ring-2 focus-visible:ring-white focus-visible:ring-offset-2 focus-visible:ring-offset-transparent"
+                >
+                  <BookOpen className="mr-2 h-4 w-4 sm:h-5 sm:w-5" aria-hidden="true" />
+                  {t("home.guides")}
                 </Link>
               </div>
 
-              {/* Stats */}
-              <div className="grid grid-cols-2 md:grid-cols-4 gap-3 sm:gap-4 md:gap-8 max-w-4xl mx-auto px-4 mb-8 sm:mb-12">
-                {stats.map((stat, index) => (
-                  <div
-                    key={index}
-                    className="text-center p-3 sm:p-4 rounded-2xl bg-white/10 backdrop-blur-sm border border-white/20"
-                  >
-                    <div className="text-lg sm:text-xl md:text-2xl lg:text-3xl font-bold text-white mb-1 sm:mb-2">
-                      {stat.value}
-                    </div>
-                    <div className="text-xs sm:text-sm md:text-base text-white/80 font-medium">
-                      {stat.label}
-                    </div>
+              {/* Animated Slogan */}
+              <div ref={sloganRef} className="max-w-3xl mx-auto px-4 mb-8 sm:mb-12">
+                <div className="relative h-[44px] sm:h-[52px] md:h-[56px] rounded-2xl bg-white shadow-lg overflow-hidden" style={{ animationPlayState: sloganVisible ? "running" : "paused" }}>
+                  {/* Decorative bubbles */}
+                  <div className="absolute -left-2 top-1/2 w-8 h-8 sm:w-10 sm:h-10 rounded-full bg-blue-500/20" style={{ animation: "floatCenter1 4s ease-in-out infinite", animationPlayState: sloganVisible ? "running" : "paused" }} />
+                  <div className="absolute left-[15%] -bottom-2 w-5 h-5 sm:w-6 sm:h-6 rounded-full bg-purple-500/20" style={{ animation: "float2 5s ease-in-out infinite", animationPlayState: sloganVisible ? "running" : "paused" }} />
+                  <div className="absolute right-[20%] -top-1 w-4 h-4 sm:w-5 sm:h-5 rounded-full bg-indigo-500/20" style={{ animation: "float3 3.5s ease-in-out infinite", animationPlayState: sloganVisible ? "running" : "paused" }} />
+                  <div className="absolute -right-1 top-1/2 w-7 h-7 sm:w-9 sm:h-9 rounded-full bg-blue-400/15" style={{ animation: "floatCenter2 4.5s ease-in-out infinite", animationPlayState: sloganVisible ? "running" : "paused" }} />
+                  <div className="absolute left-[40%] -bottom-1 w-3 h-3 sm:w-4 sm:h-4 rounded-full bg-purple-400/15" style={{ animation: "float1 3s ease-in-out infinite", animationPlayState: sloganVisible ? "running" : "paused" }} />
+
+                  {/* Text */}
+                  <div className="absolute inset-0 flex items-center justify-center z-10 px-3">
+                    <span className="text-xs sm:text-sm md:text-lg lg:text-xl font-semibold whitespace-nowrap bg-gradient-to-r from-blue-600 via-purple-600 to-indigo-600 bg-clip-text text-transparent">
+                      {displayText}
+                    </span>
+                    <span
+                      className="inline-block w-[2px] h-[1.1em] bg-purple-600/80 rounded-full shrink-0 ml-0.5"
+                      style={{ animation: "blink 1s step-end infinite", animationPlayState: sloganVisible ? "running" : "paused" }}
+                    />
                   </div>
-                ))}
+                </div>
+                <style jsx>{`
+                  @keyframes blink {
+                    50% { opacity: 0; }
+                  }
+                  @keyframes float1 {
+                    0%, 100% { transform: translateY(0px); }
+                    50% { transform: translateY(-6px); }
+                  }
+                  @keyframes float2 {
+                    0%, 100% { transform: translateY(0px); }
+                    50% { transform: translateY(5px); }
+                  }
+                  @keyframes float3 {
+                    0%, 100% { transform: translateX(0px); }
+                    50% { transform: translateX(6px); }
+                  }
+                  @keyframes floatCenter1 {
+                    0%, 100% { transform: translateY(-50%); }
+                    50% { transform: translateY(calc(-50% - 6px)); }
+                  }
+                  @keyframes floatCenter2 {
+                    0%, 100% { transform: translateY(-50%); }
+                    50% { transform: translateY(calc(-50% + 5px)); }
+                  }
+                `}</style>
               </div>
 
               {/* Main Features - Compact Version */}
@@ -316,7 +414,7 @@ export default function HomePage() {
                             {feature.title}
                           </h3>
                           {feature.stats && (
-                            <div className="text-[11px] sm:text-xs text-white/80 font-medium mt-auto flex-shrink-0 leading-tight">
+                            <div className="text-[11px] sm:text-xs text-white font-medium mt-auto flex-shrink-0 leading-tight">
                               {feature.stats}
                             </div>
                           )}
@@ -331,7 +429,7 @@ export default function HomePage() {
 
           {/* Scroll indicator — single animation, respects prefers-reduced-motion */}
           {showScrollIndicator && (
-            <div className="absolute bottom-4 sm:bottom-6 left-1/2 transform -translate-x-1/2 motion-safe:animate-bounce">
+            <div className="absolute bottom-4 sm:bottom-6 left-1/2 transform -translate-x-1/2 motion-safe:animate-bounce" aria-hidden="true">
               <div className="w-6 h-10 sm:w-7 sm:h-12 border-2 border-white/60 rounded-full flex justify-center shadow-[0_0_12px_rgba(255,255,255,0.35)]">
                 <div className="w-1.5 h-3 sm:h-4 bg-white/90 rounded-full mt-1.5 sm:mt-2"></div>
               </div>
@@ -406,7 +504,7 @@ export default function HomePage() {
               <h2 className="text-2xl sm:text-3xl md:text-4xl lg:text-5xl font-bold text-white mb-4 sm:mb-6">
                 {t("home.section.benefits.title")}
               </h2>
-              <p className="text-base sm:text-lg md:text-xl text-white/90 max-w-3xl mx-auto px-4">
+              <p className="text-base sm:text-lg md:text-xl text-white max-w-3xl mx-auto px-4">
                 {t("home.section.benefits.subtitle")}
               </p>
             </div>
@@ -425,7 +523,7 @@ export default function HomePage() {
                     <h3 className="text-lg sm:text-xl font-bold text-white mb-2 sm:mb-3">
                       {benefit.title}
                     </h3>
-                    <p className="text-sm sm:text-base text-white/80 leading-relaxed">
+                    <p className="text-sm sm:text-base text-white leading-relaxed">
                       {benefit.description}
                     </p>
                   </div>
@@ -454,10 +552,12 @@ export default function HomePage() {
                 <div className="flex items-center gap-3 rounded-xl bg-white/80 px-3 py-2 shadow-sm">
                   <Image
                     src="/founder-avatar.png"
-                    alt="Founder"
+                    alt={t("home.section.about.author.title")}
                     width={36}
                     height={36}
                     className="rounded-full object-cover"
+                    loading="lazy"
+                    sizes="36px"
                   />
                   <div className="text-xs sm:text-sm text-slate-600 leading-tight">
                     <div className="font-semibold text-slate-900">
@@ -521,13 +621,13 @@ export default function HomePage() {
           </div>
         </section>
 
-        {/* Testimonials Section */}
+        {/* Testimonials / Reviews Section */}
         <section
           aria-label={t("home.section.testimonials.title")}
           className="py-12 sm:py-16 md:py-24 bg-white rounded-2xl sm:rounded-3xl my-6 sm:my-8 lg:my-10"
         >
           <div className="mx-auto max-w-6xl px-3 sm:px-4 lg:px-6">
-            <div className="text-center mb-12 sm:mb-16 lg:mb-20">
+            <div className="text-center mb-8 sm:mb-10">
               <h2 className="text-2xl sm:text-3xl md:text-4xl lg:text-5xl xl:text-6xl font-bold tracking-tight text-slate-900 mb-4 sm:mb-6">
                 {t("home.section.testimonials.title")}
               </h2>
@@ -536,41 +636,68 @@ export default function HomePage() {
               </p>
             </div>
 
-            <div className="grid grid-cols-1 md:grid-cols-3 gap-4 sm:gap-6 lg:gap-8">
-              {testimonials.map((testimonial, index) => (
-                <Card
-                  key={index}
-                  className="border-0 shadow-xl h-full backdrop-blur-sm bg-white/90"
-                >
-                  <CardContent className="p-4 sm:p-6 lg:p-8 h-full flex flex-col">
-                    <div className="flex items-center mb-3 sm:mb-4">
-                      {[...Array(testimonial.rating)].map((_, i) => (
-                        <Star
-                          key={i}
-                          className="h-4 w-4 sm:h-5 sm:w-5 text-yellow-400 fill-current"
-                        />
-                      ))}
-                    </div>
-                    <p className="text-slate-700 text-sm sm:text-base lg:text-lg leading-relaxed mb-4 sm:mb-6 italic flex-1">
-                      &ldquo;{testimonial.text}&rdquo;
-                    </p>
-                    <div className="flex items-center mt-auto">
-                      <div className="w-10 h-10 sm:w-12 sm:h-12 rounded-full bg-gradient-to-br from-blue-500 to-purple-600 flex items-center justify-center text-white font-bold text-sm sm:text-lg mr-3 sm:mr-4">
-                        {testimonial.name.charAt(0)}
+            {trustStats && !reviewsLoading && (
+              <TrustStats
+                stats={trustStats}
+                variant="light"
+                starsLabel={t("home.trustStats.averageRating")}
+                studentsLabel={t("home.trustStats.students")}
+                universitiesLabel={t("home.trustStats.universities")}
+                countriesLabel={t("home.trustStats.countries")}
+              />
+            )}
+
+            {!reviewsLoading && reviews.length > 0 ? (
+              <div className="grid grid-cols-1 md:grid-cols-3 gap-4 sm:gap-6 lg:gap-8">
+                {reviews.map((review) => (
+                  <ReviewCard
+                    key={review.id}
+                    review={review}
+                    starsLabel={t("home.section.testimonials.stars")}
+                    showMoreLabel={t("home.review.showMore")}
+                    showLessLabel={t("home.review.showLess")}
+                    publishedLabel={t("home.review.publishedAfterModeration")}
+                  />
+                ))}
+              </div>
+            ) : (
+              <div className="grid grid-cols-1 md:grid-cols-3 gap-4 sm:gap-6 lg:gap-8">
+                {testimonials.map((testimonial, index) => (
+                  <Card
+                    key={index}
+                    className="border-0 shadow-xl h-full backdrop-blur-sm bg-white/90"
+                  >
+                    <CardContent className="p-4 sm:p-6 lg:p-8 h-full flex flex-col">
+                      <div className="flex items-center mb-3 sm:mb-4" role="img" aria-label={`${testimonial.rating} ${t("home.section.testimonials.stars")}`}>
+                        {[...Array(testimonial.rating)].map((_, i) => (
+                          <Star
+                            key={i}
+                            className="h-4 w-4 sm:h-5 sm:w-5 text-yellow-400 fill-current"
+                            aria-hidden="true"
+                          />
+                        ))}
                       </div>
-                      <div>
-                        <div className="font-semibold text-slate-900 text-sm sm:text-base">
-                          {testimonial.name}
+                      <p className="text-slate-700 text-sm sm:text-base lg:text-lg leading-relaxed mb-4 sm:mb-6 italic flex-1">
+                        &ldquo;{testimonial.text}&rdquo;
+                      </p>
+                      <div className="flex items-center mt-auto">
+                        <div className="w-10 h-10 sm:w-12 sm:h-12 rounded-full bg-gradient-to-br from-blue-500 to-purple-600 flex items-center justify-center text-white font-bold text-sm sm:text-lg mr-3 sm:mr-4">
+                          {testimonial.name.charAt(0)}
                         </div>
-                        <div className="text-slate-600 text-xs sm:text-sm">
-                          {testimonial.country}
+                        <div>
+                          <div className="font-semibold text-slate-900 text-sm sm:text-base">
+                            {testimonial.name}
+                          </div>
+                          <div className="text-slate-600 text-xs sm:text-sm">
+                            {testimonial.country}
+                          </div>
                         </div>
                       </div>
-                    </div>
-                  </CardContent>
-                </Card>
-              ))}
-            </div>
+                    </CardContent>
+                  </Card>
+                ))}
+              </div>
+            )}
           </div>
         </section>
 
@@ -643,21 +770,18 @@ export default function HomePage() {
                         ))}
                       </ul>
                     </div>
-                    <Link href={plan.popular ? "/payment/test" : "/register"}>
-                      <Button
-                        className={`w-full text-sm sm:text-base lg:text-lg py-3 sm:py-4 ${
-                          plan.popular
-                            ? "bg-gradient-to-r from-blue-600 to-purple-600 hover:from-blue-700 hover:to-purple-700 text-white shadow-xl hover:shadow-2xl"
-                            : "bg-white text-slate-700 hover:bg-slate-50 border-2 border-slate-300"
-                        }`}
-                        variant={plan.buttonVariant}
-                        size="lg"
-                      >
-                        {plan.popular && (
-                          <CreditCard className="mr-2 h-4 w-4 sm:h-5 sm:w-5" />
-                        )}
-                        {plan.buttonText}
-                      </Button>
+                    <Link
+                      href={plan.popular ? "/payment/test" : "/register"}
+                      className={`inline-flex items-center justify-center w-full text-sm sm:text-base lg:text-lg py-3 sm:py-4 h-12 rounded-xl font-semibold focus-visible:outline-none focus-visible:ring-2 focus-visible:ring-blue-500 focus-visible:ring-offset-2 ${
+                        plan.popular
+                          ? "bg-gradient-to-r from-blue-600 to-purple-600 hover:from-blue-700 hover:to-purple-700 text-white shadow-xl hover:shadow-2xl"
+                          : "bg-white text-slate-700 hover:bg-slate-50 border-2 border-slate-300"
+                      }`}
+                    >
+                      {plan.popular && (
+                        <CreditCard className="mr-2 h-4 w-4 sm:h-5 sm:w-5" aria-hidden="true" />
+                      )}
+                      {plan.buttonText}
                     </Link>
                   </CardContent>
                 </Card>
@@ -671,45 +795,40 @@ export default function HomePage() {
           aria-label={t("home.cta.title")}
           className="py-12 sm:py-16 md:py-24 bg-gradient-to-br from-slate-900 via-purple-900 to-blue-900 relative overflow-hidden rounded-2xl sm:rounded-3xl mt-4 sm:mt-6 mb-8 sm:mb-12 lg:mb-16"
         >
-          <div className="absolute inset-0">
+          <div className="absolute inset-0" aria-hidden="true">
             <div
               className="absolute top-0 left-0 w-full h-full opacity-30"
               style={{
                 backgroundImage: `url("data:image/svg+xml,%3Csvg width='60' height='60' viewBox='0 0 60 60' xmlns='http://www.w3.org/2000/svg'%3E%3Cg fill='none' fill-rule='evenodd'%3E%3Cg fill='%23ffffff' fill-opacity='0.05'%3E%3Ccircle cx='30' cy='30' r='2'/%3E%3C/g%3E%3C/g%3E%3C/svg%3E")`,
               }}
-            ></div>
+            />
           </div>
 
           <div className="relative z-10 mx-auto max-w-5xl text-center px-3 sm:px-4 lg:px-6">
             <h2 className="text-2xl sm:text-3xl md:text-4xl lg:text-5xl xl:text-6xl font-bold tracking-tight text-white mb-6 sm:mb-8">
               {t("home.cta.title")}
             </h2>
-            <p className="text-sm sm:text-base md:text-lg lg:text-xl xl:text-2xl text-white/90 mb-8 sm:mb-12 max-w-3xl mx-auto px-2">
+            <p className="text-sm sm:text-base md:text-lg lg:text-xl xl:text-2xl text-white mb-8 sm:mb-12 max-w-3xl mx-auto px-2">
               {t("home.cta.subtitle")}
             </p>
             <div className="flex flex-col sm:flex-row gap-4 sm:gap-6 justify-center">
-              <Link href="/register">
-                <Button
-                  size="lg"
-                  className="group text-sm sm:text-base lg:text-lg px-4 sm:px-6 lg:px-8 py-3 sm:py-4 bg-gradient-to-r from-blue-500 to-purple-600 hover:from-blue-600 hover:to-purple-700 text-white shadow-2xl sm:hover:scale-105 transition-all duration-300"
-                >
-                  <Rocket className="mr-2 h-4 w-4 sm:h-5 sm:w-5 group-hover:translate-x-1 transition-transform duration-200" />
-                  <span className="group-hover:translate-x-1 transition-transform duration-200">
-                    {t("home.cta.register")}
-                  </span>
-                </Button>
+              <Link
+                href="/register"
+                className="inline-flex items-center justify-center group text-sm sm:text-base lg:text-lg px-4 sm:px-6 lg:px-8 py-3 sm:py-4 h-12 rounded-xl font-semibold bg-gradient-to-r from-blue-500 to-purple-600 hover:from-blue-600 hover:to-purple-700 text-white shadow-2xl sm:hover:scale-105 transition-all duration-300 focus-visible:outline-none focus-visible:ring-2 focus-visible:ring-white focus-visible:ring-offset-2 focus-visible:ring-offset-slate-900"
+              >
+                <Rocket className="mr-2 h-4 w-4 sm:h-5 sm:w-5 group-hover:translate-x-1 transition-transform duration-200" aria-hidden="true" />
+                <span className="group-hover:translate-x-1 transition-transform duration-200">
+                  {t("home.cta.register")}
+                </span>
               </Link>
-              <Link href="/login">
-                <Button
-                  variant="outline"
-                  size="lg"
-                  className="group text-sm sm:text-base lg:text-lg px-4 sm:px-6 lg:px-8 py-3 sm:py-4 border-2 border-white/30 bg-white/10 text-white hover:bg-white/20 backdrop-blur-sm shadow-xl sm:hover:scale-105 transition-all duration-300"
-                >
-                  <Target className="mr-2 h-4 w-4 sm:h-5 sm:w-5 group-hover:translate-x-1 transition-transform duration-200" />
-                  <span className="group-hover:translate-x-1 transition-transform duration-200">
-                    {t("home.cta.login")}
-                  </span>
-                </Button>
+              <Link
+                href="/login"
+                className="inline-flex items-center justify-center group text-sm sm:text-base lg:text-lg px-4 sm:px-6 lg:px-8 py-3 sm:py-4 h-12 border-2 border-white/30 bg-white/10 text-white rounded-xl font-semibold hover:bg-white/20 backdrop-blur-sm shadow-xl sm:hover:scale-105 transition-all duration-300 focus-visible:outline-none focus-visible:ring-2 focus-visible:ring-white focus-visible:ring-offset-2 focus-visible:ring-offset-slate-900"
+              >
+                <Target className="mr-2 h-4 w-4 sm:h-5 sm:w-5 group-hover:translate-x-1 transition-transform duration-200" aria-hidden="true" />
+                <span className="group-hover:translate-x-1 transition-transform duration-200">
+                  {t("home.cta.login")}
+                </span>
               </Link>
             </div>
           </div>

@@ -10,9 +10,51 @@ interface AuthenticatedRequest extends Request {
 
 const router = Router();
 
+// Automatic country -> flag resolution for all 249 countries in any language
+import countries from 'i18n-iso-countries';
+
+countries.registerLocale(require('i18n-iso-countries/langs/ru.json'));
+countries.registerLocale(require('i18n-iso-countries/langs/en.json'));
+countries.registerLocale(require('i18n-iso-countries/langs/fr.json'));
+countries.registerLocale(require('i18n-iso-countries/langs/ar.json'));
+countries.registerLocale(require('i18n-iso-countries/langs/zh.json'));
+
+const SEARCH_LOCALES = ['ru', 'en', 'fr', 'ar', 'zh'];
+
+function countryToFlag(country: string | null | undefined): string {
+  if (!country || typeof country !== 'string') return '🌍';
+  const input = country.trim();
+  if (!input) return '🌍';
+
+  // 1. Direct ISO alpha-2 code (e.g. "KZ", "RU")
+  const upper = input.toUpperCase();
+  if (upper.length === 2 && countries.isValid(upper)) {
+    return codeToEmoji(upper);
+  }
+
+  // 2. Search across all registered languages
+  for (const locale of SEARCH_LOCALES) {
+    const code = countries.getAlpha2Code(input, locale);
+    if (code) return codeToEmoji(code);
+  }
+
+  return '🌍';
+}
+
+function codeToEmoji(code: string): string {
+  const regional = (c: string) => 0x1F1E6 - 65 + c.charCodeAt(0);
+  return String.fromCodePoint(regional(code[0]), regional(code[1]));
+}
+
 // --------------------------- validation schemas ---------------------------
+const REVIEW_TEXT_MIN = 20;
+const REVIEW_TEXT_MAX = 500;
+
 const createReviewSchema = z.object({
-  text: z.string().min(1, 'Текст отзыва не может быть пустым'),
+  text: z
+    .string()
+    .min(REVIEW_TEXT_MIN, `Текст отзыва не менее ${REVIEW_TEXT_MIN} символов`)
+    .max(REVIEW_TEXT_MAX, `Текст отзыва не более ${REVIEW_TEXT_MAX} символов`),
   rating: z.number().int().min(1, 'Рейтинг должен быть от 1 до 5').max(5, 'Рейтинг должен быть от 1 до 5'),
   allowPublication: z.boolean().default(true),
 });
@@ -63,7 +105,7 @@ router.post('/reviews', authMiddleware, async (req: AuthenticatedRequest, res) =
     res.status(201).json({
       success: true,
       data: review,
-      message: 'Отзыв был сохранён',
+      message: 'Отзыв отправлен на модерацию',
     } as ApiResponse);
   } catch (error) {
     if (error instanceof z.ZodError) {
@@ -74,7 +116,53 @@ router.post('/reviews', authMiddleware, async (req: AuthenticatedRequest, res) =
       } as ApiResponse);
     }
 
-    console.error('Error creating/updating review:', error);
+    console.error('Error creating review:', error);
+    res.status(500).json({
+      success: false,
+      error: 'Внутренняя ошибка сервера',
+    } as ApiResponse);
+  }
+});
+
+// PUT /api/reviews  (update own review, create-or-update; sets status to PENDING)
+router.put('/reviews', authMiddleware, async (req: AuthenticatedRequest, res) => {
+  try {
+    const userId = req.user!.userId;
+    const { text, rating, allowPublication } = createReviewSchema.parse(req.body);
+
+    const existing = await prisma.review.findUnique({ where: { userId } });
+    if (!existing) {
+      return res.status(404).json({
+        success: false,
+        error: 'Отзыв не найден',
+      } as ApiResponse);
+    }
+
+    const review = await prisma.review.update({
+      where: { userId },
+      data: {
+        text,
+        rating,
+        allowPublication,
+        status: ReviewStatus.PENDING,
+      },
+    });
+
+    res.json({
+      success: true,
+      data: review,
+      message: 'Отзыв отправлен на модерацию',
+    } as ApiResponse);
+  } catch (error) {
+    if (error instanceof z.ZodError) {
+      return res.status(400).json({
+        success: false,
+        error: 'Ошибка валидации',
+        details: error.errors,
+      } as ApiResponse);
+    }
+
+    console.error('Error updating review:', error);
     res.status(500).json({
       success: false,
       error: 'Внутренняя ошибка сервера',
@@ -102,49 +190,104 @@ router.get('/reviews/me', authMiddleware, async (req: AuthenticatedRequest, res)
   }
 });
 
-// GET /api/reviews  (public list, only approved reviews)
-router.get('/reviews', async (req, res) => {
+// GET /api/reviews  (public list: APPROVED + allowPublication, with TrustStats)
+const PUBLIC_REVIEWS_LIMIT = 6;
+
+router.get('/reviews', async (_req, res) => {
   try {
-    const { featured, limit, sort } = getReviewsQuerySchema.parse(req.query);
+    const reviewWhere = {
+      status: ReviewStatus.APPROVED,
+      allowPublication: true,
+    };
 
-    const where: any = { status: ReviewStatus.APPROVED };
-    if (featured === true) {
-      where.isFeatured = true;
-    }
-
-    const reviews = await prisma.review.findMany({
-      where,
-      orderBy: { createdAt: 'desc' },
-      take: limit,
-      include: {
-        user: {
-          select: {
-            id: true,
-            name: true,
-            university: true,
-            country: true,
-            plan: true,
-            profile: {
-              select: { avatar: true },
+    const [reviewsRaw, totalStudents, usersForStats, avgResult] = await Promise.all([
+      prisma.review.findMany({
+        where: reviewWhere,
+        orderBy: [{ isFeatured: 'desc' }, { createdAt: 'desc' }],
+        take: PUBLIC_REVIEWS_LIMIT,
+        include: {
+          user: {
+            select: {
+              id: true,
+              name: true,
+              country: true,
+              university: true,
+              plan: true,
+              profile: { select: { avatar: true } },
             },
           },
         },
-      },
+      }),
+      prisma.user.count(),
+      prisma.user.findMany({
+        select: {
+          university: true,
+          country: true,
+        },
+      }),
+      prisma.review.aggregate({
+        where: reviewWhere,
+        _avg: { rating: true },
+      }),
+    ]);
+
+    const universities = new Set(
+      usersForStats
+        .map((u) => (u.university ?? '').trim())
+        .filter((u) => u.length > 1),
+    );
+    const countries = new Set(
+      usersForStats
+        .map((u) => (u.country ?? '').trim())
+        .filter((c) => c.length > 1),
+    );
+
+    const stats = {
+      totalStudents,
+      totalUniversities: universities.size,
+      totalCountries: countries.size,
+      averageRating:
+        avgResult._avg.rating != null
+          ? Math.round(avgResult._avg.rating * 10) / 10
+          : 0,
+    };
+
+    const reviews = reviewsRaw.map((r) => {
+      const user = r.user as {
+        name: string;
+        country: string | null;
+        university: string | null;
+        plan: string;
+        profile?: { avatar: string | null } | null;
+      };
+      return {
+        id: r.id,
+        text: r.text,
+        rating: r.rating,
+        isPremium: user.plan === 'PREMIUM',
+        countryFlag: countryToFlag(user.country),
+        createdAt: r.createdAt.toISOString(),
+        user: {
+          name: user.name,
+          country: user.country,
+          university: user.university,
+          emailVerified: false,
+          avatar: user.profile?.avatar ?? null,
+        },
+      };
     });
 
-    res.json({ success: true, data: reviews } as ApiResponse);
+    res.json({ reviews, stats });
   } catch (error) {
     if (error instanceof z.ZodError) {
-      // unlikely since query parsing, but handle
       return res.status(400).json({
-        success: false,
         error: 'Ошибка валидации параметров',
         details: error.errors,
-      } as ApiResponse);
+      });
     }
 
     console.error('Error fetching reviews:', error);
-    res.status(500).json({ success: false, error: 'Внутренняя ошибка сервера' } as ApiResponse);
+    res.status(500).json({ error: 'Внутренняя ошибка сервера' });
   }
 });
 
@@ -197,6 +340,8 @@ router.get('/admin/reviews', authMiddleware, async (req: AuthenticatedRequest, r
   }
 });
 
+const MAX_FEATURED_REVIEWS = 6;
+
 // PATCH /api/admin/reviews/:id  (update status or feature flag)
 router.patch('/admin/reviews/:id', authMiddleware, async (req: AuthenticatedRequest, res) => {
   try {
@@ -210,13 +355,25 @@ router.patch('/admin/reviews/:id', authMiddleware, async (req: AuthenticatedRequ
     const data = adminUpdateSchema.parse(req.body);
     const { id } = req.params;
 
+    if (data.isFeatured === true) {
+      const featuredCount = await prisma.review.count({ where: { isFeatured: true } });
+      const current = await prisma.review.findUnique({ where: { id }, select: { isFeatured: true } });
+      const willBecomeFeatured = current?.isFeatured !== true;
+      if (willBecomeFeatured && featuredCount >= MAX_FEATURED_REVIEWS) {
+        return res.status(400).json({
+          success: false,
+          error: 'Можно выбрать максимум 6 избранных отзывов',
+        } as ApiResponse);
+      }
+    }
+
     const review = await prisma.review.update({
       where: { id },
       data,
     });
 
     res.json({ success: true, data: review, message: 'Отзыв обновлён' } as ApiResponse);
-  } catch (error: any) {
+  } catch (error: unknown) {
     if (error instanceof z.ZodError) {
       return res.status(400).json({
         success: false,
@@ -225,8 +382,8 @@ router.patch('/admin/reviews/:id', authMiddleware, async (req: AuthenticatedRequ
       } as ApiResponse);
     }
 
-    // Prisma error when record not found
-    if (error.code === 'P2025') {
+    const err = error as { code?: string };
+    if (err.code === 'P2025') {
       return res.status(404).json({ success: false, error: 'Отзыв не найден' } as ApiResponse);
     }
 

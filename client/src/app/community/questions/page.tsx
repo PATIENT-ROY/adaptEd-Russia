@@ -112,6 +112,15 @@ export default function CommunityQuestionsPage() {
     // eslint-disable-next-line react-hooks/exhaustive-deps
   }, [searchQuery]);
 
+  // Lightweight auto-refresh every 45s with current сортировкой и поиском
+  useEffect(() => {
+    const intervalId = setInterval(() => {
+      fetchQuestions(activeSort, searchQuery || undefined);
+    }, 45_000);
+
+    return () => clearInterval(intervalId);
+  }, [activeSort, searchQuery, fetchQuestions]);
+
   const handleFormChange = (
     e: React.ChangeEvent<HTMLInputElement | HTMLTextAreaElement>,
   ) => {
@@ -230,7 +239,7 @@ export default function CommunityQuestionsPage() {
                 variant="ghost"
                 size="sm"
                 className="text-white/80 hover:text-white hover:bg-white/10 mb-3 sm:mb-6 -ml-1"
-                onClick={() => router.push("/community")}
+                onClick={() => router.back()}
               >
                 <ArrowLeft className="h-4 w-4 mr-1 sm:mr-2" />
                 <span className="text-sm">Назад</span>

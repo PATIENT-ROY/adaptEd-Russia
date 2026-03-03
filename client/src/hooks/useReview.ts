@@ -68,25 +68,30 @@ export function useReview(): UseReviewResult {
       setSaving(true);
       setSaveError(null);
       try {
-        const res = await fetch(`${API_BASE_URL}/reviews`, {
-          method: "POST",
+        const isUpdate = !!review;
+        const url = `${API_BASE_URL}/reviews`;
+        const res = await fetch(url, {
+          method: isUpdate ? "PUT" : "POST",
           headers: {
             "Content-Type": "application/json",
             Authorization: `Bearer ${localStorage.getItem("token")}`,
           },
           body: JSON.stringify({ text, rating, allowPublication }),
         });
-        if (!res.ok) throw new Error(`HTTP ${res.status}`);
+        if (!res.ok) {
+          const body = await res.json().catch(() => ({}));
+          throw new Error((body as { error?: string })?.error || `HTTP ${res.status}`);
+        }
         const body = await res.json();
         setReview(body.data);
       } catch (e) {
         console.error("Failed to save review:", e);
-        setSaveError("Не удалось сохранить отзыв");
+        setSaveError(e instanceof Error ? e.message : "Не удалось сохранить отзыв");
       } finally {
         setSaving(false);
       }
     },
-    []
+    [review]
   );
 
   let statusMessage: string | null = null;

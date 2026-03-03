@@ -181,8 +181,33 @@ export interface Review {
     university?: string;
     city?: string;
     country?: string;
+    plan?: string;
     subscriptionStatus?: string;
   };
+}
+
+/** Public API: review with computed fields for homepage */
+export type PublicReview = {
+  id: string;
+  text: string;
+  rating: number;
+  isPremium: boolean;
+  countryFlag: string;
+  createdAt: string;
+  user: {
+    name: string;
+    country: string | null;
+    university: string | null;
+    emailVerified?: boolean;
+    avatar?: string | null;
+  };
+};
+
+export interface TrustStats {
+  totalStudents: number;
+  totalUniversities: number;
+  totalCountries: number;
+  averageRating: number;
 }
 
 // API Types
