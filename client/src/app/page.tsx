@@ -19,7 +19,7 @@ import {
   Zap,
   Star,
   Users,
-  TrendingUp,
+
   Shield,
   Award,
   Target,
