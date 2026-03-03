@@ -349,21 +349,21 @@ export default function HomePage() {
 
               {/* Animated Slogan */}
               <div ref={sloganRef} className="max-w-3xl mx-auto px-4 mb-8 sm:mb-12">
-                <div className="relative h-[44px] sm:h-[52px] md:h-[56px] rounded-2xl bg-white shadow-lg overflow-hidden" style={{ animationPlayState: sloganVisible ? "running" : "paused" }}>
+                <div className="relative h-[44px] sm:h-[52px] md:h-[56px] rounded-2xl bg-white/10 backdrop-blur-md border border-white/20 shadow-[0_0_20px_rgba(255,255,255,0.1)] overflow-hidden">
                   {/* Decorative bubbles */}
-                  <div className="absolute -left-2 top-1/2 w-8 h-8 sm:w-10 sm:h-10 rounded-full bg-blue-500/20" style={{ animation: "floatCenter1 4s ease-in-out infinite", animationPlayState: sloganVisible ? "running" : "paused" }} />
-                  <div className="absolute left-[15%] -bottom-2 w-5 h-5 sm:w-6 sm:h-6 rounded-full bg-purple-500/20" style={{ animation: "float2 5s ease-in-out infinite", animationPlayState: sloganVisible ? "running" : "paused" }} />
-                  <div className="absolute right-[20%] -top-1 w-4 h-4 sm:w-5 sm:h-5 rounded-full bg-indigo-500/20" style={{ animation: "float3 3.5s ease-in-out infinite", animationPlayState: sloganVisible ? "running" : "paused" }} />
-                  <div className="absolute -right-1 top-1/2 w-7 h-7 sm:w-9 sm:h-9 rounded-full bg-blue-400/15" style={{ animation: "floatCenter2 4.5s ease-in-out infinite", animationPlayState: sloganVisible ? "running" : "paused" }} />
-                  <div className="absolute left-[40%] -bottom-1 w-3 h-3 sm:w-4 sm:h-4 rounded-full bg-purple-400/15" style={{ animation: "float1 3s ease-in-out infinite", animationPlayState: sloganVisible ? "running" : "paused" }} />
+                  <div className="absolute -left-2 top-1/2 w-8 h-8 sm:w-10 sm:h-10 rounded-full bg-white/10" style={{ animation: "floatCenter1 4s ease-in-out infinite", animationPlayState: sloganVisible ? "running" : "paused" }} />
+                  <div className="absolute left-[15%] -bottom-2 w-5 h-5 sm:w-6 sm:h-6 rounded-full bg-white/10" style={{ animation: "float2 5s ease-in-out infinite", animationPlayState: sloganVisible ? "running" : "paused" }} />
+                  <div className="absolute right-[20%] -top-1 w-4 h-4 sm:w-5 sm:h-5 rounded-full bg-white/15" style={{ animation: "float3 3.5s ease-in-out infinite", animationPlayState: sloganVisible ? "running" : "paused" }} />
+                  <div className="absolute -right-1 top-1/2 w-7 h-7 sm:w-9 sm:h-9 rounded-full bg-white/10" style={{ animation: "floatCenter2 4.5s ease-in-out infinite", animationPlayState: sloganVisible ? "running" : "paused" }} />
+                  <div className="absolute left-[40%] -bottom-1 w-3 h-3 sm:w-4 sm:h-4 rounded-full bg-white/15" style={{ animation: "float1 3s ease-in-out infinite", animationPlayState: sloganVisible ? "running" : "paused" }} />
 
                   {/* Text */}
                   <div className="absolute inset-0 flex items-center justify-center z-10 px-3">
-                    <span className="text-xs sm:text-sm md:text-lg lg:text-xl font-semibold whitespace-nowrap bg-gradient-to-r from-blue-600 via-purple-600 to-indigo-600 bg-clip-text text-transparent">
+                    <span className="text-xs sm:text-sm md:text-lg lg:text-xl font-semibold whitespace-nowrap text-white drop-shadow-[0_0_8px_rgba(255,255,255,0.2)]">
                       {displayText}
                     </span>
                     <span
-                      className="inline-block w-[2px] h-[1.1em] bg-purple-600/80 rounded-full shrink-0 ml-0.5"
+                      className="inline-block w-[2px] h-[1.1em] bg-white/90 rounded-full shrink-0 ml-0.5"
                       style={{ animation: "blink 1s step-end infinite", animationPlayState: sloganVisible ? "running" : "paused" }}
                     />
                   </div>
@@ -427,10 +427,10 @@ export default function HomePage() {
             </div>
           </div>
 
-          {/* Scroll indicator — fixed to viewport bottom, hides on scroll */}
+          {/* Scroll indicator */}
           {showScrollIndicator && (
-            <div className="fixed bottom-4 sm:bottom-6 left-1/2 transform -translate-x-1/2 z-50 motion-safe:animate-bounce" aria-hidden="true">
-              <div className="w-6 h-10 sm:w-7 sm:h-12 border-2 border-white/60 rounded-full flex justify-center shadow-[0_0_12px_rgba(255,255,255,0.35)] bg-white/10 backdrop-blur-sm">
+            <div className="absolute bottom-4 sm:bottom-6 left-1/2 transform -translate-x-1/2 motion-safe:animate-bounce" aria-hidden="true">
+              <div className="w-6 h-10 sm:w-7 sm:h-12 border-2 border-white/60 rounded-full flex justify-center shadow-[0_0_12px_rgba(255,255,255,0.35)]">
                 <div className="w-1.5 h-3 sm:h-4 bg-white/90 rounded-full mt-1.5 sm:mt-2"></div>
               </div>
             </div>
