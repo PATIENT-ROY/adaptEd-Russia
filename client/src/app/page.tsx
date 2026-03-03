@@ -99,11 +99,11 @@ export default function HomePage() {
         href: "/education-guide",
       },
       {
-        icon: Bell,
+        icon: Sparkles,
         title: t("home.features.reminders"),
         description: t("home.features.reminders.desc"),
         color: "text-purple-600 bg-purple-50",
-        gradient: "from-purple-500 to-purple-600",
+        gradient: "from-purple-500 to-indigo-600",
         stats: t("home.section.features.stats.notifications"),
         href: "/reminders",
       },

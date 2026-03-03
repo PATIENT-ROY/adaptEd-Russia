@@ -43,6 +43,7 @@ model User {
   
   // Связи
   reminders    Reminder[]
+  notes        Note[]
   chatMessages ChatMessage[]
   profile      Profile?
   supportTickets SupportTicket[]
@@ -73,6 +74,25 @@ model Profile {
   @@map("profiles")
 }
 
+// Умные заметки
+model Note {
+  id        String   @id @default(cuid())
+  userId    String
+  title     String?
+  content   String
+  tags      String?
+  aiSummary String?
+  createdAt DateTime @default(now())
+  updatedAt DateTime @updatedAt
+
+  user      User       @relation(fields: [userId], references: [id], onDelete: Cascade)
+  reminders Reminder[]
+
+  @@index([userId])
+  @@index([createdAt])
+  @@map("notes")
+}
+
 // Напоминания
 model Reminder {
   id                 String   @id @default(cuid())
@@ -84,14 +104,17 @@ model Reminder {
   status             String   @default("PENDING")
   category           String
   notificationMethod String   @default("email")
+  noteId             String?
   createdAt          DateTime @default(now())
   updatedAt          DateTime @updatedAt
   
   user               User     @relation(fields: [userId], references: [id], onDelete: Cascade)
+  note               Note?    @relation(fields: [noteId], references: [id], onDelete: SetNull)
   
   @@index([userId])
   @@index([dueDate])
   @@index([status])
+  @@index([noteId])
   @@map("reminders")
 }
 

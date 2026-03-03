@@ -39,6 +39,7 @@ import {
   Camera,
   Star,
   X,
+  Sparkles,
 } from "lucide-react";
 import Link from "next/link";
 import Image from "next/image";
@@ -86,10 +87,10 @@ const fallbackQuickActions: ProfileQuickAction[] = [
   },
   {
     id: "smart-reminders",
-    title: "Умные напоминания",
-    description: "Управление задачами и сроками",
-    icon: "Bell",
-    color: "from-purple-500 to-purple-600",
+    title: "Умные заметки и напоминания",
+    description: "Заметки + AI автоматически создаёт напоминания",
+    icon: "Sparkles",
+    color: "from-purple-500 to-indigo-600",
     href: "/reminders",
   },
   {
@@ -136,6 +137,7 @@ const iconMap = {
   Award,
   GraduationCap,
   Crown,
+  Sparkles,
   CheckCircle,
   CreditCard,
   Clock,

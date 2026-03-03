@@ -6,6 +6,8 @@ import {
   User, 
   UpdateProfileRequest,
   Reminder,
+  Note,
+  NoteParseResult,
   Guide,
   ChatMessage,
   SubscriptionPlan,
@@ -336,6 +338,40 @@ class ApiClient {
     await this.request(`/reminders/${id}`, {
       method: 'DELETE',
     });
+  }
+
+  // Заметки
+  async getNotes(): Promise<Note[]> {
+    const response = await this.requestWithRetry<Note[]>('/notes');
+    return this.ensureData(response, 'Не удалось загрузить заметки');
+  }
+
+  async createNote(data: { title?: string; content: string; tags?: string }): Promise<Note> {
+    const response = await this.request<Note>('/notes', {
+      method: 'POST',
+      body: JSON.stringify(data),
+    });
+    return this.ensureData(response, 'Не удалось создать заметку');
+  }
+
+  async updateNote(id: string, data: Partial<Note>): Promise<Note> {
+    const response = await this.request<Note>(`/notes/${id}`, {
+      method: 'PUT',
+      body: JSON.stringify(data),
+    });
+    return this.ensureData(response, 'Не удалось обновить заметку');
+  }
+
+  async deleteNote(id: string): Promise<void> {
+    await this.request(`/notes/${id}`, { method: 'DELETE' });
+  }
+
+  async parseNote(content: string, notificationMethod: string = 'email'): Promise<NoteParseResult> {
+    const response = await this.request<NoteParseResult>('/notes/parse', {
+      method: 'POST',
+      body: JSON.stringify({ content, notificationMethod }),
+    });
+    return this.ensureData(response, 'Не удалось обработать заметку');
   }
 
   // Гайды

@@ -17,6 +17,7 @@ import paymentRoutes from './api/payments.js';
 import scheduleRoutes from './api/schedule.js';
 import questionRoutes from './api/questions.js';
 import reviewRoutes from './api/reviews.js';
+import noteRoutes from './api/notes.js';
 
 // Загружаем переменные окружения
 dotenv.config();
@@ -240,6 +241,7 @@ app.use('/api/grants', grantRoutes);
 app.use('/api/payments', paymentRoutes);
 app.use('/api/schedule', scheduleRoutes);
 app.use('/api/questions', questionRoutes);
+app.use('/api/notes', noteRoutes);
 app.use('/api', reviewRoutes);
 
 // 404 handler

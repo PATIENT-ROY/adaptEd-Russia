@@ -94,6 +94,31 @@ export interface Profile {
   updatedAt: string;
 }
 
+export interface Note {
+  id: string;
+  userId: string;
+  title?: string;
+  content: string;
+  tags?: string;
+  aiSummary?: string;
+  createdAt: string;
+  updatedAt: string;
+}
+
+export interface ParsedReminder {
+  title: string;
+  description?: string;
+  dueDate: string;
+  priority: ReminderPriority;
+  category: ReminderCategory;
+}
+
+export interface NoteParseResult {
+  note: Note;
+  reminders: Reminder[];
+  summary: string;
+}
+
 export interface Reminder {
   id: string;
   userId: string;
@@ -104,6 +129,7 @@ export interface Reminder {
   status: ReminderStatus;
   category: ReminderCategory;
   notificationMethod: string;
+  noteId?: string;
   createdAt: string;
   updatedAt: string;
 }

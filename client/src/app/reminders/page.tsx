@@ -8,6 +8,7 @@ import { Input } from "@/components/ui/input";
 import { useAuth } from "@/contexts/AuthContext";
 import { ProtectedRoute } from "@/components/auth/ProtectedRoute";
 import { useReminders } from "@/hooks/useReminders";
+import { useNotes } from "@/hooks/useNotes";
 import { useTranslation } from "@/hooks/useTranslation";
 import {
   Bell,
@@ -22,6 +23,11 @@ import {
   Save,
   ChevronLeft,
   ChevronRight,
+  Sparkles,
+  FileText,
+  Loader2,
+  Trash2,
+  StickyNote,
 } from "lucide-react";
 import {
   Reminder,
@@ -29,9 +35,10 @@ import {
   ReminderPriority,
   ReminderCategory,
   Language,
+  Note,
 } from "@/types";
 
-// ── helpers (pure, outside component) ───────────────────────────────
+// ── helpers ──────────────────────────────────────────────────────────
 
 const getStatusIcon = (status: Reminder["status"]) => {
   switch (status) {
@@ -185,7 +192,7 @@ const CalendarView = ({ reminders }: { reminders: Reminder[] }) => {
         if (!map.has(dateKey)) map.set(dateKey, []);
         map.get(dateKey)!.push(reminder);
       } catch {
-        // skip bad dates
+        /* skip bad dates */
       }
     });
     return map;
@@ -232,7 +239,6 @@ const CalendarView = ({ reminders }: { reminders: Reminder[] }) => {
         <button
           onClick={() => navigateMonth("prev")}
           className="p-2 hover:bg-gray-100 rounded-lg transition-colors"
-          aria-label={t("reminders.calendar.noRemindersOnDate")}
         >
           <ChevronLeft className="h-5 w-5 text-gray-600" />
         </button>
@@ -350,7 +356,7 @@ const CalendarView = ({ reminders }: { reminders: Reminder[] }) => {
   );
 };
 
-// ── Notification icon helper ────────────────────────────────────────
+// ── Notification Badge ──────────────────────────────────────────────
 
 const NotificationBadge = ({
   method,
@@ -393,7 +399,7 @@ const NotificationBadge = ({
   );
 };
 
-// ── Loading skeleton ────────────────────────────────────────────────
+// ── Loading Skeleton ────────────────────────────────────────────────
 
 const RemindersSkeleton = () => (
   <Layout>
@@ -411,35 +417,57 @@ const RemindersSkeleton = () => (
         </div>
       </div>
       <div className="bg-white rounded-2xl sm:rounded-3xl p-4 sm:p-6 shadow-sm">
-        <div className="h-10 flex-1 bg-gray-200 rounded animate-pulse" />
+        <div className="h-32 bg-gray-200 rounded animate-pulse" />
       </div>
       <div className="grid grid-cols-1 sm:grid-cols-2 lg:grid-cols-3 gap-4">
         {[1, 2, 3].map((i) => (
           <div key={i} className="bg-white rounded-2xl sm:rounded-3xl p-4 sm:p-6 shadow-sm">
-            <div className="flex items-center space-x-3">
-              <div className="w-12 h-12 bg-gray-200 rounded-lg animate-pulse" />
-              <div className="flex-1">
-                <div className="h-4 w-20 bg-gray-200 rounded animate-pulse mb-2" />
-                <div className="h-8 w-12 bg-gray-200 rounded animate-pulse" />
-              </div>
-            </div>
+            <div className="h-4 w-20 bg-gray-200 rounded animate-pulse mb-2" />
+            <div className="h-8 w-12 bg-gray-200 rounded animate-pulse" />
           </div>
         ))}
       </div>
-      <div>
-        <div className="h-6 w-48 bg-gray-200 rounded animate-pulse mb-4" />
-        <div className="space-y-3 sm:space-y-4">
-          {[1, 2, 3].map((i) => (
-            <div key={i} className="bg-white rounded-2xl sm:rounded-3xl p-4 shadow-sm border-l-4 border-l-blue-500">
-              <div className="h-5 w-3/4 bg-gray-200 rounded animate-pulse mb-2" />
-              <div className="h-4 w-1/2 bg-gray-200 rounded animate-pulse mb-2" />
-              <div className="h-3 w-1/3 bg-gray-200 rounded animate-pulse" />
-            </div>
-          ))}
-        </div>
-      </div>
     </div>
   </Layout>
+);
+
+// ── Tab button ──────────────────────────────────────────────────────
+
+type TabId = "notes" | "reminders" | "calendar";
+
+const TabButton = ({
+  active,
+  onClick,
+  icon,
+  label,
+  count,
+}: {
+  active: boolean;
+  onClick: () => void;
+  icon: React.ReactNode;
+  label: string;
+  count?: number;
+}) => (
+  <button
+    onClick={onClick}
+    className={`flex items-center space-x-2 px-4 py-2.5 rounded-xl text-sm font-medium transition-all ${
+      active
+        ? "bg-purple-600 text-white shadow-md"
+        : "bg-white text-gray-600 hover:bg-gray-50 border border-gray-200"
+    }`}
+  >
+    {icon}
+    <span>{label}</span>
+    {count !== undefined && count > 0 && (
+      <span
+        className={`ml-1 px-1.5 py-0.5 rounded-full text-xs font-bold ${
+          active ? "bg-white/20 text-white" : "bg-purple-100 text-purple-700"
+        }`}
+      >
+        {count}
+      </span>
+    )}
+  </button>
 );
 
 // ── Main page component ─────────────────────────────────────────────
@@ -448,16 +476,25 @@ function RemindersContent() {
   const { user } = useAuth();
   const { reminders, loading, createReminder, updateReminder, deleteReminder } =
     useReminders(user?.id || "");
+  const { notes, parsing, parseNote, deleteNote } = useNotes(user?.id || "");
   const { t, currentLanguage } = useTranslation();
   const locale = getLocaleByLanguage(currentLanguage);
 
+  const [activeTab, setActiveTab] = useState<TabId>("notes");
+  const [noteText, setNoteText] = useState("");
   const [showAddForm, setShowAddForm] = useState(false);
   const [searchTerm, setSearchTerm] = useState("");
   const [isSubmitting, setIsSubmitting] = useState(false);
   const [deletingId, setDeletingId] = useState<string | null>(null);
+  const [deletingNoteId, setDeletingNoteId] = useState<string | null>(null);
   const [toastMessage, setToastMessage] = useState("");
   const [toastType, setToastType] = useState<"success" | "error">("success");
   const [fieldErrors, setFieldErrors] = useState<Record<string, string>>({});
+  const [lastParseResult, setLastParseResult] = useState<{
+    summary: string;
+    count: number;
+  } | null>(null);
+  const [notificationMethod, setNotificationMethod] = useState<"email" | "telegram" | "vk">("email");
   const [newReminder, setNewReminder] = useState({
     title: "",
     description: "",
@@ -534,7 +571,6 @@ function RemindersContent() {
       setIsSubmitting(true);
       try {
         const dateWithTime = `${newReminder.date}T00:00:00.000Z`;
-
         await createReminder({
           title: newReminder.title,
           description: newReminder.description || undefined,
@@ -598,6 +634,54 @@ function RemindersContent() {
     [deletingId, deleteReminder, showToast, t],
   );
 
+  // ── Smart Notes handlers ──────────────────────────────────────────
+
+  const handleParseNote = useCallback(async () => {
+    if (!noteText.trim() || parsing) return;
+
+    try {
+      const result = await parseNote(noteText.trim(), notificationMethod);
+      const count = result.reminders?.length ?? 0;
+
+      setLastParseResult({
+        summary: result.summary || "",
+        count,
+      });
+
+      setNoteText("");
+
+      if (count > 0) {
+        showToast(t("notes.result.created").replace("{count}", String(count)));
+        // Refresh reminders to show newly created ones
+        window.location.reload();
+      } else {
+        showToast(t("notes.result.none"), "error");
+      }
+    } catch (error) {
+      console.error("Error parsing note:", error);
+      showToast(t("notes.toast.error"), "error");
+    }
+  }, [noteText, parsing, parseNote, notificationMethod, showToast, t]);
+
+  const handleDeleteNote = useCallback(
+    async (noteId: string) => {
+      if (deletingNoteId !== noteId) {
+        setDeletingNoteId(noteId);
+        setTimeout(() => setDeletingNoteId(null), 3000);
+        return;
+      }
+      try {
+        await deleteNote(noteId);
+        setDeletingNoteId(null);
+        showToast(t("notes.toast.deleted"));
+      } catch (error) {
+        console.error("Error deleting note:", error);
+        showToast(t("notes.toast.error"), "error");
+      }
+    },
+    [deletingNoteId, deleteNote, showToast, t],
+  );
+
   if (loading) return <RemindersSkeleton />;
 
   return (
@@ -614,25 +698,28 @@ function RemindersContent() {
         </div>
       )}
 
-      <div className="space-y-8">
+      <div className="space-y-6">
         {/* Header */}
         <div className="bg-white rounded-2xl sm:rounded-3xl p-4 sm:p-6 shadow-sm">
           <div className="flex flex-col sm:flex-row sm:items-center justify-between space-y-4 sm:space-y-0">
             <div className="flex items-center space-x-3">
-              <div className="rounded-lg bg-purple-50 p-3">
-                <Bell className="h-6 w-6 text-purple-600" />
+              <div className="rounded-lg bg-gradient-to-br from-purple-500 to-indigo-600 p-3">
+                <Sparkles className="h-6 w-6 text-white" />
               </div>
               <div>
                 <h1 className="text-xl sm:text-2xl font-bold text-gray-900">
-                  {t("reminders.header.title")}
+                  {t("notes.header.title")}
                 </h1>
                 <p className="text-sm sm:text-base text-gray-600">
-                  {t("reminders.header.subtitle")}
+                  {t("notes.header.subtitle")}
                 </p>
               </div>
             </div>
             <Button
-              onClick={() => setShowAddForm(true)}
+              onClick={() => {
+                setActiveTab("reminders");
+                setShowAddForm(true);
+              }}
               className="flex items-center space-x-2 w-full sm:w-auto"
             >
               <Plus className="h-4 w-4" />
@@ -641,467 +728,634 @@ function RemindersContent() {
           </div>
         </div>
 
-        {/* Add Reminder Form */}
-        {showAddForm && (
-          <Card className="bg-white shadow-sm">
-            <CardContent className="p-4 sm:p-6">
-              <div className="flex items-center justify-between mb-4">
-                <h3 className="text-lg font-semibold text-gray-900">
-                  {t("reminders.form.title")}
-                </h3>
-                <Button
-                  variant="outline"
-                  size="sm"
-                  onClick={() => {
-                    setShowAddForm(false);
-                    setFieldErrors({});
-                  }}
-                  aria-label={t("reminders.actions.close")}
-                >
-                  <X className="h-4 w-4" />
-                </Button>
+        {/* Tabs */}
+        <div className="flex flex-wrap gap-2">
+          <TabButton
+            active={activeTab === "notes"}
+            onClick={() => setActiveTab("notes")}
+            icon={<StickyNote className="h-4 w-4" />}
+            label={t("notes.tab.notes")}
+            count={notes.length}
+          />
+          <TabButton
+            active={activeTab === "reminders"}
+            onClick={() => setActiveTab("reminders")}
+            icon={<Bell className="h-4 w-4" />}
+            label={t("notes.tab.reminders")}
+            count={pendingReminders.length}
+          />
+          <TabButton
+            active={activeTab === "calendar"}
+            onClick={() => setActiveTab("calendar")}
+            icon={<Calendar className="h-4 w-4" />}
+            label={t("notes.tab.calendar")}
+          />
+        </div>
+
+        {/* ══════════ TAB: NOTES ══════════ */}
+        {activeTab === "notes" && (
+          <div className="space-y-6">
+            {/* Smart Note Input */}
+            <Card className="bg-white shadow-sm overflow-hidden">
+              <div className="bg-gradient-to-r from-purple-50 to-indigo-50 px-4 sm:px-6 py-3 border-b border-purple-100">
+                <div className="flex items-center space-x-2">
+                  <Sparkles className="h-4 w-4 text-purple-600" />
+                  <h3 className="text-sm font-semibold text-purple-900">
+                    {t("notes.sections.notes")}
+                  </h3>
+                  <span className="px-2 py-0.5 bg-purple-100 text-purple-700 rounded-full text-xs font-medium">
+                    {t("notes.badge.ai")}
+                  </span>
+                </div>
               </div>
+              <CardContent className="p-4 sm:p-6">
+                <textarea
+                  value={noteText}
+                  onChange={(e) => setNoteText(e.target.value)}
+                  placeholder={t("notes.input.placeholder")}
+                  className="w-full px-4 py-3 border border-gray-200 rounded-xl text-sm focus:ring-2 focus:ring-purple-500 focus:border-transparent bg-gray-50 resize-none transition-colors"
+                  rows={5}
+                  disabled={parsing}
+                />
 
-              <form onSubmit={handleAddReminder} className="space-y-4">
-                <fieldset disabled={isSubmitting} className="space-y-4">
-                  <div>
-                    <label
-                      htmlFor="reminder-title"
-                      className="block text-sm font-medium text-gray-700 mb-1"
-                    >
-                      {t("reminders.form.fields.title")}
-                    </label>
-                    <Input
-                      id="reminder-title"
-                      type="text"
-                      value={newReminder.title}
-                      onChange={(e) => handleFieldChange("title", e.target.value)}
-                      placeholder={t("reminders.form.placeholders.title")}
-                      className={fieldErrors.title ? "border-red-500" : ""}
-                    />
-                    {fieldErrors.title && (
-                      <p className="text-xs text-red-500 mt-1" role="alert">
-                        {fieldErrors.title}
-                      </p>
-                    )}
-                  </div>
-
-                  <div>
-                    <label
-                      htmlFor="reminder-description"
-                      className="block text-sm font-medium text-gray-700 mb-1"
-                    >
-                      {t("reminders.form.fields.description")}
-                    </label>
-                    <textarea
-                      id="reminder-description"
-                      value={newReminder.description}
-                      onChange={(e) => handleFieldChange("description", e.target.value)}
-                      placeholder={t("reminders.form.placeholders.description")}
-                      className="w-full px-3 py-2 border border-gray-300 rounded-md text-sm focus:ring-2 focus:ring-purple-500 focus:border-transparent bg-white"
-                      rows={3}
-                    />
-                  </div>
-
-                  <div className="grid grid-cols-1 sm:grid-cols-2 lg:grid-cols-3 gap-4">
-                    <div>
-                      <label
-                        htmlFor="reminder-date"
-                        className="block text-sm font-medium text-gray-700 mb-1"
-                      >
-                        {t("reminders.form.fields.date")}
-                      </label>
-                      <Input
-                        id="reminder-date"
-                        type="date"
-                        value={newReminder.date}
-                        onChange={(e) => handleFieldChange("date", e.target.value)}
-                        className={fieldErrors.date ? "border-red-500" : ""}
+                {/* Notification Method */}
+                <div className="mt-3 flex flex-wrap items-center gap-3">
+                  <span className="text-xs text-gray-500">{t("reminders.form.fields.notificationMethod")}:</span>
+                  {(["email", "telegram", "vk"] as const).map((method) => (
+                    <label key={method} className="flex items-center space-x-1.5 cursor-pointer">
+                      <input
+                        type="radio"
+                        name="noteNotificationMethod"
+                        value={method}
+                        checked={notificationMethod === method}
+                        onChange={(e) => setNotificationMethod(e.target.value as typeof notificationMethod)}
+                        className="h-3.5 w-3.5 text-purple-600 border-gray-300 focus:ring-purple-500"
                       />
-                      {fieldErrors.date && (
-                        <p className="text-xs text-red-500 mt-1" role="alert">
-                          {fieldErrors.date}
-                        </p>
-                      )}
-                    </div>
-
-                    <div>
-                      <label
-                        htmlFor="reminder-category"
-                        className="block text-sm font-medium text-gray-700 mb-1"
-                      >
-                        {t("reminders.form.fields.category")}
-                      </label>
-                      <div className="relative">
-                        <select
-                          id="reminder-category"
-                          value={newReminder.category}
-                          onChange={(e) => handleFieldChange("category", e.target.value)}
-                          className="w-full px-3 py-2 border border-gray-300 rounded-md text-sm focus:ring-2 focus:ring-purple-500 focus:border-transparent appearance-none bg-white"
-                        >
-                          <option value={ReminderCategory.EDUCATION}>
-                            {t("reminders.category.education")}
-                          </option>
-                          <option value={ReminderCategory.LIFE}>
-                            {t("reminders.category.life")}
-                          </option>
-                          <option value={ReminderCategory.DOCUMENTS}>
-                            {t("reminders.category.documents")}
-                          </option>
-                          <option value={ReminderCategory.HEALTH}>
-                            {t("reminders.category.health")}
-                          </option>
-                          <option value={ReminderCategory.OTHER}>
-                            {t("reminders.category.other")}
-                          </option>
-                        </select>
-                        <div className="absolute right-3 top-1/2 -translate-y-1/2 pointer-events-none">
-                          <svg className="h-4 w-4 text-gray-400" fill="none" stroke="currentColor" viewBox="0 0 24 24">
-                            <path strokeLinecap="round" strokeLinejoin="round" strokeWidth={2} d="M19 9l-7 7-7-7" />
-                          </svg>
-                        </div>
-                      </div>
-                    </div>
-
-                    <div>
-                      <label
-                        htmlFor="reminder-priority"
-                        className="block text-sm font-medium text-gray-700 mb-1"
-                      >
-                        {t("reminders.form.fields.priority")}
-                      </label>
-                      <div className="relative">
-                        <select
-                          id="reminder-priority"
-                          value={newReminder.priority}
-                          onChange={(e) => handleFieldChange("priority", e.target.value)}
-                          className="w-full px-3 py-2 border border-gray-300 rounded-md text-sm focus:ring-2 focus:ring-purple-500 focus:border-transparent appearance-none bg-white"
-                        >
-                          <option value={ReminderPriority.LOW}>{t("reminders.priority.low")}</option>
-                          <option value={ReminderPriority.MEDIUM}>{t("reminders.priority.medium")}</option>
-                          <option value={ReminderPriority.HIGH}>{t("reminders.priority.high")}</option>
-                        </select>
-                        <div className="absolute right-3 top-1/2 -translate-y-1/2 pointer-events-none">
-                          <svg className="h-4 w-4 text-gray-400" fill="none" stroke="currentColor" viewBox="0 0 24 24">
-                            <path strokeLinecap="round" strokeLinejoin="round" strokeWidth={2} d="M19 9l-7 7-7-7" />
-                          </svg>
-                        </div>
-                      </div>
-                    </div>
-                  </div>
-
-                  <div>
-                    <label className="block text-sm font-medium text-gray-700 mb-1">
-                      {t("reminders.form.fields.notificationMethod")}
+                      <span className="text-xs text-gray-600">
+                        <NotificationBadge method={method} t={t} />
+                      </span>
                     </label>
-                    <div className="space-y-2">
-                      {(["email", "telegram", "vk"] as const).map((method) => (
-                        <label key={method} className="flex items-center space-x-2 cursor-pointer">
-                          <input
-                            type="radio"
-                            name="notificationMethod"
-                            value={method}
-                            checked={newReminder.notificationMethod === method}
-                            onChange={(e) => handleFieldChange("notificationMethod", e.target.value)}
-                            className="h-4 w-4 text-purple-600 border-gray-300 focus:ring-purple-500"
-                          />
-                          <NotificationBadge method={method} t={t} />
-                        </label>
-                      ))}
+                  ))}
+                </div>
+
+                <div className="mt-4 flex flex-col sm:flex-row gap-3">
+                  <Button
+                    onClick={handleParseNote}
+                    disabled={!noteText.trim() || parsing}
+                    className="flex items-center justify-center space-x-2 bg-gradient-to-r from-purple-600 to-indigo-600 hover:from-purple-700 hover:to-indigo-700 flex-1 sm:flex-initial"
+                  >
+                    {parsing ? (
+                      <>
+                        <Loader2 className="h-4 w-4 animate-spin" />
+                        <span>{t("notes.parsing")}</span>
+                      </>
+                    ) : (
+                      <>
+                        <Sparkles className="h-4 w-4" />
+                        <span>{t("notes.actions.parse")}</span>
+                      </>
+                    )}
+                  </Button>
+                </div>
+
+                {/* AI Parse Result */}
+                {lastParseResult && (
+                  <div className="mt-4 p-4 rounded-xl bg-gradient-to-r from-green-50 to-emerald-50 border border-green-200">
+                    <div className="flex items-start space-x-2">
+                      <CheckCircle className="h-5 w-5 text-green-600 mt-0.5 flex-shrink-0" />
+                      <div>
+                        <p className="text-sm font-medium text-green-800">
+                          {t("notes.result.created").replace("{count}", String(lastParseResult.count))}
+                        </p>
+                        {lastParseResult.summary && (
+                          <div className="mt-2">
+                            <p className="text-xs text-green-700 font-medium">{t("notes.result.summary")}:</p>
+                            <p className="text-xs text-green-600 mt-1">{lastParseResult.summary}</p>
+                          </div>
+                        )}
+                        <button
+                          onClick={() => {
+                            setLastParseResult(null);
+                            setActiveTab("reminders");
+                          }}
+                          className="mt-2 text-xs text-purple-600 hover:text-purple-800 font-medium underline"
+                        >
+                          {t("notes.tab.reminders")} →
+                        </button>
+                      </div>
                     </div>
                   </div>
-                </fieldset>
-
-                <div className="flex flex-col sm:flex-row justify-end space-y-2 sm:space-y-0 sm:space-x-3">
-                  <Button
-                    type="button"
-                    variant="outline"
-                    onClick={() => {
-                      setShowAddForm(false);
-                      setFieldErrors({});
-                    }}
-                    className="w-full sm:w-auto"
-                  >
-                    {t("reminders.actions.cancel")}
-                  </Button>
-                  <Button
-                    type="submit"
-                    disabled={isSubmitting}
-                    className="flex items-center space-x-2 w-full sm:w-auto"
-                  >
-                    <Save className="h-4 w-4" />
-                    <span>{isSubmitting ? "..." : t("reminders.actions.save")}</span>
-                  </Button>
-                </div>
-              </form>
-            </CardContent>
-          </Card>
-        )}
-
-        {/* Search */}
-        <div className="bg-white rounded-2xl sm:rounded-3xl p-4 sm:p-6 shadow-sm">
-          <div className="relative">
-            <Search className="absolute left-3 top-1/2 -translate-y-1/2 h-4 w-4 text-gray-400" />
-            <Input
-              type="text"
-              placeholder={t("reminders.search.placeholder")}
-              value={searchTerm}
-              onChange={(e) => setSearchTerm(e.target.value)}
-              className="pl-10"
-              aria-label={t("reminders.search.placeholder")}
-            />
-          </div>
-        </div>
-
-        {/* Statistics */}
-        <div className="grid grid-cols-1 sm:grid-cols-2 lg:grid-cols-3 gap-4">
-          <Card>
-            <CardContent className="p-4 sm:p-6">
-              <div className="flex items-center space-x-3">
-                <div className="rounded-lg bg-red-50 p-3">
-                  <AlertCircle className="h-5 w-5 sm:h-6 sm:w-6 text-red-600" />
-                </div>
-                <div>
-                  <p className="text-sm font-medium text-gray-600">{t("reminders.stats.urgent")}</p>
-                  <p className="text-xl sm:text-2xl font-bold text-gray-900">
-                    {reminders.filter(
-                      (r) => r.priority === ReminderPriority.HIGH && r.status === ReminderStatus.PENDING,
-                    ).length}
-                  </p>
-                </div>
-              </div>
-            </CardContent>
-          </Card>
-
-          <Card>
-            <CardContent className="p-4 sm:p-6">
-              <div className="flex items-center space-x-3">
-                <div className="rounded-lg bg-blue-50 p-3">
-                  <Clock className="h-5 w-5 sm:h-6 sm:w-6 text-blue-600" />
-                </div>
-                <div>
-                  <p className="text-sm font-medium text-gray-600">{t("reminders.stats.active")}</p>
-                  <p className="text-xl sm:text-2xl font-bold text-gray-900">
-                    {pendingReminders.length}
-                  </p>
-                </div>
-              </div>
-            </CardContent>
-          </Card>
-
-          <Card>
-            <CardContent className="p-4 sm:p-6">
-              <div className="flex items-center space-x-3">
-                <div className="rounded-lg bg-green-50 p-3">
-                  <CheckCircle className="h-5 w-5 sm:h-6 sm:w-6 text-green-600" />
-                </div>
-                <div>
-                  <p className="text-sm font-medium text-gray-600">{t("reminders.stats.completed")}</p>
-                  <p className="text-xl sm:text-2xl font-bold text-gray-900">
-                    {completedReminders.length}
-                  </p>
-                </div>
-              </div>
-            </CardContent>
-          </Card>
-        </div>
-
-        {/* Active Reminders */}
-        <div>
-          <h2 className="text-lg sm:text-xl font-semibold text-gray-900 mb-4">
-            {t("reminders.sections.active")}
-            {pendingReminders.length > 0 && (
-              <span className="ml-2 text-purple-600">({pendingReminders.length})</span>
-            )}
-          </h2>
-          {pendingReminders.length === 0 ? (
-            <Card>
-              <CardContent className="p-6 sm:p-8 text-center">
-                <Bell className="h-12 w-12 text-gray-400 mx-auto mb-4" />
-                <h3 className="text-lg font-medium text-gray-900 mb-2">
-                  {t("reminders.empty.active.title")}
-                </h3>
-                <p className="text-gray-600 mb-4">{t("reminders.empty.active.description")}</p>
-                <Button onClick={() => setShowAddForm(true)}>
-                  <Plus className="h-4 w-4 mr-2" />
-                  {t("reminders.actions.add")}
-                </Button>
+                )}
               </CardContent>
             </Card>
-          ) : (
-            <div className="space-y-3 sm:space-y-4">
-              {pendingReminders.map((reminder) => {
-                const catEnum = parseCategoryEnum(reminder.category);
-                return (
-                  <Card key={reminder.id} className={getTypeColor(reminder.category)}>
-                    <CardContent className="p-3 sm:p-4">
-                      <div className="flex flex-col sm:flex-row sm:items-center justify-between space-y-3 sm:space-y-0">
-                        <div className="flex items-start sm:items-center space-x-3">
-                          {getStatusIcon(reminder.status as Reminder["status"])}
-                          <div className="flex-1 min-w-0">
-                            <h3 className="font-medium text-gray-900 text-sm sm:text-base">
-                              {reminder.title}
-                            </h3>
-                            {reminder.description && (
-                              <p className="text-xs sm:text-sm text-gray-500 mt-1">
-                                {reminder.description}
-                              </p>
-                            )}
-                            <p className="text-xs sm:text-sm text-gray-500 mt-1">
-                              {formatDueDate(reminder.dueDate, locale, t("reminders.dateNotSpecified"))}
-                            </p>
-                            <div className="text-xs text-gray-400 mt-1 flex items-center space-x-2">
-                              <span>{t("reminders.notification.label")}</span>
-                              <NotificationBadge method={reminder.notificationMethod} t={t} />
-                            </div>
-                          </div>
-                        </div>
-                        <div className="flex flex-col sm:flex-row items-start sm:items-center space-y-2 sm:space-y-0 sm:space-x-2">
-                          <span
-                            className={`px-2 py-1 rounded-full text-xs font-medium ${getCategoryBadgeColor(catEnum)}`}
-                          >
-                            {getCategoryLabel(catEnum, t)}
-                          </span>
-                          <span
-                            className={`px-2 py-1 rounded-full text-xs font-medium ${getPriorityColor(reminder.priority as Reminder["priority"])}`}
-                          >
-                            {reminder.priority === ReminderPriority.HIGH
-                              ? t("reminders.priorityLabels.urgent")
-                              : reminder.priority === ReminderPriority.MEDIUM
-                                ? t("reminders.priorityLabels.important")
-                                : t("reminders.priorityLabels.normal")}
-                          </span>
-                          <div className="flex space-x-2">
-                            <Button
-                              variant="outline"
-                              size="sm"
-                              onClick={() => handleMarkCompleted(reminder.id)}
-                              className="text-xs sm:text-sm"
-                              aria-label={t("reminders.actions.complete")}
-                            >
-                              <CheckCircle className="h-3 w-3 mr-1" />
-                              {t("reminders.actions.complete")}
-                            </Button>
-                            <Button
-                              variant="outline"
-                              size="sm"
-                              onClick={() => handleDeleteReminder(reminder.id)}
-                              className={
-                                deletingId === reminder.id
-                                  ? "border-red-300 text-red-600 hover:bg-red-50"
-                                  : ""
-                              }
-                              aria-label={
-                                deletingId === reminder.id
-                                  ? t("reminders.actions.confirmDelete")
-                                  : t("reminders.actions.delete")
-                              }
-                            >
-                              <X className="h-3 w-3 sm:h-4 sm:w-4" />
-                              {deletingId === reminder.id && (
-                                <span className="ml-1 text-xs">{t("reminders.actions.confirmDelete")}</span>
-                              )}
-                            </Button>
-                          </div>
-                        </div>
-                      </div>
-                    </CardContent>
-                  </Card>
-                );
-              })}
-            </div>
-          )}
-        </div>
 
-        {/* Completed Reminders */}
-        {completedReminders.length > 0 && (
-          <div>
-            <h2 className="text-lg sm:text-xl font-semibold text-gray-900 mb-4">
-              {t("reminders.sections.completed")}
-            </h2>
-            <div className="space-y-3 sm:space-y-4">
-              {completedReminders.map((reminder) => {
-                const catEnum = parseCategoryEnum(reminder.category);
-                return (
-                  <Card key={reminder.id} className="opacity-75">
-                    <CardContent className="p-3 sm:p-4">
-                      <div className="flex flex-col sm:flex-row sm:items-center justify-between space-y-3 sm:space-y-0">
-                        <div className="flex items-start sm:items-center space-x-3">
-                          {getStatusIcon(reminder.status as Reminder["status"])}
+            {/* Notes History */}
+            <div>
+              <h2 className="text-lg sm:text-xl font-semibold text-gray-900 mb-4">
+                {t("notes.sections.history")}
+                {notes.length > 0 && (
+                  <span className="ml-2 text-purple-600">({notes.length})</span>
+                )}
+              </h2>
+
+              {notes.length === 0 ? (
+                <Card>
+                  <CardContent className="p-6 sm:p-8 text-center">
+                    <FileText className="h-12 w-12 text-gray-400 mx-auto mb-4" />
+                    <h3 className="text-lg font-medium text-gray-900 mb-2">
+                      {t("notes.empty.title")}
+                    </h3>
+                    <p className="text-gray-600">{t("notes.empty.description")}</p>
+                  </CardContent>
+                </Card>
+              ) : (
+                <div className="space-y-3">
+                  {notes.map((note: Note) => (
+                    <Card key={note.id} className="border-l-4 border-l-purple-400">
+                      <CardContent className="p-3 sm:p-4">
+                        <div className="flex items-start justify-between">
                           <div className="flex-1 min-w-0">
-                            <h3 className="font-medium text-gray-900 line-through text-sm sm:text-base">
-                              {reminder.title}
-                            </h3>
-                            {reminder.description && (
-                              <p className="text-xs sm:text-sm text-gray-500 mt-1 line-through">
-                                {reminder.description}
-                              </p>
+                            {note.title && !note.content.startsWith(note.title.replace('...', '')) && (
+                              <h4 className="font-medium text-gray-900 text-sm">{note.title}</h4>
                             )}
-                            <p className="text-xs sm:text-sm text-gray-500 mt-1">
-                              {formatDueDate(reminder.dueDate, locale, t("reminders.dateNotSpecified"))}
+                            <p className="text-xs sm:text-sm text-gray-600 mt-1 whitespace-pre-wrap line-clamp-3">
+                              {note.content}
+                            </p>
+                            {note.aiSummary && (
+                              <div className="mt-2 p-2 bg-purple-50 rounded-lg">
+                                <div className="flex items-center space-x-1 mb-1">
+                                  <Sparkles className="h-3 w-3 text-purple-600" />
+                                  <span className="text-xs font-medium text-purple-700">
+                                    {t("notes.result.summary")}
+                                  </span>
+                                </div>
+                                <p className="text-xs text-purple-600">{note.aiSummary}</p>
+                              </div>
+                            )}
+                            <p className="text-xs text-gray-400 mt-2">
+                              {formatDueDate(note.createdAt, locale, "")}
                             </p>
                           </div>
-                        </div>
-                        <div className="flex items-center space-x-2">
-                          <span className={`px-2 py-1 rounded-full text-xs font-medium ${getCategoryBadgeColor(catEnum)}`}>
-                            {getCategoryLabel(catEnum, t)}
-                          </span>
-                          <span className="px-2 py-1 rounded-full text-xs font-medium bg-green-100 text-green-700">
-                            {t("reminders.status.completed")}
-                          </span>
                           <Button
                             variant="outline"
                             size="sm"
-                            onClick={() => handleDeleteReminder(reminder.id)}
+                            onClick={() => handleDeleteNote(note.id)}
                             className={
-                              deletingId === reminder.id
-                                ? "border-red-300 text-red-600 hover:bg-red-50"
-                                : ""
-                            }
-                            aria-label={
-                              deletingId === reminder.id
-                                ? t("reminders.actions.confirmDelete")
-                                : t("reminders.actions.delete")
+                              deletingNoteId === note.id
+                                ? "border-red-300 text-red-600 hover:bg-red-50 ml-3"
+                                : "ml-3"
                             }
                           >
-                            <X className="h-3 w-3 sm:h-4 sm:w-4" />
-                            {deletingId === reminder.id && (
-                              <span className="ml-1 text-xs">{t("reminders.actions.confirmDelete")}</span>
+                            <Trash2 className="h-3 w-3" />
+                            {deletingNoteId === note.id && (
+                              <span className="ml-1 text-xs">{t("notes.actions.confirmDelete")}</span>
                             )}
                           </Button>
                         </div>
-                      </div>
-                    </CardContent>
-                  </Card>
-                );
-              })}
+                      </CardContent>
+                    </Card>
+                  ))}
+                </div>
+              )}
             </div>
           </div>
         )}
 
-        {/* Calendar */}
-        <div>
-          <h2 className="text-lg sm:text-xl font-semibold text-gray-900 mb-4">
-            {t("reminders.sections.calendar")}
-          </h2>
-          <Card>
-            <CardContent className="p-4 sm:p-6">
+        {/* ══════════ TAB: REMINDERS ══════════ */}
+        {activeTab === "reminders" && (
+          <div className="space-y-6">
+            {/* Add Reminder Form */}
+            {showAddForm && (
+              <Card className="bg-white shadow-sm">
+                <CardContent className="p-4 sm:p-6">
+                  <div className="flex items-center justify-between mb-4">
+                    <h3 className="text-lg font-semibold text-gray-900">
+                      {t("reminders.form.title")}
+                    </h3>
+                    <Button
+                      variant="outline"
+                      size="sm"
+                      onClick={() => {
+                        setShowAddForm(false);
+                        setFieldErrors({});
+                      }}
+                    >
+                      <X className="h-4 w-4" />
+                    </Button>
+                  </div>
+
+                  <form onSubmit={handleAddReminder} className="space-y-4">
+                    <fieldset disabled={isSubmitting} className="space-y-4">
+                      <div>
+                        <label htmlFor="reminder-title" className="block text-sm font-medium text-gray-700 mb-1">
+                          {t("reminders.form.fields.title")}
+                        </label>
+                        <Input
+                          id="reminder-title"
+                          type="text"
+                          value={newReminder.title}
+                          onChange={(e) => handleFieldChange("title", e.target.value)}
+                          placeholder={t("reminders.form.placeholders.title")}
+                          className={fieldErrors.title ? "border-red-500" : ""}
+                        />
+                        {fieldErrors.title && (
+                          <p className="text-xs text-red-500 mt-1" role="alert">{fieldErrors.title}</p>
+                        )}
+                      </div>
+
+                      <div>
+                        <label htmlFor="reminder-description" className="block text-sm font-medium text-gray-700 mb-1">
+                          {t("reminders.form.fields.description")}
+                        </label>
+                        <textarea
+                          id="reminder-description"
+                          value={newReminder.description}
+                          onChange={(e) => handleFieldChange("description", e.target.value)}
+                          placeholder={t("reminders.form.placeholders.description")}
+                          className="w-full px-3 py-2 border border-gray-300 rounded-md text-sm focus:ring-2 focus:ring-purple-500 focus:border-transparent bg-white"
+                          rows={3}
+                        />
+                      </div>
+
+                      <div className="grid grid-cols-1 sm:grid-cols-2 lg:grid-cols-3 gap-4">
+                        <div>
+                          <label htmlFor="reminder-date" className="block text-sm font-medium text-gray-700 mb-1">
+                            {t("reminders.form.fields.date")}
+                          </label>
+                          <Input
+                            id="reminder-date"
+                            type="date"
+                            value={newReminder.date}
+                            onChange={(e) => handleFieldChange("date", e.target.value)}
+                            className={fieldErrors.date ? "border-red-500" : ""}
+                          />
+                          {fieldErrors.date && (
+                            <p className="text-xs text-red-500 mt-1" role="alert">{fieldErrors.date}</p>
+                          )}
+                        </div>
+
+                        <div>
+                          <label htmlFor="reminder-category" className="block text-sm font-medium text-gray-700 mb-1">
+                            {t("reminders.form.fields.category")}
+                          </label>
+                          <div className="relative">
+                            <select
+                              id="reminder-category"
+                              value={newReminder.category}
+                              onChange={(e) => handleFieldChange("category", e.target.value)}
+                              className="w-full px-3 py-2 border border-gray-300 rounded-md text-sm focus:ring-2 focus:ring-purple-500 focus:border-transparent appearance-none bg-white"
+                            >
+                              <option value={ReminderCategory.EDUCATION}>{t("reminders.category.education")}</option>
+                              <option value={ReminderCategory.LIFE}>{t("reminders.category.life")}</option>
+                              <option value={ReminderCategory.DOCUMENTS}>{t("reminders.category.documents")}</option>
+                              <option value={ReminderCategory.HEALTH}>{t("reminders.category.health")}</option>
+                              <option value={ReminderCategory.OTHER}>{t("reminders.category.other")}</option>
+                            </select>
+                            <div className="absolute right-3 top-1/2 -translate-y-1/2 pointer-events-none">
+                              <svg className="h-4 w-4 text-gray-400" fill="none" stroke="currentColor" viewBox="0 0 24 24">
+                                <path strokeLinecap="round" strokeLinejoin="round" strokeWidth={2} d="M19 9l-7 7-7-7" />
+                              </svg>
+                            </div>
+                          </div>
+                        </div>
+
+                        <div>
+                          <label htmlFor="reminder-priority" className="block text-sm font-medium text-gray-700 mb-1">
+                            {t("reminders.form.fields.priority")}
+                          </label>
+                          <div className="relative">
+                            <select
+                              id="reminder-priority"
+                              value={newReminder.priority}
+                              onChange={(e) => handleFieldChange("priority", e.target.value)}
+                              className="w-full px-3 py-2 border border-gray-300 rounded-md text-sm focus:ring-2 focus:ring-purple-500 focus:border-transparent appearance-none bg-white"
+                            >
+                              <option value={ReminderPriority.LOW}>{t("reminders.priority.low")}</option>
+                              <option value={ReminderPriority.MEDIUM}>{t("reminders.priority.medium")}</option>
+                              <option value={ReminderPriority.HIGH}>{t("reminders.priority.high")}</option>
+                            </select>
+                            <div className="absolute right-3 top-1/2 -translate-y-1/2 pointer-events-none">
+                              <svg className="h-4 w-4 text-gray-400" fill="none" stroke="currentColor" viewBox="0 0 24 24">
+                                <path strokeLinecap="round" strokeLinejoin="round" strokeWidth={2} d="M19 9l-7 7-7-7" />
+                              </svg>
+                            </div>
+                          </div>
+                        </div>
+                      </div>
+
+                      <div>
+                        <label className="block text-sm font-medium text-gray-700 mb-1">
+                          {t("reminders.form.fields.notificationMethod")}
+                        </label>
+                        <div className="space-y-2">
+                          {(["email", "telegram", "vk"] as const).map((method) => (
+                            <label key={method} className="flex items-center space-x-2 cursor-pointer">
+                              <input
+                                type="radio"
+                                name="notificationMethod"
+                                value={method}
+                                checked={newReminder.notificationMethod === method}
+                                onChange={(e) => handleFieldChange("notificationMethod", e.target.value)}
+                                className="h-4 w-4 text-purple-600 border-gray-300 focus:ring-purple-500"
+                              />
+                              <NotificationBadge method={method} t={t} />
+                            </label>
+                          ))}
+                        </div>
+                      </div>
+                    </fieldset>
+
+                    <div className="flex flex-col sm:flex-row justify-end space-y-2 sm:space-y-0 sm:space-x-3">
+                      <Button
+                        type="button"
+                        variant="outline"
+                        onClick={() => {
+                          setShowAddForm(false);
+                          setFieldErrors({});
+                        }}
+                        className="w-full sm:w-auto"
+                      >
+                        {t("reminders.actions.cancel")}
+                      </Button>
+                      <Button
+                        type="submit"
+                        disabled={isSubmitting}
+                        className="flex items-center space-x-2 w-full sm:w-auto"
+                      >
+                        <Save className="h-4 w-4" />
+                        <span>{isSubmitting ? "..." : t("reminders.actions.save")}</span>
+                      </Button>
+                    </div>
+                  </form>
+                </CardContent>
+              </Card>
+            )}
+
+            {/* Search */}
+            <div className="bg-white rounded-2xl sm:rounded-3xl p-4 sm:p-6 shadow-sm">
+              <div className="relative">
+                <Search className="absolute left-3 top-1/2 -translate-y-1/2 h-4 w-4 text-gray-400" />
+                <Input
+                  type="text"
+                  placeholder={t("reminders.search.placeholder")}
+                  value={searchTerm}
+                  onChange={(e) => setSearchTerm(e.target.value)}
+                  className="pl-10"
+                />
+              </div>
+            </div>
+
+            {/* Statistics */}
+            <div className="grid grid-cols-1 sm:grid-cols-2 lg:grid-cols-3 gap-4">
+              <Card>
+                <CardContent className="p-4 sm:p-6">
+                  <div className="flex items-center space-x-3">
+                    <div className="rounded-lg bg-red-50 p-3">
+                      <AlertCircle className="h-5 w-5 sm:h-6 sm:w-6 text-red-600" />
+                    </div>
+                    <div>
+                      <p className="text-sm font-medium text-gray-600">{t("reminders.stats.urgent")}</p>
+                      <p className="text-xl sm:text-2xl font-bold text-gray-900">
+                        {reminders.filter(
+                          (r) => r.priority === ReminderPriority.HIGH && r.status === ReminderStatus.PENDING,
+                        ).length}
+                      </p>
+                    </div>
+                  </div>
+                </CardContent>
+              </Card>
+
+              <Card>
+                <CardContent className="p-4 sm:p-6">
+                  <div className="flex items-center space-x-3">
+                    <div className="rounded-lg bg-blue-50 p-3">
+                      <Clock className="h-5 w-5 sm:h-6 sm:w-6 text-blue-600" />
+                    </div>
+                    <div>
+                      <p className="text-sm font-medium text-gray-600">{t("reminders.stats.active")}</p>
+                      <p className="text-xl sm:text-2xl font-bold text-gray-900">
+                        {pendingReminders.length}
+                      </p>
+                    </div>
+                  </div>
+                </CardContent>
+              </Card>
+
+              <Card>
+                <CardContent className="p-4 sm:p-6">
+                  <div className="flex items-center space-x-3">
+                    <div className="rounded-lg bg-green-50 p-3">
+                      <CheckCircle className="h-5 w-5 sm:h-6 sm:w-6 text-green-600" />
+                    </div>
+                    <div>
+                      <p className="text-sm font-medium text-gray-600">{t("reminders.stats.completed")}</p>
+                      <p className="text-xl sm:text-2xl font-bold text-gray-900">
+                        {completedReminders.length}
+                      </p>
+                    </div>
+                  </div>
+                </CardContent>
+              </Card>
+            </div>
+
+            {/* Active Reminders */}
+            <div>
+              <h2 className="text-lg sm:text-xl font-semibold text-gray-900 mb-4">
+                {t("reminders.sections.active")}
+                {pendingReminders.length > 0 && (
+                  <span className="ml-2 text-purple-600">({pendingReminders.length})</span>
+                )}
+              </h2>
               {pendingReminders.length === 0 ? (
-                <div className="flex flex-col items-center justify-center py-8 text-center">
-                  <Calendar className="h-12 w-12 text-gray-400 mb-4" />
-                  <h3 className="text-lg font-medium text-gray-900 mb-2">
-                    {t("reminders.empty.calendar.title")}
-                  </h3>
-                  <p className="text-gray-600 text-sm">
-                    {t("reminders.empty.calendar.description")}
-                  </p>
-                </div>
+                <Card>
+                  <CardContent className="p-6 sm:p-8 text-center">
+                    <Bell className="h-12 w-12 text-gray-400 mx-auto mb-4" />
+                    <h3 className="text-lg font-medium text-gray-900 mb-2">
+                      {t("reminders.empty.active.title")}
+                    </h3>
+                    <p className="text-gray-600 mb-4">{t("reminders.empty.active.description")}</p>
+                    <div className="flex flex-col sm:flex-row gap-3 justify-center">
+                      <Button onClick={() => setShowAddForm(true)}>
+                        <Plus className="h-4 w-4 mr-2" />
+                        {t("reminders.actions.add")}
+                      </Button>
+                      <Button
+                        variant="outline"
+                        onClick={() => setActiveTab("notes")}
+                        className="border-purple-200 text-purple-700 hover:bg-purple-50"
+                      >
+                        <Sparkles className="h-4 w-4 mr-2" />
+                        {t("notes.actions.parse")}
+                      </Button>
+                    </div>
+                  </CardContent>
+                </Card>
               ) : (
-                <CalendarView reminders={pendingReminders} />
+                <div className="space-y-3 sm:space-y-4">
+                  {pendingReminders.map((reminder) => {
+                    const catEnum = parseCategoryEnum(reminder.category);
+                    return (
+                      <Card key={reminder.id} className={getTypeColor(reminder.category)}>
+                        <CardContent className="p-3 sm:p-4">
+                          <div className="flex flex-col sm:flex-row sm:items-center justify-between space-y-3 sm:space-y-0">
+                            <div className="flex items-start sm:items-center space-x-3">
+                              {getStatusIcon(reminder.status as Reminder["status"])}
+                              <div className="flex-1 min-w-0">
+                                <h3 className="font-medium text-gray-900 text-sm sm:text-base">
+                                  {reminder.title}
+                                </h3>
+                                {reminder.description && (
+                                  <p className="text-xs sm:text-sm text-gray-500 mt-1">
+                                    {reminder.description}
+                                  </p>
+                                )}
+                                <p className="text-xs sm:text-sm text-gray-500 mt-1">
+                                  {formatDueDate(reminder.dueDate, locale, t("reminders.dateNotSpecified"))}
+                                </p>
+                                <div className="text-xs text-gray-400 mt-1 flex items-center space-x-2">
+                                  <span>{t("reminders.notification.label")}</span>
+                                  <NotificationBadge method={reminder.notificationMethod} t={t} />
+                                </div>
+                              </div>
+                            </div>
+                            <div className="flex flex-col sm:flex-row items-start sm:items-center space-y-2 sm:space-y-0 sm:space-x-2">
+                              {reminder.noteId && (
+                                <span className="px-2 py-1 rounded-full text-xs font-medium bg-purple-100 text-purple-700 flex items-center space-x-1">
+                                  <Sparkles className="h-3 w-3" />
+                                  <span>{t("notes.badge.fromNote")}</span>
+                                </span>
+                              )}
+                              <span className={`px-2 py-1 rounded-full text-xs font-medium ${getCategoryBadgeColor(catEnum)}`}>
+                                {getCategoryLabel(catEnum, t)}
+                              </span>
+                              <span className={`px-2 py-1 rounded-full text-xs font-medium ${getPriorityColor(reminder.priority as Reminder["priority"])}`}>
+                                {reminder.priority === ReminderPriority.HIGH
+                                  ? t("reminders.priorityLabels.urgent")
+                                  : reminder.priority === ReminderPriority.MEDIUM
+                                    ? t("reminders.priorityLabels.important")
+                                    : t("reminders.priorityLabels.normal")}
+                              </span>
+                              <div className="flex space-x-2">
+                                <Button
+                                  variant="outline"
+                                  size="sm"
+                                  onClick={() => handleMarkCompleted(reminder.id)}
+                                  className="text-xs sm:text-sm"
+                                >
+                                  <CheckCircle className="h-3 w-3 mr-1" />
+                                  {t("reminders.actions.complete")}
+                                </Button>
+                                <Button
+                                  variant="outline"
+                                  size="sm"
+                                  onClick={() => handleDeleteReminder(reminder.id)}
+                                  className={
+                                    deletingId === reminder.id
+                                      ? "border-red-300 text-red-600 hover:bg-red-50"
+                                      : ""
+                                  }
+                                >
+                                  <X className="h-3 w-3 sm:h-4 sm:w-4" />
+                                  {deletingId === reminder.id && (
+                                    <span className="ml-1 text-xs">{t("reminders.actions.confirmDelete")}</span>
+                                  )}
+                                </Button>
+                              </div>
+                            </div>
+                          </div>
+                        </CardContent>
+                      </Card>
+                    );
+                  })}
+                </div>
               )}
-            </CardContent>
-          </Card>
-        </div>
+            </div>
+
+            {/* Completed Reminders */}
+            {completedReminders.length > 0 && (
+              <div>
+                <h2 className="text-lg sm:text-xl font-semibold text-gray-900 mb-4">
+                  {t("reminders.sections.completed")}
+                </h2>
+                <div className="space-y-3 sm:space-y-4">
+                  {completedReminders.map((reminder) => {
+                    const catEnum = parseCategoryEnum(reminder.category);
+                    return (
+                      <Card key={reminder.id} className="opacity-75">
+                        <CardContent className="p-3 sm:p-4">
+                          <div className="flex flex-col sm:flex-row sm:items-center justify-between space-y-3 sm:space-y-0">
+                            <div className="flex items-start sm:items-center space-x-3">
+                              {getStatusIcon(reminder.status as Reminder["status"])}
+                              <div className="flex-1 min-w-0">
+                                <h3 className="font-medium text-gray-900 line-through text-sm sm:text-base">
+                                  {reminder.title}
+                                </h3>
+                                {reminder.description && (
+                                  <p className="text-xs sm:text-sm text-gray-500 mt-1 line-through">
+                                    {reminder.description}
+                                  </p>
+                                )}
+                                <p className="text-xs sm:text-sm text-gray-500 mt-1">
+                                  {formatDueDate(reminder.dueDate, locale, t("reminders.dateNotSpecified"))}
+                                </p>
+                              </div>
+                            </div>
+                            <div className="flex items-center space-x-2">
+                              <span className={`px-2 py-1 rounded-full text-xs font-medium ${getCategoryBadgeColor(catEnum)}`}>
+                                {getCategoryLabel(catEnum, t)}
+                              </span>
+                              <span className="px-2 py-1 rounded-full text-xs font-medium bg-green-100 text-green-700">
+                                {t("reminders.status.completed")}
+                              </span>
+                              <Button
+                                variant="outline"
+                                size="sm"
+                                onClick={() => handleDeleteReminder(reminder.id)}
+                                className={
+                                  deletingId === reminder.id
+                                    ? "border-red-300 text-red-600 hover:bg-red-50"
+                                    : ""
+                                }
+                              >
+                                <X className="h-3 w-3 sm:h-4 sm:w-4" />
+                                {deletingId === reminder.id && (
+                                  <span className="ml-1 text-xs">{t("reminders.actions.confirmDelete")}</span>
+                                )}
+                              </Button>
+                            </div>
+                          </div>
+                        </CardContent>
+                      </Card>
+                    );
+                  })}
+                </div>
+              </div>
+            )}
+          </div>
+        )}
+
+        {/* ══════════ TAB: CALENDAR ══════════ */}
+        {activeTab === "calendar" && (
+          <div>
+            <Card>
+              <CardContent className="p-4 sm:p-6">
+                {pendingReminders.length === 0 ? (
+                  <div className="flex flex-col items-center justify-center py-8 text-center">
+                    <Calendar className="h-12 w-12 text-gray-400 mb-4" />
+                    <h3 className="text-lg font-medium text-gray-900 mb-2">
+                      {t("reminders.empty.calendar.title")}
+                    </h3>
+                    <p className="text-gray-600 text-sm">
+                      {t("reminders.empty.calendar.description")}
+                    </p>
+                  </div>
+                ) : (
+                  <CalendarView reminders={pendingReminders} />
+                )}
+              </CardContent>
+            </Card>
+          </div>
+        )}
       </div>
     </Layout>
   );

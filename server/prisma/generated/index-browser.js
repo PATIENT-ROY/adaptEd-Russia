@@ -147,6 +147,17 @@ exports.Prisma.ProfileScalarFieldEnum = {
   updatedAt: 'updatedAt'
 };
 
+exports.Prisma.NoteScalarFieldEnum = {
+  id: 'id',
+  userId: 'userId',
+  title: 'title',
+  content: 'content',
+  tags: 'tags',
+  aiSummary: 'aiSummary',
+  createdAt: 'createdAt',
+  updatedAt: 'updatedAt'
+};
+
 exports.Prisma.ReminderScalarFieldEnum = {
   id: 'id',
   userId: 'userId',
@@ -157,6 +168,7 @@ exports.Prisma.ReminderScalarFieldEnum = {
   status: 'status',
   category: 'category',
   notificationMethod: 'notificationMethod',
+  noteId: 'noteId',
   createdAt: 'createdAt',
   updatedAt: 'updatedAt'
 };
@@ -343,6 +355,7 @@ exports.Prisma.NullsOrder = {
 exports.Prisma.ModelName = {
   User: 'User',
   Profile: 'Profile',
+  Note: 'Note',
   Reminder: 'Reminder',
   Guide: 'Guide',
   ChatMessage: 'ChatMessage',
