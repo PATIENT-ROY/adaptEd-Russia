@@ -30,7 +30,7 @@ export function ReviewCard({
       : review.text;
 
   const createdAtDate = new Date(review.createdAt);
-  const formattedDate = createdAtDate.toLocaleDateString(undefined, {
+  const formattedDate = createdAtDate.toLocaleDateString("ru-RU", {
     month: "long",
     year: "numeric",
   });

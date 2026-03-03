@@ -427,10 +427,10 @@ export default function HomePage() {
             </div>
           </div>
 
-          {/* Scroll indicator — single animation, respects prefers-reduced-motion */}
+          {/* Scroll indicator — fixed to viewport bottom, hides on scroll */}
           {showScrollIndicator && (
-            <div className="absolute bottom-4 sm:bottom-6 left-1/2 transform -translate-x-1/2 motion-safe:animate-bounce" aria-hidden="true">
-              <div className="w-6 h-10 sm:w-7 sm:h-12 border-2 border-white/60 rounded-full flex justify-center shadow-[0_0_12px_rgba(255,255,255,0.35)]">
+            <div className="fixed bottom-4 sm:bottom-6 left-1/2 transform -translate-x-1/2 z-50 motion-safe:animate-bounce" aria-hidden="true">
+              <div className="w-6 h-10 sm:w-7 sm:h-12 border-2 border-white/60 rounded-full flex justify-center shadow-[0_0_12px_rgba(255,255,255,0.35)] bg-white/10 backdrop-blur-sm">
                 <div className="w-1.5 h-3 sm:h-4 bg-white/90 rounded-full mt-1.5 sm:mt-2"></div>
               </div>
             </div>
