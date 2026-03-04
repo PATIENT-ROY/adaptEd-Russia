@@ -21,9 +21,15 @@ import {
   Award,
   ArrowLeft,
 } from "lucide-react";
-import { useCallback, useEffect, useMemo, useState } from "react";
+import { useEffect, useMemo, useRef, useState } from "react";
 import Link from "next/link";
 import { fetchAchievementsOverview } from "@/lib/api";
+
+// Защита от повторных запросов при remount
+let achievementsFetchInProgress = false;
+let achievementsLastAttemptAt = 0;
+let achievementsCache: AchievementsOverview | null = null;
+const ACHIEVEMENTS_FETCH_COOLDOWN_MS = 5_000; // 5 сек — не спамить API
 
 const FALLBACK_OVERVIEW: AchievementsOverview = {
   achievements: [
@@ -165,44 +171,70 @@ export default function AchievementsPage() {
     },
   }), [t]);
 
-  const [overview, setOverview] = useState<AchievementsOverview | null>(null);
+  const [overview, setOverview] = useState<AchievementsOverview | null>(() => achievementsCache);
   const [selectedCategory, setSelectedCategory] = useState<AchievementCategory | "all">("all");
-  const [isLoading, setIsLoading] = useState(true);
+  const [isLoading, setIsLoading] = useState(() => !achievementsCache);
   const [error, setError] = useState<string | null>(null);
-
-  const loadAchievements = useCallback(
-    async (controller?: { cancelled: boolean }) => {
-      if (!controller?.cancelled) {
-        setIsLoading(true);
-        setError(null);
-      }
-
-      try {
-        const data = await fetchAchievementsOverview();
-        if (controller?.cancelled) return;
-        setOverview(data);
-      } catch (err) {
-        if (controller?.cancelled) return;
-        const message =
-          err instanceof Error ? err.message : t("achievements.error.load");
-        setError(message);
-        setOverview(FALLBACK_OVERVIEW);
-      } finally {
-        if (!controller?.cancelled) {
-          setIsLoading(false);
-        }
-      }
-    },
-    [t]
-  );
+  const fetchedRef = useRef(false);
 
   useEffect(() => {
-    const controller = { cancelled: false };
-    loadAchievements(controller);
-    return () => {
-      controller.cancelled = true;
-    };
-  }, [loadAchievements]);
+    const now = Date.now();
+    const inCooldown = achievementsLastAttemptAt > 0 && now - achievementsLastAttemptAt < ACHIEVEMENTS_FETCH_COOLDOWN_MS;
+
+    if (fetchedRef.current || achievementsFetchInProgress) return;
+
+    if (inCooldown) {
+      setOverview(achievementsCache ?? FALLBACK_OVERVIEW);
+      setIsLoading(false);
+      return;
+    }
+
+    fetchedRef.current = true;
+    achievementsFetchInProgress = true;
+    achievementsLastAttemptAt = now;
+
+    let cancelled = false;
+
+    (async () => {
+      if (!achievementsCache) setIsLoading(true);
+      setError(null);
+      try {
+        const data = await fetchAchievementsOverview();
+        if (cancelled) return;
+        achievementsCache = data;
+        setOverview(data);
+      } catch (err) {
+        if (cancelled) return;
+        const message = err instanceof Error ? err.message : "Ошибка загрузки";
+        setError(message);
+        achievementsCache = FALLBACK_OVERVIEW;
+        setOverview(FALLBACK_OVERVIEW);
+      } finally {
+        if (!cancelled) setIsLoading(false);
+        achievementsFetchInProgress = false;
+      }
+    })();
+
+    return () => { cancelled = true; };
+  }, []);
+
+  const loadAchievements = async () => {
+    achievementsLastAttemptAt = Date.now();
+    setIsLoading(true);
+    setError(null);
+    try {
+      const data = await fetchAchievementsOverview();
+      achievementsCache = data;
+      setOverview(data);
+    } catch (err) {
+      const message = err instanceof Error ? err.message : "Ошибка загрузки";
+      setError(message);
+      achievementsCache = FALLBACK_OVERVIEW;
+      setOverview(FALLBACK_OVERVIEW);
+    } finally {
+      setIsLoading(false);
+    }
+  };
 
   const achievements = useMemo(
     () => overview?.achievements ?? [],
@@ -241,16 +273,20 @@ export default function AchievementsPage() {
   }, [achievements]);
 
   const metrics = overview?.metrics;
-  const metricItems = metrics
-    ? [
-        { label: t("achievements.metrics.guides"), value: metrics.guidesRead },
-        { label: t("achievements.metrics.aiQuestions"), value: metrics.aiQuestions },
-        { label: t("achievements.metrics.remindersCreated"), value: metrics.remindersCreated },
-        { label: t("achievements.metrics.remindersCompleted"), value: metrics.remindersCompleted },
-        { label: t("achievements.metrics.docScan"), value: metrics.docScanCount },
-        { label: t("achievements.metrics.streak"), value: metrics.streak },
-      ]
-    : [];
+  const metricItems = useMemo(
+    () =>
+      metrics
+        ? [
+            { label: t("achievements.metrics.guides"), value: metrics.guidesRead },
+            { label: t("achievements.metrics.aiQuestions"), value: metrics.aiQuestions },
+            { label: t("achievements.metrics.remindersCreated"), value: metrics.remindersCreated },
+            { label: t("achievements.metrics.remindersCompleted"), value: metrics.remindersCompleted },
+            { label: t("achievements.metrics.docScan"), value: metrics.docScanCount },
+            { label: t("achievements.metrics.streak"), value: metrics.streak },
+          ]
+        : [],
+    [metrics, t]
+  );
 
   if (isLoading) {
     return (

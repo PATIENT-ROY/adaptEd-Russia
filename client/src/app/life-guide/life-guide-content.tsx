@@ -13,9 +13,10 @@ import {
   Shield,
   Phone,
 } from "lucide-react";
-import { useState, useMemo, useEffect } from "react";
+import { useState, useMemo, useEffect, useCallback } from "react";
 import { Guide, GuideCategory, Language, Difficulty } from "@/types";
 import { useTranslation } from "@/hooks/useTranslation";
+import { useGuideProgress } from "@/hooks/useGuideProgress";
 
 // Моковые данные бытовых гайдов
 const lifeGuides: Guide[] = [
@@ -1301,6 +1302,11 @@ export function LifeGuideContent() {
   const [isInitialLoading, setIsInitialLoading] = useState(true);
   const [guidesVisibleCount, setGuidesVisibleCount] = useState(12);
 
+  const { isRead, markAsRead } = useGuideProgress("life", lifeGuides.length);
+  const handleMarkRead = useCallback((guideId: string) => {
+    markAsRead(guideId);
+  }, [markAsRead]);
+
   const categories = categoriesConfig.map((category) => ({
     ...category,
     name: t(`lifeGuide.categories.${category.id}`),
@@ -1608,7 +1614,11 @@ export function LifeGuideContent() {
                     key={`guide-${guide.id}`}
                     className="h-[280px]"
                   >
-                    <GuideCard guide={guide} />
+                    <GuideCard
+                      guide={guide}
+                      isRead={isRead(guide.id)}
+                      onRead={handleMarkRead}
+                    />
                   </div>
                 ))}
               </div>

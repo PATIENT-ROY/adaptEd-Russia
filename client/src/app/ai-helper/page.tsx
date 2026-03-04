@@ -39,6 +39,10 @@ import {
   Languages,
   Check,
   Copy,
+  Sparkles,
+  ArrowRight,
+  Lock,
+  Zap,
 } from "lucide-react";
 import ReactMarkdown from "react-markdown";
 import Link from "next/link";
@@ -164,12 +168,174 @@ function CopyButton({ text, label }: { text: string; label: string }) {
   );
 }
 
+// ── Usage Bar ───────────────────────────────────────────────────────
+
+function UsageBar({
+  used,
+  limit,
+  plan,
+  t,
+}: {
+  used: number;
+  limit: number;
+  plan: string;
+  t: (key: string) => string;
+}) {
+  const percentage = Math.min((used / limit) * 100, 100);
+  const isLow = percentage >= 80;
+
+  return (
+    <Card>
+      <CardContent className="p-4 sm:p-5">
+        <div className="flex items-center justify-between mb-2">
+          <h3 className="text-sm font-semibold text-gray-900 flex items-center space-x-1.5">
+            <Zap className="h-4 w-4 text-amber-500" />
+            <span>{t("aiHelper.usage.title")}</span>
+          </h3>
+          <span className="text-xs font-medium text-gray-500">
+            {plan === "FREEMIUM" ? "Free" : "Premium"}
+          </span>
+        </div>
+
+        <div className="w-full bg-gray-200 rounded-full h-2.5 mb-2">
+          <div
+            className={`h-2.5 rounded-full transition-all duration-500 ${
+              isLow
+                ? "bg-gradient-to-r from-red-400 to-red-500"
+                : "bg-gradient-to-r from-blue-400 to-purple-500"
+            }`}
+            style={{ width: `${percentage}%` }}
+          />
+        </div>
+
+        <p className="text-xs text-gray-600">
+          {t("aiHelper.usage.counter")
+            .replace("{used}", String(used))
+            .replace("{limit}", String(limit))}
+        </p>
+
+        {plan === "FREEMIUM" && (
+          <Link
+            href="/pricing"
+            className="mt-3 flex items-center justify-center space-x-1.5 w-full px-3 py-2 bg-gradient-to-r from-amber-400 to-orange-500 text-white rounded-lg text-xs font-medium hover:from-amber-500 hover:to-orange-600 transition-all"
+          >
+            <Sparkles className="h-3.5 w-3.5" />
+            <span>{t("aiHelper.usage.upgrade")}</span>
+          </Link>
+        )}
+      </CardContent>
+    </Card>
+  );
+}
+
+// ── Limit Overlay ───────────────────────────────────────────────────
+
+function LimitOverlay({
+  plan,
+  onDismiss,
+  t,
+}: {
+  plan: string;
+  onDismiss: () => void;
+  t: (key: string) => string;
+}) {
+  return (
+    <div className="absolute inset-0 bg-white/90 backdrop-blur-sm z-10 flex items-center justify-center p-6 rounded-2xl">
+      <div className="text-center max-w-sm">
+        <div className="w-16 h-16 mx-auto mb-4 rounded-full bg-amber-100 flex items-center justify-center">
+          <Lock className="h-8 w-8 text-amber-600" />
+        </div>
+        <h3 className="text-lg font-bold text-gray-900 mb-2">
+          {t("aiHelper.limit.title")}
+        </h3>
+        <p className="text-sm text-gray-600 mb-4">
+          {plan === "FREEMIUM"
+            ? t("aiHelper.limit.freemiumDesc")
+            : t("aiHelper.limit.premiumDesc")}
+        </p>
+        {plan === "FREEMIUM" && (
+          <Link
+            href="/pricing"
+            className="inline-flex items-center space-x-2 px-6 py-3 bg-gradient-to-r from-amber-400 to-orange-500 text-white rounded-xl font-medium hover:from-amber-500 hover:to-orange-600 transition-all mb-3"
+          >
+            <Sparkles className="h-4 w-4" />
+            <span>{t("aiHelper.limit.upgrade")}</span>
+          </Link>
+        )}
+        <div>
+          <button
+            onClick={onDismiss}
+            className="text-sm text-gray-500 hover:text-gray-700"
+          >
+            {t("aiHelper.limit.dismiss")}
+          </button>
+        </div>
+      </div>
+    </div>
+  );
+}
+
+// ── Related Guides Component ────────────────────────────────────────
+
+function RelatedGuidesBlock({
+  guides,
+  t,
+}: {
+  guides: Array<{ title: string; url: string; category: string }>;
+  t: (key: string) => string;
+}) {
+  if (guides.length === 0) return null;
+
+  return (
+    <div className="mt-2 p-3 bg-gradient-to-r from-indigo-50 to-purple-50 rounded-xl border border-indigo-100">
+      <p className="text-xs font-semibold text-indigo-700 mb-2 flex items-center space-x-1">
+        <BookOpen className="h-3.5 w-3.5" />
+        <span>{t("aiHelper.guides.related")}</span>
+      </p>
+      <div className="flex flex-wrap gap-1.5">
+        {guides.map((guide, i) => (
+          <Link
+            key={i}
+            href={guide.url}
+            className={`inline-flex items-center space-x-1 px-2.5 py-1.5 rounded-lg text-xs font-medium transition-all hover:scale-[1.02] ${
+              guide.category === "education"
+                ? "bg-blue-100 text-blue-700 hover:bg-blue-200"
+                : "bg-green-100 text-green-700 hover:bg-green-200"
+            }`}
+          >
+            {guide.category === "education" ? (
+              <GraduationCap className="h-3 w-3" />
+            ) : (
+              <Home className="h-3 w-3" />
+            )}
+            <span>{guide.title}</span>
+            <ArrowRight className="h-3 w-3" />
+          </Link>
+        ))}
+      </div>
+    </div>
+  );
+}
+
+// ── Main Page ───────────────────────────────────────────────────────
+
 export default function AiHelperPage() {
   const { user } = useAuth();
   const { t } = useTranslation();
-  const { messages, loading, error, isInitializing, sendMessage, clearChat } = useChat(
-    user?.id || ""
-  );
+  const {
+    messages,
+    loading,
+    error,
+    isInitializing,
+    usage,
+    lastRelatedGuides,
+    lastAiMessageId,
+    limitError,
+    sendMessage,
+    clearChat,
+    dismissLimitError,
+  } = useChat(user?.id || "");
+
   const [inputMessage, setInputMessage] = useState("");
   const [currentMode, setCurrentMode] = useState<AIMode>("study");
   const [showClearConfirm, setShowClearConfirm] = useState(false);
@@ -235,7 +401,6 @@ export default function AiHelperPage() {
     }
   }, []);
 
-  // Scroll on new messages
   useEffect(() => {
     if (messages.length > prevMessagesLengthRef.current) {
       setTimeout(scrollToBottom, 100);
@@ -243,7 +408,6 @@ export default function AiHelperPage() {
     prevMessagesLengthRef.current = messages.length;
   }, [messages, scrollToBottom]);
 
-  // Scroll to bottom after initial history load
   useEffect(() => {
     if (!isInitializing && messages.length > 0 && !initialLoadDoneRef.current) {
       initialLoadDoneRef.current = true;
@@ -405,7 +569,6 @@ export default function AiHelperPage() {
     await clearChat();
   }, [showClearConfirm, clearChat]);
 
-  // Skeleton for loading / no user
   if (!user || isInitializing) {
     return (
       <ProtectedRoute>
@@ -459,6 +622,8 @@ export default function AiHelperPage() {
     t(`aiHelper.tips.${currentMode}.2`),
     t(`aiHelper.tips.${currentMode}.3`),
   ];
+
+  const isAtLimit = usage ? usage.used >= usage.limit : false;
 
   return (
     <ProtectedRoute>
@@ -515,9 +680,18 @@ export default function AiHelperPage() {
           </div>
 
           <div className="grid grid-cols-1 xl:grid-cols-4 gap-4 sm:gap-6 lg:gap-8">
-            {/* Chat Section — order-1 on all screens */}
+            {/* Chat Section */}
             <div className="xl:col-span-3 order-1">
-              <Card className="min-h-[400px] sm:min-h-[500px] h-[calc(100vh-300px)] sm:h-[calc(100vh-350px)] lg:h-[calc(100vh-400px)] flex flex-col">
+              <Card className="min-h-[400px] sm:min-h-[500px] h-[calc(100vh-300px)] sm:h-[calc(100vh-350px)] lg:h-[calc(100vh-400px)] flex flex-col relative">
+                {/* Limit Overlay */}
+                {limitError && (
+                  <LimitOverlay
+                    plan={limitError}
+                    onDismiss={dismissLimitError}
+                    t={t}
+                  />
+                )}
+
                 <CardHeader className="border-b flex-shrink-0 p-4 sm:p-6">
                   <div className="flex flex-col sm:flex-row sm:items-center justify-between space-y-3 sm:space-y-0">
                     <div className="flex items-center space-x-3">
@@ -576,79 +750,111 @@ export default function AiHelperPage() {
                     ) : (
                       <div className="space-y-3 sm:space-y-4">
                         {messages.map((message) => (
-                          <div
-                            key={message.id}
-                            className={`flex ${
-                              message.isUser ? "justify-end" : "justify-start"
-                            }`}
-                          >
+                          <div key={message.id}>
                             <div
-                              className={`group max-w-[90%] sm:max-w-[85%] lg:max-w-[75%] rounded-2xl px-3 sm:px-4 py-2 sm:py-3 break-words ${
-                                message.isUser
-                                  ? "bg-blue-500 text-white"
-                                  : "bg-gray-100 text-gray-900"
+                              className={`flex ${
+                                message.isUser ? "justify-end" : "justify-start"
                               }`}
                             >
-                              <div className="flex items-center space-x-2 mb-1 sm:mb-2">
-                                {!message.isUser && (
-                                  <Bot className="h-3 w-3 sm:h-4 sm:w-4 text-gray-500 flex-shrink-0" />
-                                )}
-                                <span className={`text-xs flex-shrink-0 ${
-                                  message.isUser ? "text-blue-100" : "text-gray-500"
+                              <div
+                                className={`group max-w-[90%] sm:max-w-[85%] lg:max-w-[75%] rounded-2xl px-3 sm:px-4 py-2 sm:py-3 break-words ${
+                                  message.isUser
+                                    ? "bg-blue-500 text-white"
+                                    : "bg-gray-100 text-gray-900"
+                                }`}
+                              >
+                                <div className="flex items-center space-x-2 mb-1 sm:mb-2">
+                                  {!message.isUser && (
+                                    <Bot className="h-3 w-3 sm:h-4 sm:w-4 text-gray-500 flex-shrink-0" />
+                                  )}
+                                  <span className={`text-xs flex-shrink-0 ${
+                                    message.isUser ? "text-blue-100" : "text-gray-500"
+                                  }`}>
+                                    {message.timestamp
+                                      ? new Date(
+                                          message.timestamp
+                                        ).toLocaleTimeString("ru-RU", {
+                                          hour: "2-digit",
+                                          minute: "2-digit",
+                                        })
+                                      : new Date().toLocaleTimeString("ru-RU", {
+                                          hour: "2-digit",
+                                          minute: "2-digit",
+                                        })}
+                                  </span>
+                                  {!message.isUser && (
+                                    <CopyButton
+                                      text={message.content}
+                                      label={t("aiHelper.copied")}
+                                    />
+                                  )}
+                                </div>
+                                <div className={`prose prose-sm max-w-none text-sm sm:text-base ${
+                                  message.isUser ? "prose-invert" : ""
                                 }`}>
-                                  {message.timestamp
-                                    ? new Date(
-                                        message.timestamp
-                                      ).toLocaleTimeString("ru-RU", {
-                                        hour: "2-digit",
-                                        minute: "2-digit",
-                                      })
-                                    : new Date().toLocaleTimeString("ru-RU", {
-                                        hour: "2-digit",
-                                        minute: "2-digit",
-                                      })}
-                                </span>
-                                {!message.isUser && (
-                                  <CopyButton
-                                    text={message.content}
-                                    label={t("aiHelper.copied")}
-                                  />
-                                )}
-                              </div>
-                              <div className="prose prose-sm max-w-none text-sm sm:text-base">
-                                <ReactMarkdown
-                                  components={{
-                                    p: ({ children, ...props }: React.ComponentProps<'p'>) => (
-                                      <p className="mb-1 sm:mb-2 last:mb-0" {...props}>
-                                        {children}
-                                      </p>
-                                    ),
-                                    ul: ({ children, ...props }: React.ComponentProps<'ul'>) => (
-                                      <ul className="list-disc list-inside mb-1 sm:mb-2 space-y-0.5 sm:space-y-1" {...props}>
-                                        {children}
-                                      </ul>
-                                    ),
-                                    ol: ({ children, ...props }: React.ComponentProps<'ol'>) => (
-                                      <ol className="list-decimal list-inside mb-1 sm:mb-2 space-y-0.5 sm:space-y-1" {...props}>
-                                        {children}
-                                      </ol>
-                                    ),
-                                    li: ({ children, ...props }: React.ComponentProps<'li'>) => (
-                                      <li className="text-xs sm:text-sm" {...props}>
-                                        {children}
-                                      </li>
-                                    ),
-                                    strong: ({ children, ...props }: React.ComponentProps<'strong'>) => (
-                                      <strong className="font-semibold" {...props}>
-                                        {children}
-                                      </strong>
-                                    ),
-                                  } as React.ComponentProps<typeof ReactMarkdown>['components']}
-                                >
-                                  {message.content}
-                                </ReactMarkdown>
+                                  <ReactMarkdown
+                                    components={{
+                                      h2: ({ children, ...props }: React.ComponentProps<'h2'>) => (
+                                        <h2 className={`text-base sm:text-lg font-bold mt-3 mb-2 ${message.isUser ? "text-white" : "text-gray-900"}`} {...props}>
+                                          {children}
+                                        </h2>
+                                      ),
+                                      h3: ({ children, ...props }: React.ComponentProps<'h3'>) => (
+                                        <h3 className={`text-sm sm:text-base font-semibold mt-2 mb-1 ${message.isUser ? "text-white" : "text-gray-800"}`} {...props}>
+                                          {children}
+                                        </h3>
+                                      ),
+                                      p: ({ children, ...props }: React.ComponentProps<'p'>) => (
+                                        <p className="mb-1.5 sm:mb-2 last:mb-0 leading-relaxed" {...props}>
+                                          {children}
+                                        </p>
+                                      ),
+                                      ul: ({ children, ...props }: React.ComponentProps<'ul'>) => (
+                                        <ul className="list-disc list-inside mb-1.5 sm:mb-2 space-y-0.5 sm:space-y-1" {...props}>
+                                          {children}
+                                        </ul>
+                                      ),
+                                      ol: ({ children, ...props }: React.ComponentProps<'ol'>) => (
+                                        <ol className="list-decimal list-inside mb-1.5 sm:mb-2 space-y-0.5 sm:space-y-1" {...props}>
+                                          {children}
+                                        </ol>
+                                      ),
+                                      li: ({ children, ...props }: React.ComponentProps<'li'>) => (
+                                        <li className="text-xs sm:text-sm leading-relaxed" {...props}>
+                                          {children}
+                                        </li>
+                                      ),
+                                      strong: ({ children, ...props }: React.ComponentProps<'strong'>) => (
+                                        <strong className="font-semibold" {...props}>
+                                          {children}
+                                        </strong>
+                                      ),
+                                      blockquote: ({ children, ...props }: React.ComponentProps<'blockquote'>) => (
+                                        <blockquote className="border-l-3 border-purple-400 pl-3 my-2 italic text-gray-600" {...props}>
+                                          {children}
+                                        </blockquote>
+                                      ),
+                                    } as React.ComponentProps<typeof ReactMarkdown>['components']}
+                                  >
+                                    {message.content}
+                                  </ReactMarkdown>
+                                </div>
                               </div>
                             </div>
+
+                            {/* Related Guides — shown after the last AI message */}
+                            {!message.isUser &&
+                              message.id === lastAiMessageId &&
+                              lastRelatedGuides.length > 0 && (
+                                <div className="flex justify-start mt-1 ml-0">
+                                  <div className="max-w-[90%] sm:max-w-[85%] lg:max-w-[75%]">
+                                    <RelatedGuidesBlock
+                                      guides={lastRelatedGuides}
+                                      t={t}
+                                    />
+                                  </div>
+                                </div>
+                              )}
                           </div>
                         ))}
                       </div>
@@ -670,14 +876,35 @@ export default function AiHelperPage() {
                         {speechError}
                       </p>
                     )}
+
+                    {/* Usage mini-bar (mobile only, visible above input) */}
+                    {usage && (
+                      <div className="xl:hidden flex items-center justify-between text-xs text-gray-500 px-1">
+                        <span>
+                          {t("aiHelper.usage.counter")
+                            .replace("{used}", String(usage.used))
+                            .replace("{limit}", String(usage.limit))}
+                        </span>
+                        {isAtLimit && (
+                          <span className="text-amber-600 font-medium">
+                            {t("aiHelper.limit.title")}
+                          </span>
+                        )}
+                      </div>
+                    )}
+
                     <div className="flex items-center space-x-2">
                       <Input
                         value={inputMessage}
                         onChange={(e) => setInputMessage(e.target.value)}
                         onKeyDown={handleKeyDown}
-                        placeholder={t("aiHelper.input.placeholder")}
+                        placeholder={
+                          isAtLimit
+                            ? t("aiHelper.limit.inputPlaceholder")
+                            : t("aiHelper.input.placeholder")
+                        }
                         className="flex-1 text-sm sm:text-base"
-                        disabled={loading}
+                        disabled={loading || isAtLimit}
                       />
                       {isSpeechSupported ? (
                         <Button
@@ -685,7 +912,7 @@ export default function AiHelperPage() {
                           variant="outline"
                           size="icon"
                           onClick={toggleSpeechRecognition}
-                          disabled={loading}
+                          disabled={loading || isAtLimit}
                           className={`h-10 w-10 rounded-full border-slate-200 transition-colors flex-shrink-0 ${
                             isListening
                               ? "bg-red-500 border-red-500 text-white hover:bg-red-600"
@@ -715,7 +942,7 @@ export default function AiHelperPage() {
                       )}
                       <Button
                         onClick={handleSendMessage}
-                        disabled={loading || !inputMessage.trim()}
+                        disabled={loading || !inputMessage.trim() || isAtLimit}
                         className="bg-gradient-to-r from-blue-500 to-purple-600 hover:from-blue-600 hover:to-purple-700 flex-shrink-0"
                         size="sm"
                         aria-label={t("aiHelper.input.send")}
@@ -728,8 +955,19 @@ export default function AiHelperPage() {
               </Card>
             </div>
 
-            {/* Quick Questions — order-2 on all screens */}
+            {/* Sidebar */}
             <div className="space-y-4 sm:space-y-6 order-2">
+              {/* Usage indicator */}
+              {usage && (
+                <UsageBar
+                  used={usage.used}
+                  limit={usage.limit}
+                  plan={usage.plan}
+                  t={t}
+                />
+              )}
+
+              {/* Quick Questions */}
               <Card className={`border-2 ${currentModeConfig.bgColor}`}>
                 <CardHeader className="p-4 sm:p-6">
                   <CardTitle className={`flex items-center space-x-2 text-lg sm:text-xl ${currentModeConfig.color}`}>
@@ -747,10 +985,10 @@ export default function AiHelperPage() {
                       <button
                         key={item.id}
                         type="button"
-                        disabled={loading}
+                        disabled={loading || isAtLimit}
                         onClick={() => handleQuickQuestion(item.question)}
                         className={`w-full text-left border rounded-lg p-4 sm:p-5 bg-white hover:shadow-sm transition-all duration-200 ${
-                          loading
+                          loading || isAtLimit
                             ? "opacity-50 cursor-not-allowed"
                             : "hover:scale-[1.02] cursor-pointer"
                         } ${BORDER_COLORS[currentMode]}`}

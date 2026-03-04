@@ -81,8 +81,7 @@
 /* Современные компоненты */
 
 .modern-card {
-    background: rgba(255, 255, 255, 0.9);
-    backdrop-filter: blur(10px);
+    background: rgba(255, 255, 255, 0.95);
     border: 1px solid rgba(255, 255, 255, 0.2);
     border-radius: 16px;
     box-shadow: 0 20px 25px -5px rgba(0, 0, 0, 0.1);
@@ -117,9 +116,8 @@
 }
 
 .modern-nav {
-    background: rgba(255, 255, 255, 0.8);
-    backdrop-filter: blur(10px);
-    border-bottom: 1px solid rgba(255, 255, 255, 0.2);
+    background: rgba(255, 255, 255, 0.92);
+    border-bottom: 1px solid rgba(226, 232, 240, 0.8);
     box-shadow: 0 4px 6px -1px rgba(0, 0, 0, 0.1);
 }
 
@@ -296,9 +294,6 @@
 /* Улучшенная адаптивность для навигации */
 
 @media (max-width: 768px) {
-    .modern-nav {
-        backdrop-filter: blur(15px);
-    }
     .modern-nav-item {
         padding: 0.75rem 1rem;
         font-size: 14px;
@@ -500,4 +495,41 @@ nextjs-portal:not(:has(> *)) {
 
 .scrollbar-hide::-webkit-scrollbar {
     display: none;
+}
+
+/* Hero typewriter animations (moved from style jsx to reduce JS bundle) */
+@keyframes heroBlink {
+    50% { opacity: 0; }
+}
+@keyframes heroFloat1 {
+    0%, 100% { transform: translateY(0px); }
+    50% { transform: translateY(-6px); }
+}
+@keyframes heroFloat2 {
+    0%, 100% { transform: translateY(0px); }
+    50% { transform: translateY(5px); }
+}
+@keyframes heroFloat3 {
+    0%, 100% { transform: translateX(0px); }
+    50% { transform: translateX(6px); }
+}
+@keyframes heroFloatCenter1 {
+    0%, 100% { transform: translateY(-50%); }
+    50% { transform: translateY(calc(-50% - 6px)); }
+}
+@keyframes heroFloatCenter2 {
+    0%, 100% { transform: translateY(-50%); }
+    50% { transform: translateY(calc(-50% + 5px)); }
+}
+.hero-blink { animation: heroBlink 1s step-end infinite; }
+.hero-float1 { animation: heroFloat1 3s ease-in-out infinite; }
+.hero-float2 { animation: heroFloat2 5s ease-in-out infinite; }
+.hero-float3 { animation: heroFloat3 3.5s ease-in-out infinite; }
+.hero-float-center1 { animation: heroFloatCenter1 4s ease-in-out infinite; }
+.hero-float-center2 { animation: heroFloatCenter2 4.5s ease-in-out infinite; }
+
+/* Offscreen content optimization */
+.below-fold {
+    content-visibility: auto;
+    contain-intrinsic-size: auto 600px;
 }

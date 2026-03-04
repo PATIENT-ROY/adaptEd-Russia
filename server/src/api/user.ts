@@ -621,7 +621,11 @@ router.get('/profile/overview', authMiddleware, async (req: Request, res: Respon
   try {
     const authUser = (req as any).user;
 
-    const [userData, reminders, payments, chatMessages] = await Promise.all([
+    const guideReadsCountPromise = prisma.guideRead.count({
+      where: { userId: authUser.userId },
+    }).catch(() => 0);
+
+    const [userData, reminders, payments, chatMessages, guidesCompletedCount] = await Promise.all([
       getUserById(authUser.userId),
       prisma.reminder.findMany({
         where: { userId: authUser.userId },
@@ -638,6 +642,7 @@ router.get('/profile/overview', authMiddleware, async (req: Request, res: Respon
         orderBy: { createdAt: 'desc' },
         take: 10,
       }),
+      guideReadsCountPromise,
     ]);
 
     if (!userData) {
@@ -653,8 +658,7 @@ router.get('/profile/overview', authMiddleware, async (req: Request, res: Respon
 
     const completedReminders = reminders.filter((reminder) => reminder.status === 'COMPLETED');
 
-    const guidesCompletedCount = Math.max(completedReminders.length, 0);
-    const displayedGuidesCount = Math.max(guidesCompletedCount, 5);
+    const displayedGuidesCount = guidesCompletedCount;
     const aiQuestionsCount = chatMessages.length;
     const registeredAt = userData.registeredAt ? new Date(userData.registeredAt) : new Date();
     const daysSinceRegistration = Math.max(
@@ -864,7 +868,11 @@ router.get('/dashboard', authMiddleware, async (req: Request, res: Response) => 
   try {
     const authUser = (req as any).user;
 
-    const [userData, reminders, payments, chatMessages] = await Promise.all([
+    const guideReadsCountPromise = prisma.guideRead.count({
+      where: { userId: authUser.userId },
+    }).catch(() => 0);
+
+    const [userData, reminders, payments, chatMessages, guidesCompletedCount] = await Promise.all([
       getUserById(authUser.userId),
       prisma.reminder.findMany({
         where: { userId: authUser.userId },
@@ -881,6 +889,7 @@ router.get('/dashboard', authMiddleware, async (req: Request, res: Response) => 
         orderBy: { createdAt: 'desc' },
         take: 50,
       }),
+      guideReadsCountPromise,
     ]);
 
     if (!userData) {
@@ -907,11 +916,6 @@ router.get('/dashboard', authMiddleware, async (req: Request, res: Response) => 
     const aiQuestionsToday = chatMessages.filter((message) =>
       isSameDay(new Date(message.createdAt), now)
     ).length;
-
-    const guidesCompletedCount = Math.max(
-      completedReminders.length,
-      Math.ceil(aiQuestionsCount / 4)
-    );
 
     const guidesReadToday = Math.min(
       completedRemindersToday + Math.ceil(aiQuestionsToday / 2),
@@ -1050,7 +1054,12 @@ router.get('/achievements', authMiddleware, async (req: Request, res: Response) 
         return 0;
       });
 
-    const [userData, reminders, payments, chatMessages, docScanAggregate, grantApplicationsCount] =
+    const guideReadsPromise = prisma.guideRead.findMany({
+      where: { userId: authUser.userId },
+      select: { guideId: true, guideType: true },
+    }).catch(() => []);
+
+    const [userData, reminders, payments, chatMessages, docScanAggregate, grantApplicationsCount, guideReads] =
       await Promise.all([
         getUserById(authUser.userId),
         prisma.reminder.findMany({
@@ -1070,6 +1079,7 @@ router.get('/achievements', authMiddleware, async (req: Request, res: Response) 
         }),
         docScanAggregatePromise,
         grantApplicationsCountPromise,
+        guideReadsPromise,
       ]);
 
     if (!userData) {
@@ -1101,10 +1111,9 @@ router.get('/achievements', authMiddleware, async (req: Request, res: Response) 
 
     const streak = calculateStreak(activityDates);
 
-    const guidesCompletedCount = Math.max(
-      remindersCompletedCount,
-      Math.ceil(aiQuestionsCount / 4)
-    );
+    const guidesCompletedCount = guideReads.length;
+    const educationGuidesRead = guideReads.filter(r => r.guideType === 'education').length;
+    const lifeGuidesRead = guideReads.filter(r => r.guideType === 'life').length;
 
     const xpFromGuides = guidesCompletedCount * 20;
     const xpFromAI = aiQuestionsCount * 5;
@@ -1157,16 +1166,16 @@ router.get('/achievements', authMiddleware, async (req: Request, res: Response) 
       ask_1_ai_question: () => thresholdProgress(aiQuestionsCount, 1),
       create_1_reminder: () => thresholdProgress(remindersCreatedCount, 1),
       scan_1_document: () => thresholdProgress(docScanCount, 1),
-      read_10_education_guides: () => thresholdProgress(guidesCompletedCount, 10),
-      read_all_exam_guides: () => thresholdProgress(guidesCompletedCount, 25),
-      read_coursework_guide: () => thresholdProgress(guidesCompletedCount, 5),
+      read_10_education_guides: () => thresholdProgress(educationGuidesRead, 10),
+      read_all_exam_guides: () => thresholdProgress(educationGuidesRead, 16),
+      read_coursework_guide: () => thresholdProgress(educationGuidesRead, 5),
       explore_scholarships: () =>
         booleanProgress(grantApplicationsCount > 0, grantApplicationsCount, 1),
       scan_10_documents: () => thresholdProgress(docScanCount, 10),
-      read_5_life_guides: () => thresholdProgress(guidesCompletedCount, 5),
-      read_all_health_guides: () => thresholdProgress(guidesCompletedCount, 15),
-      read_all_document_guides: () => thresholdProgress(guidesCompletedCount, 20),
-      read_transport_guide: () => thresholdProgress(guidesCompletedCount, 2),
+      read_5_life_guides: () => thresholdProgress(lifeGuidesRead, 5),
+      read_all_health_guides: () => thresholdProgress(lifeGuidesRead, 15),
+      read_all_document_guides: () => thresholdProgress(educationGuidesRead, 10),
+      read_transport_guide: () => thresholdProgress(lifeGuidesRead, 2),
       streak_7_days: () => thresholdProgress(streak, 7),
       streak_30_days: () => thresholdProgress(streak, 30),
       complete_20_reminders: () => thresholdProgress(remindersCompletedCount, 20),

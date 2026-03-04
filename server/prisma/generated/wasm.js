@@ -329,6 +329,14 @@ exports.Prisma.QuestionLikeScalarFieldEnum = {
   createdAt: 'createdAt'
 };
 
+exports.Prisma.GuideReadScalarFieldEnum = {
+  id: 'id',
+  userId: 'userId',
+  guideId: 'guideId',
+  guideType: 'guideType',
+  readAt: 'readAt'
+};
+
 exports.Prisma.ReviewScalarFieldEnum = {
   id: 'id',
   userId: 'userId',
@@ -370,6 +378,7 @@ exports.Prisma.ModelName = {
   Question: 'Question',
   Answer: 'Answer',
   QuestionLike: 'QuestionLike',
+  GuideRead: 'GuideRead',
   Review: 'Review'
 };
 

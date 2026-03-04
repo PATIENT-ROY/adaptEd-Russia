@@ -99,6 +99,11 @@ export type Answer = $Result.DefaultSelection<Prisma.$AnswerPayload>
  */
 export type QuestionLike = $Result.DefaultSelection<Prisma.$QuestionLikePayload>
 /**
+ * Model GuideRead
+ * 
+ */
+export type GuideRead = $Result.DefaultSelection<Prisma.$GuideReadPayload>
+/**
  * Model Review
  * 
  */
@@ -396,6 +401,16 @@ export class PrismaClient<
     * ```
     */
   get questionLike(): Prisma.QuestionLikeDelegate<ExtArgs>;
+
+  /**
+   * `prisma.guideRead`: Exposes CRUD operations for the **GuideRead** model.
+    * Example usage:
+    * ```ts
+    * // Fetch zero or more GuideReads
+    * const guideReads = await prisma.guideRead.findMany()
+    * ```
+    */
+  get guideRead(): Prisma.GuideReadDelegate<ExtArgs>;
 
   /**
    * `prisma.review`: Exposes CRUD operations for the **Review** model.
@@ -864,6 +879,7 @@ export namespace Prisma {
     Question: 'Question',
     Answer: 'Answer',
     QuestionLike: 'QuestionLike',
+    GuideRead: 'GuideRead',
     Review: 'Review'
   };
 
@@ -880,7 +896,7 @@ export namespace Prisma {
 
   export type TypeMap<ExtArgs extends $Extensions.InternalArgs = $Extensions.DefaultArgs, ClientOptions = {}> = {
     meta: {
-      modelProps: "user" | "profile" | "note" | "reminder" | "guide" | "chatMessage" | "supportTicket" | "supportResponse" | "admin" | "subscriptionPlan" | "payment" | "subscription" | "grant" | "userGrantApplication" | "question" | "answer" | "questionLike" | "review"
+      modelProps: "user" | "profile" | "note" | "reminder" | "guide" | "chatMessage" | "supportTicket" | "supportResponse" | "admin" | "subscriptionPlan" | "payment" | "subscription" | "grant" | "userGrantApplication" | "question" | "answer" | "questionLike" | "guideRead" | "review"
       txIsolationLevel: Prisma.TransactionIsolationLevel
     }
     model: {
@@ -2074,6 +2090,76 @@ export namespace Prisma {
           }
         }
       }
+      GuideRead: {
+        payload: Prisma.$GuideReadPayload<ExtArgs>
+        fields: Prisma.GuideReadFieldRefs
+        operations: {
+          findUnique: {
+            args: Prisma.GuideReadFindUniqueArgs<ExtArgs>
+            result: $Utils.PayloadToResult<Prisma.$GuideReadPayload> | null
+          }
+          findUniqueOrThrow: {
+            args: Prisma.GuideReadFindUniqueOrThrowArgs<ExtArgs>
+            result: $Utils.PayloadToResult<Prisma.$GuideReadPayload>
+          }
+          findFirst: {
+            args: Prisma.GuideReadFindFirstArgs<ExtArgs>
+            result: $Utils.PayloadToResult<Prisma.$GuideReadPayload> | null
+          }
+          findFirstOrThrow: {
+            args: Prisma.GuideReadFindFirstOrThrowArgs<ExtArgs>
+            result: $Utils.PayloadToResult<Prisma.$GuideReadPayload>
+          }
+          findMany: {
+            args: Prisma.GuideReadFindManyArgs<ExtArgs>
+            result: $Utils.PayloadToResult<Prisma.$GuideReadPayload>[]
+          }
+          create: {
+            args: Prisma.GuideReadCreateArgs<ExtArgs>
+            result: $Utils.PayloadToResult<Prisma.$GuideReadPayload>
+          }
+          createMany: {
+            args: Prisma.GuideReadCreateManyArgs<ExtArgs>
+            result: BatchPayload
+          }
+          createManyAndReturn: {
+            args: Prisma.GuideReadCreateManyAndReturnArgs<ExtArgs>
+            result: $Utils.PayloadToResult<Prisma.$GuideReadPayload>[]
+          }
+          delete: {
+            args: Prisma.GuideReadDeleteArgs<ExtArgs>
+            result: $Utils.PayloadToResult<Prisma.$GuideReadPayload>
+          }
+          update: {
+            args: Prisma.GuideReadUpdateArgs<ExtArgs>
+            result: $Utils.PayloadToResult<Prisma.$GuideReadPayload>
+          }
+          deleteMany: {
+            args: Prisma.GuideReadDeleteManyArgs<ExtArgs>
+            result: BatchPayload
+          }
+          updateMany: {
+            args: Prisma.GuideReadUpdateManyArgs<ExtArgs>
+            result: BatchPayload
+          }
+          upsert: {
+            args: Prisma.GuideReadUpsertArgs<ExtArgs>
+            result: $Utils.PayloadToResult<Prisma.$GuideReadPayload>
+          }
+          aggregate: {
+            args: Prisma.GuideReadAggregateArgs<ExtArgs>
+            result: $Utils.Optional<AggregateGuideRead>
+          }
+          groupBy: {
+            args: Prisma.GuideReadGroupByArgs<ExtArgs>
+            result: $Utils.Optional<GuideReadGroupByOutputType>[]
+          }
+          count: {
+            args: Prisma.GuideReadCountArgs<ExtArgs>
+            result: $Utils.Optional<GuideReadCountAggregateOutputType> | number
+          }
+        }
+      }
       Review: {
         payload: Prisma.$ReviewPayload<ExtArgs>
         fields: Prisma.ReviewFieldRefs
@@ -2316,6 +2402,7 @@ export namespace Prisma {
     answers: number
     questionLikes: number
     reviews: number
+    guideReads: number
   }
 
   export type UserCountOutputTypeSelect<ExtArgs extends $Extensions.InternalArgs = $Extensions.DefaultArgs> = {
@@ -2330,6 +2417,7 @@ export namespace Prisma {
     answers?: boolean | UserCountOutputTypeCountAnswersArgs
     questionLikes?: boolean | UserCountOutputTypeCountQuestionLikesArgs
     reviews?: boolean | UserCountOutputTypeCountReviewsArgs
+    guideReads?: boolean | UserCountOutputTypeCountGuideReadsArgs
   }
 
   // Custom InputTypes
@@ -2418,6 +2506,13 @@ export namespace Prisma {
    */
   export type UserCountOutputTypeCountReviewsArgs<ExtArgs extends $Extensions.InternalArgs = $Extensions.DefaultArgs> = {
     where?: ReviewWhereInput
+  }
+
+  /**
+   * UserCountOutputType without action
+   */
+  export type UserCountOutputTypeCountGuideReadsArgs<ExtArgs extends $Extensions.InternalArgs = $Extensions.DefaultArgs> = {
+    where?: GuideReadWhereInput
   }
 
 
@@ -2899,6 +2994,7 @@ export namespace Prisma {
     answers?: boolean | User$answersArgs<ExtArgs>
     questionLikes?: boolean | User$questionLikesArgs<ExtArgs>
     reviews?: boolean | User$reviewsArgs<ExtArgs>
+    guideReads?: boolean | User$guideReadsArgs<ExtArgs>
     _count?: boolean | UserCountOutputTypeDefaultArgs<ExtArgs>
   }, ExtArgs["result"]["user"]>
 
@@ -2949,6 +3045,7 @@ export namespace Prisma {
     answers?: boolean | User$answersArgs<ExtArgs>
     questionLikes?: boolean | User$questionLikesArgs<ExtArgs>
     reviews?: boolean | User$reviewsArgs<ExtArgs>
+    guideReads?: boolean | User$guideReadsArgs<ExtArgs>
     _count?: boolean | UserCountOutputTypeDefaultArgs<ExtArgs>
   }
   export type UserIncludeCreateManyAndReturn<ExtArgs extends $Extensions.InternalArgs = $Extensions.DefaultArgs> = {}
@@ -2968,6 +3065,7 @@ export namespace Prisma {
       answers: Prisma.$AnswerPayload<ExtArgs>[]
       questionLikes: Prisma.$QuestionLikePayload<ExtArgs>[]
       reviews: Prisma.$ReviewPayload<ExtArgs>[]
+      guideReads: Prisma.$GuideReadPayload<ExtArgs>[]
     }
     scalars: $Extensions.GetPayloadResult<{
       id: string
@@ -3360,6 +3458,7 @@ export namespace Prisma {
     answers<T extends User$answersArgs<ExtArgs> = {}>(args?: Subset<T, User$answersArgs<ExtArgs>>): Prisma.PrismaPromise<$Result.GetResult<Prisma.$AnswerPayload<ExtArgs>, T, "findMany"> | Null>
     questionLikes<T extends User$questionLikesArgs<ExtArgs> = {}>(args?: Subset<T, User$questionLikesArgs<ExtArgs>>): Prisma.PrismaPromise<$Result.GetResult<Prisma.$QuestionLikePayload<ExtArgs>, T, "findMany"> | Null>
     reviews<T extends User$reviewsArgs<ExtArgs> = {}>(args?: Subset<T, User$reviewsArgs<ExtArgs>>): Prisma.PrismaPromise<$Result.GetResult<Prisma.$ReviewPayload<ExtArgs>, T, "findMany"> | Null>
+    guideReads<T extends User$guideReadsArgs<ExtArgs> = {}>(args?: Subset<T, User$guideReadsArgs<ExtArgs>>): Prisma.PrismaPromise<$Result.GetResult<Prisma.$GuideReadPayload<ExtArgs>, T, "findMany"> | Null>
     /**
      * Attaches callbacks for the resolution and/or rejection of the Promise.
      * @param onfulfilled The callback to execute when the Promise is resolved.
@@ -3947,6 +4046,26 @@ export namespace Prisma {
     take?: number
     skip?: number
     distinct?: ReviewScalarFieldEnum | ReviewScalarFieldEnum[]
+  }
+
+  /**
+   * User.guideReads
+   */
+  export type User$guideReadsArgs<ExtArgs extends $Extensions.InternalArgs = $Extensions.DefaultArgs> = {
+    /**
+     * Select specific fields to fetch from the GuideRead
+     */
+    select?: GuideReadSelect<ExtArgs> | null
+    /**
+     * Choose, which related nodes to fetch as well
+     */
+    include?: GuideReadInclude<ExtArgs> | null
+    where?: GuideReadWhereInput
+    orderBy?: GuideReadOrderByWithRelationInput | GuideReadOrderByWithRelationInput[]
+    cursor?: GuideReadWhereUniqueInput
+    take?: number
+    skip?: number
+    distinct?: GuideReadScalarFieldEnum | GuideReadScalarFieldEnum[]
   }
 
   /**
@@ -20001,6 +20120,937 @@ export namespace Prisma {
 
 
   /**
+   * Model GuideRead
+   */
+
+  export type AggregateGuideRead = {
+    _count: GuideReadCountAggregateOutputType | null
+    _min: GuideReadMinAggregateOutputType | null
+    _max: GuideReadMaxAggregateOutputType | null
+  }
+
+  export type GuideReadMinAggregateOutputType = {
+    id: string | null
+    userId: string | null
+    guideId: string | null
+    guideType: string | null
+    readAt: Date | null
+  }
+
+  export type GuideReadMaxAggregateOutputType = {
+    id: string | null
+    userId: string | null
+    guideId: string | null
+    guideType: string | null
+    readAt: Date | null
+  }
+
+  export type GuideReadCountAggregateOutputType = {
+    id: number
+    userId: number
+    guideId: number
+    guideType: number
+    readAt: number
+    _all: number
+  }
+
+
+  export type GuideReadMinAggregateInputType = {
+    id?: true
+    userId?: true
+    guideId?: true
+    guideType?: true
+    readAt?: true
+  }
+
+  export type GuideReadMaxAggregateInputType = {
+    id?: true
+    userId?: true
+    guideId?: true
+    guideType?: true
+    readAt?: true
+  }
+
+  export type GuideReadCountAggregateInputType = {
+    id?: true
+    userId?: true
+    guideId?: true
+    guideType?: true
+    readAt?: true
+    _all?: true
+  }
+
+  export type GuideReadAggregateArgs<ExtArgs extends $Extensions.InternalArgs = $Extensions.DefaultArgs> = {
+    /**
+     * Filter which GuideRead to aggregate.
+     */
+    where?: GuideReadWhereInput
+    /**
+     * {@link https://www.prisma.io/docs/concepts/components/prisma-client/sorting Sorting Docs}
+     * 
+     * Determine the order of GuideReads to fetch.
+     */
+    orderBy?: GuideReadOrderByWithRelationInput | GuideReadOrderByWithRelationInput[]
+    /**
+     * {@link https://www.prisma.io/docs/concepts/components/prisma-client/pagination#cursor-based-pagination Cursor Docs}
+     * 
+     * Sets the start position
+     */
+    cursor?: GuideReadWhereUniqueInput
+    /**
+     * {@link https://www.prisma.io/docs/concepts/components/prisma-client/pagination Pagination Docs}
+     * 
+     * Take `±n` GuideReads from the position of the cursor.
+     */
+    take?: number
+    /**
+     * {@link https://www.prisma.io/docs/concepts/components/prisma-client/pagination Pagination Docs}
+     * 
+     * Skip the first `n` GuideReads.
+     */
+    skip?: number
+    /**
+     * {@link https://www.prisma.io/docs/concepts/components/prisma-client/aggregations Aggregation Docs}
+     * 
+     * Count returned GuideReads
+    **/
+    _count?: true | GuideReadCountAggregateInputType
+    /**
+     * {@link https://www.prisma.io/docs/concepts/components/prisma-client/aggregations Aggregation Docs}
+     * 
+     * Select which fields to find the minimum value
+    **/
+    _min?: GuideReadMinAggregateInputType
+    /**
+     * {@link https://www.prisma.io/docs/concepts/components/prisma-client/aggregations Aggregation Docs}
+     * 
+     * Select which fields to find the maximum value
+    **/
+    _max?: GuideReadMaxAggregateInputType
+  }
+
+  export type GetGuideReadAggregateType<T extends GuideReadAggregateArgs> = {
+        [P in keyof T & keyof AggregateGuideRead]: P extends '_count' | 'count'
+      ? T[P] extends true
+        ? number
+        : GetScalarType<T[P], AggregateGuideRead[P]>
+      : GetScalarType<T[P], AggregateGuideRead[P]>
+  }
+
+
+
+
+  export type GuideReadGroupByArgs<ExtArgs extends $Extensions.InternalArgs = $Extensions.DefaultArgs> = {
+    where?: GuideReadWhereInput
+    orderBy?: GuideReadOrderByWithAggregationInput | GuideReadOrderByWithAggregationInput[]
+    by: GuideReadScalarFieldEnum[] | GuideReadScalarFieldEnum
+    having?: GuideReadScalarWhereWithAggregatesInput
+    take?: number
+    skip?: number
+    _count?: GuideReadCountAggregateInputType | true
+    _min?: GuideReadMinAggregateInputType
+    _max?: GuideReadMaxAggregateInputType
+  }
+
+  export type GuideReadGroupByOutputType = {
+    id: string
+    userId: string
+    guideId: string
+    guideType: string
+    readAt: Date
+    _count: GuideReadCountAggregateOutputType | null
+    _min: GuideReadMinAggregateOutputType | null
+    _max: GuideReadMaxAggregateOutputType | null
+  }
+
+  type GetGuideReadGroupByPayload<T extends GuideReadGroupByArgs> = Prisma.PrismaPromise<
+    Array<
+      PickEnumerable<GuideReadGroupByOutputType, T['by']> &
+        {
+          [P in ((keyof T) & (keyof GuideReadGroupByOutputType))]: P extends '_count'
+            ? T[P] extends boolean
+              ? number
+              : GetScalarType<T[P], GuideReadGroupByOutputType[P]>
+            : GetScalarType<T[P], GuideReadGroupByOutputType[P]>
+        }
+      >
+    >
+
+
+  export type GuideReadSelect<ExtArgs extends $Extensions.InternalArgs = $Extensions.DefaultArgs> = $Extensions.GetSelect<{
+    id?: boolean
+    userId?: boolean
+    guideId?: boolean
+    guideType?: boolean
+    readAt?: boolean
+    user?: boolean | UserDefaultArgs<ExtArgs>
+  }, ExtArgs["result"]["guideRead"]>
+
+  export type GuideReadSelectCreateManyAndReturn<ExtArgs extends $Extensions.InternalArgs = $Extensions.DefaultArgs> = $Extensions.GetSelect<{
+    id?: boolean
+    userId?: boolean
+    guideId?: boolean
+    guideType?: boolean
+    readAt?: boolean
+    user?: boolean | UserDefaultArgs<ExtArgs>
+  }, ExtArgs["result"]["guideRead"]>
+
+  export type GuideReadSelectScalar = {
+    id?: boolean
+    userId?: boolean
+    guideId?: boolean
+    guideType?: boolean
+    readAt?: boolean
+  }
+
+  export type GuideReadInclude<ExtArgs extends $Extensions.InternalArgs = $Extensions.DefaultArgs> = {
+    user?: boolean | UserDefaultArgs<ExtArgs>
+  }
+  export type GuideReadIncludeCreateManyAndReturn<ExtArgs extends $Extensions.InternalArgs = $Extensions.DefaultArgs> = {
+    user?: boolean | UserDefaultArgs<ExtArgs>
+  }
+
+  export type $GuideReadPayload<ExtArgs extends $Extensions.InternalArgs = $Extensions.DefaultArgs> = {
+    name: "GuideRead"
+    objects: {
+      user: Prisma.$UserPayload<ExtArgs>
+    }
+    scalars: $Extensions.GetPayloadResult<{
+      id: string
+      userId: string
+      guideId: string
+      guideType: string
+      readAt: Date
+    }, ExtArgs["result"]["guideRead"]>
+    composites: {}
+  }
+
+  type GuideReadGetPayload<S extends boolean | null | undefined | GuideReadDefaultArgs> = $Result.GetResult<Prisma.$GuideReadPayload, S>
+
+  type GuideReadCountArgs<ExtArgs extends $Extensions.InternalArgs = $Extensions.DefaultArgs> = 
+    Omit<GuideReadFindManyArgs, 'select' | 'include' | 'distinct'> & {
+      select?: GuideReadCountAggregateInputType | true
+    }
+
+  export interface GuideReadDelegate<ExtArgs extends $Extensions.InternalArgs = $Extensions.DefaultArgs> {
+    [K: symbol]: { types: Prisma.TypeMap<ExtArgs>['model']['GuideRead'], meta: { name: 'GuideRead' } }
+    /**
+     * Find zero or one GuideRead that matches the filter.
+     * @param {GuideReadFindUniqueArgs} args - Arguments to find a GuideRead
+     * @example
+     * // Get one GuideRead
+     * const guideRead = await prisma.guideRead.findUnique({
+     *   where: {
+     *     // ... provide filter here
+     *   }
+     * })
+     */
+    findUnique<T extends GuideReadFindUniqueArgs>(args: SelectSubset<T, GuideReadFindUniqueArgs<ExtArgs>>): Prisma__GuideReadClient<$Result.GetResult<Prisma.$GuideReadPayload<ExtArgs>, T, "findUnique"> | null, null, ExtArgs>
+
+    /**
+     * Find one GuideRead that matches the filter or throw an error with `error.code='P2025'` 
+     * if no matches were found.
+     * @param {GuideReadFindUniqueOrThrowArgs} args - Arguments to find a GuideRead
+     * @example
+     * // Get one GuideRead
+     * const guideRead = await prisma.guideRead.findUniqueOrThrow({
+     *   where: {
+     *     // ... provide filter here
+     *   }
+     * })
+     */
+    findUniqueOrThrow<T extends GuideReadFindUniqueOrThrowArgs>(args: SelectSubset<T, GuideReadFindUniqueOrThrowArgs<ExtArgs>>): Prisma__GuideReadClient<$Result.GetResult<Prisma.$GuideReadPayload<ExtArgs>, T, "findUniqueOrThrow">, never, ExtArgs>
+
+    /**
+     * Find the first GuideRead that matches the filter.
+     * Note, that providing `undefined` is treated as the value not being there.
+     * Read more here: https://pris.ly/d/null-undefined
+     * @param {GuideReadFindFirstArgs} args - Arguments to find a GuideRead
+     * @example
+     * // Get one GuideRead
+     * const guideRead = await prisma.guideRead.findFirst({
+     *   where: {
+     *     // ... provide filter here
+     *   }
+     * })
+     */
+    findFirst<T extends GuideReadFindFirstArgs>(args?: SelectSubset<T, GuideReadFindFirstArgs<ExtArgs>>): Prisma__GuideReadClient<$Result.GetResult<Prisma.$GuideReadPayload<ExtArgs>, T, "findFirst"> | null, null, ExtArgs>
+
+    /**
+     * Find the first GuideRead that matches the filter or
+     * throw `PrismaKnownClientError` with `P2025` code if no matches were found.
+     * Note, that providing `undefined` is treated as the value not being there.
+     * Read more here: https://pris.ly/d/null-undefined
+     * @param {GuideReadFindFirstOrThrowArgs} args - Arguments to find a GuideRead
+     * @example
+     * // Get one GuideRead
+     * const guideRead = await prisma.guideRead.findFirstOrThrow({
+     *   where: {
+     *     // ... provide filter here
+     *   }
+     * })
+     */
+    findFirstOrThrow<T extends GuideReadFindFirstOrThrowArgs>(args?: SelectSubset<T, GuideReadFindFirstOrThrowArgs<ExtArgs>>): Prisma__GuideReadClient<$Result.GetResult<Prisma.$GuideReadPayload<ExtArgs>, T, "findFirstOrThrow">, never, ExtArgs>
+
+    /**
+     * Find zero or more GuideReads that matches the filter.
+     * Note, that providing `undefined` is treated as the value not being there.
+     * Read more here: https://pris.ly/d/null-undefined
+     * @param {GuideReadFindManyArgs} args - Arguments to filter and select certain fields only.
+     * @example
+     * // Get all GuideReads
+     * const guideReads = await prisma.guideRead.findMany()
+     * 
+     * // Get first 10 GuideReads
+     * const guideReads = await prisma.guideRead.findMany({ take: 10 })
+     * 
+     * // Only select the `id`
+     * const guideReadWithIdOnly = await prisma.guideRead.findMany({ select: { id: true } })
+     * 
+     */
+    findMany<T extends GuideReadFindManyArgs>(args?: SelectSubset<T, GuideReadFindManyArgs<ExtArgs>>): Prisma.PrismaPromise<$Result.GetResult<Prisma.$GuideReadPayload<ExtArgs>, T, "findMany">>
+
+    /**
+     * Create a GuideRead.
+     * @param {GuideReadCreateArgs} args - Arguments to create a GuideRead.
+     * @example
+     * // Create one GuideRead
+     * const GuideRead = await prisma.guideRead.create({
+     *   data: {
+     *     // ... data to create a GuideRead
+     *   }
+     * })
+     * 
+     */
+    create<T extends GuideReadCreateArgs>(args: SelectSubset<T, GuideReadCreateArgs<ExtArgs>>): Prisma__GuideReadClient<$Result.GetResult<Prisma.$GuideReadPayload<ExtArgs>, T, "create">, never, ExtArgs>
+
+    /**
+     * Create many GuideReads.
+     * @param {GuideReadCreateManyArgs} args - Arguments to create many GuideReads.
+     * @example
+     * // Create many GuideReads
+     * const guideRead = await prisma.guideRead.createMany({
+     *   data: [
+     *     // ... provide data here
+     *   ]
+     * })
+     *     
+     */
+    createMany<T extends GuideReadCreateManyArgs>(args?: SelectSubset<T, GuideReadCreateManyArgs<ExtArgs>>): Prisma.PrismaPromise<BatchPayload>
+
+    /**
+     * Create many GuideReads and returns the data saved in the database.
+     * @param {GuideReadCreateManyAndReturnArgs} args - Arguments to create many GuideReads.
+     * @example
+     * // Create many GuideReads
+     * const guideRead = await prisma.guideRead.createManyAndReturn({
+     *   data: [
+     *     // ... provide data here
+     *   ]
+     * })
+     * 
+     * // Create many GuideReads and only return the `id`
+     * const guideReadWithIdOnly = await prisma.guideRead.createManyAndReturn({ 
+     *   select: { id: true },
+     *   data: [
+     *     // ... provide data here
+     *   ]
+     * })
+     * Note, that providing `undefined` is treated as the value not being there.
+     * Read more here: https://pris.ly/d/null-undefined
+     * 
+     */
+    createManyAndReturn<T extends GuideReadCreateManyAndReturnArgs>(args?: SelectSubset<T, GuideReadCreateManyAndReturnArgs<ExtArgs>>): Prisma.PrismaPromise<$Result.GetResult<Prisma.$GuideReadPayload<ExtArgs>, T, "createManyAndReturn">>
+
+    /**
+     * Delete a GuideRead.
+     * @param {GuideReadDeleteArgs} args - Arguments to delete one GuideRead.
+     * @example
+     * // Delete one GuideRead
+     * const GuideRead = await prisma.guideRead.delete({
+     *   where: {
+     *     // ... filter to delete one GuideRead
+     *   }
+     * })
+     * 
+     */
+    delete<T extends GuideReadDeleteArgs>(args: SelectSubset<T, GuideReadDeleteArgs<ExtArgs>>): Prisma__GuideReadClient<$Result.GetResult<Prisma.$GuideReadPayload<ExtArgs>, T, "delete">, never, ExtArgs>
+
+    /**
+     * Update one GuideRead.
+     * @param {GuideReadUpdateArgs} args - Arguments to update one GuideRead.
+     * @example
+     * // Update one GuideRead
+     * const guideRead = await prisma.guideRead.update({
+     *   where: {
+     *     // ... provide filter here
+     *   },
+     *   data: {
+     *     // ... provide data here
+     *   }
+     * })
+     * 
+     */
+    update<T extends GuideReadUpdateArgs>(args: SelectSubset<T, GuideReadUpdateArgs<ExtArgs>>): Prisma__GuideReadClient<$Result.GetResult<Prisma.$GuideReadPayload<ExtArgs>, T, "update">, never, ExtArgs>
+
+    /**
+     * Delete zero or more GuideReads.
+     * @param {GuideReadDeleteManyArgs} args - Arguments to filter GuideReads to delete.
+     * @example
+     * // Delete a few GuideReads
+     * const { count } = await prisma.guideRead.deleteMany({
+     *   where: {
+     *     // ... provide filter here
+     *   }
+     * })
+     * 
+     */
+    deleteMany<T extends GuideReadDeleteManyArgs>(args?: SelectSubset<T, GuideReadDeleteManyArgs<ExtArgs>>): Prisma.PrismaPromise<BatchPayload>
+
+    /**
+     * Update zero or more GuideReads.
+     * Note, that providing `undefined` is treated as the value not being there.
+     * Read more here: https://pris.ly/d/null-undefined
+     * @param {GuideReadUpdateManyArgs} args - Arguments to update one or more rows.
+     * @example
+     * // Update many GuideReads
+     * const guideRead = await prisma.guideRead.updateMany({
+     *   where: {
+     *     // ... provide filter here
+     *   },
+     *   data: {
+     *     // ... provide data here
+     *   }
+     * })
+     * 
+     */
+    updateMany<T extends GuideReadUpdateManyArgs>(args: SelectSubset<T, GuideReadUpdateManyArgs<ExtArgs>>): Prisma.PrismaPromise<BatchPayload>
+
+    /**
+     * Create or update one GuideRead.
+     * @param {GuideReadUpsertArgs} args - Arguments to update or create a GuideRead.
+     * @example
+     * // Update or create a GuideRead
+     * const guideRead = await prisma.guideRead.upsert({
+     *   create: {
+     *     // ... data to create a GuideRead
+     *   },
+     *   update: {
+     *     // ... in case it already exists, update
+     *   },
+     *   where: {
+     *     // ... the filter for the GuideRead we want to update
+     *   }
+     * })
+     */
+    upsert<T extends GuideReadUpsertArgs>(args: SelectSubset<T, GuideReadUpsertArgs<ExtArgs>>): Prisma__GuideReadClient<$Result.GetResult<Prisma.$GuideReadPayload<ExtArgs>, T, "upsert">, never, ExtArgs>
+
+
+    /**
+     * Count the number of GuideReads.
+     * Note, that providing `undefined` is treated as the value not being there.
+     * Read more here: https://pris.ly/d/null-undefined
+     * @param {GuideReadCountArgs} args - Arguments to filter GuideReads to count.
+     * @example
+     * // Count the number of GuideReads
+     * const count = await prisma.guideRead.count({
+     *   where: {
+     *     // ... the filter for the GuideReads we want to count
+     *   }
+     * })
+    **/
+    count<T extends GuideReadCountArgs>(
+      args?: Subset<T, GuideReadCountArgs>,
+    ): Prisma.PrismaPromise<
+      T extends $Utils.Record<'select', any>
+        ? T['select'] extends true
+          ? number
+          : GetScalarType<T['select'], GuideReadCountAggregateOutputType>
+        : number
+    >
+
+    /**
+     * Allows you to perform aggregations operations on a GuideRead.
+     * Note, that providing `undefined` is treated as the value not being there.
+     * Read more here: https://pris.ly/d/null-undefined
+     * @param {GuideReadAggregateArgs} args - Select which aggregations you would like to apply and on what fields.
+     * @example
+     * // Ordered by age ascending
+     * // Where email contains prisma.io
+     * // Limited to the 10 users
+     * const aggregations = await prisma.user.aggregate({
+     *   _avg: {
+     *     age: true,
+     *   },
+     *   where: {
+     *     email: {
+     *       contains: "prisma.io",
+     *     },
+     *   },
+     *   orderBy: {
+     *     age: "asc",
+     *   },
+     *   take: 10,
+     * })
+    **/
+    aggregate<T extends GuideReadAggregateArgs>(args: Subset<T, GuideReadAggregateArgs>): Prisma.PrismaPromise<GetGuideReadAggregateType<T>>
+
+    /**
+     * Group by GuideRead.
+     * Note, that providing `undefined` is treated as the value not being there.
+     * Read more here: https://pris.ly/d/null-undefined
+     * @param {GuideReadGroupByArgs} args - Group by arguments.
+     * @example
+     * // Group by city, order by createdAt, get count
+     * const result = await prisma.user.groupBy({
+     *   by: ['city', 'createdAt'],
+     *   orderBy: {
+     *     createdAt: true
+     *   },
+     *   _count: {
+     *     _all: true
+     *   },
+     * })
+     * 
+    **/
+    groupBy<
+      T extends GuideReadGroupByArgs,
+      HasSelectOrTake extends Or<
+        Extends<'skip', Keys<T>>,
+        Extends<'take', Keys<T>>
+      >,
+      OrderByArg extends True extends HasSelectOrTake
+        ? { orderBy: GuideReadGroupByArgs['orderBy'] }
+        : { orderBy?: GuideReadGroupByArgs['orderBy'] },
+      OrderFields extends ExcludeUnderscoreKeys<Keys<MaybeTupleToUnion<T['orderBy']>>>,
+      ByFields extends MaybeTupleToUnion<T['by']>,
+      ByValid extends Has<ByFields, OrderFields>,
+      HavingFields extends GetHavingFields<T['having']>,
+      HavingValid extends Has<ByFields, HavingFields>,
+      ByEmpty extends T['by'] extends never[] ? True : False,
+      InputErrors extends ByEmpty extends True
+      ? `Error: "by" must not be empty.`
+      : HavingValid extends False
+      ? {
+          [P in HavingFields]: P extends ByFields
+            ? never
+            : P extends string
+            ? `Error: Field "${P}" used in "having" needs to be provided in "by".`
+            : [
+                Error,
+                'Field ',
+                P,
+                ` in "having" needs to be provided in "by"`,
+              ]
+        }[HavingFields]
+      : 'take' extends Keys<T>
+      ? 'orderBy' extends Keys<T>
+        ? ByValid extends True
+          ? {}
+          : {
+              [P in OrderFields]: P extends ByFields
+                ? never
+                : `Error: Field "${P}" in "orderBy" needs to be provided in "by"`
+            }[OrderFields]
+        : 'Error: If you provide "take", you also need to provide "orderBy"'
+      : 'skip' extends Keys<T>
+      ? 'orderBy' extends Keys<T>
+        ? ByValid extends True
+          ? {}
+          : {
+              [P in OrderFields]: P extends ByFields
+                ? never
+                : `Error: Field "${P}" in "orderBy" needs to be provided in "by"`
+            }[OrderFields]
+        : 'Error: If you provide "skip", you also need to provide "orderBy"'
+      : ByValid extends True
+      ? {}
+      : {
+          [P in OrderFields]: P extends ByFields
+            ? never
+            : `Error: Field "${P}" in "orderBy" needs to be provided in "by"`
+        }[OrderFields]
+    >(args: SubsetIntersection<T, GuideReadGroupByArgs, OrderByArg> & InputErrors): {} extends InputErrors ? GetGuideReadGroupByPayload<T> : Prisma.PrismaPromise<InputErrors>
+  /**
+   * Fields of the GuideRead model
+   */
+  readonly fields: GuideReadFieldRefs;
+  }
+
+  /**
+   * The delegate class that acts as a "Promise-like" for GuideRead.
+   * Why is this prefixed with `Prisma__`?
+   * Because we want to prevent naming conflicts as mentioned in
+   * https://github.com/prisma/prisma-client-js/issues/707
+   */
+  export interface Prisma__GuideReadClient<T, Null = never, ExtArgs extends $Extensions.InternalArgs = $Extensions.DefaultArgs> extends Prisma.PrismaPromise<T> {
+    readonly [Symbol.toStringTag]: "PrismaPromise"
+    user<T extends UserDefaultArgs<ExtArgs> = {}>(args?: Subset<T, UserDefaultArgs<ExtArgs>>): Prisma__UserClient<$Result.GetResult<Prisma.$UserPayload<ExtArgs>, T, "findUniqueOrThrow"> | Null, Null, ExtArgs>
+    /**
+     * Attaches callbacks for the resolution and/or rejection of the Promise.
+     * @param onfulfilled The callback to execute when the Promise is resolved.
+     * @param onrejected The callback to execute when the Promise is rejected.
+     * @returns A Promise for the completion of which ever callback is executed.
+     */
+    then<TResult1 = T, TResult2 = never>(onfulfilled?: ((value: T) => TResult1 | PromiseLike<TResult1>) | undefined | null, onrejected?: ((reason: any) => TResult2 | PromiseLike<TResult2>) | undefined | null): $Utils.JsPromise<TResult1 | TResult2>
+    /**
+     * Attaches a callback for only the rejection of the Promise.
+     * @param onrejected The callback to execute when the Promise is rejected.
+     * @returns A Promise for the completion of the callback.
+     */
+    catch<TResult = never>(onrejected?: ((reason: any) => TResult | PromiseLike<TResult>) | undefined | null): $Utils.JsPromise<T | TResult>
+    /**
+     * Attaches a callback that is invoked when the Promise is settled (fulfilled or rejected). The
+     * resolved value cannot be modified from the callback.
+     * @param onfinally The callback to execute when the Promise is settled (fulfilled or rejected).
+     * @returns A Promise for the completion of the callback.
+     */
+    finally(onfinally?: (() => void) | undefined | null): $Utils.JsPromise<T>
+  }
+
+
+
+
+  /**
+   * Fields of the GuideRead model
+   */ 
+  interface GuideReadFieldRefs {
+    readonly id: FieldRef<"GuideRead", 'String'>
+    readonly userId: FieldRef<"GuideRead", 'String'>
+    readonly guideId: FieldRef<"GuideRead", 'String'>
+    readonly guideType: FieldRef<"GuideRead", 'String'>
+    readonly readAt: FieldRef<"GuideRead", 'DateTime'>
+  }
+    
+
+  // Custom InputTypes
+  /**
+   * GuideRead findUnique
+   */
+  export type GuideReadFindUniqueArgs<ExtArgs extends $Extensions.InternalArgs = $Extensions.DefaultArgs> = {
+    /**
+     * Select specific fields to fetch from the GuideRead
+     */
+    select?: GuideReadSelect<ExtArgs> | null
+    /**
+     * Choose, which related nodes to fetch as well
+     */
+    include?: GuideReadInclude<ExtArgs> | null
+    /**
+     * Filter, which GuideRead to fetch.
+     */
+    where: GuideReadWhereUniqueInput
+  }
+
+  /**
+   * GuideRead findUniqueOrThrow
+   */
+  export type GuideReadFindUniqueOrThrowArgs<ExtArgs extends $Extensions.InternalArgs = $Extensions.DefaultArgs> = {
+    /**
+     * Select specific fields to fetch from the GuideRead
+     */
+    select?: GuideReadSelect<ExtArgs> | null
+    /**
+     * Choose, which related nodes to fetch as well
+     */
+    include?: GuideReadInclude<ExtArgs> | null
+    /**
+     * Filter, which GuideRead to fetch.
+     */
+    where: GuideReadWhereUniqueInput
+  }
+
+  /**
+   * GuideRead findFirst
+   */
+  export type GuideReadFindFirstArgs<ExtArgs extends $Extensions.InternalArgs = $Extensions.DefaultArgs> = {
+    /**
+     * Select specific fields to fetch from the GuideRead
+     */
+    select?: GuideReadSelect<ExtArgs> | null
+    /**
+     * Choose, which related nodes to fetch as well
+     */
+    include?: GuideReadInclude<ExtArgs> | null
+    /**
+     * Filter, which GuideRead to fetch.
+     */
+    where?: GuideReadWhereInput
+    /**
+     * {@link https://www.prisma.io/docs/concepts/components/prisma-client/sorting Sorting Docs}
+     * 
+     * Determine the order of GuideReads to fetch.
+     */
+    orderBy?: GuideReadOrderByWithRelationInput | GuideReadOrderByWithRelationInput[]
+    /**
+     * {@link https://www.prisma.io/docs/concepts/components/prisma-client/pagination#cursor-based-pagination Cursor Docs}
+     * 
+     * Sets the position for searching for GuideReads.
+     */
+    cursor?: GuideReadWhereUniqueInput
+    /**
+     * {@link https://www.prisma.io/docs/concepts/components/prisma-client/pagination Pagination Docs}
+     * 
+     * Take `±n` GuideReads from the position of the cursor.
+     */
+    take?: number
+    /**
+     * {@link https://www.prisma.io/docs/concepts/components/prisma-client/pagination Pagination Docs}
+     * 
+     * Skip the first `n` GuideReads.
+     */
+    skip?: number
+    /**
+     * {@link https://www.prisma.io/docs/concepts/components/prisma-client/distinct Distinct Docs}
+     * 
+     * Filter by unique combinations of GuideReads.
+     */
+    distinct?: GuideReadScalarFieldEnum | GuideReadScalarFieldEnum[]
+  }
+
+  /**
+   * GuideRead findFirstOrThrow
+   */
+  export type GuideReadFindFirstOrThrowArgs<ExtArgs extends $Extensions.InternalArgs = $Extensions.DefaultArgs> = {
+    /**
+     * Select specific fields to fetch from the GuideRead
+     */
+    select?: GuideReadSelect<ExtArgs> | null
+    /**
+     * Choose, which related nodes to fetch as well
+     */
+    include?: GuideReadInclude<ExtArgs> | null
+    /**
+     * Filter, which GuideRead to fetch.
+     */
+    where?: GuideReadWhereInput
+    /**
+     * {@link https://www.prisma.io/docs/concepts/components/prisma-client/sorting Sorting Docs}
+     * 
+     * Determine the order of GuideReads to fetch.
+     */
+    orderBy?: GuideReadOrderByWithRelationInput | GuideReadOrderByWithRelationInput[]
+    /**
+     * {@link https://www.prisma.io/docs/concepts/components/prisma-client/pagination#cursor-based-pagination Cursor Docs}
+     * 
+     * Sets the position for searching for GuideReads.
+     */
+    cursor?: GuideReadWhereUniqueInput
+    /**
+     * {@link https://www.prisma.io/docs/concepts/components/prisma-client/pagination Pagination Docs}
+     * 
+     * Take `±n` GuideReads from the position of the cursor.
+     */
+    take?: number
+    /**
+     * {@link https://www.prisma.io/docs/concepts/components/prisma-client/pagination Pagination Docs}
+     * 
+     * Skip the first `n` GuideReads.
+     */
+    skip?: number
+    /**
+     * {@link https://www.prisma.io/docs/concepts/components/prisma-client/distinct Distinct Docs}
+     * 
+     * Filter by unique combinations of GuideReads.
+     */
+    distinct?: GuideReadScalarFieldEnum | GuideReadScalarFieldEnum[]
+  }
+
+  /**
+   * GuideRead findMany
+   */
+  export type GuideReadFindManyArgs<ExtArgs extends $Extensions.InternalArgs = $Extensions.DefaultArgs> = {
+    /**
+     * Select specific fields to fetch from the GuideRead
+     */
+    select?: GuideReadSelect<ExtArgs> | null
+    /**
+     * Choose, which related nodes to fetch as well
+     */
+    include?: GuideReadInclude<ExtArgs> | null
+    /**
+     * Filter, which GuideReads to fetch.
+     */
+    where?: GuideReadWhereInput
+    /**
+     * {@link https://www.prisma.io/docs/concepts/components/prisma-client/sorting Sorting Docs}
+     * 
+     * Determine the order of GuideReads to fetch.
+     */
+    orderBy?: GuideReadOrderByWithRelationInput | GuideReadOrderByWithRelationInput[]
+    /**
+     * {@link https://www.prisma.io/docs/concepts/components/prisma-client/pagination#cursor-based-pagination Cursor Docs}
+     * 
+     * Sets the position for listing GuideReads.
+     */
+    cursor?: GuideReadWhereUniqueInput
+    /**
+     * {@link https://www.prisma.io/docs/concepts/components/prisma-client/pagination Pagination Docs}
+     * 
+     * Take `±n` GuideReads from the position of the cursor.
+     */
+    take?: number
+    /**
+     * {@link https://www.prisma.io/docs/concepts/components/prisma-client/pagination Pagination Docs}
+     * 
+     * Skip the first `n` GuideReads.
+     */
+    skip?: number
+    distinct?: GuideReadScalarFieldEnum | GuideReadScalarFieldEnum[]
+  }
+
+  /**
+   * GuideRead create
+   */
+  export type GuideReadCreateArgs<ExtArgs extends $Extensions.InternalArgs = $Extensions.DefaultArgs> = {
+    /**
+     * Select specific fields to fetch from the GuideRead
+     */
+    select?: GuideReadSelect<ExtArgs> | null
+    /**
+     * Choose, which related nodes to fetch as well
+     */
+    include?: GuideReadInclude<ExtArgs> | null
+    /**
+     * The data needed to create a GuideRead.
+     */
+    data: XOR<GuideReadCreateInput, GuideReadUncheckedCreateInput>
+  }
+
+  /**
+   * GuideRead createMany
+   */
+  export type GuideReadCreateManyArgs<ExtArgs extends $Extensions.InternalArgs = $Extensions.DefaultArgs> = {
+    /**
+     * The data used to create many GuideReads.
+     */
+    data: GuideReadCreateManyInput | GuideReadCreateManyInput[]
+  }
+
+  /**
+   * GuideRead createManyAndReturn
+   */
+  export type GuideReadCreateManyAndReturnArgs<ExtArgs extends $Extensions.InternalArgs = $Extensions.DefaultArgs> = {
+    /**
+     * Select specific fields to fetch from the GuideRead
+     */
+    select?: GuideReadSelectCreateManyAndReturn<ExtArgs> | null
+    /**
+     * The data used to create many GuideReads.
+     */
+    data: GuideReadCreateManyInput | GuideReadCreateManyInput[]
+    /**
+     * Choose, which related nodes to fetch as well
+     */
+    include?: GuideReadIncludeCreateManyAndReturn<ExtArgs> | null
+  }
+
+  /**
+   * GuideRead update
+   */
+  export type GuideReadUpdateArgs<ExtArgs extends $Extensions.InternalArgs = $Extensions.DefaultArgs> = {
+    /**
+     * Select specific fields to fetch from the GuideRead
+     */
+    select?: GuideReadSelect<ExtArgs> | null
+    /**
+     * Choose, which related nodes to fetch as well
+     */
+    include?: GuideReadInclude<ExtArgs> | null
+    /**
+     * The data needed to update a GuideRead.
+     */
+    data: XOR<GuideReadUpdateInput, GuideReadUncheckedUpdateInput>
+    /**
+     * Choose, which GuideRead to update.
+     */
+    where: GuideReadWhereUniqueInput
+  }
+
+  /**
+   * GuideRead updateMany
+   */
+  export type GuideReadUpdateManyArgs<ExtArgs extends $Extensions.InternalArgs = $Extensions.DefaultArgs> = {
+    /**
+     * The data used to update GuideReads.
+     */
+    data: XOR<GuideReadUpdateManyMutationInput, GuideReadUncheckedUpdateManyInput>
+    /**
+     * Filter which GuideReads to update
+     */
+    where?: GuideReadWhereInput
+  }
+
+  /**
+   * GuideRead upsert
+   */
+  export type GuideReadUpsertArgs<ExtArgs extends $Extensions.InternalArgs = $Extensions.DefaultArgs> = {
+    /**
+     * Select specific fields to fetch from the GuideRead
+     */
+    select?: GuideReadSelect<ExtArgs> | null
+    /**
+     * Choose, which related nodes to fetch as well
+     */
+    include?: GuideReadInclude<ExtArgs> | null
+    /**
+     * The filter to search for the GuideRead to update in case it exists.
+     */
+    where: GuideReadWhereUniqueInput
+    /**
+     * In case the GuideRead found by the `where` argument doesn't exist, create a new GuideRead with this data.
+     */
+    create: XOR<GuideReadCreateInput, GuideReadUncheckedCreateInput>
+    /**
+     * In case the GuideRead was found with the provided `where` argument, update it with this data.
+     */
+    update: XOR<GuideReadUpdateInput, GuideReadUncheckedUpdateInput>
+  }
+
+  /**
+   * GuideRead delete
+   */
+  export type GuideReadDeleteArgs<ExtArgs extends $Extensions.InternalArgs = $Extensions.DefaultArgs> = {
+    /**
+     * Select specific fields to fetch from the GuideRead
+     */
+    select?: GuideReadSelect<ExtArgs> | null
+    /**
+     * Choose, which related nodes to fetch as well
+     */
+    include?: GuideReadInclude<ExtArgs> | null
+    /**
+     * Filter which GuideRead to delete.
+     */
+    where: GuideReadWhereUniqueInput
+  }
+
+  /**
+   * GuideRead deleteMany
+   */
+  export type GuideReadDeleteManyArgs<ExtArgs extends $Extensions.InternalArgs = $Extensions.DefaultArgs> = {
+    /**
+     * Filter which GuideReads to delete
+     */
+    where?: GuideReadWhereInput
+  }
+
+  /**
+   * GuideRead without action
+   */
+  export type GuideReadDefaultArgs<ExtArgs extends $Extensions.InternalArgs = $Extensions.DefaultArgs> = {
+    /**
+     * Select specific fields to fetch from the GuideRead
+     */
+    select?: GuideReadSelect<ExtArgs> | null
+    /**
+     * Choose, which related nodes to fetch as well
+     */
+    include?: GuideReadInclude<ExtArgs> | null
+  }
+
+
+  /**
    * Model Review
    */
 
@@ -21285,6 +22335,17 @@ export namespace Prisma {
   export type QuestionLikeScalarFieldEnum = (typeof QuestionLikeScalarFieldEnum)[keyof typeof QuestionLikeScalarFieldEnum]
 
 
+  export const GuideReadScalarFieldEnum: {
+    id: 'id',
+    userId: 'userId',
+    guideId: 'guideId',
+    guideType: 'guideType',
+    readAt: 'readAt'
+  };
+
+  export type GuideReadScalarFieldEnum = (typeof GuideReadScalarFieldEnum)[keyof typeof GuideReadScalarFieldEnum]
+
+
   export const ReviewScalarFieldEnum: {
     id: 'id',
     userId: 'userId',
@@ -21389,6 +22450,7 @@ export namespace Prisma {
     answers?: AnswerListRelationFilter
     questionLikes?: QuestionLikeListRelationFilter
     reviews?: ReviewListRelationFilter
+    guideReads?: GuideReadListRelationFilter
   }
 
   export type UserOrderByWithRelationInput = {
@@ -21418,6 +22480,7 @@ export namespace Prisma {
     answers?: AnswerOrderByRelationAggregateInput
     questionLikes?: QuestionLikeOrderByRelationAggregateInput
     reviews?: ReviewOrderByRelationAggregateInput
+    guideReads?: GuideReadOrderByRelationAggregateInput
   }
 
   export type UserWhereUniqueInput = Prisma.AtLeast<{
@@ -21450,6 +22513,7 @@ export namespace Prisma {
     answers?: AnswerListRelationFilter
     questionLikes?: QuestionLikeListRelationFilter
     reviews?: ReviewListRelationFilter
+    guideReads?: GuideReadListRelationFilter
   }, "id" | "email">
 
   export type UserOrderByWithAggregationInput = {
@@ -22739,6 +23803,62 @@ export namespace Prisma {
     createdAt?: DateTimeWithAggregatesFilter<"QuestionLike"> | Date | string
   }
 
+  export type GuideReadWhereInput = {
+    AND?: GuideReadWhereInput | GuideReadWhereInput[]
+    OR?: GuideReadWhereInput[]
+    NOT?: GuideReadWhereInput | GuideReadWhereInput[]
+    id?: StringFilter<"GuideRead"> | string
+    userId?: StringFilter<"GuideRead"> | string
+    guideId?: StringFilter<"GuideRead"> | string
+    guideType?: StringFilter<"GuideRead"> | string
+    readAt?: DateTimeFilter<"GuideRead"> | Date | string
+    user?: XOR<UserRelationFilter, UserWhereInput>
+  }
+
+  export type GuideReadOrderByWithRelationInput = {
+    id?: SortOrder
+    userId?: SortOrder
+    guideId?: SortOrder
+    guideType?: SortOrder
+    readAt?: SortOrder
+    user?: UserOrderByWithRelationInput
+  }
+
+  export type GuideReadWhereUniqueInput = Prisma.AtLeast<{
+    id?: string
+    userId_guideId_guideType?: GuideReadUserIdGuideIdGuideTypeCompoundUniqueInput
+    AND?: GuideReadWhereInput | GuideReadWhereInput[]
+    OR?: GuideReadWhereInput[]
+    NOT?: GuideReadWhereInput | GuideReadWhereInput[]
+    userId?: StringFilter<"GuideRead"> | string
+    guideId?: StringFilter<"GuideRead"> | string
+    guideType?: StringFilter<"GuideRead"> | string
+    readAt?: DateTimeFilter<"GuideRead"> | Date | string
+    user?: XOR<UserRelationFilter, UserWhereInput>
+  }, "id" | "userId_guideId_guideType">
+
+  export type GuideReadOrderByWithAggregationInput = {
+    id?: SortOrder
+    userId?: SortOrder
+    guideId?: SortOrder
+    guideType?: SortOrder
+    readAt?: SortOrder
+    _count?: GuideReadCountOrderByAggregateInput
+    _max?: GuideReadMaxOrderByAggregateInput
+    _min?: GuideReadMinOrderByAggregateInput
+  }
+
+  export type GuideReadScalarWhereWithAggregatesInput = {
+    AND?: GuideReadScalarWhereWithAggregatesInput | GuideReadScalarWhereWithAggregatesInput[]
+    OR?: GuideReadScalarWhereWithAggregatesInput[]
+    NOT?: GuideReadScalarWhereWithAggregatesInput | GuideReadScalarWhereWithAggregatesInput[]
+    id?: StringWithAggregatesFilter<"GuideRead"> | string
+    userId?: StringWithAggregatesFilter<"GuideRead"> | string
+    guideId?: StringWithAggregatesFilter<"GuideRead"> | string
+    guideType?: StringWithAggregatesFilter<"GuideRead"> | string
+    readAt?: DateTimeWithAggregatesFilter<"GuideRead"> | Date | string
+  }
+
   export type ReviewWhereInput = {
     AND?: ReviewWhereInput | ReviewWhereInput[]
     OR?: ReviewWhereInput[]
@@ -22843,6 +23963,7 @@ export namespace Prisma {
     answers?: AnswerCreateNestedManyWithoutAuthorInput
     questionLikes?: QuestionLikeCreateNestedManyWithoutUserInput
     reviews?: ReviewCreateNestedManyWithoutUserInput
+    guideReads?: GuideReadCreateNestedManyWithoutUserInput
   }
 
   export type UserUncheckedCreateInput = {
@@ -22872,6 +23993,7 @@ export namespace Prisma {
     answers?: AnswerUncheckedCreateNestedManyWithoutAuthorInput
     questionLikes?: QuestionLikeUncheckedCreateNestedManyWithoutUserInput
     reviews?: ReviewUncheckedCreateNestedManyWithoutUserInput
+    guideReads?: GuideReadUncheckedCreateNestedManyWithoutUserInput
   }
 
   export type UserUpdateInput = {
@@ -22901,6 +24023,7 @@ export namespace Prisma {
     answers?: AnswerUpdateManyWithoutAuthorNestedInput
     questionLikes?: QuestionLikeUpdateManyWithoutUserNestedInput
     reviews?: ReviewUpdateManyWithoutUserNestedInput
+    guideReads?: GuideReadUpdateManyWithoutUserNestedInput
   }
 
   export type UserUncheckedUpdateInput = {
@@ -22930,6 +24053,7 @@ export namespace Prisma {
     answers?: AnswerUncheckedUpdateManyWithoutAuthorNestedInput
     questionLikes?: QuestionLikeUncheckedUpdateManyWithoutUserNestedInput
     reviews?: ReviewUncheckedUpdateManyWithoutUserNestedInput
+    guideReads?: GuideReadUncheckedUpdateManyWithoutUserNestedInput
   }
 
   export type UserCreateManyInput = {
@@ -24347,6 +25471,61 @@ export namespace Prisma {
     createdAt?: DateTimeFieldUpdateOperationsInput | Date | string
   }
 
+  export type GuideReadCreateInput = {
+    id?: string
+    guideId: string
+    guideType: string
+    readAt?: Date | string
+    user: UserCreateNestedOneWithoutGuideReadsInput
+  }
+
+  export type GuideReadUncheckedCreateInput = {
+    id?: string
+    userId: string
+    guideId: string
+    guideType: string
+    readAt?: Date | string
+  }
+
+  export type GuideReadUpdateInput = {
+    id?: StringFieldUpdateOperationsInput | string
+    guideId?: StringFieldUpdateOperationsInput | string
+    guideType?: StringFieldUpdateOperationsInput | string
+    readAt?: DateTimeFieldUpdateOperationsInput | Date | string
+    user?: UserUpdateOneRequiredWithoutGuideReadsNestedInput
+  }
+
+  export type GuideReadUncheckedUpdateInput = {
+    id?: StringFieldUpdateOperationsInput | string
+    userId?: StringFieldUpdateOperationsInput | string
+    guideId?: StringFieldUpdateOperationsInput | string
+    guideType?: StringFieldUpdateOperationsInput | string
+    readAt?: DateTimeFieldUpdateOperationsInput | Date | string
+  }
+
+  export type GuideReadCreateManyInput = {
+    id?: string
+    userId: string
+    guideId: string
+    guideType: string
+    readAt?: Date | string
+  }
+
+  export type GuideReadUpdateManyMutationInput = {
+    id?: StringFieldUpdateOperationsInput | string
+    guideId?: StringFieldUpdateOperationsInput | string
+    guideType?: StringFieldUpdateOperationsInput | string
+    readAt?: DateTimeFieldUpdateOperationsInput | Date | string
+  }
+
+  export type GuideReadUncheckedUpdateManyInput = {
+    id?: StringFieldUpdateOperationsInput | string
+    userId?: StringFieldUpdateOperationsInput | string
+    guideId?: StringFieldUpdateOperationsInput | string
+    guideType?: StringFieldUpdateOperationsInput | string
+    readAt?: DateTimeFieldUpdateOperationsInput | Date | string
+  }
+
   export type ReviewCreateInput = {
     id?: string
     text: string
@@ -24540,6 +25719,12 @@ export namespace Prisma {
     none?: ReviewWhereInput
   }
 
+  export type GuideReadListRelationFilter = {
+    every?: GuideReadWhereInput
+    some?: GuideReadWhereInput
+    none?: GuideReadWhereInput
+  }
+
   export type SortOrderInput = {
     sort: SortOrder
     nulls?: NullsOrder
@@ -24586,6 +25771,10 @@ export namespace Prisma {
   }
 
   export type ReviewOrderByRelationAggregateInput = {
+    _count?: SortOrder
+  }
+
+  export type GuideReadOrderByRelationAggregateInput = {
     _count?: SortOrder
   }
 
@@ -25453,6 +26642,36 @@ export namespace Prisma {
     createdAt?: SortOrder
   }
 
+  export type GuideReadUserIdGuideIdGuideTypeCompoundUniqueInput = {
+    userId: string
+    guideId: string
+    guideType: string
+  }
+
+  export type GuideReadCountOrderByAggregateInput = {
+    id?: SortOrder
+    userId?: SortOrder
+    guideId?: SortOrder
+    guideType?: SortOrder
+    readAt?: SortOrder
+  }
+
+  export type GuideReadMaxOrderByAggregateInput = {
+    id?: SortOrder
+    userId?: SortOrder
+    guideId?: SortOrder
+    guideType?: SortOrder
+    readAt?: SortOrder
+  }
+
+  export type GuideReadMinOrderByAggregateInput = {
+    id?: SortOrder
+    userId?: SortOrder
+    guideId?: SortOrder
+    guideType?: SortOrder
+    readAt?: SortOrder
+  }
+
   export type ReviewCountOrderByAggregateInput = {
     id?: SortOrder
     userId?: SortOrder
@@ -25580,6 +26799,13 @@ export namespace Prisma {
     connect?: ReviewWhereUniqueInput | ReviewWhereUniqueInput[]
   }
 
+  export type GuideReadCreateNestedManyWithoutUserInput = {
+    create?: XOR<GuideReadCreateWithoutUserInput, GuideReadUncheckedCreateWithoutUserInput> | GuideReadCreateWithoutUserInput[] | GuideReadUncheckedCreateWithoutUserInput[]
+    connectOrCreate?: GuideReadCreateOrConnectWithoutUserInput | GuideReadCreateOrConnectWithoutUserInput[]
+    createMany?: GuideReadCreateManyUserInputEnvelope
+    connect?: GuideReadWhereUniqueInput | GuideReadWhereUniqueInput[]
+  }
+
   export type ReminderUncheckedCreateNestedManyWithoutUserInput = {
     create?: XOR<ReminderCreateWithoutUserInput, ReminderUncheckedCreateWithoutUserInput> | ReminderCreateWithoutUserInput[] | ReminderUncheckedCreateWithoutUserInput[]
     connectOrCreate?: ReminderCreateOrConnectWithoutUserInput | ReminderCreateOrConnectWithoutUserInput[]
@@ -25661,6 +26887,13 @@ export namespace Prisma {
     connectOrCreate?: ReviewCreateOrConnectWithoutUserInput | ReviewCreateOrConnectWithoutUserInput[]
     createMany?: ReviewCreateManyUserInputEnvelope
     connect?: ReviewWhereUniqueInput | ReviewWhereUniqueInput[]
+  }
+
+  export type GuideReadUncheckedCreateNestedManyWithoutUserInput = {
+    create?: XOR<GuideReadCreateWithoutUserInput, GuideReadUncheckedCreateWithoutUserInput> | GuideReadCreateWithoutUserInput[] | GuideReadUncheckedCreateWithoutUserInput[]
+    connectOrCreate?: GuideReadCreateOrConnectWithoutUserInput | GuideReadCreateOrConnectWithoutUserInput[]
+    createMany?: GuideReadCreateManyUserInputEnvelope
+    connect?: GuideReadWhereUniqueInput | GuideReadWhereUniqueInput[]
   }
 
   export type StringFieldUpdateOperationsInput = {
@@ -25839,6 +27072,20 @@ export namespace Prisma {
     deleteMany?: ReviewScalarWhereInput | ReviewScalarWhereInput[]
   }
 
+  export type GuideReadUpdateManyWithoutUserNestedInput = {
+    create?: XOR<GuideReadCreateWithoutUserInput, GuideReadUncheckedCreateWithoutUserInput> | GuideReadCreateWithoutUserInput[] | GuideReadUncheckedCreateWithoutUserInput[]
+    connectOrCreate?: GuideReadCreateOrConnectWithoutUserInput | GuideReadCreateOrConnectWithoutUserInput[]
+    upsert?: GuideReadUpsertWithWhereUniqueWithoutUserInput | GuideReadUpsertWithWhereUniqueWithoutUserInput[]
+    createMany?: GuideReadCreateManyUserInputEnvelope
+    set?: GuideReadWhereUniqueInput | GuideReadWhereUniqueInput[]
+    disconnect?: GuideReadWhereUniqueInput | GuideReadWhereUniqueInput[]
+    delete?: GuideReadWhereUniqueInput | GuideReadWhereUniqueInput[]
+    connect?: GuideReadWhereUniqueInput | GuideReadWhereUniqueInput[]
+    update?: GuideReadUpdateWithWhereUniqueWithoutUserInput | GuideReadUpdateWithWhereUniqueWithoutUserInput[]
+    updateMany?: GuideReadUpdateManyWithWhereWithoutUserInput | GuideReadUpdateManyWithWhereWithoutUserInput[]
+    deleteMany?: GuideReadScalarWhereInput | GuideReadScalarWhereInput[]
+  }
+
   export type ReminderUncheckedUpdateManyWithoutUserNestedInput = {
     create?: XOR<ReminderCreateWithoutUserInput, ReminderUncheckedCreateWithoutUserInput> | ReminderCreateWithoutUserInput[] | ReminderUncheckedCreateWithoutUserInput[]
     connectOrCreate?: ReminderCreateOrConnectWithoutUserInput | ReminderCreateOrConnectWithoutUserInput[]
@@ -26001,6 +27248,20 @@ export namespace Prisma {
     update?: ReviewUpdateWithWhereUniqueWithoutUserInput | ReviewUpdateWithWhereUniqueWithoutUserInput[]
     updateMany?: ReviewUpdateManyWithWhereWithoutUserInput | ReviewUpdateManyWithWhereWithoutUserInput[]
     deleteMany?: ReviewScalarWhereInput | ReviewScalarWhereInput[]
+  }
+
+  export type GuideReadUncheckedUpdateManyWithoutUserNestedInput = {
+    create?: XOR<GuideReadCreateWithoutUserInput, GuideReadUncheckedCreateWithoutUserInput> | GuideReadCreateWithoutUserInput[] | GuideReadUncheckedCreateWithoutUserInput[]
+    connectOrCreate?: GuideReadCreateOrConnectWithoutUserInput | GuideReadCreateOrConnectWithoutUserInput[]
+    upsert?: GuideReadUpsertWithWhereUniqueWithoutUserInput | GuideReadUpsertWithWhereUniqueWithoutUserInput[]
+    createMany?: GuideReadCreateManyUserInputEnvelope
+    set?: GuideReadWhereUniqueInput | GuideReadWhereUniqueInput[]
+    disconnect?: GuideReadWhereUniqueInput | GuideReadWhereUniqueInput[]
+    delete?: GuideReadWhereUniqueInput | GuideReadWhereUniqueInput[]
+    connect?: GuideReadWhereUniqueInput | GuideReadWhereUniqueInput[]
+    update?: GuideReadUpdateWithWhereUniqueWithoutUserInput | GuideReadUpdateWithWhereUniqueWithoutUserInput[]
+    updateMany?: GuideReadUpdateManyWithWhereWithoutUserInput | GuideReadUpdateManyWithWhereWithoutUserInput[]
+    deleteMany?: GuideReadScalarWhereInput | GuideReadScalarWhereInput[]
   }
 
   export type UserCreateNestedOneWithoutProfileInput = {
@@ -26637,6 +27898,20 @@ export namespace Prisma {
     update?: XOR<XOR<UserUpdateToOneWithWhereWithoutQuestionLikesInput, UserUpdateWithoutQuestionLikesInput>, UserUncheckedUpdateWithoutQuestionLikesInput>
   }
 
+  export type UserCreateNestedOneWithoutGuideReadsInput = {
+    create?: XOR<UserCreateWithoutGuideReadsInput, UserUncheckedCreateWithoutGuideReadsInput>
+    connectOrCreate?: UserCreateOrConnectWithoutGuideReadsInput
+    connect?: UserWhereUniqueInput
+  }
+
+  export type UserUpdateOneRequiredWithoutGuideReadsNestedInput = {
+    create?: XOR<UserCreateWithoutGuideReadsInput, UserUncheckedCreateWithoutGuideReadsInput>
+    connectOrCreate?: UserCreateOrConnectWithoutGuideReadsInput
+    upsert?: UserUpsertWithoutGuideReadsInput
+    connect?: UserWhereUniqueInput
+    update?: XOR<XOR<UserUpdateToOneWithWhereWithoutGuideReadsInput, UserUpdateWithoutGuideReadsInput>, UserUncheckedUpdateWithoutGuideReadsInput>
+  }
+
   export type UserCreateNestedOneWithoutReviewsInput = {
     create?: XOR<UserCreateWithoutReviewsInput, UserUncheckedCreateWithoutReviewsInput>
     connectOrCreate?: UserCreateOrConnectWithoutReviewsInput
@@ -27201,6 +28476,29 @@ export namespace Prisma {
     data: ReviewCreateManyUserInput | ReviewCreateManyUserInput[]
   }
 
+  export type GuideReadCreateWithoutUserInput = {
+    id?: string
+    guideId: string
+    guideType: string
+    readAt?: Date | string
+  }
+
+  export type GuideReadUncheckedCreateWithoutUserInput = {
+    id?: string
+    guideId: string
+    guideType: string
+    readAt?: Date | string
+  }
+
+  export type GuideReadCreateOrConnectWithoutUserInput = {
+    where: GuideReadWhereUniqueInput
+    create: XOR<GuideReadCreateWithoutUserInput, GuideReadUncheckedCreateWithoutUserInput>
+  }
+
+  export type GuideReadCreateManyUserInputEnvelope = {
+    data: GuideReadCreateManyUserInput | GuideReadCreateManyUserInput[]
+  }
+
   export type ReminderUpsertWithWhereUniqueWithoutUserInput = {
     where: ReminderWhereUniqueInput
     update: XOR<ReminderUpdateWithoutUserInput, ReminderUncheckedUpdateWithoutUserInput>
@@ -27565,6 +28863,33 @@ export namespace Prisma {
     updatedAt?: DateTimeFilter<"Review"> | Date | string
   }
 
+  export type GuideReadUpsertWithWhereUniqueWithoutUserInput = {
+    where: GuideReadWhereUniqueInput
+    update: XOR<GuideReadUpdateWithoutUserInput, GuideReadUncheckedUpdateWithoutUserInput>
+    create: XOR<GuideReadCreateWithoutUserInput, GuideReadUncheckedCreateWithoutUserInput>
+  }
+
+  export type GuideReadUpdateWithWhereUniqueWithoutUserInput = {
+    where: GuideReadWhereUniqueInput
+    data: XOR<GuideReadUpdateWithoutUserInput, GuideReadUncheckedUpdateWithoutUserInput>
+  }
+
+  export type GuideReadUpdateManyWithWhereWithoutUserInput = {
+    where: GuideReadScalarWhereInput
+    data: XOR<GuideReadUpdateManyMutationInput, GuideReadUncheckedUpdateManyWithoutUserInput>
+  }
+
+  export type GuideReadScalarWhereInput = {
+    AND?: GuideReadScalarWhereInput | GuideReadScalarWhereInput[]
+    OR?: GuideReadScalarWhereInput[]
+    NOT?: GuideReadScalarWhereInput | GuideReadScalarWhereInput[]
+    id?: StringFilter<"GuideRead"> | string
+    userId?: StringFilter<"GuideRead"> | string
+    guideId?: StringFilter<"GuideRead"> | string
+    guideType?: StringFilter<"GuideRead"> | string
+    readAt?: DateTimeFilter<"GuideRead"> | Date | string
+  }
+
   export type UserCreateWithoutProfileInput = {
     id?: string
     email: string
@@ -27591,6 +28916,7 @@ export namespace Prisma {
     answers?: AnswerCreateNestedManyWithoutAuthorInput
     questionLikes?: QuestionLikeCreateNestedManyWithoutUserInput
     reviews?: ReviewCreateNestedManyWithoutUserInput
+    guideReads?: GuideReadCreateNestedManyWithoutUserInput
   }
 
   export type UserUncheckedCreateWithoutProfileInput = {
@@ -27619,6 +28945,7 @@ export namespace Prisma {
     answers?: AnswerUncheckedCreateNestedManyWithoutAuthorInput
     questionLikes?: QuestionLikeUncheckedCreateNestedManyWithoutUserInput
     reviews?: ReviewUncheckedCreateNestedManyWithoutUserInput
+    guideReads?: GuideReadUncheckedCreateNestedManyWithoutUserInput
   }
 
   export type UserCreateOrConnectWithoutProfileInput = {
@@ -27663,6 +28990,7 @@ export namespace Prisma {
     answers?: AnswerUpdateManyWithoutAuthorNestedInput
     questionLikes?: QuestionLikeUpdateManyWithoutUserNestedInput
     reviews?: ReviewUpdateManyWithoutUserNestedInput
+    guideReads?: GuideReadUpdateManyWithoutUserNestedInput
   }
 
   export type UserUncheckedUpdateWithoutProfileInput = {
@@ -27691,6 +29019,7 @@ export namespace Prisma {
     answers?: AnswerUncheckedUpdateManyWithoutAuthorNestedInput
     questionLikes?: QuestionLikeUncheckedUpdateManyWithoutUserNestedInput
     reviews?: ReviewUncheckedUpdateManyWithoutUserNestedInput
+    guideReads?: GuideReadUncheckedUpdateManyWithoutUserNestedInput
   }
 
   export type UserCreateWithoutNotesInput = {
@@ -27719,6 +29048,7 @@ export namespace Prisma {
     answers?: AnswerCreateNestedManyWithoutAuthorInput
     questionLikes?: QuestionLikeCreateNestedManyWithoutUserInput
     reviews?: ReviewCreateNestedManyWithoutUserInput
+    guideReads?: GuideReadCreateNestedManyWithoutUserInput
   }
 
   export type UserUncheckedCreateWithoutNotesInput = {
@@ -27747,6 +29077,7 @@ export namespace Prisma {
     answers?: AnswerUncheckedCreateNestedManyWithoutAuthorInput
     questionLikes?: QuestionLikeUncheckedCreateNestedManyWithoutUserInput
     reviews?: ReviewUncheckedCreateNestedManyWithoutUserInput
+    guideReads?: GuideReadUncheckedCreateNestedManyWithoutUserInput
   }
 
   export type UserCreateOrConnectWithoutNotesInput = {
@@ -27828,6 +29159,7 @@ export namespace Prisma {
     answers?: AnswerUpdateManyWithoutAuthorNestedInput
     questionLikes?: QuestionLikeUpdateManyWithoutUserNestedInput
     reviews?: ReviewUpdateManyWithoutUserNestedInput
+    guideReads?: GuideReadUpdateManyWithoutUserNestedInput
   }
 
   export type UserUncheckedUpdateWithoutNotesInput = {
@@ -27856,6 +29188,7 @@ export namespace Prisma {
     answers?: AnswerUncheckedUpdateManyWithoutAuthorNestedInput
     questionLikes?: QuestionLikeUncheckedUpdateManyWithoutUserNestedInput
     reviews?: ReviewUncheckedUpdateManyWithoutUserNestedInput
+    guideReads?: GuideReadUncheckedUpdateManyWithoutUserNestedInput
   }
 
   export type ReminderUpsertWithWhereUniqueWithoutNoteInput = {
@@ -27900,6 +29233,7 @@ export namespace Prisma {
     answers?: AnswerCreateNestedManyWithoutAuthorInput
     questionLikes?: QuestionLikeCreateNestedManyWithoutUserInput
     reviews?: ReviewCreateNestedManyWithoutUserInput
+    guideReads?: GuideReadCreateNestedManyWithoutUserInput
   }
 
   export type UserUncheckedCreateWithoutRemindersInput = {
@@ -27928,6 +29262,7 @@ export namespace Prisma {
     answers?: AnswerUncheckedCreateNestedManyWithoutAuthorInput
     questionLikes?: QuestionLikeUncheckedCreateNestedManyWithoutUserInput
     reviews?: ReviewUncheckedCreateNestedManyWithoutUserInput
+    guideReads?: GuideReadUncheckedCreateNestedManyWithoutUserInput
   }
 
   export type UserCreateOrConnectWithoutRemindersInput = {
@@ -27999,6 +29334,7 @@ export namespace Prisma {
     answers?: AnswerUpdateManyWithoutAuthorNestedInput
     questionLikes?: QuestionLikeUpdateManyWithoutUserNestedInput
     reviews?: ReviewUpdateManyWithoutUserNestedInput
+    guideReads?: GuideReadUpdateManyWithoutUserNestedInput
   }
 
   export type UserUncheckedUpdateWithoutRemindersInput = {
@@ -28027,6 +29363,7 @@ export namespace Prisma {
     answers?: AnswerUncheckedUpdateManyWithoutAuthorNestedInput
     questionLikes?: QuestionLikeUncheckedUpdateManyWithoutUserNestedInput
     reviews?: ReviewUncheckedUpdateManyWithoutUserNestedInput
+    guideReads?: GuideReadUncheckedUpdateManyWithoutUserNestedInput
   }
 
   export type NoteUpsertWithoutRemindersInput = {
@@ -28088,6 +29425,7 @@ export namespace Prisma {
     answers?: AnswerCreateNestedManyWithoutAuthorInput
     questionLikes?: QuestionLikeCreateNestedManyWithoutUserInput
     reviews?: ReviewCreateNestedManyWithoutUserInput
+    guideReads?: GuideReadCreateNestedManyWithoutUserInput
   }
 
   export type UserUncheckedCreateWithoutChatMessagesInput = {
@@ -28116,6 +29454,7 @@ export namespace Prisma {
     answers?: AnswerUncheckedCreateNestedManyWithoutAuthorInput
     questionLikes?: QuestionLikeUncheckedCreateNestedManyWithoutUserInput
     reviews?: ReviewUncheckedCreateNestedManyWithoutUserInput
+    guideReads?: GuideReadUncheckedCreateNestedManyWithoutUserInput
   }
 
   export type UserCreateOrConnectWithoutChatMessagesInput = {
@@ -28160,6 +29499,7 @@ export namespace Prisma {
     answers?: AnswerUpdateManyWithoutAuthorNestedInput
     questionLikes?: QuestionLikeUpdateManyWithoutUserNestedInput
     reviews?: ReviewUpdateManyWithoutUserNestedInput
+    guideReads?: GuideReadUpdateManyWithoutUserNestedInput
   }
 
   export type UserUncheckedUpdateWithoutChatMessagesInput = {
@@ -28188,6 +29528,7 @@ export namespace Prisma {
     answers?: AnswerUncheckedUpdateManyWithoutAuthorNestedInput
     questionLikes?: QuestionLikeUncheckedUpdateManyWithoutUserNestedInput
     reviews?: ReviewUncheckedUpdateManyWithoutUserNestedInput
+    guideReads?: GuideReadUncheckedUpdateManyWithoutUserNestedInput
   }
 
   export type UserCreateWithoutSupportTicketsInput = {
@@ -28216,6 +29557,7 @@ export namespace Prisma {
     answers?: AnswerCreateNestedManyWithoutAuthorInput
     questionLikes?: QuestionLikeCreateNestedManyWithoutUserInput
     reviews?: ReviewCreateNestedManyWithoutUserInput
+    guideReads?: GuideReadCreateNestedManyWithoutUserInput
   }
 
   export type UserUncheckedCreateWithoutSupportTicketsInput = {
@@ -28244,6 +29586,7 @@ export namespace Prisma {
     answers?: AnswerUncheckedCreateNestedManyWithoutAuthorInput
     questionLikes?: QuestionLikeUncheckedCreateNestedManyWithoutUserInput
     reviews?: ReviewUncheckedCreateNestedManyWithoutUserInput
+    guideReads?: GuideReadUncheckedCreateNestedManyWithoutUserInput
   }
 
   export type UserCreateOrConnectWithoutSupportTicketsInput = {
@@ -28313,6 +29656,7 @@ export namespace Prisma {
     answers?: AnswerUpdateManyWithoutAuthorNestedInput
     questionLikes?: QuestionLikeUpdateManyWithoutUserNestedInput
     reviews?: ReviewUpdateManyWithoutUserNestedInput
+    guideReads?: GuideReadUpdateManyWithoutUserNestedInput
   }
 
   export type UserUncheckedUpdateWithoutSupportTicketsInput = {
@@ -28341,6 +29685,7 @@ export namespace Prisma {
     answers?: AnswerUncheckedUpdateManyWithoutAuthorNestedInput
     questionLikes?: QuestionLikeUncheckedUpdateManyWithoutUserNestedInput
     reviews?: ReviewUncheckedUpdateManyWithoutUserNestedInput
+    guideReads?: GuideReadUncheckedUpdateManyWithoutUserNestedInput
   }
 
   export type SupportResponseUpsertWithWhereUniqueWithoutTicketInput = {
@@ -28619,6 +29964,7 @@ export namespace Prisma {
     answers?: AnswerCreateNestedManyWithoutAuthorInput
     questionLikes?: QuestionLikeCreateNestedManyWithoutUserInput
     reviews?: ReviewCreateNestedManyWithoutUserInput
+    guideReads?: GuideReadCreateNestedManyWithoutUserInput
   }
 
   export type UserUncheckedCreateWithoutPaymentsInput = {
@@ -28647,6 +29993,7 @@ export namespace Prisma {
     answers?: AnswerUncheckedCreateNestedManyWithoutAuthorInput
     questionLikes?: QuestionLikeUncheckedCreateNestedManyWithoutUserInput
     reviews?: ReviewUncheckedCreateNestedManyWithoutUserInput
+    guideReads?: GuideReadUncheckedCreateNestedManyWithoutUserInput
   }
 
   export type UserCreateOrConnectWithoutPaymentsInput = {
@@ -28724,6 +30071,7 @@ export namespace Prisma {
     answers?: AnswerUpdateManyWithoutAuthorNestedInput
     questionLikes?: QuestionLikeUpdateManyWithoutUserNestedInput
     reviews?: ReviewUpdateManyWithoutUserNestedInput
+    guideReads?: GuideReadUpdateManyWithoutUserNestedInput
   }
 
   export type UserUncheckedUpdateWithoutPaymentsInput = {
@@ -28752,6 +30100,7 @@ export namespace Prisma {
     answers?: AnswerUncheckedUpdateManyWithoutAuthorNestedInput
     questionLikes?: QuestionLikeUncheckedUpdateManyWithoutUserNestedInput
     reviews?: ReviewUncheckedUpdateManyWithoutUserNestedInput
+    guideReads?: GuideReadUncheckedUpdateManyWithoutUserNestedInput
   }
 
   export type SubscriptionUpsertWithWhereUniqueWithoutPaymentInput = {
@@ -28796,6 +30145,7 @@ export namespace Prisma {
     answers?: AnswerCreateNestedManyWithoutAuthorInput
     questionLikes?: QuestionLikeCreateNestedManyWithoutUserInput
     reviews?: ReviewCreateNestedManyWithoutUserInput
+    guideReads?: GuideReadCreateNestedManyWithoutUserInput
   }
 
   export type UserUncheckedCreateWithoutSubscriptionsInput = {
@@ -28824,6 +30174,7 @@ export namespace Prisma {
     answers?: AnswerUncheckedCreateNestedManyWithoutAuthorInput
     questionLikes?: QuestionLikeUncheckedCreateNestedManyWithoutUserInput
     reviews?: ReviewUncheckedCreateNestedManyWithoutUserInput
+    guideReads?: GuideReadUncheckedCreateNestedManyWithoutUserInput
   }
 
   export type UserCreateOrConnectWithoutSubscriptionsInput = {
@@ -28928,6 +30279,7 @@ export namespace Prisma {
     answers?: AnswerUpdateManyWithoutAuthorNestedInput
     questionLikes?: QuestionLikeUpdateManyWithoutUserNestedInput
     reviews?: ReviewUpdateManyWithoutUserNestedInput
+    guideReads?: GuideReadUpdateManyWithoutUserNestedInput
   }
 
   export type UserUncheckedUpdateWithoutSubscriptionsInput = {
@@ -28956,6 +30308,7 @@ export namespace Prisma {
     answers?: AnswerUncheckedUpdateManyWithoutAuthorNestedInput
     questionLikes?: QuestionLikeUncheckedUpdateManyWithoutUserNestedInput
     reviews?: ReviewUncheckedUpdateManyWithoutUserNestedInput
+    guideReads?: GuideReadUncheckedUpdateManyWithoutUserNestedInput
   }
 
   export type SubscriptionPlanUpsertWithoutSubscriptionsInput = {
@@ -29103,6 +30456,7 @@ export namespace Prisma {
     answers?: AnswerCreateNestedManyWithoutAuthorInput
     questionLikes?: QuestionLikeCreateNestedManyWithoutUserInput
     reviews?: ReviewCreateNestedManyWithoutUserInput
+    guideReads?: GuideReadCreateNestedManyWithoutUserInput
   }
 
   export type UserUncheckedCreateWithoutUserGrantApplicationsInput = {
@@ -29131,6 +30485,7 @@ export namespace Prisma {
     answers?: AnswerUncheckedCreateNestedManyWithoutAuthorInput
     questionLikes?: QuestionLikeUncheckedCreateNestedManyWithoutUserInput
     reviews?: ReviewUncheckedCreateNestedManyWithoutUserInput
+    guideReads?: GuideReadUncheckedCreateNestedManyWithoutUserInput
   }
 
   export type UserCreateOrConnectWithoutUserGrantApplicationsInput = {
@@ -29224,6 +30579,7 @@ export namespace Prisma {
     answers?: AnswerUpdateManyWithoutAuthorNestedInput
     questionLikes?: QuestionLikeUpdateManyWithoutUserNestedInput
     reviews?: ReviewUpdateManyWithoutUserNestedInput
+    guideReads?: GuideReadUpdateManyWithoutUserNestedInput
   }
 
   export type UserUncheckedUpdateWithoutUserGrantApplicationsInput = {
@@ -29252,6 +30608,7 @@ export namespace Prisma {
     answers?: AnswerUncheckedUpdateManyWithoutAuthorNestedInput
     questionLikes?: QuestionLikeUncheckedUpdateManyWithoutUserNestedInput
     reviews?: ReviewUncheckedUpdateManyWithoutUserNestedInput
+    guideReads?: GuideReadUncheckedUpdateManyWithoutUserNestedInput
   }
 
   export type GrantUpsertWithoutApplicationsInput = {
@@ -29335,6 +30692,7 @@ export namespace Prisma {
     answers?: AnswerCreateNestedManyWithoutAuthorInput
     questionLikes?: QuestionLikeCreateNestedManyWithoutUserInput
     reviews?: ReviewCreateNestedManyWithoutUserInput
+    guideReads?: GuideReadCreateNestedManyWithoutUserInput
   }
 
   export type UserUncheckedCreateWithoutQuestionsInput = {
@@ -29363,6 +30721,7 @@ export namespace Prisma {
     answers?: AnswerUncheckedCreateNestedManyWithoutAuthorInput
     questionLikes?: QuestionLikeUncheckedCreateNestedManyWithoutUserInput
     reviews?: ReviewUncheckedCreateNestedManyWithoutUserInput
+    guideReads?: GuideReadUncheckedCreateNestedManyWithoutUserInput
   }
 
   export type UserCreateOrConnectWithoutQuestionsInput = {
@@ -29453,6 +30812,7 @@ export namespace Prisma {
     answers?: AnswerUpdateManyWithoutAuthorNestedInput
     questionLikes?: QuestionLikeUpdateManyWithoutUserNestedInput
     reviews?: ReviewUpdateManyWithoutUserNestedInput
+    guideReads?: GuideReadUpdateManyWithoutUserNestedInput
   }
 
   export type UserUncheckedUpdateWithoutQuestionsInput = {
@@ -29481,6 +30841,7 @@ export namespace Prisma {
     answers?: AnswerUncheckedUpdateManyWithoutAuthorNestedInput
     questionLikes?: QuestionLikeUncheckedUpdateManyWithoutUserNestedInput
     reviews?: ReviewUncheckedUpdateManyWithoutUserNestedInput
+    guideReads?: GuideReadUncheckedUpdateManyWithoutUserNestedInput
   }
 
   export type AnswerUpsertWithWhereUniqueWithoutQuestionInput = {
@@ -29568,6 +30929,7 @@ export namespace Prisma {
     questions?: QuestionCreateNestedManyWithoutAuthorInput
     questionLikes?: QuestionLikeCreateNestedManyWithoutUserInput
     reviews?: ReviewCreateNestedManyWithoutUserInput
+    guideReads?: GuideReadCreateNestedManyWithoutUserInput
   }
 
   export type UserUncheckedCreateWithoutAnswersInput = {
@@ -29596,6 +30958,7 @@ export namespace Prisma {
     questions?: QuestionUncheckedCreateNestedManyWithoutAuthorInput
     questionLikes?: QuestionLikeUncheckedCreateNestedManyWithoutUserInput
     reviews?: ReviewUncheckedCreateNestedManyWithoutUserInput
+    guideReads?: GuideReadUncheckedCreateNestedManyWithoutUserInput
   }
 
   export type UserCreateOrConnectWithoutAnswersInput = {
@@ -29673,6 +31036,7 @@ export namespace Prisma {
     questions?: QuestionUpdateManyWithoutAuthorNestedInput
     questionLikes?: QuestionLikeUpdateManyWithoutUserNestedInput
     reviews?: ReviewUpdateManyWithoutUserNestedInput
+    guideReads?: GuideReadUpdateManyWithoutUserNestedInput
   }
 
   export type UserUncheckedUpdateWithoutAnswersInput = {
@@ -29701,6 +31065,7 @@ export namespace Prisma {
     questions?: QuestionUncheckedUpdateManyWithoutAuthorNestedInput
     questionLikes?: QuestionLikeUncheckedUpdateManyWithoutUserNestedInput
     reviews?: ReviewUncheckedUpdateManyWithoutUserNestedInput
+    guideReads?: GuideReadUncheckedUpdateManyWithoutUserNestedInput
   }
 
   export type QuestionCreateWithoutLikesInput = {
@@ -29756,6 +31121,7 @@ export namespace Prisma {
     questions?: QuestionCreateNestedManyWithoutAuthorInput
     answers?: AnswerCreateNestedManyWithoutAuthorInput
     reviews?: ReviewCreateNestedManyWithoutUserInput
+    guideReads?: GuideReadCreateNestedManyWithoutUserInput
   }
 
   export type UserUncheckedCreateWithoutQuestionLikesInput = {
@@ -29784,6 +31150,7 @@ export namespace Prisma {
     questions?: QuestionUncheckedCreateNestedManyWithoutAuthorInput
     answers?: AnswerUncheckedCreateNestedManyWithoutAuthorInput
     reviews?: ReviewUncheckedCreateNestedManyWithoutUserInput
+    guideReads?: GuideReadUncheckedCreateNestedManyWithoutUserInput
   }
 
   export type UserCreateOrConnectWithoutQuestionLikesInput = {
@@ -29861,6 +31228,7 @@ export namespace Prisma {
     questions?: QuestionUpdateManyWithoutAuthorNestedInput
     answers?: AnswerUpdateManyWithoutAuthorNestedInput
     reviews?: ReviewUpdateManyWithoutUserNestedInput
+    guideReads?: GuideReadUpdateManyWithoutUserNestedInput
   }
 
   export type UserUncheckedUpdateWithoutQuestionLikesInput = {
@@ -29888,6 +31256,139 @@ export namespace Prisma {
     userGrantApplications?: UserGrantApplicationUncheckedUpdateManyWithoutUserNestedInput
     questions?: QuestionUncheckedUpdateManyWithoutAuthorNestedInput
     answers?: AnswerUncheckedUpdateManyWithoutAuthorNestedInput
+    reviews?: ReviewUncheckedUpdateManyWithoutUserNestedInput
+    guideReads?: GuideReadUncheckedUpdateManyWithoutUserNestedInput
+  }
+
+  export type UserCreateWithoutGuideReadsInput = {
+    id?: string
+    email: string
+    password: string
+    name: string
+    language?: string
+    country: string
+    role?: string
+    registeredAt?: Date | string
+    university?: string | null
+    faculty?: string | null
+    year?: string | null
+    plan?: string
+    phone?: string | null
+    gender?: string | null
+    reminders?: ReminderCreateNestedManyWithoutUserInput
+    notes?: NoteCreateNestedManyWithoutUserInput
+    chatMessages?: ChatMessageCreateNestedManyWithoutUserInput
+    profile?: ProfileCreateNestedOneWithoutUserInput
+    supportTickets?: SupportTicketCreateNestedManyWithoutUserInput
+    payments?: PaymentCreateNestedManyWithoutUserInput
+    subscriptions?: SubscriptionCreateNestedManyWithoutUserInput
+    userGrantApplications?: UserGrantApplicationCreateNestedManyWithoutUserInput
+    questions?: QuestionCreateNestedManyWithoutAuthorInput
+    answers?: AnswerCreateNestedManyWithoutAuthorInput
+    questionLikes?: QuestionLikeCreateNestedManyWithoutUserInput
+    reviews?: ReviewCreateNestedManyWithoutUserInput
+  }
+
+  export type UserUncheckedCreateWithoutGuideReadsInput = {
+    id?: string
+    email: string
+    password: string
+    name: string
+    language?: string
+    country: string
+    role?: string
+    registeredAt?: Date | string
+    university?: string | null
+    faculty?: string | null
+    year?: string | null
+    plan?: string
+    phone?: string | null
+    gender?: string | null
+    reminders?: ReminderUncheckedCreateNestedManyWithoutUserInput
+    notes?: NoteUncheckedCreateNestedManyWithoutUserInput
+    chatMessages?: ChatMessageUncheckedCreateNestedManyWithoutUserInput
+    profile?: ProfileUncheckedCreateNestedOneWithoutUserInput
+    supportTickets?: SupportTicketUncheckedCreateNestedManyWithoutUserInput
+    payments?: PaymentUncheckedCreateNestedManyWithoutUserInput
+    subscriptions?: SubscriptionUncheckedCreateNestedManyWithoutUserInput
+    userGrantApplications?: UserGrantApplicationUncheckedCreateNestedManyWithoutUserInput
+    questions?: QuestionUncheckedCreateNestedManyWithoutAuthorInput
+    answers?: AnswerUncheckedCreateNestedManyWithoutAuthorInput
+    questionLikes?: QuestionLikeUncheckedCreateNestedManyWithoutUserInput
+    reviews?: ReviewUncheckedCreateNestedManyWithoutUserInput
+  }
+
+  export type UserCreateOrConnectWithoutGuideReadsInput = {
+    where: UserWhereUniqueInput
+    create: XOR<UserCreateWithoutGuideReadsInput, UserUncheckedCreateWithoutGuideReadsInput>
+  }
+
+  export type UserUpsertWithoutGuideReadsInput = {
+    update: XOR<UserUpdateWithoutGuideReadsInput, UserUncheckedUpdateWithoutGuideReadsInput>
+    create: XOR<UserCreateWithoutGuideReadsInput, UserUncheckedCreateWithoutGuideReadsInput>
+    where?: UserWhereInput
+  }
+
+  export type UserUpdateToOneWithWhereWithoutGuideReadsInput = {
+    where?: UserWhereInput
+    data: XOR<UserUpdateWithoutGuideReadsInput, UserUncheckedUpdateWithoutGuideReadsInput>
+  }
+
+  export type UserUpdateWithoutGuideReadsInput = {
+    id?: StringFieldUpdateOperationsInput | string
+    email?: StringFieldUpdateOperationsInput | string
+    password?: StringFieldUpdateOperationsInput | string
+    name?: StringFieldUpdateOperationsInput | string
+    language?: StringFieldUpdateOperationsInput | string
+    country?: StringFieldUpdateOperationsInput | string
+    role?: StringFieldUpdateOperationsInput | string
+    registeredAt?: DateTimeFieldUpdateOperationsInput | Date | string
+    university?: NullableStringFieldUpdateOperationsInput | string | null
+    faculty?: NullableStringFieldUpdateOperationsInput | string | null
+    year?: NullableStringFieldUpdateOperationsInput | string | null
+    plan?: StringFieldUpdateOperationsInput | string
+    phone?: NullableStringFieldUpdateOperationsInput | string | null
+    gender?: NullableStringFieldUpdateOperationsInput | string | null
+    reminders?: ReminderUpdateManyWithoutUserNestedInput
+    notes?: NoteUpdateManyWithoutUserNestedInput
+    chatMessages?: ChatMessageUpdateManyWithoutUserNestedInput
+    profile?: ProfileUpdateOneWithoutUserNestedInput
+    supportTickets?: SupportTicketUpdateManyWithoutUserNestedInput
+    payments?: PaymentUpdateManyWithoutUserNestedInput
+    subscriptions?: SubscriptionUpdateManyWithoutUserNestedInput
+    userGrantApplications?: UserGrantApplicationUpdateManyWithoutUserNestedInput
+    questions?: QuestionUpdateManyWithoutAuthorNestedInput
+    answers?: AnswerUpdateManyWithoutAuthorNestedInput
+    questionLikes?: QuestionLikeUpdateManyWithoutUserNestedInput
+    reviews?: ReviewUpdateManyWithoutUserNestedInput
+  }
+
+  export type UserUncheckedUpdateWithoutGuideReadsInput = {
+    id?: StringFieldUpdateOperationsInput | string
+    email?: StringFieldUpdateOperationsInput | string
+    password?: StringFieldUpdateOperationsInput | string
+    name?: StringFieldUpdateOperationsInput | string
+    language?: StringFieldUpdateOperationsInput | string
+    country?: StringFieldUpdateOperationsInput | string
+    role?: StringFieldUpdateOperationsInput | string
+    registeredAt?: DateTimeFieldUpdateOperationsInput | Date | string
+    university?: NullableStringFieldUpdateOperationsInput | string | null
+    faculty?: NullableStringFieldUpdateOperationsInput | string | null
+    year?: NullableStringFieldUpdateOperationsInput | string | null
+    plan?: StringFieldUpdateOperationsInput | string
+    phone?: NullableStringFieldUpdateOperationsInput | string | null
+    gender?: NullableStringFieldUpdateOperationsInput | string | null
+    reminders?: ReminderUncheckedUpdateManyWithoutUserNestedInput
+    notes?: NoteUncheckedUpdateManyWithoutUserNestedInput
+    chatMessages?: ChatMessageUncheckedUpdateManyWithoutUserNestedInput
+    profile?: ProfileUncheckedUpdateOneWithoutUserNestedInput
+    supportTickets?: SupportTicketUncheckedUpdateManyWithoutUserNestedInput
+    payments?: PaymentUncheckedUpdateManyWithoutUserNestedInput
+    subscriptions?: SubscriptionUncheckedUpdateManyWithoutUserNestedInput
+    userGrantApplications?: UserGrantApplicationUncheckedUpdateManyWithoutUserNestedInput
+    questions?: QuestionUncheckedUpdateManyWithoutAuthorNestedInput
+    answers?: AnswerUncheckedUpdateManyWithoutAuthorNestedInput
+    questionLikes?: QuestionLikeUncheckedUpdateManyWithoutUserNestedInput
     reviews?: ReviewUncheckedUpdateManyWithoutUserNestedInput
   }
 
@@ -29917,6 +31418,7 @@ export namespace Prisma {
     questions?: QuestionCreateNestedManyWithoutAuthorInput
     answers?: AnswerCreateNestedManyWithoutAuthorInput
     questionLikes?: QuestionLikeCreateNestedManyWithoutUserInput
+    guideReads?: GuideReadCreateNestedManyWithoutUserInput
   }
 
   export type UserUncheckedCreateWithoutReviewsInput = {
@@ -29945,6 +31447,7 @@ export namespace Prisma {
     questions?: QuestionUncheckedCreateNestedManyWithoutAuthorInput
     answers?: AnswerUncheckedCreateNestedManyWithoutAuthorInput
     questionLikes?: QuestionLikeUncheckedCreateNestedManyWithoutUserInput
+    guideReads?: GuideReadUncheckedCreateNestedManyWithoutUserInput
   }
 
   export type UserCreateOrConnectWithoutReviewsInput = {
@@ -29989,6 +31492,7 @@ export namespace Prisma {
     questions?: QuestionUpdateManyWithoutAuthorNestedInput
     answers?: AnswerUpdateManyWithoutAuthorNestedInput
     questionLikes?: QuestionLikeUpdateManyWithoutUserNestedInput
+    guideReads?: GuideReadUpdateManyWithoutUserNestedInput
   }
 
   export type UserUncheckedUpdateWithoutReviewsInput = {
@@ -30017,6 +31521,7 @@ export namespace Prisma {
     questions?: QuestionUncheckedUpdateManyWithoutAuthorNestedInput
     answers?: AnswerUncheckedUpdateManyWithoutAuthorNestedInput
     questionLikes?: QuestionLikeUncheckedUpdateManyWithoutUserNestedInput
+    guideReads?: GuideReadUncheckedUpdateManyWithoutUserNestedInput
   }
 
   export type ReminderCreateManyUserInput = {
@@ -30130,6 +31635,13 @@ export namespace Prisma {
     allowPublication?: boolean
     createdAt?: Date | string
     updatedAt?: Date | string
+  }
+
+  export type GuideReadCreateManyUserInput = {
+    id?: string
+    guideId: string
+    guideType: string
+    readAt?: Date | string
   }
 
   export type ReminderUpdateWithoutUserInput = {
@@ -30479,6 +31991,27 @@ export namespace Prisma {
     allowPublication?: BoolFieldUpdateOperationsInput | boolean
     createdAt?: DateTimeFieldUpdateOperationsInput | Date | string
     updatedAt?: DateTimeFieldUpdateOperationsInput | Date | string
+  }
+
+  export type GuideReadUpdateWithoutUserInput = {
+    id?: StringFieldUpdateOperationsInput | string
+    guideId?: StringFieldUpdateOperationsInput | string
+    guideType?: StringFieldUpdateOperationsInput | string
+    readAt?: DateTimeFieldUpdateOperationsInput | Date | string
+  }
+
+  export type GuideReadUncheckedUpdateWithoutUserInput = {
+    id?: StringFieldUpdateOperationsInput | string
+    guideId?: StringFieldUpdateOperationsInput | string
+    guideType?: StringFieldUpdateOperationsInput | string
+    readAt?: DateTimeFieldUpdateOperationsInput | Date | string
+  }
+
+  export type GuideReadUncheckedUpdateManyWithoutUserInput = {
+    id?: StringFieldUpdateOperationsInput | string
+    guideId?: StringFieldUpdateOperationsInput | string
+    guideType?: StringFieldUpdateOperationsInput | string
+    readAt?: DateTimeFieldUpdateOperationsInput | Date | string
   }
 
   export type ReminderCreateManyNoteInput = {
@@ -30902,6 +32435,10 @@ export namespace Prisma {
      * @deprecated Use QuestionLikeDefaultArgs instead
      */
     export type QuestionLikeArgs<ExtArgs extends $Extensions.InternalArgs = $Extensions.DefaultArgs> = QuestionLikeDefaultArgs<ExtArgs>
+    /**
+     * @deprecated Use GuideReadDefaultArgs instead
+     */
+    export type GuideReadArgs<ExtArgs extends $Extensions.InternalArgs = $Extensions.DefaultArgs> = GuideReadDefaultArgs<ExtArgs>
     /**
      * @deprecated Use ReviewDefaultArgs instead
      */

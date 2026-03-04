@@ -164,21 +164,28 @@ router.post('/parse', authMiddleware, async (req: Request, res: Response) => {
     const aiResult = await parseNoteWithAI(content, today);
 
     // 3. Создаём напоминания из AI-результата
+    const validPriorities = new Set(['LOW', 'MEDIUM', 'HIGH', 'URGENT']);
+    const validCategories = new Set(['EDUCATION', 'LIFE', 'DOCUMENTS', 'HEALTH', 'OTHER']);
+
     const createdReminders = [];
     for (const item of aiResult.reminders) {
       try {
         const dueDate = new Date(item.dueDate);
         if (isNaN(dueDate.getTime())) continue;
+        if (!item.title || typeof item.title !== 'string') continue;
+
+        const priority = validPriorities.has(item.priority) ? item.priority : 'MEDIUM';
+        const category = validCategories.has(item.category) ? item.category : 'OTHER';
 
         const reminder = await prisma.reminder.create({
           data: {
             userId: user.userId,
             noteId: note.id,
-            title: item.title,
-            description: item.description || null,
+            title: item.title.slice(0, 200),
+            description: item.description?.slice(0, 500) || null,
             dueDate,
-            priority: item.priority || 'MEDIUM',
-            category: item.category || 'OTHER',
+            priority,
+            category,
             status: 'PENDING',
             notificationMethod,
           },

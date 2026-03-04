@@ -111,18 +111,16 @@ export function GuideDetailModal({
 
   return (
     <div
-      className="fixed inset-0 z-[100] flex items-start justify-center p-0"
+      className="fixed inset-0 z-[100] flex items-center justify-center p-4 sm:p-6"
       onClick={onClose}
     >
-      {/* Overlay with backdrop blur */}
       <div
-        className="absolute inset-0 bg-black/50 backdrop-blur-sm"
+        className="absolute inset-0 bg-black/50"
         onClick={onClose}
       />
 
-      {/* Modal Content */}
       <Card
-        className="relative z-10 w-full h-full max-h-full flex flex-col rounded-none shadow-2xl overflow-hidden"
+        className="relative z-10 w-[min(95vw,32rem)] max-w-xl max-h-[75vh] flex flex-col rounded-2xl shadow-2xl overflow-hidden animate-fade-in no-hover"
         onClick={(e) => e.stopPropagation()}
       >
         <CardHeader className="border-b pb-3 pt-4 flex-shrink-0 bg-white sticky top-0 z-20">
@@ -185,9 +183,8 @@ export function GuideDetailModal({
             {guide.tags.map((tag) => (
               <span
                 key={tag}
-                className="inline-flex items-center px-2 py-1 rounded-full bg-blue-50 text-blue-700 text-xs font-medium hover:bg-blue-100 transition-colors cursor-pointer"
+                className="inline-flex items-center px-2.5 py-1 rounded-full bg-gray-100 text-gray-600 text-xs font-medium"
               >
-                <Tag className="h-3 w-3 mr-1" />
                 {tag}
               </span>
             ))}

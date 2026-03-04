@@ -155,6 +155,18 @@ export interface ChatMessage {
   timestamp: string;
 }
 
+export interface RelatedGuide {
+  title: string;
+  url: string;
+  category: 'education' | 'life';
+}
+
+export interface ChatUsage {
+  used: number;
+  limit: number;
+  plan: string;
+}
+
 export interface SupportFormData {
   name: string;
   email: string;

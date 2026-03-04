@@ -474,7 +474,7 @@ const TabButton = ({
 
 function RemindersContent() {
   const { user } = useAuth();
-  const { reminders, loading, createReminder, updateReminder, deleteReminder } =
+  const { reminders, loading, createReminder, updateReminder, deleteReminder, refreshReminders } =
     useReminders(user?.id || "");
   const { notes, parsing, parseNote, deleteNote } = useNotes(user?.id || "");
   const { t, currentLanguage } = useTranslation();
@@ -652,8 +652,7 @@ function RemindersContent() {
 
       if (count > 0) {
         showToast(t("notes.result.created").replace("{count}", String(count)));
-        // Refresh reminders to show newly created ones
-        window.location.reload();
+        await refreshReminders();
       } else {
         showToast(t("notes.result.none"), "error");
       }
@@ -661,7 +660,7 @@ function RemindersContent() {
       console.error("Error parsing note:", error);
       showToast(t("notes.toast.error"), "error");
     }
-  }, [noteText, parsing, parseNote, notificationMethod, showToast, t]);
+  }, [noteText, parsing, parseNote, notificationMethod, showToast, t, refreshReminders]);
 
   const handleDeleteNote = useCallback(
     async (noteId: string) => {

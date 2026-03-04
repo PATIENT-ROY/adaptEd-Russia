@@ -18,6 +18,7 @@ import scheduleRoutes from './api/schedule.js';
 import questionRoutes from './api/questions.js';
 import reviewRoutes from './api/reviews.js';
 import noteRoutes from './api/notes.js';
+import guideProgressRoutes from './api/guide-progress.js';
 
 // Загружаем переменные окружения
 dotenv.config();
@@ -104,6 +105,7 @@ if (ENABLE_RATE_LIMIT) {
   
   // Лимит для AI запросов
   app.use('/api/chat', aiLimiter);
+  app.use('/api/notes/parse', aiLimiter);
   
   // Лимит для платежей
   app.use('/api/payments', paymentLimiter);
@@ -243,6 +245,7 @@ app.use('/api/schedule', scheduleRoutes);
 app.use('/api/questions', questionRoutes);
 app.use('/api/notes', noteRoutes);
 app.use('/api', reviewRoutes);
+app.use('/api/guide-progress', guideProgressRoutes);
 
 // 404 handler
 app.use('*', (req, res) => {

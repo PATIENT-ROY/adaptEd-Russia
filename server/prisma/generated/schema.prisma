@@ -52,7 +52,8 @@ model User {
   questions             Question[]
   answers               Answer[]
   questionLikes         QuestionLike[]
-  reviews               Review[] // обратная связь пользователей
+  reviews               Review[]
+  guideReads            GuideRead[]
 
   @@map("users")
 }
@@ -366,6 +367,22 @@ model QuestionLike {
 
   @@unique([questionId, userId])
   @@map("question_likes")
+}
+
+// Прогресс чтения гайдов
+model GuideRead {
+  id        String   @id @default(cuid())
+  userId    String
+  guideId   String
+  guideType String // "education" | "life"
+  readAt    DateTime @default(now())
+
+  user User @relation(fields: [userId], references: [id], onDelete: Cascade)
+
+  @@unique([userId, guideId, guideType])
+  @@index([userId])
+  @@index([guideType])
+  @@map("guide_reads")
 }
 
 // Отзывы пользователей

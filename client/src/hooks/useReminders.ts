@@ -234,5 +234,6 @@ export function useReminders(userId: string) {
     createReminder,
     updateReminder,
     deleteReminder,
+    refreshReminders: fetchReminders,
   };
 } 

@@ -29,7 +29,7 @@ import {
   Languages,
   AlertTriangle,
 } from "lucide-react";
-import { useState, useMemo, useEffect } from "react";
+import { useState, useMemo, useEffect, useCallback } from "react";
 import Link from "next/link";
 import {
   Guide,
@@ -43,6 +43,7 @@ import {
   GrantCategory,
 } from "@/types";
 import { useTranslation } from "@/hooks/useTranslation";
+import { useGuideProgress } from "@/hooks/useGuideProgress";
 
 // Моковые данные гайдов
 const educationGuides: Guide[] = [
@@ -1839,6 +1840,15 @@ export function EducationGuideContent() {
   const [isLoading, setIsLoading] = useState(false);
   const [isInitialLoading, setIsInitialLoading] = useState(true);
   const [grants] = useState<Grant[]>(mockGrants);
+
+  const {
+    isRead,
+    markAsRead,
+  } = useGuideProgress("education", educationGuides.length);
+
+  const handleMarkRead = useCallback((guideId: string) => {
+    markAsRead(guideId);
+  }, [markAsRead]);
   const [grantSearchTerm, setGrantSearchTerm] = useState("");
   const [showGrantFilters, setShowGrantFilters] = useState(false);
   const [grantFilters, setGrantFilters] = useState<{
@@ -2579,7 +2589,11 @@ export function EducationGuideContent() {
                       key={`guide-${guide.id}`}
                       className="h-[280px]"
                     >
-                      <GuideCard guide={guide} />
+                      <GuideCard
+                        guide={guide}
+                        isRead={isRead(guide.id)}
+                        onRead={handleMarkRead}
+                      />
                     </div>
                   ))}
                 </div>

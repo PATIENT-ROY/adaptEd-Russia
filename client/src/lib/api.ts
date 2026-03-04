@@ -10,6 +10,8 @@ import {
   NoteParseResult,
   Guide,
   ChatMessage,
+  RelatedGuide,
+  ChatUsage,
   SubscriptionPlan,
   PaymentRequest,
   PaymentResponse,
@@ -37,6 +39,13 @@ export const AUTH_INVALID_EVENT = 'auth:invalid';
 interface ChatMessageResponse {
   userMessage?: ChatMessage;
   aiMessage?: ChatMessage;
+  relatedGuides?: RelatedGuide[];
+  usage?: ChatUsage;
+}
+
+interface ChatHistoryResponse {
+  data: ChatMessage[];
+  usage?: ChatUsage;
 }
 
 class ApiClient {
@@ -390,18 +399,20 @@ class ApiClient {
   }
 
   // Чат
-  async sendMessage(content: string, mode?: string): Promise<ChatMessageResponse | ChatMessage> {
-    const response = await this.request<ChatMessageResponse | ChatMessage>('/chat/messages', {
+  async sendMessage(content: string, mode?: string): Promise<ChatMessageResponse> {
+    const response = await this.request<ChatMessageResponse>('/chat/messages', {
       method: 'POST',
       body: JSON.stringify({ content, mode }),
     });
-    const data = response.data ?? response;
-    return data as ChatMessageResponse | ChatMessage;
+    const data = (response.data ?? response) as ChatMessageResponse;
+    return data;
   }
 
-  async getChatHistory(): Promise<ChatMessage[]> {
+  async getChatHistory(): Promise<{ messages: ChatMessage[]; usage?: ChatUsage }> {
     const response = await this.requestWithRetry<ChatMessage[]>('/chat/messages');
-    return this.ensureData(response, 'Не удалось загрузить историю чата');
+    const raw = response as any;
+    const messages = Array.isArray(raw.data) ? raw.data : (Array.isArray(raw) ? raw : []);
+    return { messages, usage: raw.usage };
   }
 
   async clearChatHistory(): Promise<void> {
@@ -536,4 +547,61 @@ export const getTestData = async (): Promise<TestData> => {
   }
   
   return response.json();
+};
+
+// Guide Progress API
+export interface GuideReadEntry {
+  guideId: string;
+  guideType: 'education' | 'life';
+  readAt: string;
+}
+
+export const getGuideProgress = async (type?: 'education' | 'life'): Promise<GuideReadEntry[]> => {
+  const token = typeof window !== 'undefined' ? localStorage.getItem('token') : null;
+  if (!token) return [];
+  try {
+    const url = type
+      ? `${API_BASE_URL}/guide-progress?type=${type}`
+      : `${API_BASE_URL}/guide-progress`;
+    const response = await fetch(url, {
+      headers: { 'Authorization': `Bearer ${token}` },
+    });
+    if (!response.ok) return [];
+    const result = await response.json();
+    return result.data || [];
+  } catch {
+    return [];
+  }
+};
+
+export const markGuideRead = async (guideId: string, guideType: 'education' | 'life'): Promise<boolean> => {
+  const token = typeof window !== 'undefined' ? localStorage.getItem('token') : null;
+  if (!token) return false;
+  try {
+    const response = await fetch(`${API_BASE_URL}/guide-progress`, {
+      method: 'POST',
+      headers: {
+        'Content-Type': 'application/json',
+        'Authorization': `Bearer ${token}`,
+      },
+      body: JSON.stringify({ guideId, guideType }),
+    });
+    return response.ok;
+  } catch {
+    return false;
+  }
+};
+
+export const unmarkGuideRead = async (guideId: string, guideType: 'education' | 'life'): Promise<boolean> => {
+  const token = typeof window !== 'undefined' ? localStorage.getItem('token') : null;
+  if (!token) return false;
+  try {
+    const response = await fetch(`${API_BASE_URL}/guide-progress/${guideId}?type=${guideType}`, {
+      method: 'DELETE',
+      headers: { 'Authorization': `Bearer ${token}` },
+    });
+    return response.ok;
+  } catch {
+    return false;
+  }
 }; 

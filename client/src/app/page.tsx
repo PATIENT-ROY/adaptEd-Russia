@@ -39,11 +39,14 @@ import {
   organizationStructuredData,
 } from "@/components/seo/structured-data";
 import { useTranslation } from "@/hooks/useTranslation";
-import { useEffect, useState, useMemo, useRef } from "react";
+import { useEffect, useState, useMemo } from "react";
+import dynamic from "next/dynamic";
 import { API_BASE_URL } from "@/lib/api";
 import { PublicReview, TrustStats as TrustStatsType } from "@/types";
-import { TrustStats } from "@/components/home/TrustStats";
-import { ReviewCard } from "@/components/home/ReviewCard";
+import { HeroTypewriter } from "@/components/home/HeroTypewriter";
+
+const TrustStats = dynamic(() => import("@/components/home/TrustStats").then(m => m.TrustStats), { ssr: false });
+const ReviewCard = dynamic(() => import("@/components/home/ReviewCard").then(m => m.ReviewCard), { ssr: false });
 
 export default function HomePage() {
   const { t } = useTranslation();
@@ -229,57 +232,7 @@ export default function HomePage() {
     [t]
   );
 
-  const sloganRef = useRef<HTMLDivElement>(null);
-  const [sloganVisible, setSloganVisible] = useState(false);
-  const [sloganIndex, setSloganIndex] = useState(0);
-  const [displayText, setDisplayText] = useState("");
-  const [phase, setPhase] = useState<"typing" | "pause" | "deleting">("typing");
-
-  useEffect(() => {
-    const el = sloganRef.current;
-    if (!el) return;
-    const observer = new IntersectionObserver(
-      ([entry]) => setSloganVisible(entry.isIntersecting),
-      { threshold: 0.3 }
-    );
-    observer.observe(el);
-    return () => observer.disconnect();
-  }, []);
-
-  useEffect(() => {
-    if (!sloganVisible) return;
-
-    const current = slogans[sloganIndex];
-
-    if (phase === "typing") {
-      if (displayText.length < current.length) {
-        const timer = setTimeout(() => {
-          setDisplayText(current.slice(0, displayText.length + 1));
-        }, 55 + Math.random() * 35);
-        return () => clearTimeout(timer);
-      } else {
-        const timer = setTimeout(() => setPhase("pause"), 0);
-        return () => clearTimeout(timer);
-      }
-    }
-
-    if (phase === "pause") {
-      const timer = setTimeout(() => setPhase("deleting"), 2200);
-      return () => clearTimeout(timer);
-    }
-
-    if (phase === "deleting") {
-      if (displayText.length > 0) {
-        const timer = setTimeout(() => {
-          setDisplayText(current.slice(0, displayText.length - 1));
-        }, 25);
-        return () => clearTimeout(timer);
-      } else {
-        setSloganIndex((prev) => (prev + 1) % slogans.length);
-        setPhase("typing");
-      }
-    }
-  }, [displayText, phase, sloganIndex, slogans, sloganVisible]);
+  // Typewriter state moved to HeroTypewriter component
 
   const testimonials = useMemo(
     () => [
@@ -333,67 +286,22 @@ export default function HomePage() {
               <div className="flex flex-col sm:flex-row gap-3 sm:gap-4 justify-center mb-8 sm:mb-12 max-w-2xl mx-auto">
                 <Link
                   href="/register"
-                  className="inline-flex items-center justify-center w-full sm:w-auto text-sm sm:text-base lg:text-lg px-4 sm:px-6 lg:px-8 py-3 sm:py-4 border-2 bg-white/15 backdrop-blur-sm border-white/40 text-white rounded-xl font-semibold sm:hover:bg-white/20 sm:hover:border-white/50 active:bg-white/30 active:scale-95 shadow-lg sm:hover:shadow-xl active:shadow-md transition-all duration-300 focus-visible:outline-none focus-visible:ring-2 focus-visible:ring-white focus-visible:ring-offset-2 focus-visible:ring-offset-transparent"
+                  className="inline-flex items-center justify-center w-full sm:w-auto text-sm sm:text-base lg:text-lg px-4 sm:px-6 lg:px-8 py-3 sm:py-4 border-2 bg-white/20 border-white/40 text-white rounded-xl font-semibold sm:hover:bg-white/30 sm:hover:border-white/50 active:bg-white/35 active:scale-95 shadow-lg sm:hover:shadow-xl active:shadow-md transition-all duration-300 focus-visible:outline-none focus-visible:ring-2 focus-visible:ring-white focus-visible:ring-offset-2 focus-visible:ring-offset-transparent"
                 >
                   <Rocket className="mr-2 h-4 w-4 sm:h-5 sm:w-5" aria-hidden="true" />
                   {t("home.start")}
                 </Link>
                 <Link
                   href="/education-guide"
-                  className="inline-flex items-center justify-center w-full sm:w-auto text-sm sm:text-base lg:text-lg px-4 sm:px-6 lg:px-8 py-3 sm:py-4 border-2 border-white/40 text-white bg-white/10 rounded-xl font-semibold sm:hover:bg-white/90 sm:hover:text-indigo-700 sm:hover:border-white active:bg-white/30 active:scale-95 backdrop-blur-sm shadow-lg sm:hover:shadow-xl active:shadow-md transition-all duration-300 focus-visible:outline-none focus-visible:ring-2 focus-visible:ring-white focus-visible:ring-offset-2 focus-visible:ring-offset-transparent"
+                  className="inline-flex items-center justify-center w-full sm:w-auto text-sm sm:text-base lg:text-lg px-4 sm:px-6 lg:px-8 py-3 sm:py-4 border-2 border-white/40 text-white bg-white/15 rounded-xl font-semibold sm:hover:bg-white/90 sm:hover:text-indigo-700 sm:hover:border-white active:bg-white/35 active:scale-95 shadow-lg sm:hover:shadow-xl active:shadow-md transition-all duration-300 focus-visible:outline-none focus-visible:ring-2 focus-visible:ring-white focus-visible:ring-offset-2 focus-visible:ring-offset-transparent"
                 >
                   <BookOpen className="mr-2 h-4 w-4 sm:h-5 sm:w-5" aria-hidden="true" />
                   {t("home.guides")}
                 </Link>
               </div>
 
-              {/* Animated Slogan */}
-              <div ref={sloganRef} className="max-w-3xl mx-auto px-4 mb-8 sm:mb-12">
-                <div className="relative h-[44px] sm:h-[52px] md:h-[56px] rounded-2xl bg-white/10 backdrop-blur-md border border-white/20 shadow-[0_0_20px_rgba(255,255,255,0.1)] overflow-hidden">
-                  {/* Decorative bubbles */}
-                  <div className="absolute -left-2 top-1/2 w-8 h-8 sm:w-10 sm:h-10 rounded-full bg-white/10" style={{ animation: "floatCenter1 4s ease-in-out infinite", animationPlayState: sloganVisible ? "running" : "paused" }} />
-                  <div className="absolute left-[15%] -bottom-2 w-5 h-5 sm:w-6 sm:h-6 rounded-full bg-white/10" style={{ animation: "float2 5s ease-in-out infinite", animationPlayState: sloganVisible ? "running" : "paused" }} />
-                  <div className="absolute right-[20%] -top-1 w-4 h-4 sm:w-5 sm:h-5 rounded-full bg-white/15" style={{ animation: "float3 3.5s ease-in-out infinite", animationPlayState: sloganVisible ? "running" : "paused" }} />
-                  <div className="absolute -right-1 top-1/2 w-7 h-7 sm:w-9 sm:h-9 rounded-full bg-white/10" style={{ animation: "floatCenter2 4.5s ease-in-out infinite", animationPlayState: sloganVisible ? "running" : "paused" }} />
-                  <div className="absolute left-[40%] -bottom-1 w-3 h-3 sm:w-4 sm:h-4 rounded-full bg-white/15" style={{ animation: "float1 3s ease-in-out infinite", animationPlayState: sloganVisible ? "running" : "paused" }} />
-
-                  {/* Text */}
-                  <div className="absolute inset-0 flex items-center justify-center z-10 px-3">
-                    <span className="text-xs sm:text-sm md:text-lg lg:text-xl font-semibold whitespace-nowrap text-white drop-shadow-[0_0_8px_rgba(255,255,255,0.2)]">
-                      {displayText}
-                    </span>
-                    <span
-                      className="inline-block w-[2px] h-[1.1em] bg-white/90 rounded-full shrink-0 ml-0.5"
-                      style={{ animation: "blink 1s step-end infinite", animationPlayState: sloganVisible ? "running" : "paused" }}
-                    />
-                  </div>
-                </div>
-                <style jsx>{`
-                  @keyframes blink {
-                    50% { opacity: 0; }
-                  }
-                  @keyframes float1 {
-                    0%, 100% { transform: translateY(0px); }
-                    50% { transform: translateY(-6px); }
-                  }
-                  @keyframes float2 {
-                    0%, 100% { transform: translateY(0px); }
-                    50% { transform: translateY(5px); }
-                  }
-                  @keyframes float3 {
-                    0%, 100% { transform: translateX(0px); }
-                    50% { transform: translateX(6px); }
-                  }
-                  @keyframes floatCenter1 {
-                    0%, 100% { transform: translateY(-50%); }
-                    50% { transform: translateY(calc(-50% - 6px)); }
-                  }
-                  @keyframes floatCenter2 {
-                    0%, 100% { transform: translateY(-50%); }
-                    50% { transform: translateY(calc(-50% + 5px)); }
-                  }
-                `}</style>
-              </div>
+              {/* Animated Slogan — isolated to prevent parent re-renders */}
+              <HeroTypewriter slogans={slogans} />
 
               {/* Main Features - Compact Version */}
               <div className="mt-8 sm:mt-12 max-w-5xl mx-auto px-2 sm:px-4">
@@ -406,8 +314,8 @@ export default function HomePage() {
                         href={feature.href}
                         className="group"
                       >
-                        <div className="bg-white/15 backdrop-blur-md border border-white/30 rounded-xl sm:rounded-2xl p-3 sm:p-4 hover:bg-white/25 hover:border-white/50 transition-all duration-300 h-full flex flex-col items-center text-center">
-                          <div className="w-10 h-10 sm:w-14 sm:h-14 rounded-lg sm:rounded-xl bg-white/20 backdrop-blur-sm flex items-center justify-center mb-2 sm:mb-3 group-hover:scale-110 transition-transform duration-300 flex-shrink-0">
+                        <div className="bg-white/20 border border-white/25 rounded-xl sm:rounded-2xl p-3 sm:p-4 hover:bg-white/30 hover:border-white/40 transition-all duration-300 h-full flex flex-col items-center text-center">
+                          <div className="w-10 h-10 sm:w-14 sm:h-14 rounded-lg sm:rounded-xl bg-white/25 flex items-center justify-center mb-2 sm:mb-3 group-hover:scale-110 transition-transform duration-300 flex-shrink-0">
                             <Icon className="h-5 w-5 sm:h-7 sm:w-7 text-white" />
                           </div>
                           <h3 className="text-xs sm:text-sm lg:text-base font-bold text-white mb-1 sm:mb-2 flex-shrink-0 leading-tight">
@@ -462,7 +370,7 @@ export default function HomePage() {
                 return (
                   <Card
                     key={index}
-                    className="border-0 shadow-xl h-full backdrop-blur-sm bg-white/90"
+                    className="border-0 shadow-xl h-full bg-white"
                   >
                     <CardContent className="p-2.5 sm:p-6 lg:p-8 relative z-10 flex flex-col min-h-[200px] sm:min-h-0 h-full">
                       <div
@@ -492,12 +400,12 @@ export default function HomePage() {
         {/* Benefits Section */}
         <section
           aria-label={t("home.section.benefits.title")}
-          className="py-12 sm:py-16 md:py-24 relative overflow-hidden rounded-2xl sm:rounded-3xl my-6 sm:my-8 lg:my-10"
+          className="below-fold py-12 sm:py-16 md:py-24 relative overflow-hidden rounded-2xl sm:rounded-3xl my-6 sm:my-8 lg:my-10"
         >
           <div className="absolute inset-0 bg-gradient-to-br from-purple-600 via-blue-600 to-indigo-700"></div>
           <div className="relative max-w-7xl mx-auto px-4 sm:px-6 lg:px-8">
             <div className="text-center mb-12 sm:mb-16">
-              <div className="inline-flex items-center rounded-full bg-white/20 backdrop-blur-sm px-4 sm:px-6 py-2 sm:py-3 text-xs sm:text-sm font-semibold text-white mb-6 sm:mb-8 shadow-lg border border-white/20">
+              <div className="inline-flex items-center rounded-full bg-white/20 px-4 sm:px-6 py-2 sm:py-3 text-xs sm:text-sm font-semibold text-white mb-6 sm:mb-8 shadow-lg border border-white/20">
                 <Sparkles className="mr-2 h-3 w-3 sm:h-4 sm:w-4" />
                 {t("home.section.benefits.badge")}
               </div>
@@ -515,7 +423,7 @@ export default function HomePage() {
                 return (
                   <div
                     key={index}
-                    className="p-4 sm:p-6 lg:p-8 rounded-2xl bg-white/10 backdrop-blur-sm border border-white/20"
+                    className="p-4 sm:p-6 lg:p-8 rounded-2xl bg-white/15 border border-white/20"
                   >
                     <div className="w-12 h-12 sm:w-16 sm:h-16 rounded-2xl bg-white/20 flex items-center justify-center mb-4 sm:mb-6">
                       <Icon className="h-6 w-6 sm:h-8 sm:w-8 text-white" />
@@ -536,7 +444,7 @@ export default function HomePage() {
         {/* About Section */}
         <section
           aria-label={t("home.section.about.title")}
-          className="py-12 sm:py-16 md:py-24 bg-white rounded-2xl sm:rounded-3xl my-6 sm:my-8 lg:my-10"
+          className="below-fold py-12 sm:py-16 md:py-24 bg-white rounded-2xl sm:rounded-3xl my-6 sm:my-8 lg:my-10"
         >
           <div className="mx-auto max-w-4xl px-3 sm:px-4 lg:px-6">
             <div className="text-center mb-8 sm:mb-10">
@@ -624,7 +532,7 @@ export default function HomePage() {
         {/* Testimonials / Reviews Section */}
         <section
           aria-label={t("home.section.testimonials.title")}
-          className="py-12 sm:py-16 md:py-24 bg-white rounded-2xl sm:rounded-3xl my-6 sm:my-8 lg:my-10"
+          className="below-fold py-12 sm:py-16 md:py-24 bg-white rounded-2xl sm:rounded-3xl my-6 sm:my-8 lg:my-10"
         >
           <div className="mx-auto max-w-6xl px-3 sm:px-4 lg:px-6">
             <div className="text-center mb-8 sm:mb-10">
@@ -665,7 +573,7 @@ export default function HomePage() {
                 {testimonials.map((testimonial, index) => (
                   <Card
                     key={index}
-                    className="border-0 shadow-xl h-full backdrop-blur-sm bg-white/90"
+                    className="border-0 shadow-xl h-full bg-white"
                   >
                     <CardContent className="p-4 sm:p-6 lg:p-8 h-full flex flex-col">
                       <div className="flex items-center mb-3 sm:mb-4" role="img" aria-label={`${testimonial.rating} ${t("home.section.testimonials.stars")}`}>
@@ -704,7 +612,7 @@ export default function HomePage() {
         {/* Pricing Section */}
         <section
           aria-label={t("home.section.pricing.title")}
-          className="py-12 sm:py-16 md:py-24 bg-gradient-to-br from-slate-50 via-blue-50 to-indigo-50 rounded-2xl sm:rounded-3xl my-6 sm:my-8 lg:my-10 overflow-visible"
+          className="below-fold py-12 sm:py-16 md:py-24 bg-gradient-to-br from-slate-50 via-blue-50 to-indigo-50 rounded-2xl sm:rounded-3xl my-6 sm:my-8 lg:my-10 overflow-visible"
         >
           <div className="mx-auto max-w-6xl px-3 sm:px-4 lg:px-6">
             <div className="text-center mb-12 sm:mb-16 lg:mb-20">
@@ -720,7 +628,7 @@ export default function HomePage() {
               {pricingPlans.map((plan, index) => (
                 <Card
                   key={index}
-                  className={`relative flex flex-col backdrop-blur-sm bg-white/90 ${
+                  className={`relative flex flex-col bg-white ${
                     plan.popular
                       ? "ring-4 ring-blue-500 shadow-2xl"
                       : "shadow-xl"
@@ -793,7 +701,7 @@ export default function HomePage() {
         {/* CTA Section */}
         <section
           aria-label={t("home.cta.title")}
-          className="py-12 sm:py-16 md:py-24 bg-gradient-to-br from-slate-900 via-purple-900 to-blue-900 relative overflow-hidden rounded-2xl sm:rounded-3xl mt-4 sm:mt-6 mb-8 sm:mb-12 lg:mb-16"
+          className="below-fold py-12 sm:py-16 md:py-24 bg-gradient-to-br from-slate-900 via-purple-900 to-blue-900 relative overflow-hidden rounded-2xl sm:rounded-3xl mt-4 sm:mt-6 mb-8 sm:mb-12 lg:mb-16"
         >
           <div className="absolute inset-0" aria-hidden="true">
             <div
@@ -823,7 +731,7 @@ export default function HomePage() {
               </Link>
               <Link
                 href="/login"
-                className="inline-flex items-center justify-center group text-sm sm:text-base lg:text-lg px-4 sm:px-6 lg:px-8 py-3 sm:py-4 h-12 border-2 border-white/30 bg-white/10 text-white rounded-xl font-semibold hover:bg-white/20 backdrop-blur-sm shadow-xl sm:hover:scale-105 transition-all duration-300 focus-visible:outline-none focus-visible:ring-2 focus-visible:ring-white focus-visible:ring-offset-2 focus-visible:ring-offset-slate-900"
+                className="inline-flex items-center justify-center group text-sm sm:text-base lg:text-lg px-4 sm:px-6 lg:px-8 py-3 sm:py-4 h-12 border-2 border-white/30 bg-white/15 text-white rounded-xl font-semibold hover:bg-white/25 shadow-xl sm:hover:scale-105 transition-all duration-300 focus-visible:outline-none focus-visible:ring-2 focus-visible:ring-white focus-visible:ring-offset-2 focus-visible:ring-offset-slate-900"
               >
                 <Target className="mr-2 h-4 w-4 sm:h-5 sm:w-5 group-hover:translate-x-1 transition-transform duration-200" aria-hidden="true" />
                 <span className="group-hover:translate-x-1 transition-transform duration-200">

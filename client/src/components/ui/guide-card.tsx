@@ -1,6 +1,6 @@
 import React from "react";
 import { Button } from "./button";
-import { ArrowRight, BookOpen, Home, Clock } from "lucide-react";
+import { ArrowRight, BookOpen, Home, Clock, CheckCircle2 } from "lucide-react";
 import { cn } from "@/lib/utils";
 import { Guide, GuideCategory } from "@/types";
 import { formatDate } from "@/lib/date-utils";
@@ -12,6 +12,8 @@ interface GuideCardProps {
   guide: Guide;
   onClick?: () => void;
   className?: string;
+  isRead?: boolean;
+  onRead?: (guideId: string) => void;
 }
 
 const categoryIcons = {
@@ -23,7 +25,7 @@ const categoryIcons = {
   [GuideCategory.OTHER]: BookOpen,
 };
 
-export function GuideCard({ guide, onClick, className }: GuideCardProps) {
+export function GuideCard({ guide, onClick, className, isRead, onRead }: GuideCardProps) {
   const router = useRouter();
   const [showModal, setShowModal] = React.useState(false);
   const Icon = categoryIcons[guide.category];
@@ -31,16 +33,20 @@ export function GuideCard({ guide, onClick, className }: GuideCardProps) {
   const handleReadMore = (e: React.MouseEvent) => {
     e.stopPropagation();
 
-    // Проверяем если это словарь студенческого сленга
     if (
       guide.title.toLowerCase().includes("сленг") ||
       guide.tags.some((tag) => tag.toLowerCase().includes("сленг"))
     ) {
+      onRead?.(guide.id);
       router.push("/student-slang");
     } else {
-      // Для остальных гайдов открываем модальное окно
       setShowModal(true);
     }
+  };
+
+  const handleModalClose = () => {
+    setShowModal(false);
+    onRead?.(guide.id);
   };
 
   // Обрезаем контент для превью (как на эскизе "Тут будет подсказка что в нутри...")
@@ -69,21 +75,28 @@ export function GuideCard({ guide, onClick, className }: GuideCardProps) {
   return (
     <>
       <GuideCardBase
-        className={className}
+        className={cn(className, isRead && "ring-1 ring-green-200 bg-green-50/30")}
         onClick={onClick}
         icon={
-          <div
-            className={cn(
-              "rounded-xl flex-shrink-0 h-12 w-12 sm:h-14 sm:w-14 flex items-center justify-center shadow-sm",
-              guide.category === GuideCategory.EDUCATION && "bg-blue-600",
-              guide.category === GuideCategory.LIFE && "bg-green-600",
-              guide.category === GuideCategory.DOCUMENTS && "bg-red-600",
-              guide.category === GuideCategory.CULTURE && "bg-purple-600",
-              guide.category === GuideCategory.LEGAL && "bg-orange-600",
-              (!guide.category || guide.category === GuideCategory.OTHER) && "bg-gray-600"
+          <div className="relative">
+            <div
+              className={cn(
+                "rounded-xl flex-shrink-0 h-12 w-12 sm:h-14 sm:w-14 flex items-center justify-center shadow-sm",
+                guide.category === GuideCategory.EDUCATION && "bg-blue-600",
+                guide.category === GuideCategory.LIFE && "bg-green-600",
+                guide.category === GuideCategory.DOCUMENTS && "bg-red-600",
+                guide.category === GuideCategory.CULTURE && "bg-purple-600",
+                guide.category === GuideCategory.LEGAL && "bg-orange-600",
+                (!guide.category || guide.category === GuideCategory.OTHER) && "bg-gray-600"
+              )}
+            >
+              <Icon className="h-6 w-6 sm:h-7 sm:w-7 text-white" />
+            </div>
+            {isRead && (
+              <div className="absolute -top-1 -right-1 w-5 h-5 bg-green-500 rounded-full flex items-center justify-center ring-2 ring-white">
+                <CheckCircle2 className="h-3.5 w-3.5 text-white" />
+              </div>
             )}
-          >
-            <Icon className="h-6 w-6 sm:h-7 sm:w-7 text-white" />
           </div>
         }
         title={guide.title}
@@ -101,18 +114,17 @@ export function GuideCard({ guide, onClick, className }: GuideCardProps) {
               onClick={handleReadMore}
               className="h-auto p-0 text-blue-600 hover:text-blue-700 text-sm font-medium group transition-all duration-300"
             >
-              Читать далее
+              {isRead ? "Перечитать" : "Читать далее"}
               <ArrowRight className="ml-1 h-3.5 w-3.5 group-hover:translate-x-1 transition-transform duration-300" />
             </Button>
           </>
         }
       />
 
-      {/* Модальное окно для деталей гайда */}
       <GuideDetailModal
         guide={guide}
         isOpen={showModal}
-        onClose={() => setShowModal(false)}
+        onClose={handleModalClose}
       />
     </>
   );
