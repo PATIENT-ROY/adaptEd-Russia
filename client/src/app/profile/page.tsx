@@ -46,10 +46,17 @@ import Image from "next/image";
 import { useEffect, useMemo, useState, useRef, useCallback } from "react";
 import { useRouter } from "next/navigation";
 import { useAuth } from "@/contexts/AuthContext";
-import { fetchProfileOverview, API_BASE_URL } from "@/lib/api";
+import {
+  fetchProfileOverview,
+  API_BASE_URL,
+  applyPremium,
+  fixMyPlan,
+  getPayment,
+} from "@/lib/api";
 import {
   User as UserType,
   Plan,
+  PaymentStatus,
   ProfileOverview,
   ProfileQuickAction,
   Role,
@@ -345,7 +352,8 @@ export default function ProfilePage() {
   const [isUploadingAvatar, setIsUploadingAvatar] = useState(false);
   const [toastMessage, setToastMessage] = useState<string | null>(null);
   const avatarInputRef = useRef<HTMLInputElement>(null);
-  const { user, logout, updateProfile } = useAuth();
+  const paymentSyncAttemptedRef = useRef(false);
+  const { user, logout, updateProfile, syncUser } = useAuth();
   const { t } = useTranslation();
   const {
     review,
@@ -435,38 +443,52 @@ export default function ProfilePage() {
     return () => cancelAnimationFrame(id);
   }, []);
 
-  useEffect(() => {
-    let isMounted = true;
+  const loadProfileOverview = useCallback(async () => {
+    if (!user) return;
+    setIsProfileLoading(true);
+    setProfileError(null);
+    try {
+      const data = await fetchProfileOverview();
+      setProfileOverview(data);
+      const nextPlan = normalizePlan(data?.user?.plan);
+      const currentPlan = normalizePlan(user.plan);
+      if (nextPlan !== currentPlan) {
+        syncUser({ plan: nextPlan });
+      }
 
-    const loadProfileOverview = async () => {
-      if (!user) return;
-
-      setIsProfileLoading(true);
-      setProfileError(null);
-
-      try {
-        const data = await fetchProfileOverview();
-        if (!isMounted) return;
-        setProfileOverview(data);
-      } catch (error) {
-        console.error("Failed to load profile overview:", error);
-        if (!isMounted) return;
-        setProfileError(
-          "Не удалось загрузить данные профиля. Попробуйте обновить страницу.",
+      if (
+        !paymentSyncAttemptedRef.current &&
+        nextPlan !== Plan.PREMIUM
+      ) {
+        const pendingPayment = data.billingHistory?.find(
+          (invoice) => invoice.status === "pending",
         );
-      } finally {
-        if (isMounted) {
-          setIsProfileLoading(false);
+        if (pendingPayment) {
+          paymentSyncAttemptedRef.current = true;
+          const latestPayment = await getPayment(pendingPayment.id);
+          if (latestPayment.status === PaymentStatus.SUCCEEDED) {
+            const refreshed = await fetchProfileOverview();
+            setProfileOverview(refreshed);
+            const refreshedPlan = normalizePlan(refreshed?.user?.plan);
+            if (refreshedPlan !== currentPlan) {
+              syncUser({ plan: refreshedPlan });
+            }
+          }
         }
       }
-    };
+    } catch (error) {
+      console.error("Failed to load profile overview:", error);
+      setProfileError(
+        "Не удалось загрузить данные профиля. Попробуйте обновить страницу.",
+      );
+    } finally {
+      setIsProfileLoading(false);
+    }
+  }, [user, syncUser]);
 
+  useEffect(() => {
     loadProfileOverview();
-
-    return () => {
-      isMounted = false;
-    };
-  }, [user]);
+  }, [loadProfileOverview]);
 
   const mergedUser = useMemo<ExtendedUser | null>(() => {
     if (!user) {
@@ -674,15 +696,36 @@ export default function ProfilePage() {
                     <Calendar className="mr-1 sm:mr-2 h-3 w-3 sm:h-4 sm:w-4 md:h-5 md:w-5" />
                     {extendedUser.year || "Курс не указан"}
                   </span>
-                  {user.plan === Plan.PREMIUM ? (
+                  {extendedUser.plan === Plan.PREMIUM ? (
                     <span className="inline-flex items-center px-2 sm:px-3 md:px-4 py-1 md:py-2 rounded-full bg-gradient-to-r from-yellow-400 to-orange-500">
                       <Crown className="mr-1 sm:mr-2 h-3 w-3 sm:h-4 sm:w-4 md:h-5 md:w-5" />
                       {t("home.pricing.premium")}
                     </span>
                   ) : (
-                    <span className="inline-flex items-center px-2 sm:px-3 md:px-4 py-1 md:py-2 rounded-full bg-red-500 text-white border-2 border-red-600">
-                      <Zap className="mr-1 sm:mr-2 h-3 w-3 sm:h-4 sm:w-4 md:h-5 md:w-5" />
-                      {t("home.pricing.freemium")}
+                    <span className="inline-flex items-center gap-2">
+                      <span className="inline-flex items-center px-2 sm:px-3 md:px-4 py-1 md:py-2 rounded-full bg-red-500 text-white border-2 border-red-600">
+                        <Zap className="mr-1 sm:mr-2 h-3 w-3 sm:h-4 sm:w-4 md:h-5 md:w-5" />
+                        {t("home.pricing.freemium")}
+                      </span>
+                      {billingHistoryData.some((inv) => inv.status === "paid") && (
+                        <Button
+                          size="sm"
+                          variant="outline"
+                          className="border-white/50 text-white hover:bg-white/20 text-xs"
+                          onClick={async () => {
+                            try {
+                              await fixMyPlan();
+                              showToast("Премиум применён!");
+                              await loadProfileOverview();
+                              setTimeout(() => window.location.reload(), 500);
+                            } catch (e) {
+                              showToast(e instanceof Error ? e.message : "Ошибка");
+                            }
+                          }}
+                        >
+                          Исправить план
+                        </Button>
+                      )}
                     </span>
                   )}
                 </div>
@@ -960,6 +1003,25 @@ export default function ProfilePage() {
                               </div>
 
                               <div className="flex space-x-1 sm:space-x-2 flex-shrink-0">
+                                {invoice.status === "pending" && (
+                                  <Button
+                                    variant="outline"
+                                    size="sm"
+                                    className="text-xs px-2 py-1 h-7 sm:h-8 hover:bg-green-50 hover:border-green-300 hover:text-green-700"
+                                    onClick={async () => {
+                                      try {
+                                        await applyPremium(invoice.id);
+                                        showToast("Премиум применён!");
+                                        await loadProfileOverview();
+                                        setTimeout(() => window.location.reload(), 500);
+                                      } catch (e) {
+                                        showToast(e instanceof Error ? e.message : "Ошибка");
+                                      }
+                                    }}
+                                  >
+                                    Применить Premium
+                                  </Button>
+                                )}
                                 <Button
                                   variant="ghost"
                                   size="sm"

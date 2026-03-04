@@ -43,14 +43,14 @@ router.get("/", async (req: AuthenticatedRequest, res) => {
     const where = search
       ? {
           OR: [
-            { title: { contains: search, mode: "insensitive" as const } },
-            { description: { contains: search, mode: "insensitive" as const } },
-            { author: { name: { contains: search, mode: "insensitive" as const } } },
+            { title: { contains: search } },
+            { description: { contains: search } },
+            { author: { name: { contains: search } } },
           ],
         }
       : {};
 
-    const [questions, total] = await Promise.all([
+    const [questions, total, answered, unanswered] = await Promise.all([
       prisma.question.findMany({
         where,
         include: {
@@ -73,12 +73,14 @@ router.get("/", async (req: AuthenticatedRequest, res) => {
         },
         orderBy:
           sort === "new"
-            ? { createdAt: "desc" }
-            : { likes: { _count: "desc" } },
+            ? [{ createdAt: "desc" }]
+            : [{ likes: { _count: "desc" } }, { createdAt: "desc" }],
         skip: (page - 1) * limit,
         take: limit,
       }),
       prisma.question.count({ where }),
+      prisma.question.count({ where: { ...where, isAnswered: true } }),
+      prisma.question.count({ where: { ...where, isAnswered: false } }),
     ]);
 
     const formattedQuestions = questions.map((q) => ({
@@ -100,7 +102,14 @@ router.get("/", async (req: AuthenticatedRequest, res) => {
     res.json({
       success: true,
       data: formattedQuestions,
-      meta: { total, page, limit, hasMore: page * limit < total },
+      meta: {
+        total,
+        page,
+        limit,
+        hasMore: page * limit < total,
+        answered,
+        unanswered,
+      },
     });
   } catch (error) {
     console.error("Ошибка при получении вопросов:", error);
@@ -467,4 +476,3 @@ function getTimeLabel(date: Date): string {
 }
 
 export default router;
-

@@ -23,6 +23,7 @@ interface AuthContextType {
   ) => Promise<boolean>;
   logout: () => void;
   updateProfile: (userData: Partial<User>) => Promise<boolean>;
+  syncUser: (userData: Partial<User>) => void;
   isLoading: boolean;
   isNewUser: boolean;
   clearNewUserFlag: () => void;
@@ -224,6 +225,18 @@ export function AuthProvider({ children }: { children: React.ReactNode }) {
     [user]
   );
 
+  const syncUser = useCallback((userData: Partial<User>) => {
+    setUser((prevUser) => {
+      if (!prevUser) return prevUser;
+      const mergedUser: User = {
+        ...prevUser,
+        ...userData,
+      };
+      localStorage.setItem("user", JSON.stringify(mergedUser));
+      return mergedUser;
+    });
+  }, []);
+
   return (
     <AuthContext.Provider
       value={{
@@ -232,6 +245,7 @@ export function AuthProvider({ children }: { children: React.ReactNode }) {
         register,
         logout,
         updateProfile,
+        syncUser,
         isLoading,
         isNewUser,
         clearNewUserFlag,

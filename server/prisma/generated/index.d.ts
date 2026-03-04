@@ -13061,6 +13061,7 @@ export namespace Prisma {
   export type PaymentMinAggregateOutputType = {
     id: string | null
     userId: string | null
+    planId: string | null
     amount: number | null
     currency: string | null
     description: string | null
@@ -13074,6 +13075,7 @@ export namespace Prisma {
   export type PaymentMaxAggregateOutputType = {
     id: string | null
     userId: string | null
+    planId: string | null
     amount: number | null
     currency: string | null
     description: string | null
@@ -13087,6 +13089,7 @@ export namespace Prisma {
   export type PaymentCountAggregateOutputType = {
     id: number
     userId: number
+    planId: number
     amount: number
     currency: number
     description: number
@@ -13110,6 +13113,7 @@ export namespace Prisma {
   export type PaymentMinAggregateInputType = {
     id?: true
     userId?: true
+    planId?: true
     amount?: true
     currency?: true
     description?: true
@@ -13123,6 +13127,7 @@ export namespace Prisma {
   export type PaymentMaxAggregateInputType = {
     id?: true
     userId?: true
+    planId?: true
     amount?: true
     currency?: true
     description?: true
@@ -13136,6 +13141,7 @@ export namespace Prisma {
   export type PaymentCountAggregateInputType = {
     id?: true
     userId?: true
+    planId?: true
     amount?: true
     currency?: true
     description?: true
@@ -13236,6 +13242,7 @@ export namespace Prisma {
   export type PaymentGroupByOutputType = {
     id: string
     userId: string | null
+    planId: string | null
     amount: number
     currency: string
     description: string
@@ -13268,6 +13275,7 @@ export namespace Prisma {
   export type PaymentSelect<ExtArgs extends $Extensions.InternalArgs = $Extensions.DefaultArgs> = $Extensions.GetSelect<{
     id?: boolean
     userId?: boolean
+    planId?: boolean
     amount?: boolean
     currency?: boolean
     description?: boolean
@@ -13284,6 +13292,7 @@ export namespace Prisma {
   export type PaymentSelectCreateManyAndReturn<ExtArgs extends $Extensions.InternalArgs = $Extensions.DefaultArgs> = $Extensions.GetSelect<{
     id?: boolean
     userId?: boolean
+    planId?: boolean
     amount?: boolean
     currency?: boolean
     description?: boolean
@@ -13298,6 +13307,7 @@ export namespace Prisma {
   export type PaymentSelectScalar = {
     id?: boolean
     userId?: boolean
+    planId?: boolean
     amount?: boolean
     currency?: boolean
     description?: boolean
@@ -13326,6 +13336,7 @@ export namespace Prisma {
     scalars: $Extensions.GetPayloadResult<{
       id: string
       userId: string | null
+      planId: string | null
       amount: number
       currency: string
       description: string
@@ -13731,6 +13742,7 @@ export namespace Prisma {
   interface PaymentFieldRefs {
     readonly id: FieldRef<"Payment", 'String'>
     readonly userId: FieldRef<"Payment", 'String'>
+    readonly planId: FieldRef<"Payment", 'String'>
     readonly amount: FieldRef<"Payment", 'Float'>
     readonly currency: FieldRef<"Payment", 'String'>
     readonly description: FieldRef<"Payment", 'String'>
@@ -22231,6 +22243,7 @@ export namespace Prisma {
   export const PaymentScalarFieldEnum: {
     id: 'id',
     userId: 'userId',
+    planId: 'planId',
     amount: 'amount',
     currency: 'currency',
     description: 'description',
@@ -23245,6 +23258,7 @@ export namespace Prisma {
     NOT?: PaymentWhereInput | PaymentWhereInput[]
     id?: StringFilter<"Payment"> | string
     userId?: StringNullableFilter<"Payment"> | string | null
+    planId?: StringNullableFilter<"Payment"> | string | null
     amount?: FloatFilter<"Payment"> | number
     currency?: StringFilter<"Payment"> | string
     description?: StringFilter<"Payment"> | string
@@ -23260,6 +23274,7 @@ export namespace Prisma {
   export type PaymentOrderByWithRelationInput = {
     id?: SortOrder
     userId?: SortOrderInput | SortOrder
+    planId?: SortOrderInput | SortOrder
     amount?: SortOrder
     currency?: SortOrder
     description?: SortOrder
@@ -23278,6 +23293,7 @@ export namespace Prisma {
     OR?: PaymentWhereInput[]
     NOT?: PaymentWhereInput | PaymentWhereInput[]
     userId?: StringNullableFilter<"Payment"> | string | null
+    planId?: StringNullableFilter<"Payment"> | string | null
     amount?: FloatFilter<"Payment"> | number
     currency?: StringFilter<"Payment"> | string
     description?: StringFilter<"Payment"> | string
@@ -23293,6 +23309,7 @@ export namespace Prisma {
   export type PaymentOrderByWithAggregationInput = {
     id?: SortOrder
     userId?: SortOrderInput | SortOrder
+    planId?: SortOrderInput | SortOrder
     amount?: SortOrder
     currency?: SortOrder
     description?: SortOrder
@@ -23314,6 +23331,7 @@ export namespace Prisma {
     NOT?: PaymentScalarWhereWithAggregatesInput | PaymentScalarWhereWithAggregatesInput[]
     id?: StringWithAggregatesFilter<"Payment"> | string
     userId?: StringNullableWithAggregatesFilter<"Payment"> | string | null
+    planId?: StringNullableWithAggregatesFilter<"Payment"> | string | null
     amount?: FloatWithAggregatesFilter<"Payment"> | number
     currency?: StringWithAggregatesFilter<"Payment"> | string
     description?: StringWithAggregatesFilter<"Payment"> | string
@@ -24866,6 +24884,7 @@ export namespace Prisma {
 
   export type PaymentCreateInput = {
     id?: string
+    planId?: string | null
     amount: number
     currency?: string
     description: string
@@ -24881,6 +24900,7 @@ export namespace Prisma {
   export type PaymentUncheckedCreateInput = {
     id?: string
     userId?: string | null
+    planId?: string | null
     amount: number
     currency?: string
     description: string
@@ -24894,6 +24914,7 @@ export namespace Prisma {
 
   export type PaymentUpdateInput = {
     id?: StringFieldUpdateOperationsInput | string
+    planId?: NullableStringFieldUpdateOperationsInput | string | null
     amount?: FloatFieldUpdateOperationsInput | number
     currency?: StringFieldUpdateOperationsInput | string
     description?: StringFieldUpdateOperationsInput | string
@@ -24909,6 +24930,7 @@ export namespace Prisma {
   export type PaymentUncheckedUpdateInput = {
     id?: StringFieldUpdateOperationsInput | string
     userId?: NullableStringFieldUpdateOperationsInput | string | null
+    planId?: NullableStringFieldUpdateOperationsInput | string | null
     amount?: FloatFieldUpdateOperationsInput | number
     currency?: StringFieldUpdateOperationsInput | string
     description?: StringFieldUpdateOperationsInput | string
@@ -24923,6 +24945,7 @@ export namespace Prisma {
   export type PaymentCreateManyInput = {
     id?: string
     userId?: string | null
+    planId?: string | null
     amount: number
     currency?: string
     description: string
@@ -24935,6 +24958,7 @@ export namespace Prisma {
 
   export type PaymentUpdateManyMutationInput = {
     id?: StringFieldUpdateOperationsInput | string
+    planId?: NullableStringFieldUpdateOperationsInput | string | null
     amount?: FloatFieldUpdateOperationsInput | number
     currency?: StringFieldUpdateOperationsInput | string
     description?: StringFieldUpdateOperationsInput | string
@@ -24948,6 +24972,7 @@ export namespace Prisma {
   export type PaymentUncheckedUpdateManyInput = {
     id?: StringFieldUpdateOperationsInput | string
     userId?: NullableStringFieldUpdateOperationsInput | string | null
+    planId?: NullableStringFieldUpdateOperationsInput | string | null
     amount?: FloatFieldUpdateOperationsInput | number
     currency?: StringFieldUpdateOperationsInput | string
     description?: StringFieldUpdateOperationsInput | string
@@ -26321,6 +26346,7 @@ export namespace Prisma {
   export type PaymentCountOrderByAggregateInput = {
     id?: SortOrder
     userId?: SortOrder
+    planId?: SortOrder
     amount?: SortOrder
     currency?: SortOrder
     description?: SortOrder
@@ -26338,6 +26364,7 @@ export namespace Prisma {
   export type PaymentMaxOrderByAggregateInput = {
     id?: SortOrder
     userId?: SortOrder
+    planId?: SortOrder
     amount?: SortOrder
     currency?: SortOrder
     description?: SortOrder
@@ -26351,6 +26378,7 @@ export namespace Prisma {
   export type PaymentMinOrderByAggregateInput = {
     id?: SortOrder
     userId?: SortOrder
+    planId?: SortOrder
     amount?: SortOrder
     currency?: SortOrder
     description?: SortOrder
@@ -28271,6 +28299,7 @@ export namespace Prisma {
 
   export type PaymentCreateWithoutUserInput = {
     id?: string
+    planId?: string | null
     amount: number
     currency?: string
     description: string
@@ -28284,6 +28313,7 @@ export namespace Prisma {
 
   export type PaymentUncheckedCreateWithoutUserInput = {
     id?: string
+    planId?: string | null
     amount: number
     currency?: string
     description: string
@@ -28676,6 +28706,7 @@ export namespace Prisma {
     NOT?: PaymentScalarWhereInput | PaymentScalarWhereInput[]
     id?: StringFilter<"Payment"> | string
     userId?: StringNullableFilter<"Payment"> | string | null
+    planId?: StringNullableFilter<"Payment"> | string | null
     amount?: FloatFilter<"Payment"> | number
     currency?: StringFilter<"Payment"> | string
     description?: StringFilter<"Payment"> | string
@@ -30213,6 +30244,7 @@ export namespace Prisma {
 
   export type PaymentCreateWithoutSubscriptionsInput = {
     id?: string
+    planId?: string | null
     amount: number
     currency?: string
     description: string
@@ -30227,6 +30259,7 @@ export namespace Prisma {
   export type PaymentUncheckedCreateWithoutSubscriptionsInput = {
     id?: string
     userId?: string | null
+    planId?: string | null
     amount: number
     currency?: string
     description: string
@@ -30359,6 +30392,7 @@ export namespace Prisma {
 
   export type PaymentUpdateWithoutSubscriptionsInput = {
     id?: StringFieldUpdateOperationsInput | string
+    planId?: NullableStringFieldUpdateOperationsInput | string | null
     amount?: FloatFieldUpdateOperationsInput | number
     currency?: StringFieldUpdateOperationsInput | string
     description?: StringFieldUpdateOperationsInput | string
@@ -30373,6 +30407,7 @@ export namespace Prisma {
   export type PaymentUncheckedUpdateWithoutSubscriptionsInput = {
     id?: StringFieldUpdateOperationsInput | string
     userId?: NullableStringFieldUpdateOperationsInput | string | null
+    planId?: NullableStringFieldUpdateOperationsInput | string | null
     amount?: FloatFieldUpdateOperationsInput | number
     currency?: StringFieldUpdateOperationsInput | string
     description?: StringFieldUpdateOperationsInput | string
@@ -31570,6 +31605,7 @@ export namespace Prisma {
 
   export type PaymentCreateManyUserInput = {
     id?: string
+    planId?: string | null
     amount: number
     currency?: string
     description: string
@@ -31782,6 +31818,7 @@ export namespace Prisma {
 
   export type PaymentUpdateWithoutUserInput = {
     id?: StringFieldUpdateOperationsInput | string
+    planId?: NullableStringFieldUpdateOperationsInput | string | null
     amount?: FloatFieldUpdateOperationsInput | number
     currency?: StringFieldUpdateOperationsInput | string
     description?: StringFieldUpdateOperationsInput | string
@@ -31795,6 +31832,7 @@ export namespace Prisma {
 
   export type PaymentUncheckedUpdateWithoutUserInput = {
     id?: StringFieldUpdateOperationsInput | string
+    planId?: NullableStringFieldUpdateOperationsInput | string | null
     amount?: FloatFieldUpdateOperationsInput | number
     currency?: StringFieldUpdateOperationsInput | string
     description?: StringFieldUpdateOperationsInput | string
@@ -31808,6 +31846,7 @@ export namespace Prisma {
 
   export type PaymentUncheckedUpdateManyWithoutUserInput = {
     id?: StringFieldUpdateOperationsInput | string
+    planId?: NullableStringFieldUpdateOperationsInput | string | null
     amount?: FloatFieldUpdateOperationsInput | number
     currency?: StringFieldUpdateOperationsInput | string
     description?: StringFieldUpdateOperationsInput | string

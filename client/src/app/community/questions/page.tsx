@@ -55,6 +55,8 @@ export default function CommunityQuestionsPage() {
     error,
     hasMore,
     totalCount,
+    answeredCount,
+    unansweredCount,
     fetchQuestions,
     loadMore,
     fetchQuestion,
@@ -84,14 +86,15 @@ export default function CommunityQuestionsPage() {
   const [isSubmitting, setIsSubmitting] = useState(false);
   const formRef = useRef<HTMLDivElement | null>(null);
   const debounceRef = useRef<ReturnType<typeof setTimeout> | null>(null);
+  const didInitSearchRef = useRef(false);
 
   // Sync liked state from server data
   useEffect(() => {
     const liked: Record<string, boolean> = {};
     for (const q of questions) {
-      if (q.isLikedByCurrentUser) liked[q.id] = true;
+      liked[q.id] = q.isLikedByCurrentUser;
     }
-    setLikedQuestions((prev) => ({ ...prev, ...liked }));
+    setLikedQuestions(liked);
   }, [questions]);
 
   // Fetch on mount and sort change
@@ -102,6 +105,10 @@ export default function CommunityQuestionsPage() {
 
   // Debounced server search
   useEffect(() => {
+    if (!didInitSearchRef.current) {
+      didInitSearchRef.current = true;
+      return;
+    }
     if (debounceRef.current) clearTimeout(debounceRef.current);
     debounceRef.current = setTimeout(() => {
       fetchQuestions(activeSort, searchQuery || undefined);
@@ -223,8 +230,8 @@ export default function CommunityQuestionsPage() {
 
   const stats = {
     total: totalCount,
-    answered: questions.filter((q) => q.isAnswered).length,
-    unanswered: questions.filter((q) => !q.isAnswered).length,
+    answered: answeredCount,
+    unanswered: unansweredCount,
   };
 
   return (
@@ -302,6 +309,7 @@ export default function CommunityQuestionsPage() {
                   type="text"
                   placeholder="Поиск вопросов..."
                   aria-label="Поиск вопросов"
+                  data-testid="questions-search"
                   value={searchQuery}
                   onChange={(e) => setSearchQuery(e.target.value)}
                   className="w-full pl-10 sm:pl-12 pr-10 py-2.5 sm:py-3 text-sm sm:text-base bg-white border border-slate-200 rounded-lg sm:rounded-xl shadow-sm focus:ring-2 focus:ring-indigo-500 focus:border-transparent transition-shadow"
@@ -355,6 +363,7 @@ export default function CommunityQuestionsPage() {
                 </div>
 
                 <Button
+                  data-testid="open-question-form"
                   onClick={() => {
                     setIsFormVisible(true);
                     requestAnimationFrame(() => {
@@ -406,6 +415,7 @@ export default function CommunityQuestionsPage() {
                     <input
                       id="q-title"
                       name="title"
+                      data-testid="question-form-title"
                       value={formData.title}
                       onChange={handleFormChange}
                       className="w-full px-3 sm:px-4 py-2.5 sm:py-3 text-sm sm:text-base border border-slate-200 rounded-lg sm:rounded-xl focus:ring-2 focus:ring-indigo-500 focus:border-transparent transition-shadow"
@@ -429,6 +439,7 @@ export default function CommunityQuestionsPage() {
                     <textarea
                       id="q-desc"
                       name="description"
+                      data-testid="question-form-description"
                       value={formData.description}
                       onChange={handleFormChange}
                       rows={3}
@@ -453,6 +464,7 @@ export default function CommunityQuestionsPage() {
                     <Button
                       type="submit"
                       size="sm"
+                      data-testid="question-form-submit"
                       disabled={isSubmitting || !formData.title.trim()}
                       className="bg-gradient-to-r from-indigo-600 to-purple-600 hover:from-indigo-700 hover:to-purple-700 text-white shadow-md shadow-indigo-200 rounded-lg sm:rounded-xl px-4 sm:px-6 text-xs sm:text-sm disabled:opacity-50"
                     >
@@ -556,6 +568,7 @@ export default function CommunityQuestionsPage() {
                   variant="outline"
                   onClick={handleLoadMore}
                   disabled={isLoadingMore}
+                  data-testid="questions-load-more"
                   className="rounded-xl px-8"
                 >
                   {isLoadingMore ? (

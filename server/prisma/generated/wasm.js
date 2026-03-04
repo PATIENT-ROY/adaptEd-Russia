@@ -246,6 +246,7 @@ exports.Prisma.SubscriptionPlanScalarFieldEnum = {
 exports.Prisma.PaymentScalarFieldEnum = {
   id: 'id',
   userId: 'userId',
+  planId: 'planId',
   amount: 'amount',
   currency: 'currency',
   description: 'description',

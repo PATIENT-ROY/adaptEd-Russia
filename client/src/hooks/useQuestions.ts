@@ -32,7 +32,14 @@ export interface Answer {
 interface PaginatedResponse<T> {
   success: boolean;
   data?: T;
-  meta?: { total: number; page: number; limit: number; hasMore: boolean };
+  meta?: {
+    total: number;
+    page: number;
+    limit: number;
+    hasMore: boolean;
+    answered: number;
+    unanswered: number;
+  };
   message?: string;
   errors?: unknown[];
 }
@@ -51,6 +58,8 @@ export const useQuestions = () => {
   const [error, setError] = useState<string | null>(null);
   const [hasMore, setHasMore] = useState(false);
   const [totalCount, setTotalCount] = useState(0);
+  const [answeredCount, setAnsweredCount] = useState(0);
+  const [unansweredCount, setUnansweredCount] = useState(0);
   const pageRef = useRef(1);
 
   const getHeaders = useCallback((withAuth = false) => {
@@ -109,6 +118,8 @@ export const useQuestions = () => {
         pageRef.current = page;
         setHasMore(data.meta?.hasMore ?? false);
         setTotalCount(data.meta?.total ?? fetched.length);
+        setAnsweredCount(data.meta?.answered ?? 0);
+        setUnansweredCount(data.meta?.unanswered ?? 0);
         return fetched;
       } catch (err) {
         const message =
@@ -259,7 +270,11 @@ export const useQuestions = () => {
           setQuestions((prev) =>
             prev.map((q) =>
               q.id === questionId
-                ? { ...q, likesCount: data.data!.likesCount }
+                ? {
+                    ...q,
+                    likesCount: data.data!.likesCount,
+                    isLikedByCurrentUser: data.data!.isLiked,
+                  }
                 : q,
             ),
           );
@@ -302,7 +317,11 @@ export const useQuestions = () => {
           setQuestions((prev) =>
             prev.map((q) =>
               q.id === questionId
-                ? { ...q, likesCount: data.data!.likesCount }
+                ? {
+                    ...q,
+                    likesCount: data.data!.likesCount,
+                    isLikedByCurrentUser: data.data!.isLiked,
+                  }
                 : q,
             ),
           );
@@ -357,6 +376,8 @@ export const useQuestions = () => {
     error,
     hasMore,
     totalCount,
+    answeredCount,
+    unansweredCount,
     fetchQuestions,
     loadMore,
     fetchQuestion,

@@ -11,3 +11,5 @@ dist/
 client/.env.local.bak
 client/.next.zip
 client/next 2.config.ts
+client/playwright-report/
+client/test-results/

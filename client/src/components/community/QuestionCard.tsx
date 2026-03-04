@@ -59,6 +59,7 @@ function AuthorAvatar({ name }: { name: string }) {
 }
 
 export function QuestionCard({
+  id,
   title,
   description,
   answersCount,
@@ -111,7 +112,10 @@ export function QuestionCard({
   };
 
   return (
-    <Card className="relative overflow-hidden border-0 bg-white/80 backdrop-blur-sm shadow-lg shadow-slate-200/50">
+    <Card
+      data-testid={`question-card-${id}`}
+      className="relative overflow-hidden border-0 bg-white/80 backdrop-blur-sm shadow-lg shadow-slate-200/50"
+    >
       <CardHeader className="p-3 sm:p-4 lg:p-6 pb-2 sm:pb-3">
         <div className="flex items-center justify-between">
           <div className="flex items-center flex-wrap gap-1.5 sm:gap-2">
@@ -147,6 +151,7 @@ export function QuestionCard({
             <button
               type="button"
               onClick={handleDelete}
+              data-testid={`question-delete-${id}`}
               className={`p-1.5 rounded-lg transition-colors text-xs flex items-center gap-1 ${
                 confirmDelete
                   ? "bg-red-100 text-red-600 hover:bg-red-200"
@@ -180,6 +185,7 @@ export function QuestionCard({
               type="button"
               onClick={onToggle}
               aria-expanded={isExpanded}
+              data-testid={`question-toggle-${id}`}
               className="inline-flex items-center gap-1 sm:gap-1.5 px-2 sm:px-3 py-1 sm:py-1.5 rounded-full text-xs sm:text-sm font-medium text-slate-600 bg-slate-100 hover:bg-indigo-100 hover:text-indigo-700 transition-colors"
             >
               <MessageSquare className="h-3 w-3 sm:h-4 sm:w-4" />
@@ -201,6 +207,7 @@ export function QuestionCard({
               type="button"
               variant={isLiked ? "default" : "outline"}
               size="sm"
+              data-testid={`question-like-${id}`}
               className={`h-7 sm:h-8 px-2 sm:px-3 rounded-full transition-all text-xs sm:text-sm ${
                 isLiked
                   ? "bg-gradient-to-r from-pink-500 to-rose-500 text-white border-0 shadow-md shadow-pink-200"
@@ -281,6 +288,7 @@ export function QuestionCard({
                     ref={textareaRef}
                     value={answerText}
                     onChange={(e) => setAnswerText(e.target.value)}
+                    data-testid={`question-answer-input-${id}`}
                     placeholder="Напишите ответ..."
                     rows={1}
                     className="flex-1 px-3 sm:px-4 py-2 sm:py-2.5 text-xs sm:text-sm border border-slate-200 rounded-lg sm:rounded-xl focus:ring-2 focus:ring-indigo-500 focus:border-transparent bg-white placeholder:text-slate-400 transition-shadow resize-none overflow-hidden"
@@ -295,6 +303,7 @@ export function QuestionCard({
                   <Button
                     type="submit"
                     size="sm"
+                    data-testid={`question-answer-submit-${id}`}
                     disabled={!answerText.trim() || isSubmitting}
                     className="px-3 sm:px-4 h-9 sm:h-10 bg-gradient-to-r from-indigo-600 to-purple-600 hover:from-indigo-700 hover:to-purple-700 text-white rounded-lg sm:rounded-xl shadow-md shadow-indigo-200 disabled:opacity-50 disabled:cursor-not-allowed flex-shrink-0"
                   >

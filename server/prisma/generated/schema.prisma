@@ -230,6 +230,7 @@ model SubscriptionPlan {
 model Payment {
   id                String   @id @default(cuid())
   userId            String?
+  planId            String? // План подписки (для применения при успешной оплате)
   amount            Float
   currency          String   @default("RUB")
   description       String

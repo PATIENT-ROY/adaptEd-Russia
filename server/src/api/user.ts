@@ -1,5 +1,6 @@
 import { Router, Request, Response } from 'express';
 import { z } from 'zod';
+import { v4 as uuidv4 } from 'uuid';
 import { prisma } from '../lib/database';
 import { authMiddleware, getUserById } from '../lib/auth';
 import { UpdateProfileRequest, ApiResponse } from '@/types';
@@ -800,47 +801,110 @@ router.get('/profile/overview', authMiddleware, async (req: Request, res: Respon
         icon: 'MessageSquare',
         color: 'text-orange-600',
       })),
-      ...payments.slice(0, 3).map((payment) => ({
-        id: `payment-${payment.id}`,
-        type: 'payment' as const,
-        title: `Платёж: ${payment.description}`,
-        timestamp: payment.createdAt.toISOString(),
-        icon: payment.status === 'SUCCEEDED' ? 'CreditCard' : 'Clock',
-        color: payment.status === 'SUCCEEDED' ? 'text-emerald-600' : 'text-slate-500',
-        meta: {
-          amount: payment.amount,
-          currency: payment.currency,
-          status: payment.status,
-        },
-      })),
+      ...payments.slice(0, 3).map((payment) => {
+        const paymentStatus = (payment.status || '').toUpperCase();
+        return {
+          id: `payment-${payment.id}`,
+          type: 'payment' as const,
+          title: `Платёж: ${payment.description}`,
+          timestamp: payment.createdAt.toISOString(),
+          icon: paymentStatus === 'SUCCEEDED' ? 'CreditCard' : 'Clock',
+          color: paymentStatus === 'SUCCEEDED' ? 'text-emerald-600' : 'text-slate-500',
+          meta: {
+            amount: payment.amount,
+            currency: payment.currency,
+            status: payment.status,
+          },
+        };
+      }),
     ]
       .sort((a, b) => new Date(b.timestamp).getTime() - new Date(a.timestamp).getTime())
       .slice(0, 8);
 
-    const billingHistory: ProfileBillingItem[] = payments.map((payment, index) => ({
-      id: payment.id,
-      date: payment.createdAt.toISOString(),
-      amount: payment.amount,
-      currency: payment.currency,
-      status:
-        payment.status === 'SUCCEEDED'
-          ? 'paid'
-          : payment.status === 'PENDING'
-          ? 'pending'
-          : payment.status === 'FAILED'
-          ? 'failed'
-          : payment.status.toLowerCase(),
-      description: payment.description,
-      invoiceNumber: `INV-${new Date(payment.createdAt)
-        .toISOString()
-        .slice(0, 10)
-        .replace(/-/g, '')}-${index + 1}`,
-      paymentMethod: payment.paymentMethod,
-    }));
+    const billingHistory: ProfileBillingItem[] = payments.map((payment, index) => {
+      const paymentStatus = (payment.status || '').toUpperCase();
+      return {
+        id: payment.id,
+        date: payment.createdAt.toISOString(),
+        amount: payment.amount,
+        currency: payment.currency,
+        status:
+          paymentStatus === 'SUCCEEDED'
+            ? 'paid'
+            : paymentStatus === 'PENDING'
+            ? 'pending'
+            : paymentStatus === 'FAILED'
+            ? 'failed'
+            : paymentStatus.toLowerCase(),
+        description: payment.description,
+        invoiceNumber: `INV-${new Date(payment.createdAt)
+          .toISOString()
+          .slice(0, 10)
+          .replace(/-/g, '')}-${index + 1}`,
+        paymentMethod: payment.paymentMethod,
+      };
+    });
+
+    // Если есть активная подписка или оплаченный платёж — показываем PREMIUM
+    let activeSubscription = await prisma.subscription.findFirst({
+      where: { userId: authUser.userId, status: 'ACTIVE' },
+    });
+
+    // Если подписки нет, но есть успешный платёж — создаём подписку (восстановление)
+    if (!activeSubscription) {
+      const succeededPayment = payments.find(
+        (p) => (p.status || '').toUpperCase() === 'SUCCEEDED'
+      );
+      if (succeededPayment) {
+        try {
+          const plan = succeededPayment.planId
+            ? await prisma.subscriptionPlan.findUnique({ where: { id: succeededPayment.planId } })
+            : await prisma.subscriptionPlan.findFirst({
+                where: { price: succeededPayment.amount, isActive: true },
+              }) || await prisma.subscriptionPlan.findFirst({
+                where: { isActive: true, price: { gt: 0 } },
+                orderBy: { price: 'asc' },
+              });
+          if (plan) {
+            const startDate = new Date();
+            const endDate = new Date();
+            endDate.setMonth(endDate.getMonth() + (plan.interval === 'MONTHLY' ? 1 : 12));
+            activeSubscription = await prisma.subscription.upsert({
+              where: { userId: authUser.userId },
+              update: { status: 'ACTIVE', startDate, endDate, paymentId: succeededPayment.id },
+              create: {
+                id: uuidv4(),
+                userId: authUser.userId,
+                planId: plan.id,
+                status: 'ACTIVE',
+                startDate,
+                endDate,
+                autoRenew: true,
+                paymentId: succeededPayment.id,
+              },
+            });
+            await prisma.user.update({
+              where: { id: authUser.userId },
+              data: { plan: 'PREMIUM' },
+            });
+          }
+        } catch (e) {
+          console.error('Auto-fix subscription:', e);
+        }
+      }
+    } else if (userData.plan !== 'PREMIUM') {
+      await prisma.user.update({
+        where: { id: authUser.userId },
+        data: { plan: 'PREMIUM' },
+      }).catch(() => {});
+    }
+
+    const effectivePlan = activeSubscription ? 'PREMIUM' : (userData.plan || 'FREEMIUM');
 
     const responsePayload: ProfileOverviewResponse = {
       user: {
         ...userData,
+        plan: effectivePlan,
       },
       stats,
       quickActions,

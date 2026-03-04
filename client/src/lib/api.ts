@@ -487,6 +487,32 @@ export const getPayment = async (paymentId: string): Promise<Payment> => {
   return response.json();
 };
 
+export const fixMyPlan = async (): Promise<{ success: boolean }> => {
+  const token = typeof window !== 'undefined' ? localStorage.getItem('token') : null;
+  const response = await fetch(`${API_BASE_URL}/payments/fix-my-plan`, {
+    method: 'POST',
+    headers: { 'Authorization': `Bearer ${token}` },
+  });
+  if (!response.ok) {
+    const err = await response.json().catch(() => ({}));
+    throw new Error(err.error || 'Не удалось применить Premium');
+  }
+  return response.json();
+};
+
+export const applyPremium = async (paymentId: string): Promise<{ success: boolean }> => {
+  const token = typeof window !== 'undefined' ? localStorage.getItem('token') : null;
+  const response = await fetch(`${API_BASE_URL}/payments/apply-premium/${paymentId}`, {
+    method: 'POST',
+    headers: { 'Authorization': `Bearer ${token}` },
+  });
+  if (!response.ok) {
+    const err = await response.json().catch(() => ({}));
+    throw new Error(err.error || 'Failed to apply premium');
+  }
+  return response.json();
+};
+
 export const cancelPayment = async (paymentId: string): Promise<void> => {
   const token = typeof window !== 'undefined' ? localStorage.getItem('token') : null;
   const response = await fetch(`${API_BASE_URL}/payments/payment/${paymentId}/cancel`, {

@@ -54,6 +54,7 @@ router.post('/create-payment', authMiddleware, async (req, res) => {
       data: {
         id: uuidv4(),
         userId,
+        planId,
         amount: plan.price,
         currency: plan.currency,
         description: yooKassaPayment.description || '',
@@ -105,7 +106,8 @@ router.get('/payment/:paymentId', authMiddleware, async (req, res) => {
 
     console.log('Payment found:', { id: payment.id, yooKassaPaymentId: payment.yooKassaPaymentId, status: payment.status });
 
-    // Получаем актуальный статус из YooKassa
+    // Получаем актуальный статус из YooKassa (или mock)
+    let statusNormalized = (payment.status || '').toUpperCase();
     if (payment.yooKassaPaymentId) {
       try {
         const yooKassaStatus = await checkPaymentStatus(payment.yooKassaPaymentId);
@@ -115,15 +117,61 @@ router.get('/payment/:paymentId', authMiddleware, async (req, res) => {
           yooKassa: yooKassaStatus.status 
         });
         
+        statusNormalized = (yooKassaStatus.status || '').toUpperCase();
+        
         // Обновляем статус в базе данных если он изменился
-        if (yooKassaStatus.status !== payment.status) {
+        if (statusNormalized !== payment.status) {
           await prisma.payment.update({
             where: { id: payment.id },
-            data: { status: yooKassaStatus.status },
+            data: { status: statusNormalized },
           });
           
-          payment.status = yooKassaStatus.status;
+          payment.status = statusNormalized;
           console.log('Payment status updated:', payment.status);
+        }
+
+        // При успешной оплате — применяем подписку и обновляем план (fallback если webhook не сработал)
+        if (statusNormalized === 'SUCCEEDED' && payment.userId) {
+            try {
+              let plan = payment.planId
+                ? await prisma.subscriptionPlan.findUnique({ where: { id: payment.planId } })
+                : await prisma.subscriptionPlan.findFirst({
+                    where: { price: payment.amount, isActive: true },
+                  });
+              if (plan) {
+                const startDate = new Date();
+                const endDate = new Date();
+                endDate.setMonth(endDate.getMonth() + (plan.interval === 'MONTHLY' ? 1 : 12));
+
+                await prisma.subscription.upsert({
+                  where: { userId: payment.userId },
+                  update: {
+                    status: 'ACTIVE',
+                    startDate,
+                    endDate,
+                    paymentId: payment.id,
+                  },
+                  create: {
+                    id: uuidv4(),
+                    userId: payment.userId,
+                    planId: plan.id,
+                    status: 'ACTIVE',
+                    startDate,
+                    endDate,
+                    autoRenew: true,
+                    paymentId: payment.id,
+                  },
+                });
+
+                await prisma.user.update({
+                  where: { id: payment.userId },
+                  data: { plan: 'PREMIUM' },
+                });
+                console.log('Subscription and user plan applied for payment:', payment.id);
+              }
+            } catch (applyErr) {
+              console.error('Error applying subscription on payment check:', applyErr);
+            }
         }
       } catch (yooKassaError) {
         console.error('Error checking YooKassa status:', yooKassaError);
@@ -269,6 +317,12 @@ router.post('/webhook', async (req, res) => {
                 paymentId: payment.id,
               },
             });
+
+            // Обновляем план пользователя на PREMIUM (отображается в профиле)
+            await prisma.user.update({
+              where: { id: metadata.userId },
+              data: { plan: 'PREMIUM' },
+            });
           }
         }
       }
@@ -278,6 +332,148 @@ router.post('/webhook', async (req, res) => {
   } catch (error) {
     console.error('Webhook error:', error);
     res.status(500).json({ error: 'Webhook processing failed' });
+  }
+});
+
+// Принудительно применить Premium по оплаченному платежу текущего пользователя (без payment_id)
+router.post('/fix-my-plan', authMiddleware, async (req, res) => {
+  try {
+    const userId = (req as any).user.userId;
+
+    const recentPayments = await prisma.payment.findMany({
+      where: { userId },
+      orderBy: { createdAt: 'desc' },
+      take: 50,
+    });
+    const succeededPayment = recentPayments.find(
+      (payment) => (payment.status || '').toUpperCase() === 'SUCCEEDED'
+    );
+    if (!succeededPayment) {
+      return res.status(400).json({
+        error: 'Нет успешных платежей. Сначала оплатите подписку.',
+      });
+    }
+
+    if (succeededPayment.status !== 'SUCCEEDED') {
+      await prisma.payment.update({
+        where: { id: succeededPayment.id },
+        data: { status: 'SUCCEEDED' },
+      });
+    }
+
+    let plan = succeededPayment.planId
+      ? await prisma.subscriptionPlan.findUnique({ where: { id: succeededPayment.planId } })
+      : await prisma.subscriptionPlan.findFirst({
+          where: { price: succeededPayment.amount, isActive: true },
+        });
+    if (!plan) {
+      plan = await prisma.subscriptionPlan.findFirst({
+        where: { isActive: true, price: { gt: 0 } },
+        orderBy: { price: 'asc' },
+      });
+    }
+    if (!plan) {
+      return res.status(400).json({
+        error: 'План не найден. Запустите: cd server && npx tsx src/scripts/init-payment-data.ts',
+      });
+    }
+
+    const startDate = new Date();
+    const endDate = new Date();
+    endDate.setMonth(endDate.getMonth() + (plan.interval === 'MONTHLY' ? 1 : 12));
+
+    await prisma.subscription.upsert({
+      where: { userId },
+      update: { status: 'ACTIVE', startDate, endDate, paymentId: succeededPayment.id },
+      create: {
+        id: uuidv4(),
+        userId,
+        planId: plan.id,
+        status: 'ACTIVE',
+        startDate,
+        endDate,
+        autoRenew: true,
+        paymentId: succeededPayment.id,
+      },
+    });
+    await prisma.user.update({
+      where: { id: userId },
+      data: { plan: 'PREMIUM' },
+    });
+
+    console.log('fix-my-plan: Premium applied for user', userId);
+    res.json({ success: true, message: 'Premium применён' });
+  } catch (error) {
+    console.error('fix-my-plan error:', error);
+    res.status(500).json({ error: 'Ошибка: ' + (error instanceof Error ? error.message : 'Unknown') });
+  }
+});
+
+// Ручное применение Premium по payment_id (для случаев когда авто-применение не сработало)
+router.post('/apply-premium/:paymentId', authMiddleware, async (req, res) => {
+  try {
+    const { paymentId } = req.params;
+    const userId = (req as any).user.userId;
+
+    let payment = await prisma.payment.findFirst({
+      where: { id: paymentId, userId },
+    });
+    if (!payment) {
+      payment = await prisma.payment.findFirst({
+        where: { yooKassaPaymentId: paymentId, userId },
+      });
+    }
+    if (!payment) {
+      return res.status(404).json({ error: 'Payment not found' });
+    }
+
+    let plan = payment.planId
+      ? await prisma.subscriptionPlan.findUnique({ where: { id: payment.planId } })
+      : await prisma.subscriptionPlan.findFirst({
+          where: { price: payment.amount, isActive: true },
+        });
+    if (!plan) {
+      plan = await prisma.subscriptionPlan.findFirst({
+        where: { isActive: true, price: { gt: 0 } },
+        orderBy: { price: 'asc' },
+      });
+    }
+    if (!plan) {
+      return res.status(400).json({ error: 'No subscription plan found. Run: npx tsx src/scripts/init-payment-data.ts' });
+    }
+
+    const startDate = new Date();
+    const endDate = new Date();
+    endDate.setMonth(endDate.getMonth() + (plan.interval === 'MONTHLY' ? 1 : 12));
+
+    await prisma.subscription.upsert({
+      where: { userId },
+      update: { status: 'ACTIVE', startDate, endDate, paymentId: payment.id },
+      create: {
+        id: uuidv4(),
+        userId,
+        planId: plan.id,
+        status: 'ACTIVE',
+        startDate,
+        endDate,
+        autoRenew: true,
+        paymentId: payment.id,
+      },
+    });
+    await prisma.user.update({
+      where: { id: userId },
+      data: { plan: 'PREMIUM' },
+    });
+    await prisma.payment.update({
+      where: { id: payment.id },
+      data: { status: 'SUCCEEDED' },
+    });
+
+    console.log('Premium applied manually for payment:', paymentId);
+    res.json({ success: true, message: 'Premium applied' });
+  } catch (error) {
+    console.error('Apply premium error:', error);
+    res.status(500).json({ error: 'Failed to apply premium' });
   }
 });
 
