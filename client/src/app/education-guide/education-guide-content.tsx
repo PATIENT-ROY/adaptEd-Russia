@@ -1816,7 +1816,6 @@ type Category = {
 
 const categoriesConfig: Omit<Category, "name">[] = [
   { id: "all", icon: BookOpen },
-  { id: "grants", icon: Award },
   { id: "schedule", icon: Clock },
   { id: "exams", icon: GraduationCap },
   { id: "papers", icon: FileText },

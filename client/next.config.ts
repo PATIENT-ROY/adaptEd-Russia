@@ -1,8 +1,11 @@
 import type { NextConfig } from 'next'
+import path from 'path'
 
 const nextConfig: NextConfig = {
   // Для Netlify плагин сам управляет output
   output: process.env.NETLIFY ? undefined : 'standalone',
+  // Фикс для monorepo: корректный root для _next/static (устраняет 404 и MIME type)
+  outputFileTracingRoot: path.join(process.cwd()),
   experimental: {
     optimizePackageImports: ['lucide-react'],
   },

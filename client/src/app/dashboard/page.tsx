@@ -264,8 +264,9 @@ export default function DashboardPage() {
                   </span>
                 </Link>
                 <div>
-                  <h1 className="text-xl sm:text-2xl lg:text-3xl font-bold text-slate-900 mb-1 sm:mb-2">
+                  <h1 className="text-xl sm:text-2xl lg:text-3xl font-bold text-slate-900 mb-1 sm:mb-2 flex items-center gap-2">
                     {welcomeMessage}
+                    <span className="animate-wave text-2xl sm:text-3xl lg:text-4xl" role="img" aria-label="машущая рука">👋</span>
                   </h1>
                   <p className="text-sm sm:text-base lg:text-lg text-slate-600">
                     {t("dashboard.welcome.subtitle")}

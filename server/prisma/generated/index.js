@@ -361,7 +361,7 @@ const config = {
       "value": "prisma-client-js"
     },
     "output": {
-      "value": "/Users/patientmbaya/Desktop/AdaptEd-Russia/adapted-russia/server/prisma/generated",
+      "value": "/Users/patientmbaya/Desktop/AdaptEd-Russia 02/server/prisma/generated",
       "fromEnvVar": null
     },
     "config": {
@@ -375,7 +375,7 @@ const config = {
       }
     ],
     "previewFeatures": [],
-    "sourceFilePath": "/Users/patientmbaya/Desktop/AdaptEd-Russia/adapted-russia/server/prisma/schema.prisma",
+    "sourceFilePath": "/Users/patientmbaya/Desktop/AdaptEd-Russia 02/server/prisma/schema.prisma",
     "isCustomOutput": true
   },
   "relativeEnvPaths": {

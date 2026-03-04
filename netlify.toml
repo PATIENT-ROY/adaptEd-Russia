@@ -8,6 +8,8 @@
   NEXT_TELEMETRY_DISABLED = "1"
   NPM_FLAGS = "--legacy-peer-deps"
   NEXT_PRIVATE_STANDALONE = "false"
+  # Skew protection: устраняет 404 на _next/static при деплое
+  NETLIFY_NEXT_SKEW_PROTECTION = "true"
   # ⚠️ ВАЖНО: Добавь NEXT_PUBLIC_API_URL через UI Netlify (Site settings → Environment variables)
   # NEXT_PUBLIC_API_URL = "https://твой-бэкенд-url.com/api"
   
