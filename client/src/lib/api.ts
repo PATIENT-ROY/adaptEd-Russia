@@ -43,11 +43,6 @@ interface ChatMessageResponse {
   usage?: ChatUsage;
 }
 
-interface ChatHistoryResponse {
-  data: ChatMessage[];
-  usage?: ChatUsage;
-}
-
 class ApiClient {
   private baseURL: string;
   private token: string | null = null;
@@ -410,8 +405,8 @@ class ApiClient {
 
   async getChatHistory(): Promise<{ messages: ChatMessage[]; usage?: ChatUsage }> {
     const response = await this.requestWithRetry<ChatMessage[]>('/chat/messages');
-    const raw = response as any;
-    const messages = Array.isArray(raw.data) ? raw.data : (Array.isArray(raw) ? raw : []);
+    const raw = response as ApiResponse<ChatMessage[]> & { usage?: ChatUsage };
+    const messages = Array.isArray(raw.data) ? raw.data : [];
     return { messages, usage: raw.usage };
   }
 

@@ -353,7 +353,6 @@ export default function ProfilePage() {
     error: reviewError,
     saving: reviewSaving,
     saveError: reviewSaveError,
-    statusMessage: reviewStatusMessage,
     createOrUpdate: saveReview,
   } = useReview();
 
