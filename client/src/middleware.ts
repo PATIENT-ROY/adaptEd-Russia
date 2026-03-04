@@ -28,5 +28,6 @@ export function middleware(request: NextRequest) {
 }
 
 export const config = {
-  matcher: ['/((?!api|_next/image|favicon.ico).*)'],
+  // Исключаем _next/static — статика должна обходиться без middleware (фикс 404/502 на Netlify)
+  matcher: ['/((?!api|_next|favicon.ico).*)'],
 };
