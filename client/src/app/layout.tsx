@@ -1,5 +1,4 @@
 import type { Metadata } from "next";
-import { Inter } from "next/font/google";
 import "./globals.css";
 import { AuthProvider } from "@/contexts/AuthContext";
 import { LanguageProvider } from "@/contexts/LanguageContext";
@@ -8,13 +7,6 @@ import { ConditionalFooter } from "@/components/layout/conditional-footer";
 import { HtmlLang } from "@/components/language/html-lang";
 import { CookieConsent } from "@/components/ui/cookie-consent";
 import { ErrorBoundary } from "@/components/auth/ErrorBoundary";
-
-const inter = Inter({
-  subsets: ["latin"],
-  display: "swap",
-  preload: true,
-  adjustFontFallback: true,
-});
 
 export const metadata: Metadata = {
   title: {
@@ -113,7 +105,7 @@ export default function RootLayout({
         <meta name="theme-color" content="#2563eb" />
         <meta name="msapplication-TileColor" content="#2563eb" />
       </head>
-      <body className={inter.className}>
+      <body>
         <ErrorBoundary>
           <AuthProvider>
             <LanguageProvider>

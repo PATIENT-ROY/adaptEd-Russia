@@ -4,6 +4,7 @@ import { useCallback, useEffect, useRef, useState } from "react";
 import { useRouter } from "next/navigation";
 import { Layout } from "@/components/layout/layout";
 import { ProtectedRoute } from "@/components/auth/ProtectedRoute";
+import { FeaturePreviewGate } from "@/components/auth/FeaturePreviewGate";
 import { Button } from "@/components/ui/button";
 import { QuestionCard } from "@/components/community/QuestionCard";
 import { useQuestions, type Answer } from "@/hooks/useQuestions";
@@ -235,7 +236,15 @@ export default function CommunityQuestionsPage() {
   };
 
   return (
-    <ProtectedRoute>
+    <ProtectedRoute
+      fallback={
+        <FeaturePreviewGate
+          featureName="Сообщество вопросов"
+          previewTitle="Пример"
+          previewText="Пока нет вопросов. Задайте первый после входа в аккаунт."
+        />
+      }
+    >
       <Layout>
         <div className="min-h-screen bg-gradient-to-br from-slate-50 via-blue-50 to-indigo-50 rounded-xl sm:rounded-2xl lg:rounded-3xl mx-2 sm:mx-4 lg:mx-8 my-2 sm:my-4 lg:my-8 overflow-hidden">
           {/* Hero Section — compact on mobile */}
@@ -514,7 +523,7 @@ export default function CommunityQuestionsPage() {
                     <h3 className="text-xl font-semibold text-slate-700 mb-2">
                       {searchQuery
                         ? "Ничего не найдено"
-                        : "Пока нет вопросов"}
+                        : "Пока нет вопросов. Задайте первый!"}
                     </h3>
                     <p className="text-slate-500 mb-6">
                       {searchQuery

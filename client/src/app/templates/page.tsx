@@ -3,6 +3,7 @@
 import { useState, useCallback } from "react";
 import { Layout } from "@/components/layout/layout";
 import { ProtectedRoute } from "@/components/auth/ProtectedRoute";
+import { FeaturePreviewGate } from "@/components/auth/FeaturePreviewGate";
 import { useAuth } from "@/contexts/AuthContext";
 import { useTranslation } from "@/hooks/useTranslation";
 import { apiClient } from "@/lib/api";
@@ -297,6 +298,13 @@ export default function TemplatesPage() {
   const [fieldErrors, setFieldErrors] = useState<Set<string>>(new Set());
   const [toastMessage, setToastMessage] = useState<string | null>(null);
   const [toastType, setToastType] = useState<"success" | "error">("success");
+  const unauthFallback = (
+    <FeaturePreviewGate
+      featureName="Шаблоны для учёбы"
+      previewTitle="Пример шаблона"
+      previewText='После входа вы сможете быстро получить готовый текст, например: "Письмо преподавателю о переносе дедлайна".'
+    />
+  );
 
   const showToast = useCallback((msg: string, type: "success" | "error" = "success") => {
     setToastMessage(msg);
@@ -395,7 +403,7 @@ export default function TemplatesPage() {
 
   if (!user) {
     return (
-      <ProtectedRoute>
+      <ProtectedRoute fallback={unauthFallback}>
         <Layout>
           <div className="flex items-center justify-center min-h-[400px]">
             <LoadingSpinner size="lg" />
@@ -406,7 +414,7 @@ export default function TemplatesPage() {
   }
 
   return (
-    <ProtectedRoute>
+    <ProtectedRoute fallback={unauthFallback}>
       <Layout>
         <div className="space-y-4 sm:space-y-6">
           {/* Header */}

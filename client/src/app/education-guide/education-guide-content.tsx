@@ -2,7 +2,6 @@
 
 import { Layout } from "@/components/layout/layout";
 import { GuideCard } from "@/components/ui/guide-card";
-import { GuideCardBase } from "@/components/ui/guide-card-base";
 import { Button } from "@/components/ui/button";
 import {
   ScheduleFilter,
@@ -16,16 +15,6 @@ import {
   Calendar,
   FileText,
   Clock,
-  Award,
-  DollarSign,
-  Globe,
-  Building,
-  Star,
-  Heart,
-  Share2,
-  Eye,
-  TrendingUp,
-  Users,
   Languages,
   AlertTriangle,
 } from "lucide-react";
@@ -36,11 +25,6 @@ import {
   GuideCategory,
   Language,
   Difficulty,
-  Grant,
-  GrantType,
-  GrantStatus,
-  GrantLevel,
-  GrantCategory,
 } from "@/types";
 import { useTranslation } from "@/hooks/useTranslation";
 import { useGuideProgress } from "@/hooks/useGuideProgress";
@@ -1634,177 +1618,6 @@ const educationGuides: Guide[] = [
   },
 ];
 
-// Моковые данные грантов и стипендий
-const mockGrants: Grant[] = [
-  {
-    id: "1",
-    title: "Стипендия Правительства РФ для иностранных студентов",
-    description:
-      "Полная стипендия для обучения в российских университетах по программам бакалавриата, магистратуры и аспирантуры.",
-    amount: 150000,
-    currency: "RUB",
-    type: "GOVERNMENT" as GrantType,
-    status: "ACTIVE" as GrantStatus,
-    level: "ALL" as GrantLevel,
-    category: "ACADEMIC" as GrantCategory,
-    organization: "Министерство науки и высшего образования РФ",
-    website: "https://education-in-russia.com",
-    applicationDeadline: "2024-12-31",
-    startDate: "2024-09-01",
-    endDate: "2025-06-30",
-    requirements: [
-      "Возраст 18-35 лет",
-      "Хорошая успеваемость (GPA 4.0+)",
-      "Владение русским языком (B1+)",
-      "Мотивационное письмо",
-      "Рекомендательные письма",
-    ],
-    documents: [
-      "Заявление",
-      "Копия паспорта",
-      "Аттестат/диплом",
-      "Медицинская справка",
-      "Сертификат о знании русского языка",
-    ],
-    benefits: [
-      "Полное покрытие стоимости обучения",
-      "Ежемесячная стипендия 150,000 ₽",
-      "Бесплатное проживание в общежитии",
-      "Медицинская страховка",
-      "Компенсация проезда",
-    ],
-    eligibility: {
-      countries: ["Все страны"],
-      ageRange: { min: 18, max: 35 },
-      gpa: 4.0,
-      languageLevel: "B1+",
-      studyField: ["Все направления"],
-    },
-    applicationProcess:
-      "Онлайн подача заявки через портал education-in-russia.com",
-    contactInfo: {
-      email: "grants@minobrnauki.gov.ru",
-      phone: "+7 (495) 123-45-67",
-    },
-    tags: ["правительство", "полная стипендия", "все уровни"],
-    isFeatured: true,
-    createdAt: "2024-01-01",
-    updatedAt: "2024-01-01",
-  },
-  {
-    id: "2",
-    title: "Грант МГУ имени М.В. Ломоносова",
-    description:
-      "Стипендия для талантливых иностранных студентов, поступающих в Московский государственный университет.",
-    amount: 80000,
-    currency: "RUB",
-    type: "UNIVERSITY" as GrantType,
-    status: "ACTIVE" as GrantStatus,
-    level: "MASTER" as GrantLevel,
-    category: "MERIT_BASED" as GrantCategory,
-    organization: "МГУ имени М.В. Ломоносова",
-    website: "https://www.msu.ru",
-    applicationDeadline: "2024-11-15",
-    startDate: "2024-09-01",
-    endDate: "2026-06-30",
-    requirements: [
-      "Диплом бакалавра с отличием",
-      "Портфолио достижений",
-      "Исследовательский проект",
-      "Свободное владение русским языком",
-    ],
-    documents: [
-      "Заявление",
-      "Диплом бакалавра",
-      "Портфолио",
-      "Исследовательский проект",
-      "Сертификат ТРКИ-2",
-    ],
-    benefits: [
-      "Скидка 50% на обучение",
-      "Ежемесячная стипендия 80,000 ₽",
-      "Участие в научных конференциях",
-      "Стажировки в ведущих компаниях",
-    ],
-    eligibility: {
-      countries: ["Все страны"],
-      gpa: 4.5,
-      languageLevel: "B2+",
-      studyField: ["Математика", "Физика", "Химия", "Биология", "Информатика"],
-    },
-    applicationProcess: "Подача документов через приемную комиссию МГУ",
-    contactInfo: {
-      email: "international@msu.ru",
-      phone: "+7 (495) 939-10-00",
-    },
-    tags: ["МГУ", "магистратура", "наука"],
-    isFeatured: true,
-    createdAt: "2024-01-01",
-    updatedAt: "2024-01-01",
-  },
-  {
-    id: "3",
-    title: "Стипендия Россотрудничества",
-    description:
-      "Государственная стипендия для граждан стран СНГ, обучающихся в российских вузах.",
-    amount: 120000,
-    currency: "RUB",
-    type: "GOVERNMENT" as GrantType,
-    status: "ACTIVE" as GrantStatus,
-    level: "ALL" as GrantLevel,
-    category: "ACADEMIC" as GrantCategory,
-    organization: "Россотрудничество",
-    website: "https://rs.gov.ru",
-    applicationDeadline: "2024-10-31",
-    startDate: "2024-09-01",
-    endDate: "2025-06-30",
-    requirements: [
-      "Гражданство стран СНГ",
-      "Хорошая успеваемость",
-      "Знание русского языка",
-      "Мотивационное письмо",
-    ],
-    documents: [
-      "Заявление",
-      "Копия паспорта",
-      "Аттестат/диплом",
-      "Медицинская справка",
-      "Сертификат о знании русского языка",
-    ],
-    benefits: [
-      "Полное покрытие обучения",
-      "Ежемесячная стипендия 120,000 ₽",
-      "Проживание в общежитии",
-      "Медицинская страховка",
-    ],
-    eligibility: {
-      countries: [
-        "Азербайджан",
-        "Армения",
-        "Беларусь",
-        "Казахстан",
-        "Кыргызстан",
-        "Молдова",
-        "Таджикистан",
-        "Туркменистан",
-        "Узбекистан",
-      ],
-      ageRange: { min: 17, max: 30 },
-      gpa: 3.8,
-      languageLevel: "B1+",
-    },
-    applicationProcess:
-      "Подача через представительства Россотрудничества в странах СНГ",
-    contactInfo: {
-      email: "grants@rs.gov.ru",
-      phone: "+7 (495) 981-56-80",
-    },
-    tags: ["СНГ", "государственная", "все уровни"],
-    isFeatured: false,
-    createdAt: "2024-01-01",
-    updatedAt: "2024-01-01",
-  },
-];
 
 type Category = {
   id: string;
@@ -1831,6 +1644,18 @@ const categoriesConfig: Omit<Category, "name">[] = [
   },
 ];
 
+const ENABLED_CATEGORY_IDS = new Set([
+  "all",
+  "schedule",
+  "exams",
+  "papers",
+  "documents",
+  "structure",
+  "dictionary",
+  "expulsion-risks",
+  "translation-centers",
+]);
+
 export function EducationGuideContent() {
   const { t } = useTranslation();
   const [searchQuery, setSearchQuery] = useState("");
@@ -1838,7 +1663,6 @@ export function EducationGuideContent() {
   const [showSchedule, setShowSchedule] = useState(false);
   const [isLoading, setIsLoading] = useState(false);
   const [isInitialLoading, setIsInitialLoading] = useState(true);
-  const [grants] = useState<Grant[]>(mockGrants);
 
   const {
     isRead,
@@ -1848,21 +1672,17 @@ export function EducationGuideContent() {
   const handleMarkRead = useCallback((guideId: string) => {
     markAsRead(guideId);
   }, [markAsRead]);
-  const [grantSearchTerm, setGrantSearchTerm] = useState("");
-  const [showGrantFilters, setShowGrantFilters] = useState(false);
-  const [grantFilters, setGrantFilters] = useState<{
-    type?: GrantType[];
-    status?: GrantStatus[];
-    level?: GrantLevel[];
-    category?: GrantCategory[];
-  }>({});
-  const [favorites, setFavorites] = useState<string[]>([]);
   const [guidesVisibleCount, setGuidesVisibleCount] = useState(12);
 
-  const categories: Category[] = categoriesConfig.map((category) => ({
-    ...category,
-    name: t(`educationGuide.categories.${category.id}`),
-  }));
+  const categories: Category[] = categoriesConfig
+    .filter((category) => ENABLED_CATEGORY_IDS.has(category.id))
+    .map((category) => ({
+      ...category,
+      name: t(`educationGuide.categories.${category.id}`),
+    }));
+  const safeSelectedCategory = ENABLED_CATEGORY_IDS.has(selectedCategory)
+    ? selectedCategory
+    : "all";
 
   // Показать контент сразу (без искусственной задержки — улучшает Performance)
   useEffect(() => {
@@ -1874,6 +1694,13 @@ export function EducationGuideContent() {
   useEffect(() => {
     setGuidesVisibleCount(12);
   }, [searchQuery, selectedCategory]);
+
+  // Любая неизвестная/устаревшая категория сбрасывается на "all".
+  useEffect(() => {
+    if (!ENABLED_CATEGORY_IDS.has(selectedCategory)) {
+      setSelectedCategory("all");
+    }
+  }, [selectedCategory]);
 
   const handleShowSchedule = async (filters: ScheduleFilters) => {
     setIsLoading(true);
@@ -1887,110 +1714,6 @@ export function EducationGuideContent() {
     setShowSchedule(true);
     // Пока нет API ВУЗа, всегда показываем "Ничего не найдено"
   };
-
-  // Функции для работы с грантами
-  const toggleFavorite = (grantId: string) => {
-    setFavorites((prev) =>
-      prev.includes(grantId)
-        ? prev.filter((id) => id !== grantId)
-        : [...prev, grantId]
-    );
-  };
-
-  const formatAmount = (amount: number, currency: string) => {
-    return new Intl.NumberFormat("ru-RU", {
-      style: "currency",
-      currency: currency === "RUB" ? "RUB" : "USD",
-      minimumFractionDigits: 0,
-      maximumFractionDigits: 0,
-    }).format(amount);
-  };
-
-  const getStatusColor = (status: GrantStatus) => {
-    switch (status) {
-      case "ACTIVE":
-        return "bg-green-100 text-green-800";
-      case "COMING_SOON":
-        return "bg-blue-100 text-blue-800";
-      case "EXPIRED":
-        return "bg-gray-100 text-gray-800";
-      case "CLOSED":
-        return "bg-red-100 text-red-800";
-      default:
-        return "bg-gray-100 text-gray-800";
-    }
-  };
-
-  const getTypeIcon = (type: GrantType) => {
-    switch (type) {
-      case "GOVERNMENT":
-        return <Building className="h-4 w-4" />;
-      case "UNIVERSITY":
-        return <GraduationCap className="h-4 w-4" />;
-      case "PRIVATE":
-        return <Award className="h-4 w-4" />;
-      case "INTERNATIONAL":
-        return <Globe className="h-4 w-4" />;
-      case "RESEARCH":
-        return <BookOpen className="h-4 w-4" />;
-      case "EXCHANGE":
-        return <Users className="h-4 w-4" />;
-      default:
-        return <Award className="h-4 w-4" />;
-    }
-  };
-
-  // Фильтрация грантов
-  const filteredGrants = useMemo(() => {
-    let filtered = grants;
-
-    // Search filter
-    if (grantSearchTerm) {
-      filtered = filtered.filter(
-        (grant) =>
-          grant.title.toLowerCase().includes(grantSearchTerm.toLowerCase()) ||
-          grant.description
-            .toLowerCase()
-            .includes(grantSearchTerm.toLowerCase()) ||
-          grant.organization
-            .toLowerCase()
-            .includes(grantSearchTerm.toLowerCase()) ||
-          grant.tags.some((tag) =>
-            tag.toLowerCase().includes(grantSearchTerm.toLowerCase())
-          )
-      );
-    }
-
-    // Type filter
-    if (grantFilters.type && grantFilters.type.length > 0) {
-      filtered = filtered.filter((grant) =>
-        grantFilters.type!.includes(grant.type)
-      );
-    }
-
-    // Status filter
-    if (grantFilters.status && grantFilters.status.length > 0) {
-      filtered = filtered.filter((grant) =>
-        grantFilters.status!.includes(grant.status)
-      );
-    }
-
-    // Level filter
-    if (grantFilters.level && grantFilters.level.length > 0) {
-      filtered = filtered.filter((grant) =>
-        grantFilters.level!.includes(grant.level)
-      );
-    }
-
-    // Category filter
-    if (grantFilters.category && grantFilters.category.length > 0) {
-      filtered = filtered.filter((grant) =>
-        grantFilters.category!.includes(grant.category)
-      );
-    }
-
-    return filtered;
-  }, [grants, grantSearchTerm, grantFilters]);
 
   // Фильтрация гайдов
   const filteredGuides = useMemo(() => {
@@ -2009,9 +1732,9 @@ export function EducationGuideContent() {
     }
 
     // Фильтр по категории
-    if (selectedCategory !== "all") {
+    if (safeSelectedCategory !== "all") {
       filtered = filtered.filter((guide) => {
-        switch (selectedCategory) {
+        switch (safeSelectedCategory) {
           case "schedule":
             return guide.tags.some((tag) =>
               ["расписание", "пары", "занятия", "время"].includes(tag)
@@ -2068,7 +1791,7 @@ export function EducationGuideContent() {
     }
 
     return filtered;
-  }, [searchQuery, selectedCategory]);
+  }, [searchQuery, safeSelectedCategory]);
 
   // Skeleton при начальной загрузке
   if (isInitialLoading) {
@@ -2179,7 +1902,7 @@ export function EducationGuideContent() {
           <div className="grid grid-cols-2 sm:grid-cols-4 gap-3 sm:gap-4">
             {categories.map((category) => {
               const Icon = category.icon;
-              const isActive = selectedCategory === category.id;
+              const isActive = safeSelectedCategory === category.id;
               const isLink = category.isLink;
               const href = category.href;
               
@@ -2221,307 +1944,7 @@ export function EducationGuideContent() {
         </div>
 
         {/* Content based on selected category */}
-        {selectedCategory === "grants" ? (
-          <div className="space-y-6">
-            {/* Grants Search and Filters */}
-            <div className="bg-white rounded-2xl sm:rounded-3xl p-4 sm:p-6">
-              <div className="flex flex-col lg:flex-row gap-4">
-                {/* Search */}
-                <div className="flex-1 relative">
-                  <Search className="absolute left-3 top-1/2 transform -translate-y-1/2 text-gray-400 h-5 w-5" />
-                  <input
-                    type="text"
-                    placeholder={t("educationGuide.grants.searchPlaceholder")}
-                    value={grantSearchTerm}
-                    onChange={(e) => setGrantSearchTerm(e.target.value)}
-                    className="w-full pl-10 pr-4 py-3 border border-gray-300 rounded-lg focus:ring-2 focus:ring-blue-500 focus:border-transparent transition-all duration-300"
-                  />
-                </div>
-
-                {/* Filter Toggle */}
-                <Button
-                  variant="outline"
-                  onClick={() => setShowGrantFilters(!showGrantFilters)}
-                  className="px-6 py-3"
-                >
-                  <Filter className="h-5 w-5 mr-2" />
-                  {t("educationGuide.grants.filters")}
-                </Button>
-              </div>
-
-              {/* Filters Panel */}
-              {showGrantFilters && (
-                <div className="mt-6 pt-6 border-t border-gray-200">
-                  <div className="grid grid-cols-1 md:grid-cols-2 lg:grid-cols-4 gap-4">
-                    {/* Type Filter */}
-                    <div>
-                      <h4 className="text-sm font-medium text-gray-700 mb-2">
-                        {t("educationGuide.grants.grantType")}
-                      </h4>
-                      <div className="space-y-2">
-                        {Object.values(GrantType).map((type) => (
-                          <label
-                            key={type}
-                            className="flex items-center space-x-2"
-                          >
-                            <input
-                              type="checkbox"
-                              checked={
-                                grantFilters.type?.includes(type) || false
-                              }
-                              onChange={(e) => {
-                                setGrantFilters((prev) => ({
-                                  ...prev,
-                                  type: e.target.checked
-                                    ? [...(prev.type || []), type]
-                                    : prev.type?.filter((t) => t !== type) ||
-                                      [],
-                                }));
-                              }}
-                              className="rounded border-gray-300 text-blue-600 focus:ring-blue-500"
-                            />
-                            <span className="text-sm text-gray-600">
-                              {type}
-                            </span>
-                          </label>
-                        ))}
-                      </div>
-                    </div>
-
-                    {/* Level Filter */}
-                    <div>
-                      <h4 className="text-sm font-medium text-gray-700 mb-2">
-                        {t("educationGuide.grants.educationLevel")}
-                      </h4>
-                      <div className="space-y-2">
-                        {Object.values(GrantLevel).map((level) => (
-                          <label
-                            key={level}
-                            className="flex items-center space-x-2"
-                          >
-                            <input
-                              type="checkbox"
-                              checked={
-                                grantFilters.level?.includes(level) || false
-                              }
-                              onChange={(e) => {
-                                setGrantFilters((prev) => ({
-                                  ...prev,
-                                  level: e.target.checked
-                                    ? [...(prev.level || []), level]
-                                    : prev.level?.filter((l) => l !== level) ||
-                                      [],
-                                }));
-                              }}
-                              className="rounded border-gray-300 text-blue-600 focus:ring-blue-500"
-                            />
-                            <span className="text-sm text-gray-600">
-                              {level}
-                            </span>
-                          </label>
-                        ))}
-                      </div>
-                    </div>
-
-                    {/* Category Filter */}
-                    <div>
-                      <h4 className="text-sm font-medium text-gray-700 mb-2">
-                        {t("educationGuide.grants.category")}
-                      </h4>
-                      <div className="space-y-2">
-                        {Object.values(GrantCategory).map((category) => (
-                          <label
-                            key={category}
-                            className="flex items-center space-x-2"
-                          >
-                            <input
-                              type="checkbox"
-                              checked={
-                                grantFilters.category?.includes(category) ||
-                                false
-                              }
-                              onChange={(e) => {
-                                setGrantFilters((prev) => ({
-                                  ...prev,
-                                  category: e.target.checked
-                                    ? [...(prev.category || []), category]
-                                    : prev.category?.filter(
-                                        (c) => c !== category
-                                      ) || [],
-                                }));
-                              }}
-                              className="rounded border-gray-300 text-blue-600 focus:ring-blue-500"
-                            />
-                            <span className="text-sm text-gray-600">
-                              {category}
-                            </span>
-                          </label>
-                        ))}
-                      </div>
-                    </div>
-
-                    {/* Status Filter */}
-                    <div>
-                      <h4 className="text-sm font-medium text-gray-700 mb-2">
-                        {t("educationGuide.grants.status")}
-                      </h4>
-                      <div className="space-y-2">
-                        {Object.values(GrantStatus).map((status) => (
-                          <label
-                            key={status}
-                            className="flex items-center space-x-2"
-                          >
-                            <input
-                              type="checkbox"
-                              checked={
-                                grantFilters.status?.includes(status) || false
-                              }
-                              onChange={(e) => {
-                                setGrantFilters((prev) => ({
-                                  ...prev,
-                                  status: e.target.checked
-                                    ? [...(prev.status || []), status]
-                                    : prev.status?.filter(
-                                        (s) => s !== status
-                                      ) || [],
-                                }));
-                              }}
-                              className="rounded border-gray-300 text-blue-600 focus:ring-blue-500"
-                            />
-                            <span className="text-sm text-gray-600">
-                              {status}
-                            </span>
-                          </label>
-                        ))}
-                      </div>
-                    </div>
-                  </div>
-                </div>
-              )}
-            </div>
-
-            {/* Results Count */}
-            <div className="mb-4">
-              <p className="text-gray-600">
-                {t("educationGuide.grants.foundCount")}: {filteredGrants.length}
-              </p>
-            </div>
-
-            {/* Grants Grid */}
-            <div
-              className="grid grid-cols-1 lg:grid-cols-2 xl:grid-cols-3 gap-6"
-              style={{ gridAutoRows: "1fr" }}
-            >
-              {filteredGrants.map((grant) => (
-                <GuideCardBase
-                  key={grant.id}
-                  className="rounded-2xl sm:rounded-3xl"
-                  icon={
-                    <div className="rounded-xl flex-shrink-0 h-12 w-12 sm:h-14 sm:w-14 flex items-center justify-center shadow-sm bg-slate-100 text-slate-700">
-                      {getTypeIcon(grant.type)}
-                    </div>
-                  }
-                  title={grant.title}
-                  subtitle={grant.organization}
-                  badges={
-                    <>
-                      <span
-                        className={`px-2 py-1 rounded-full text-xs font-medium ${getStatusColor(
-                          grant.status
-                        )}`}
-                      >
-                        {grant.status}
-                      </span>
-                      {grant.isFeatured && (
-                        <span className="inline-flex items-center space-x-1 text-xs text-yellow-600 font-medium">
-                          <Star className="h-3 w-3 sm:h-4 sm:w-4 text-yellow-500 fill-yellow-500" />
-                          <span>{t("educationGuide.grants.featured")}</span>
-                        </span>
-                      )}
-                    </>
-                  }
-                  description={grant.description}
-                  meta={[
-                    {
-                      icon: <DollarSign className="h-3 w-3 sm:h-4 sm:w-4" />,
-                      label: t("educationGuide.grants.amount"),
-                      value: formatAmount(grant.amount, grant.currency),
-                      valueClassName: "text-green-600",
-                    },
-                    {
-                      icon: <Calendar className="h-3 w-3 sm:h-4 sm:w-4" />,
-                      label: t("educationGuide.grants.deadline"),
-                      value: new Date(
-                        grant.applicationDeadline
-                      ).toLocaleDateString("ru-RU"),
-                      valueClassName: "text-red-600",
-                    },
-                    {
-                      icon: <GraduationCap className="h-3 w-3 sm:h-4 sm:w-4" />,
-                      label: t("educationGuide.grants.level"),
-                      value: grant.level,
-                      valueClassName: "text-gray-700",
-                    },
-                  ]}
-                  tags={grant.tags}
-                  footerActions={
-                    <>
-                      <div className="flex items-center space-x-2">
-                        <Button
-                          variant="ghost"
-                          size="sm"
-                          onClick={() => toggleFavorite(grant.id)}
-                          className="p-1 h-8 w-8"
-                        >
-                          <Heart
-                            className={`h-4 w-4 ${
-                              favorites.includes(grant.id)
-                                ? "fill-red-500 text-red-500"
-                                : "text-gray-400"
-                            }`}
-                          />
-                        </Button>
-                        <Button variant="ghost" size="sm" className="p-1 h-8 w-8">
-                          <Share2 className="h-4 w-4 text-gray-400" />
-                        </Button>
-                      </div>
-                      <div className="flex space-x-2">
-                        <Button className="bg-gradient-to-r from-blue-600 to-purple-600 hover:from-blue-700 hover:to-purple-700 text-xs sm:text-sm">
-                          <Eye className="h-3 w-3 sm:h-4 sm:w-4 mr-1 sm:mr-2" />
-                          {t("educationGuide.grants.details")}
-                        </Button>
-                        <Button variant="outline" className="px-2 sm:px-3">
-                          <TrendingUp className="h-3 w-3 sm:h-4 sm:w-4" />
-                        </Button>
-                      </div>
-                    </>
-                  }
-                />
-              ))}
-            </div>
-
-            {/* Empty State */}
-            {filteredGrants.length === 0 && (
-              <div className="text-center py-12">
-                <Award className="h-16 w-16 text-gray-400 mx-auto mb-4" />
-                <h3 className="text-lg font-medium text-gray-900 mb-2">
-                  {t("educationGuide.grants.notFound")}
-                </h3>
-                <p className="text-gray-600 mb-4">
-                  {t("educationGuide.grants.tryChangeFilters")}
-                </p>
-                <Button
-                  onClick={() => {
-                    setGrantSearchTerm("");
-                    setGrantFilters({});
-                  }}
-                >
-                  {t("educationGuide.grants.resetFilters")}
-                </Button>
-              </div>
-            )}
-          </div>
-        ) : selectedCategory === "schedule" ? (
+        {safeSelectedCategory === "schedule" ? (
           <div className="space-y-6">
             <ScheduleFilter onShowSchedule={handleShowSchedule} />
             {isLoading && (
@@ -2566,7 +1989,7 @@ export function EducationGuideContent() {
                       String(filteredGuides.length),
                     )}
               </h2>
-              {(searchQuery || selectedCategory !== "all") && (
+              {(searchQuery || safeSelectedCategory !== "all") && (
                 <Button
                   variant="outline"
                   size="sm"

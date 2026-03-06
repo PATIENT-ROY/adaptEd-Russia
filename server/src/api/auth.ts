@@ -2,7 +2,7 @@ import { Router, Request, Response } from 'express';
 import { z } from 'zod';
 import { prisma } from '../lib/database';
 import { hashPassword, generateToken, authenticateUser } from '../lib/auth';
-import { RegisterRequest, LoginRequest, AuthResponse, ApiResponse } from '@/types';
+import { RegisterRequest, LoginRequest, AuthResponse, ApiResponse } from '../types/index.js';
 
 const router = Router();
 
@@ -171,7 +171,7 @@ router.get('/verify', async (req: Request, res: Response) => {
     }
 
     const token = authHeader.substring(7);
-    const { verifyToken } = await import('../lib/auth');
+    const { verifyToken } = await import('../lib/auth.js');
     const payload = verifyToken(token);
 
     if (!payload) {
@@ -182,7 +182,7 @@ router.get('/verify', async (req: Request, res: Response) => {
     }
 
     // Получаем актуальные данные пользователя
-    const { getUserById } = await import('../lib/auth');
+    const { getUserById } = await import('../lib/auth.js');
     const user = await getUserById(payload.userId);
 
     if (!user) {

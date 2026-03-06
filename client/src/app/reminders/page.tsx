@@ -1271,11 +1271,17 @@ function RemindersContent() {
             </div>
 
             {/* Completed Reminders */}
-            {completedReminders.length > 0 && (
-              <div>
-                <h2 className="text-lg sm:text-xl font-semibold text-gray-900 mb-4">
-                  {t("reminders.sections.completed")}
-                </h2>
+            <div>
+              <h2 className="text-lg sm:text-xl font-semibold text-gray-900 mb-4">
+                {t("reminders.sections.completed")}
+              </h2>
+              {completedReminders.length === 0 ? (
+                <Card>
+                  <CardContent className="p-6 text-center text-gray-600">
+                    Пока нет завершённых напоминаний.
+                  </CardContent>
+                </Card>
+              ) : (
                 <div className="space-y-3 sm:space-y-4">
                   {completedReminders.map((reminder) => {
                     const catEnum = parseCategoryEnum(reminder.category);
@@ -1328,8 +1334,8 @@ function RemindersContent() {
                     );
                   })}
                 </div>
-              </div>
-            )}
+              )}
+            </div>
           </div>
         )}
 

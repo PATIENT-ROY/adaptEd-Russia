@@ -2,7 +2,7 @@ import { Router, Request, Response } from 'express';
 import { z } from 'zod';
 import { prisma } from '../lib/database';
 import { authMiddleware } from '../lib/auth';
-import { ApiResponse } from '@/types';
+import { ApiResponse } from '../types/index.js';
 
 const router = Router();
 

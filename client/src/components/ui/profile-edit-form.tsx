@@ -1,6 +1,6 @@
 "use client";
 
-import { useState, useEffect } from "react";
+import { useState, useEffect, useMemo, useRef } from "react";
 import { Button } from "./button";
 import { Input } from "./input";
 import {
@@ -19,8 +19,21 @@ import {
   Loader2,
   Phone,
   MapPin,
+  ChevronDown,
 } from "lucide-react";
 import type { User as UserType } from "@/types";
+import { RUSSIAN_CITIES } from "@/constants/russianCities";
+
+const POPULAR_RUSSIAN_CITIES = [
+  "Москва",
+  "Санкт-Петербург",
+  "Екатеринбург",
+  "Казань",
+  "Новосибирск",
+  "Нижний Новгород",
+  "Краснодар",
+  "Ростов-на-Дону",
+];
 
 interface ExtendedUser extends UserType {
   university?: string;
@@ -55,6 +68,9 @@ export function ProfileEditForm({
   });
   const [isLoading, setIsLoading] = useState(false);
   const [error, setError] = useState("");
+  const [showCitySuggestions, setShowCitySuggestions] = useState(false);
+  const [activeCityIndex, setActiveCityIndex] = useState(-1);
+  const cityFieldRef = useRef<HTMLDivElement | null>(null);
 
   useEffect(() => {
     setFormData({
@@ -68,6 +84,21 @@ export function ProfileEditForm({
     });
   }, [user]);
 
+  useEffect(() => {
+    const handleClickOutside = (event: MouseEvent) => {
+      if (!cityFieldRef.current) return;
+      if (!cityFieldRef.current.contains(event.target as Node)) {
+        setShowCitySuggestions(false);
+        setActiveCityIndex(-1);
+      }
+    };
+
+    document.addEventListener("mousedown", handleClickOutside);
+    return () => {
+      document.removeEventListener("mousedown", handleClickOutside);
+    };
+  }, []);
+
   const handleChange = (
     e: React.ChangeEvent<HTMLInputElement | HTMLSelectElement>
   ) => {
@@ -76,6 +107,30 @@ export function ProfileEditForm({
       [e.target.name]: e.target.value,
     }));
   };
+
+  const citySuggestions = useMemo(() => {
+    const query = formData.city
+      .trim()
+      .toLocaleLowerCase("ru")
+      .replace(/ё/g, "е");
+    const source = query
+      ? RUSSIAN_CITIES.filter((city) =>
+          city
+            .toLocaleLowerCase("ru")
+            .replace(/ё/g, "е")
+            .includes(query),
+        )
+      : POPULAR_RUSSIAN_CITIES;
+    return source.slice(0, 8);
+  }, [formData.city]);
+
+  const applyCity = (city: string) => {
+    setFormData((prev) => ({ ...prev, city }));
+    setShowCitySuggestions(false);
+    setActiveCityIndex(-1);
+  };
+
+  const shouldShowCitySuggestions = showCitySuggestions;
 
   const handleSubmit = async (e: React.FormEvent) => {
     e.preventDefault();
@@ -207,7 +262,7 @@ export function ProfileEditForm({
               >
                 Город
               </label>
-              <div className="relative">
+              <div className="relative" ref={cityFieldRef}>
                 <MapPin className="absolute left-3 top-1/2 transform -translate-y-1/2 h-4 w-4 text-slate-400" />
                 <Input
                   id="city"
@@ -215,9 +270,72 @@ export function ProfileEditForm({
                   type="text"
                   placeholder="Москва, Санкт-Петербург..."
                   value={formData.city}
-                  onChange={handleChange}
+                  onChange={(e) => {
+                    handleChange(e);
+                    setShowCitySuggestions(true);
+                    setActiveCityIndex(-1);
+                  }}
+                  onFocus={() => setShowCitySuggestions(true)}
+                  onKeyDown={(e) => {
+                    if (!showCitySuggestions || citySuggestions.length === 0) return;
+                    if (e.key === "ArrowDown") {
+                      e.preventDefault();
+                      setActiveCityIndex((prev) =>
+                        prev < citySuggestions.length - 1 ? prev + 1 : 0,
+                      );
+                    } else if (e.key === "ArrowUp") {
+                      e.preventDefault();
+                      setActiveCityIndex((prev) =>
+                        prev > 0 ? prev - 1 : citySuggestions.length - 1,
+                      );
+                    } else if (e.key === "Enter" && activeCityIndex >= 0) {
+                      e.preventDefault();
+                      applyCity(citySuggestions[activeCityIndex]);
+                    } else if (e.key === "Escape") {
+                      setShowCitySuggestions(false);
+                      setActiveCityIndex(-1);
+                    }
+                  }}
                   className="pl-10 h-12 border-slate-200 focus:border-blue-500 focus:ring-blue-500"
+                  autoComplete="off"
                 />
+                <button
+                  type="button"
+                  aria-label="Показать города"
+                  onClick={() => setShowCitySuggestions((prev) => !prev)}
+                  className="absolute right-3 top-1/2 -translate-y-1/2 text-slate-500 hover:text-slate-700"
+                >
+                  <ChevronDown
+                    className={`h-4 w-4 transition-transform ${showCitySuggestions ? "rotate-180" : ""}`}
+                  />
+                </button>
+                {shouldShowCitySuggestions && citySuggestions.length > 0 && (
+                  <div className="absolute left-0 right-0 top-full z-50 mt-1 rounded-lg border border-slate-200 bg-white shadow-lg max-h-56 overflow-y-auto">
+                    {citySuggestions.map((city, index) => (
+                      <button
+                        key={city}
+                        type="button"
+                        onMouseEnter={() => setActiveCityIndex(index)}
+                        onMouseDown={(e) => {
+                          e.preventDefault();
+                          applyCity(city);
+                        }}
+                        className={`w-full px-3 py-2 text-left text-sm ${
+                          index === activeCityIndex
+                            ? "bg-blue-50 text-blue-700"
+                            : "hover:bg-slate-50"
+                        }`}
+                      >
+                        {city}
+                      </button>
+                    ))}
+                  </div>
+                )}
+                {shouldShowCitySuggestions && citySuggestions.length === 0 && (
+                  <div className="absolute left-0 right-0 top-full z-50 mt-1 rounded-lg border border-slate-200 bg-white shadow-lg px-3 py-2 text-sm text-slate-500">
+                    Город не найден
+                  </div>
+                )}
               </div>
             </div>
 

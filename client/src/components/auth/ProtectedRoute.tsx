@@ -1,8 +1,6 @@
 "use client";
 
 import { useAuth } from "@/contexts/AuthContext";
-import { useRouter } from "next/navigation";
-import { useEffect, useState } from "react";
 import { Card, CardContent } from "@/components/ui/card";
 import { Button } from "@/components/ui/button";
 import { Loader2, LogIn } from "lucide-react";
@@ -15,18 +13,6 @@ interface ProtectedRouteProps {
 
 export function ProtectedRoute({ children, fallback }: ProtectedRouteProps) {
   const { user, isLoading } = useAuth();
-  const router = useRouter();
-  const [isRedirecting, setIsRedirecting] = useState(false);
-
-  useEffect(() => {
-    if (!isLoading && !user) {
-      setIsRedirecting(true);
-      const timeoutId = window.setTimeout(() => {
-        router.push("/login");
-      }, 1200);
-      return () => window.clearTimeout(timeoutId);
-    }
-  }, [user, isLoading, router]);
 
   if (isLoading) {
     return (
@@ -58,13 +44,8 @@ export function ProtectedRoute({ children, fallback }: ProtectedRouteProps) {
               Требуется авторизация
             </h2>
             <p className="text-slate-600 mb-6">
-              Для доступа к этой странице необходимо войти в систему
+              Чтобы использовать эту функцию, создайте аккаунт или войдите.
             </p>
-            {isRedirecting && (
-              <div className="mb-6 rounded-lg bg-blue-50 px-4 py-2 text-sm text-blue-700">
-                Сейчас перенаправим на страницу входа…
-              </div>
-            )}
             <div>
               <Link href="/login">
                 <Button className="w-full bg-gradient-to-r from-blue-500 to-purple-600 hover:from-blue-600 hover:to-purple-700">
@@ -73,7 +54,7 @@ export function ProtectedRoute({ children, fallback }: ProtectedRouteProps) {
               </Link>
               <Link href="/register" className="block mt-3">
                 <Button variant="outline" className="w-full">
-                  Зарегистрироваться
+                  Создать аккаунт
                 </Button>
               </Link>
             </div>

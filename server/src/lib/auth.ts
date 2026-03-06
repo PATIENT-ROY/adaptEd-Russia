@@ -1,19 +1,21 @@
 import bcrypt from 'bcryptjs';
-import jwt, { SignOptions } from 'jsonwebtoken';
+import jwt, { JwtPayload, SignOptions } from 'jsonwebtoken';
 import crypto from 'crypto';
 import { Request, Response, NextFunction } from 'express';
 import { prisma } from './database';
 
-let JWT_SECRET = process.env.JWT_SECRET;
-if (!JWT_SECRET) {
+let jwtSecret = process.env.JWT_SECRET;
+if (!jwtSecret) {
   if (process.env.NODE_ENV === 'production') {
     throw new Error('❌ JWT_SECRET is required in production environment');
   }
   // DEVELOPMENT: Генерируем случайный secret вместо hardcoded
-  JWT_SECRET = crypto.randomBytes(32).toString('hex');
+  jwtSecret = crypto.randomBytes(32).toString('hex');
   console.warn('[auth] ⚠️ No JWT_SECRET provided, generated random secret for development');
 }
-const JWT_EXPIRES_IN = process.env.JWT_EXPIRES_IN || '7d';
+const JWT_SECRET: string = jwtSecret;
+const JWT_EXPIRES_IN: SignOptions['expiresIn'] =
+  (process.env.JWT_EXPIRES_IN as SignOptions['expiresIn']) || '7d';
 
 export interface JWTPayload {
   userId: string;
@@ -31,12 +33,20 @@ export async function comparePasswords(password: string, hashedPassword: string)
 }
 
 export function generateToken(payload: JWTPayload): string {
-  return jwt.sign(payload, JWT_SECRET, { expiresIn: JWT_EXPIRES_IN } as any);
+  return jwt.sign(payload, JWT_SECRET, { expiresIn: JWT_EXPIRES_IN });
 }
 
 export function verifyToken(token: string): JWTPayload | null {
   try {
-    return jwt.verify(token, JWT_SECRET) as JWTPayload;
+    const decoded = jwt.verify(token, JWT_SECRET);
+    if (typeof decoded === 'string') return null;
+    const payload = decoded as JwtPayload;
+    if (!payload.userId || !payload.email || !payload.role) return null;
+    return {
+      userId: String(payload.userId),
+      email: String(payload.email),
+      role: String(payload.role),
+    };
   } catch (error) {
     return null;
   }

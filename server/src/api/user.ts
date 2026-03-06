@@ -3,7 +3,7 @@ import { z } from 'zod';
 import { v4 as uuidv4 } from 'uuid';
 import { prisma } from '../lib/database';
 import { authMiddleware, getUserById } from '../lib/auth';
-import { UpdateProfileRequest, ApiResponse } from '@/types';
+import { UpdateProfileRequest, ApiResponse } from '../types/index.js';
 
 interface ProfileStat {
   id: string;
@@ -778,7 +778,7 @@ router.get('/profile/overview', authMiddleware, async (req: Request, res: Respon
     const recentActivity: ProfileActivityItem[] = [
       ...reminders.slice(0, 5).map((reminder) => ({
         id: `reminder-${reminder.id}`,
-        type: reminder.status === 'COMPLETED' ? 'task' : 'reminder',
+        type: reminder.status === 'COMPLETED' ? ('task' as const) : ('reminder' as const),
         title:
           reminder.status === 'COMPLETED'
             ? `Завершена задача: ${reminder.title}`

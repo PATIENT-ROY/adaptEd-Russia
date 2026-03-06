@@ -3,6 +3,7 @@
 import { useState, useEffect, useRef, useCallback, useMemo } from "react";
 import { Layout } from "@/components/layout/layout";
 import { ProtectedRoute } from "@/components/auth/ProtectedRoute";
+import { FeaturePreviewGate } from "@/components/auth/FeaturePreviewGate";
 import { useAuth } from "@/contexts/AuthContext";
 import { useChat } from "@/hooks/useChat";
 import { useTranslation } from "@/hooks/useTranslation";
@@ -346,6 +347,13 @@ export default function AiHelperPage() {
   const [isSpeechSupported, setIsSpeechSupported] = useState(false);
   const [isListening, setIsListening] = useState(false);
   const [speechError, setSpeechError] = useState<string | null>(null);
+  const unauthFallback = (
+    <FeaturePreviewGate
+      featureName="AI-помощник"
+      previewTitle="Пример вопроса"
+      previewText='Например: "Как оформить академическую справку в университете?" После входа AI даст пошаговый ответ.'
+    />
+  );
 
   const aiModes = useMemo<AIModeConfig[]>(() => [
     {
@@ -571,7 +579,7 @@ export default function AiHelperPage() {
 
   if (!user || isInitializing) {
     return (
-      <ProtectedRoute>
+      <ProtectedRoute fallback={unauthFallback}>
         <Layout>
           <div className="space-y-4 sm:space-y-6 lg:space-y-8">
             <div className="bg-white rounded-2xl sm:rounded-3xl p-4 sm:p-6 shadow-sm">
@@ -626,7 +634,7 @@ export default function AiHelperPage() {
   const isAtLimit = usage ? usage.used >= usage.limit : false;
 
   return (
-    <ProtectedRoute>
+    <ProtectedRoute fallback={unauthFallback}>
       <Layout>
         <div className="space-y-4 sm:space-y-6 lg:space-y-8">
           {/* Header */}

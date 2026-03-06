@@ -109,6 +109,10 @@ export default function RegisterPage() {
   const [showConfirmPassword, setShowConfirmPassword] = useState(false);
   const [error, setError] = useState("");
   const [detailsError, setDetailsError] = useState("");
+  const [submitFeedback, setSubmitFeedback] = useState<{
+    type: "success" | "error";
+    message: string;
+  } | null>(null);
   const [isLoading, setIsLoading] = useState(false);
   const [step, setStep] = useState<"details" | "security">("details");
   const [isTransitioning, setIsTransitioning] = useState(false);
@@ -130,6 +134,7 @@ export default function RegisterPage() {
   const handleDetailsSubmit = (e: React.FormEvent) => {
     e.preventDefault();
     setDetailsError("");
+    setSubmitFeedback(null);
 
     const isValidEmail = /^[^\s@]+@[^\s@]+\.[^\s@]+$/.test(
       formData.email.trim()
@@ -149,6 +154,7 @@ export default function RegisterPage() {
   const handleSecuritySubmit = async (e: React.FormEvent) => {
     e.preventDefault();
     setError("");
+    setSubmitFeedback(null);
 
     if (formData.password !== formData.confirmPassword) {
       setError(t("register.error.passwordMismatch"));
@@ -184,9 +190,17 @@ export default function RegisterPage() {
       });
 
       if (success) {
-        router.push("/dashboard");
+        setSubmitFeedback({
+          type: "success",
+          message: "✔ Аккаунт успешно создан",
+        });
+        setTimeout(() => router.push("/dashboard"), 900);
       } else {
         setError(t("register.error.emailExists"));
+        setSubmitFeedback({
+          type: "error",
+          message: "❌ Ошибка регистрации",
+        });
       }
     } catch (err) {
       if (
@@ -197,6 +211,10 @@ export default function RegisterPage() {
       } else {
         setError(t("register.error.generic"));
       }
+      setSubmitFeedback({
+        type: "error",
+        message: "❌ Ошибка регистрации",
+      });
     } finally {
       setIsLoading(false);
     }
@@ -210,6 +228,7 @@ export default function RegisterPage() {
     setIsTransitioning(false);
     setError("");
     setDetailsError("");
+    setSubmitFeedback(null);
   };
 
   useEffect(() => {
@@ -265,6 +284,7 @@ export default function RegisterPage() {
                 <motion.form
                   key="details-step"
                   onSubmit={handleDetailsSubmit}
+                  method="post"
                   className="space-y-4"
                   initial={{ opacity: 0, y: 24 }}
                   animate={{ opacity: 1, y: 0 }}
@@ -412,6 +432,7 @@ export default function RegisterPage() {
 
                   <motion.form
                     onSubmit={handleSecuritySubmit}
+                    method="post"
                     className="space-y-4"
                     initial={{ opacity: 0, y: 12 }}
                     animate={{ opacity: 1, y: 0 }}
@@ -510,6 +531,25 @@ export default function RegisterPage() {
                         >
                           <AlertCircle className="h-4 w-4 text-red-500" />
                           <span className="text-sm text-red-600">{error}</span>
+                        </motion.div>
+                      )}
+                    </AnimatePresence>
+                    <AnimatePresence>
+                      {submitFeedback && (
+                        <motion.div
+                          className={`rounded-lg border px-3 py-2 text-sm ${
+                            submitFeedback.type === "success"
+                              ? "bg-green-50 border-green-200 text-green-700"
+                              : "bg-red-50 border-red-200 text-red-700"
+                          }`}
+                          initial={{ opacity: 0, y: 8 }}
+                          animate={{ opacity: 1, y: 0 }}
+                          exit={{ opacity: 0, y: -6 }}
+                          transition={{ duration: 0.2 }}
+                          role="status"
+                          aria-live="polite"
+                        >
+                          {submitFeedback.message}
                         </motion.div>
                       )}
                     </AnimatePresence>

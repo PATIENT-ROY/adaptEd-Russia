@@ -265,6 +265,10 @@ router.get('/history', authMiddleware, async (req, res) => {
 router.post('/webhook', async (req, res) => {
   try {
     const webhookSecret = process.env.YOOKASSA_WEBHOOK_SECRET;
+    if (process.env.NODE_ENV === 'production' && !webhookSecret) {
+      console.error('YOOKASSA_WEBHOOK_SECRET is required in production');
+      return res.status(500).json({ error: 'Webhook is not configured' });
+    }
     if (webhookSecret) {
       const providedSecret = req.headers['x-webhook-secret'];
       if (providedSecret !== webhookSecret) {

@@ -2,7 +2,7 @@ import { Router, Request } from 'express';
 import { z } from 'zod';
 import { prisma } from '../lib/database.js';
 import { authMiddleware, JWTPayload } from '../lib/auth.js';
-import { ApiResponse, ReviewStatus } from '@/types';
+import { ApiResponse, ReviewStatus } from '../types/index.js';
 
 interface AuthenticatedRequest extends Request {
   user?: JWTPayload;

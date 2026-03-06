@@ -84,6 +84,25 @@ const nextConfig: NextConfig = {
       },
     ];
   },
+  async redirects() {
+    return [
+      {
+        source: '/education',
+        destination: '/education-guide',
+        permanent: true,
+      },
+      {
+        source: '/life',
+        destination: '/life-guide',
+        permanent: true,
+      },
+      {
+        source: '/reviews',
+        destination: '/profile',
+        permanent: true,
+      },
+    ];
+  },
   webpack: (config, { isServer }) => {
     // Правильная обработка pdfjs-dist
     if (!isServer) {

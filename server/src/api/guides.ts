@@ -1,6 +1,6 @@
 import { Router, Request, Response } from 'express';
 import { prisma } from '../lib/database';
-import { ApiResponse } from '@/types';
+import { ApiResponse } from '../types/index.js';
 
 const router = Router();
 

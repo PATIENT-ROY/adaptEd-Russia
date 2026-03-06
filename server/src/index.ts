@@ -136,7 +136,7 @@ app.use(cookieParser());
 app.get('/health', async (req, res) => {
   try {
     // Проверяем database connection
-    const { prisma } = await import('./lib/database');
+    const { prisma } = await import('./lib/database.js');
     await prisma.$queryRaw`SELECT 1`;
     
     res.json({ 
