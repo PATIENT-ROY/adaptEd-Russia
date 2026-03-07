@@ -99,7 +99,7 @@ const lifeGuides: Guide[] = [
 **Сроки:**
 • Регистрацию нужно оформить в течение 7-14 дней после заселения
 • Для иностранных студентов может быть другой срок (уточните)
-• Штраф за просрочку регистрации - до 5000 рублей
+• Штраф зависит от региона и статуса; актуальные суммы уточняйте на Госуслугах и в МВД
 
 # 5. Правила проживания в общежитии
 
@@ -180,7 +180,7 @@ const lifeGuides: Guide[] = [
     difficulty: Difficulty.BEGINNER,
     isPublished: true,
     createdAt: "2024-01-15",
-    updatedAt: "2024-01-20",
+    updatedAt: "2026-03-07",
   },
   {
     id: "2",
@@ -260,7 +260,7 @@ const lifeGuides: Guide[] = [
 
 🏛️ **Места получения:**
 
-**1. Пенсионный фонд России (ПФР):**
+**1. Социальный фонд России (СФР):**
 • По месту регистрации или фактического проживания
 • Приём по записи или в порядке очереди
 • Сайт: pfrf.ru
@@ -268,12 +268,12 @@ const lifeGuides: Guide[] = [
 **2. Многофункциональный центр (МФЦ):**
 • Можно подать заявление в любом МФЦ
 • Более удобно - можно записаться онлайн
-• Документы передадут в ПФР
+• Документы передадут в Социальный фонд России (СФР)
 
 **3. Работодатель:**
 • При первом трудоустройстве работодатель может оформить
 • Подайте заявление работодателю
-• Он направит документы в ПФР
+• Он направит документы в Социальный фонд России (СФР)
 
 # 6. Документы для получения СНИЛС
 
@@ -308,7 +308,7 @@ const lifeGuides: Guide[] = [
 3. Придите в назначенное время
 4. Подайте заявление и документы
 5. Получите расписку о приёме документов
-6. Придите за готовой "зелёной карточкой" (справкой СНИЛС)
+6. Получите уведомление о регистрации в системе СНИЛС (бумажно или в электронном виде)
 
 **Стоимость:**
 • БЕСПЛАТНО
@@ -322,7 +322,7 @@ const lifeGuides: Guide[] = [
 • БЕСПЛАТНО
 
 **Если потеряли СНИЛС:**
-• Нужно обратиться в ПФР с паспортом
+• Нужно обратиться в СФР с паспортом
 • Заполнить заявление на выдачу дубликата
 • Срок - до 2 недель
 • БЕСПЛАТНО
@@ -340,7 +340,7 @@ const lifeGuides: Guide[] = [
 
 **СНИЛС:**
 • Номер СНИЛС также не меняется
-• При смене фамилии нужно обновить данные в ПФР
+• При смене фамилии нужно обновить данные в СФР
 • Без СНИЛС нельзя оформить многие документы
 • Нужен для регистрации на госуслугах
 
@@ -355,7 +355,7 @@ const lifeGuides: Guide[] = [
     difficulty: Difficulty.INTERMEDIATE,
     isPublished: true,
     createdAt: "2024-01-10",
-    updatedAt: "2024-01-18",
+    updatedAt: "2026-03-07",
   },
   {
     id: "3",
@@ -387,7 +387,7 @@ const lifeGuides: Guide[] = [
 • Заявление о выдаче/замене паспорта (форма заполняется на месте)
 • Заявление в полицию о потере (талон-уведомление)
 • Фотографии 2 шт. (35x45 мм, цветные, матовые)
-• Квитанция об оплате госпошлины (3000 руб. для иностранцев, уточните)
+• Квитанция об оплате госпошлины (актуальный размер уточняйте на Госуслугах/в МВД)
 • Документы о регистрации по месту пребывания
 
 **Дополнительно для иностранных граждан:**
@@ -497,7 +497,7 @@ const lifeGuides: Guide[] = [
 # 8. Стоимость восстановления
 
 💰 **Госпошлина:**
-• Для граждан России: обычно 1500-3000 рублей
+• Для граждан России: актуальный размер госпошлины и штрафов зависит от обстоятельств, уточняйте в МВД/на Госуслугах
 • Для иностранных граждан: уточните размер
 • При срочном оформлении - дополнительная плата
 
@@ -528,7 +528,7 @@ const lifeGuides: Guide[] = [
     difficulty: Difficulty.ADVANCED,
     isPublished: true,
     createdAt: "2024-01-05",
-    updatedAt: "2024-01-12",
+    updatedAt: "2026-03-07",
   },
   {
     id: "4",
@@ -713,7 +713,7 @@ const lifeGuides: Guide[] = [
     difficulty: Difficulty.INTERMEDIATE,
     isPublished: true,
     createdAt: "2024-01-08",
-    updatedAt: "2024-01-15",
+    updatedAt: "2026-03-07",
   },
   {
     id: "5",
@@ -852,7 +852,7 @@ const lifeGuides: Guide[] = [
 
 # 6. Стоимость проезда
 
-💰 **Примерные цены (2024 год, могут варьироваться по городам):**
+💰 **Примерные ориентиры на 2026 год (зависят от города и тарифа):**
 
 **Метро:**
 • Одна поездка: 60-70 рублей
@@ -944,7 +944,7 @@ const lifeGuides: Guide[] = [
     difficulty: Difficulty.BEGINNER,
     isPublished: true,
     createdAt: "2024-01-12",
-    updatedAt: "2024-01-19",
+    updatedAt: "2026-03-07",
   },
   {
     id: "6",
@@ -956,7 +956,7 @@ const lifeGuides: Guide[] = [
     difficulty: Difficulty.ADVANCED,
     isPublished: true,
     createdAt: "2024-01-03",
-    updatedAt: "2024-01-10",
+    updatedAt: "2026-03-07",
   },
   {
     id: "7",
@@ -968,7 +968,7 @@ const lifeGuides: Guide[] = [
     difficulty: Difficulty.ADVANCED,
     isPublished: true,
     createdAt: "2024-01-07",
-    updatedAt: "2024-01-14",
+    updatedAt: "2026-03-07",
   },
   {
     id: "8",
@@ -980,7 +980,7 @@ const lifeGuides: Guide[] = [
     difficulty: Difficulty.INTERMEDIATE,
     isPublished: true,
     createdAt: "2024-01-09",
-    updatedAt: "2024-01-16",
+    updatedAt: "2026-03-07",
   },
   {
     id: "9",
@@ -993,7 +993,7 @@ const lifeGuides: Guide[] = [
     difficulty: Difficulty.INTERMEDIATE,
     isPublished: true,
     createdAt: "2024-01-20",
-    updatedAt: "2024-01-20",
+    updatedAt: "2026-03-07",
   },
   {
     id: "10",
@@ -1006,7 +1006,7 @@ const lifeGuides: Guide[] = [
     difficulty: Difficulty.BEGINNER,
     isPublished: true,
     createdAt: "2024-01-20",
-    updatedAt: "2024-01-20",
+    updatedAt: "2026-03-07",
   },
   {
     id: "11",
@@ -1019,7 +1019,7 @@ const lifeGuides: Guide[] = [
     difficulty: Difficulty.INTERMEDIATE,
     isPublished: true,
     createdAt: "2024-01-20",
-    updatedAt: "2024-01-20",
+    updatedAt: "2026-03-07",
   },
   {
     id: "12",
@@ -1032,7 +1032,7 @@ const lifeGuides: Guide[] = [
     difficulty: Difficulty.BEGINNER,
     isPublished: true,
     createdAt: "2024-01-20",
-    updatedAt: "2024-01-20",
+    updatedAt: "2026-03-07",
   },
   {
     id: "13",
@@ -1045,7 +1045,7 @@ const lifeGuides: Guide[] = [
     difficulty: Difficulty.ADVANCED,
     isPublished: true,
     createdAt: "2024-01-20",
-    updatedAt: "2024-01-20",
+    updatedAt: "2026-03-07",
   },
   {
     id: "14",
@@ -1276,7 +1276,7 @@ const lifeGuides: Guide[] = [
     difficulty: Difficulty.INTERMEDIATE,
     isPublished: true,
     createdAt: "2024-01-20",
-    updatedAt: "2024-01-20",
+    updatedAt: "2026-03-07",
   },
 ];
 

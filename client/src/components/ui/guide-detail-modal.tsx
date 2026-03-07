@@ -1,11 +1,11 @@
 "use client";
 
 import { Guide } from "@/types";
-import { X, Clock, Tag, BookOpen } from "lucide-react";
+import { X, Clock, Tag, BookOpen, ChevronDown, ChevronUp } from "lucide-react";
 import { formatDate } from "@/lib/date-utils";
 import { Button } from "./button";
 import { Card, CardContent, CardHeader, CardTitle } from "./card";
-import { useEffect } from "react";
+import { useEffect, useState } from "react";
 
 // Функция для обработки markdown
 function formatMarkdown(text: string): string {
@@ -83,6 +83,34 @@ function formatMarkdown(text: string): string {
   return html;
 }
 
+function extractQuickPoints(content: string): string[] {
+  const lines = content
+    .split("\n")
+    .map((line) => line.trim())
+    .filter(Boolean);
+
+  const bulletPoints = lines
+    .filter((line) => line.startsWith("• "))
+    .map((line) => line.replace(/^•\s*/, ""))
+    .filter((line) => line.length > 8);
+
+  if (bulletPoints.length > 0) {
+    return bulletPoints.slice(0, 5);
+  }
+
+  const plainText = content
+    .replace(/[#*_`]/g, "")
+    .replace(/\n+/g, " ")
+    .replace(/\s+/g, " ")
+    .trim();
+
+  return plainText
+    .split(/[.!?]/)
+    .map((s) => s.trim())
+    .filter((s) => s.length > 12)
+    .slice(0, 4);
+}
+
 interface GuideDetailModalProps {
   guide: Guide | null;
   isOpen: boolean;
@@ -94,6 +122,8 @@ export function GuideDetailModal({
   isOpen,
   onClose,
 }: GuideDetailModalProps) {
+  const [showFullContent, setShowFullContent] = useState(false);
+
   // Prevent body scroll when modal is open
   useEffect(() => {
     if (isOpen) {
@@ -107,7 +137,14 @@ export function GuideDetailModal({
     };
   }, [isOpen]);
 
+  useEffect(() => {
+    if (isOpen) {
+      setShowFullContent(false);
+    }
+  }, [isOpen, guide?.id]);
+
   if (!guide || !isOpen) return null;
+  const quickPoints = extractQuickPoints(guide.content);
 
   return (
     <div
@@ -168,14 +205,49 @@ export function GuideDetailModal({
             </div>
           </div>
 
+          <div className="rounded-lg border border-amber-200 bg-amber-50 px-3 py-2 text-xs text-amber-800">
+            Актуальность: материалы пересмотрены в 2026 году. Нормы, пошлины и сроки могут отличаться по региону и вузу, проверяйте официальные источники (вуз, Госуслуги, МВД, ФНС, СФР).
+          </div>
+
+          <div className="rounded-lg border border-blue-200 bg-blue-50 px-3 py-3">
+            <p className="text-sm font-semibold text-blue-900 mb-2">Кратко и понятно:</p>
+            <ul className="list-disc ml-5 space-y-1 text-sm text-blue-900">
+              {quickPoints.map((point, index) => (
+                <li key={`${guide.id}-quick-${index}`}>{point}</li>
+              ))}
+            </ul>
+          </div>
+
           {/* Content */}
-          <div className="prose max-w-none prose-sm">
-            <div 
-              className="text-sm text-gray-700 leading-relaxed whitespace-pre-line"
-              dangerouslySetInnerHTML={{
-                __html: formatMarkdown(guide.content)
-              }}
-            />
+          <div>
+            <Button
+              type="button"
+              variant="outline"
+              className="mb-3 w-full"
+              onClick={() => setShowFullContent((prev) => !prev)}
+            >
+              {showFullContent ? (
+                <>
+                  <ChevronUp className="h-4 w-4 mr-2" />
+                  Скрыть полную версию
+                </>
+              ) : (
+                <>
+                  <ChevronDown className="h-4 w-4 mr-2" />
+                  Показать полную версию
+                </>
+              )}
+            </Button>
+            {showFullContent && (
+              <div className="prose max-w-none prose-sm">
+                <div 
+                  className="text-sm text-gray-700 leading-relaxed whitespace-pre-line"
+                  dangerouslySetInnerHTML={{
+                    __html: formatMarkdown(guide.content)
+                  }}
+                />
+              </div>
+            )}
           </div>
 
           {/* Tags */}

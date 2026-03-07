@@ -36,13 +36,13 @@ const educationGuides: Guide[] = [
     title: "Словарь студенческого сленга",
     category: GuideCategory.EDUCATION,
     content:
-      "Понимай студентов России! 🔥 Словарь актуальных терминов 2025 года. Изучи студенческий сленг: 'сессия', 'стипуха', 'пара', 'хвост', 'автомат' и многое другое. Быт, Право и Образование. Полезно для быстрой адаптации в студенческой среде!",
+      "Понимай студентов России! 🔥 Словарь актуальных терминов 2026 года. Изучи студенческий сленг: 'сессия', 'стипуха', 'пара', 'хвост', 'автомат' и многое другое. Быт, Право и Образование. Полезно для быстрой адаптации в студенческой среде!",
     language: Language.RU,
     tags: ["сленг", "студенты", "культура", "адаптация", "язык"],
     difficulty: Difficulty.BEGINNER,
     isPublished: true,
     createdAt: "2025-01-22",
-    updatedAt: "2025-01-22",
+    updatedAt: "2026-03-07",
   },
   {
     id: "0-main",
@@ -56,7 +56,7 @@ const educationGuides: Guide[] = [
     difficulty: Difficulty.BEGINNER,
     isPublished: true,
     createdAt: "2024-01-21",
-    updatedAt: "2024-01-21",
+    updatedAt: "2026-03-07",
   },
   {
     id: "0",
@@ -69,7 +69,7 @@ const educationGuides: Guide[] = [
     difficulty: Difficulty.BEGINNER,
     isPublished: true,
     createdAt: "2024-01-20",
-    updatedAt: "2024-01-20",
+    updatedAt: "2026-03-07",
   },
   {
     id: "1",
@@ -169,7 +169,7 @@ const educationGuides: Guide[] = [
     difficulty: Difficulty.INTERMEDIATE,
     isPublished: true,
     createdAt: "2024-01-15",
-    updatedAt: "2024-01-20",
+    updatedAt: "2026-03-07",
   },
   {
     id: "2",
@@ -264,7 +264,7 @@ const educationGuides: Guide[] = [
     difficulty: Difficulty.BEGINNER,
     isPublished: true,
     createdAt: "2024-01-10",
-    updatedAt: "2024-01-18",
+    updatedAt: "2026-03-07",
   },
   {
     id: "3",
@@ -357,7 +357,7 @@ const educationGuides: Guide[] = [
     difficulty: Difficulty.BEGINNER,
     isPublished: true,
     createdAt: "2024-01-05",
-    updatedAt: "2024-01-12",
+    updatedAt: "2026-03-07",
   },
   {
     id: "4",
@@ -636,7 +636,7 @@ const educationGuides: Guide[] = [
     difficulty: Difficulty.INTERMEDIATE,
     isPublished: true,
     createdAt: "2024-01-08",
-    updatedAt: "2024-01-15",
+    updatedAt: "2026-03-07",
   },
   {
     id: "5",
@@ -725,7 +725,7 @@ const educationGuides: Guide[] = [
     difficulty: Difficulty.INTERMEDIATE,
     isPublished: true,
     createdAt: "2024-01-12",
-    updatedAt: "2024-01-19",
+    updatedAt: "2026-03-07",
   },
   {
     id: "6",
@@ -964,7 +964,7 @@ const educationGuides: Guide[] = [
     difficulty: Difficulty.ADVANCED,
     isPublished: true,
     createdAt: "2024-01-03",
-    updatedAt: "2024-01-10",
+    updatedAt: "2026-03-07",
   },
   {
     id: "doc-inn-snils",
@@ -1030,7 +1030,7 @@ const educationGuides: Guide[] = [
 
 🏛️ **Места получения:**
 
-**1. Пенсионный фонд России (ПФР):**
+**1. Социальный фонд России (СФР):**
 • По месту регистрации или фактического проживания
 • Приём по записи или в порядке очереди
 • Сайт: pfrf.ru
@@ -1038,12 +1038,12 @@ const educationGuides: Guide[] = [
 **2. Многофункциональный центр (МФЦ):**
 • Можно подать заявление в любом МФЦ
 • Более удобно - можно записаться онлайн
-• Документы передадут в ПФР
+• Документы передадут в Социальный фонд России (СФР)
 
 **3. Работодатель:**
 • При первом трудоустройстве работодатель может оформить
 • Подайте заявление работодателю
-• Он направит документы в ПФР
+• Он направит документы в Социальный фонд России (СФР)
 
 # 6. Документы для получения СНИЛС
 
@@ -1080,7 +1080,7 @@ const educationGuides: Guide[] = [
 
 **СНИЛС:**
 • Номер СНИЛС также не меняется
-• При смене фамилии нужно обновить данные в ПФР
+• При смене фамилии нужно обновить данные в СФР
 • Без СНИЛС нельзя оформить многие документы
 • Нужен для регистрации на госуслугах
 
@@ -1095,7 +1095,7 @@ const educationGuides: Guide[] = [
     difficulty: Difficulty.INTERMEDIATE,
     isPublished: true,
     createdAt: "2024-01-10",
-    updatedAt: "2024-01-18",
+    updatedAt: "2026-03-07",
   },
   {
     id: "doc-passport",
@@ -1127,7 +1127,7 @@ const educationGuides: Guide[] = [
 • Заявление о выдаче/замене паспорта (форма заполняется на месте)
 • Заявление в полицию о потере (талон-уведомление)
 • Фотографии 2 шт. (35x45 мм, цветные, матовые)
-• Квитанция об оплате госпошлины (3000 руб. для иностранцев, уточните)
+• Квитанция об оплате госпошлины (актуальный размер уточняйте на Госуслугах/в МВД)
 • Документы о регистрации по месту пребывания
 
 **Дополнительно для иностранных граждан:**
@@ -1218,7 +1218,7 @@ const educationGuides: Guide[] = [
 # 8. Стоимость восстановления
 
 💰 **Госпошлина:**
-• Для граждан России: обычно 1500-3000 рублей
+• Для граждан России: актуальный размер госпошлины и штрафов зависит от обстоятельств, уточняйте в МВД/на Госуслугах
 • Для иностранных граждан: уточните размер
 • При срочном оформлении - дополнительная плата
 
@@ -1239,7 +1239,7 @@ const educationGuides: Guide[] = [
     difficulty: Difficulty.ADVANCED,
     isPublished: true,
     createdAt: "2024-01-05",
-    updatedAt: "2024-01-15",
+    updatedAt: "2026-03-07",
   },
   {
     id: "expulsion-academic",
@@ -1306,7 +1306,7 @@ const educationGuides: Guide[] = [
     difficulty: Difficulty.ADVANCED,
     isPublished: true,
     createdAt: "2024-01-20",
-    updatedAt: "2024-01-20",
+    updatedAt: "2026-03-07",
   },
   {
     id: "expulsion-attendance",
@@ -1374,7 +1374,7 @@ const educationGuides: Guide[] = [
     difficulty: Difficulty.INTERMEDIATE,
     isPublished: true,
     createdAt: "2024-01-20",
-    updatedAt: "2024-01-20",
+    updatedAt: "2026-03-07",
   },
   {
     id: "expulsion-migration",
@@ -1394,7 +1394,7 @@ const educationGuides: Guide[] = [
 
 **Последствия:**
 • Получение предупреждения от МВД
-• Штрафы (до 5000 рублей за просрочку регистрации)
+• Штрафы за просрочку регистрации (размер зависит от региона и статуса)
 • Возможность депортации
 • **Немедленное отчисление из вуза** при серьёзных нарушениях
 • Запрет на въезд в Россию
@@ -1452,7 +1452,7 @@ const educationGuides: Guide[] = [
     difficulty: Difficulty.ADVANCED,
     isPublished: true,
     createdAt: "2024-01-20",
-    updatedAt: "2024-01-20",
+    updatedAt: "2026-03-07",
   },
   {
     id: "expulsion-payment",
@@ -1527,7 +1527,7 @@ const educationGuides: Guide[] = [
     difficulty: Difficulty.INTERMEDIATE,
     isPublished: true,
     createdAt: "2024-01-20",
-    updatedAt: "2024-01-20",
+    updatedAt: "2026-03-07",
   },
   {
     id: "expulsion-disciplinary",
@@ -1614,7 +1614,7 @@ const educationGuides: Guide[] = [
     difficulty: Difficulty.ADVANCED,
     isPublished: true,
     createdAt: "2024-01-20",
-    updatedAt: "2024-01-20",
+    updatedAt: "2026-03-07",
   },
 ];
 
