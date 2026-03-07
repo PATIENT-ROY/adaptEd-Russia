@@ -19,12 +19,16 @@ import {
   Download,
   ChevronDown,
   ArrowLeft,
+  Copy,
+  CheckCircle2,
 } from "lucide-react";
 import Link from "next/link";
 import { useAuth } from "@/contexts/AuthContext";
 import { useState, useMemo } from "react";
 import { Language, Role } from "@/types";
 import { useTranslation } from "@/hooks/useTranslation";
+import { API_BASE_URL } from "@/lib/api";
+import { countrySuggestions } from "@/constants/countries";
 
 const mockUsers = [
   {
@@ -134,6 +138,10 @@ function AdminUsersContent() {
     status: "active",
   });
   const [formError, setFormError] = useState<string>("");
+  const [inviteLink, setInviteLink] = useState<string>("");
+  const [isSubmitting, setIsSubmitting] = useState(false);
+  const [copiedInvite, setCopiedInvite] = useState(false);
+  const [inviteStatus, setInviteStatus] = useState<string>("");
 
   const filteredUsers = useMemo(() => {
     return users.filter((user) => {
@@ -203,11 +211,16 @@ function AdminUsersContent() {
       status: "active",
     });
     setFormError("");
+    setInviteLink("");
+    setInviteStatus("");
+    setCopiedInvite(false);
   };
 
-  const handleAddUserSubmit = (event: React.FormEvent) => {
+  const handleAddUserSubmit = async (event: React.FormEvent) => {
     event.preventDefault();
     setFormError("");
+    setInviteLink("");
+    setInviteStatus("");
 
     if (!newUser.name.trim() || !newUser.email.trim() || !newUser.country) {
       setFormError(t("admin.users.formError"));
@@ -220,28 +233,83 @@ function AdminUsersContent() {
       return;
     }
 
-    const createdUser = {
-      id: Date.now().toString(),
-      name: newUser.name,
-      email: newUser.email,
-      country: newUser.country,
-      language: newUser.language,
-      role: newUser.role,
-      status: newUser.status,
-      registeredAt: new Date().toISOString().split("T")[0],
-      lastLogin: new Date().toISOString().split("T")[0],
-      guidesRead: 0,
-      aiQuestions: 0,
-    } as typeof mockUsers[number];
+    const token = typeof window !== "undefined" ? localStorage.getItem("token") : null;
+    if (!token) {
+      setFormError("Не найден токен администратора. Выполните вход заново.");
+      return;
+    }
 
-    setUsers([createdUser, ...users]);
-    setIsAddUserOpen(false);
-    resetNewUserForm();
+    setIsSubmitting(true);
+    try {
+      const roleMap: Record<string, "STUDENT" | "ADMIN" | "GUEST"> = {
+        student: "STUDENT",
+        admin: "ADMIN",
+        guest: "GUEST",
+      };
+
+      const response = await fetch(`${API_BASE_URL}/auth/admin/invite`, {
+        method: "POST",
+        headers: {
+          "Content-Type": "application/json",
+          Authorization: `Bearer ${token}`,
+        },
+        body: JSON.stringify({
+          name: newUser.name.trim(),
+          email: newUser.email.trim().toLowerCase(),
+          country: newUser.country.trim(),
+          language: newUser.language,
+          role: roleMap[newUser.role] || "STUDENT",
+        }),
+      });
+
+      const payload = await response.json();
+      if (!response.ok || !payload?.success) {
+        setFormError(payload?.error || "Не удалось создать приглашение");
+        return;
+      }
+
+      const createdUser = {
+        id: payload.data.user.id,
+        name: payload.data.user.name,
+        email: payload.data.user.email,
+        country: payload.data.user.country,
+        language: String(payload.data.user.language || "RU").toLowerCase(),
+        role: String(payload.data.user.role || "STUDENT").toLowerCase(),
+        status: "pending",
+        registeredAt: new Date().toISOString().split("T")[0],
+        lastLogin: "—",
+        guidesRead: 0,
+        aiQuestions: 0,
+      } as typeof mockUsers[number];
+
+      setUsers((prev) => [createdUser, ...prev]);
+      setInviteLink(payload.data.setupLink || "");
+      setInviteStatus(
+        payload.data.emailSent
+          ? "Письмо с приглашением отправлено автоматически."
+          : "Письмо не отправлено автоматически. Скопируйте ссылку и отправьте вручную."
+      );
+    } catch {
+      setFormError("Ошибка сети. Попробуйте ещё раз.");
+    } finally {
+      setIsSubmitting(false);
+    }
   };
 
   const closeAddUserModal = () => {
     setIsAddUserOpen(false);
     resetNewUserForm();
+  };
+
+  const handleCopyInvite = async () => {
+    if (!inviteLink) return;
+    try {
+      await navigator.clipboard.writeText(inviteLink);
+      setCopiedInvite(true);
+      setTimeout(() => setCopiedInvite(false), 1500);
+    } catch {
+      setFormError("Не удалось скопировать ссылку");
+    }
   };
 
   return (
@@ -611,6 +679,7 @@ function AdminUsersContent() {
                   <Input
                     id="new-user-country"
                     value={newUser.country}
+                    list="country-suggestions"
                     onChange={(e) =>
                       setNewUser((prev) => ({
                         ...prev,
@@ -620,6 +689,11 @@ function AdminUsersContent() {
                     placeholder={t("admin.users.modal.countryPlaceholder")}
                     required
                   />
+                  <datalist id="country-suggestions">
+                    {countrySuggestions.map((country) => (
+                      <option key={country} value={country} />
+                    ))}
+                  </datalist>
                 </div>
                 <div className="grid grid-cols-1 sm:grid-cols-2 gap-3">
                   <div className="space-y-1">
@@ -674,13 +748,34 @@ function AdminUsersContent() {
                     {formError}
                   </p>
                 )}
+                {inviteLink && (
+                  <div className="space-y-2 rounded-md border border-emerald-200 bg-emerald-50 p-3">
+                    <p className="text-sm font-medium text-emerald-700">{inviteStatus || "Приглашение создано."}</p>
+                    <div className="rounded bg-white px-2 py-1 text-xs text-slate-700 break-all border">
+                      {inviteLink}
+                    </div>
+                    <Button type="button" variant="outline" onClick={handleCopyInvite}>
+                      {copiedInvite ? (
+                        <>
+                          <CheckCircle2 className="h-4 w-4 mr-2 text-emerald-600" />
+                          Скопировано
+                        </>
+                      ) : (
+                        <>
+                          <Copy className="h-4 w-4 mr-2" />
+                          Скопировать ссылку
+                        </>
+                      )}
+                    </Button>
+                  </div>
+                )}
                 <div className="flex items-center justify-end space-x-2">
                   <Button type="button" variant="outline" onClick={closeAddUserModal}>
                     {t("admin.common.cancel")}
                   </Button>
-                  <Button type="submit" className="flex items-center space-x-2">
+                  <Button type="submit" className="flex items-center space-x-2" disabled={isSubmitting}>
                     <Plus className="h-4 w-4" />
-                    <span>{t("admin.common.create")}</span>
+                    <span>{isSubmitting ? "Создание..." : t("admin.common.create")}</span>
                   </Button>
                 </div>
               </form>

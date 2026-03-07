@@ -1,8 +1,10 @@
 import { Router, Request, Response } from 'express';
 import { z } from 'zod';
 import { prisma } from '../lib/database';
-import { hashPassword, generateToken, authenticateUser } from '../lib/auth';
+import { hashPassword, generateToken, authenticateUser, authMiddleware } from '../lib/auth';
+import { sendInviteEmail } from '../lib/email';
 import { RegisterRequest, LoginRequest, AuthResponse, ApiResponse } from '../types/index.js';
+import crypto from 'crypto';
 
 const router = Router();
 
@@ -24,6 +26,30 @@ const loginSchema = z.object({
   email: z.string().email('Неверный формат email'),
   password: z.string().min(1, 'Пароль обязателен'),
 });
+
+const adminInviteSchema = z.object({
+  email: z.string().email('Неверный формат email'),
+  name: z.string().min(2, 'Имя должно содержать минимум 2 символа'),
+  country: z.string().min(2, 'Укажите страну'),
+  language: z.enum(['RU', 'EN', 'FR', 'AR', 'ZH']).default('RU'),
+  role: z.enum(['STUDENT', 'ADMIN', 'GUEST']).default('STUDENT'),
+});
+
+const setPasswordSchema = z.object({
+  token: z.string().min(16, 'Недействительный токен'),
+  password: z
+    .string()
+    .min(8, 'Пароль минимум 8 символов')
+    .regex(/[A-Z]/, 'Минимум одна заглавная буква')
+    .regex(/[a-z]/, 'Минимум одна строчная буква')
+    .regex(/[0-9]/, 'Минимум одна цифра'),
+});
+
+function createPasswordSetupToken() {
+  const rawToken = crypto.randomBytes(32).toString('hex');
+  const tokenHash = crypto.createHash('sha256').update(rawToken).digest('hex');
+  return { rawToken, tokenHash };
+}
 
 // Регистрация
 router.post('/register', async (req: Request, res: Response) => {
@@ -101,6 +127,189 @@ router.post('/register', async (req: Request, res: Response) => {
 
     console.error('Registration error:', error);
     res.status(500).json({
+      success: false,
+      error: 'Внутренняя ошибка сервера'
+    } as ApiResponse);
+  }
+});
+
+// Приглашение пользователя администратором (создание ссылки на установку пароля)
+router.post('/admin/invite', authMiddleware, async (req: Request, res: Response) => {
+  try {
+    const authUser = (req as any).user;
+    if (!authUser || authUser.role !== 'ADMIN') {
+      return res.status(403).json({
+        success: false,
+        error: 'Доступ запрещён'
+      } as ApiResponse);
+    }
+
+    const validatedData = adminInviteSchema.parse(req.body);
+    const normalizedEmail = validatedData.email.trim().toLowerCase();
+    const now = new Date();
+    const expiresAt = new Date(now.getTime() + 24 * 60 * 60 * 1000); // 24 часа
+    const { rawToken, tokenHash } = createPasswordSetupToken();
+    const tempPasswordHash = await hashPassword(crypto.randomBytes(24).toString('hex'));
+
+    let user = await prisma.user.findUnique({
+      where: { email: normalizedEmail },
+      select: { id: true, email: true, name: true, role: true, language: true, country: true },
+    });
+
+    if (!user) {
+      user = await prisma.user.create({
+        data: {
+          email: normalizedEmail,
+          name: validatedData.name,
+          country: validatedData.country,
+          language: validatedData.language,
+          role: validatedData.role,
+          password: tempPasswordHash,
+        },
+        select: { id: true, email: true, name: true, role: true, language: true, country: true },
+      });
+    }
+
+    // Отзываем старые неиспользованные токены
+    await prisma.passwordSetupToken.updateMany({
+      where: {
+        userId: user.id,
+        usedAt: null,
+        expiresAt: { gt: now },
+      },
+      data: { usedAt: now },
+    });
+
+    await prisma.passwordSetupToken.create({
+      data: {
+        userId: user.id,
+        tokenHash,
+        expiresAt,
+      },
+    });
+
+    const appBaseUrl = process.env.APP_BASE_URL || process.env.CLIENT_URL || 'http://localhost:3000';
+    const setupLink = `${appBaseUrl}/set-password?token=${rawToken}&email=${encodeURIComponent(user.email)}`;
+    const emailResult = await sendInviteEmail({
+      to: user.email,
+      recipientName: user.name,
+      setupLink,
+      expiresAtIso: expiresAt.toISOString(),
+    });
+
+    return res.status(201).json({
+      success: true,
+      data: {
+        user,
+        setupLink,
+        expiresAt: expiresAt.toISOString(),
+        emailSent: emailResult.sent,
+        emailProvider: emailResult.provider,
+        emailError: emailResult.error,
+      },
+      message: emailResult.sent
+        ? 'Пользователь приглашён. Письмо отправлено.'
+        : 'Пользователь приглашён. Не удалось отправить письмо автоматически, передайте ссылку вручную.'
+    } as ApiResponse);
+  } catch (error) {
+    if (error instanceof z.ZodError) {
+      return res.status(400).json({
+        success: false,
+        error: 'Ошибка валидации',
+        details: error.errors
+      } as ApiResponse);
+    }
+    console.error('Admin invite error:', error);
+    return res.status(500).json({
+      success: false,
+      error: 'Внутренняя ошибка сервера'
+    } as ApiResponse);
+  }
+});
+
+// Проверка токена установки пароля
+router.get('/set-password/verify', async (req: Request, res: Response) => {
+  const token = String(req.query.token || '');
+  if (!token) {
+    return res.status(400).json({
+      success: false,
+      error: 'Токен обязателен'
+    } as ApiResponse);
+  }
+
+  const tokenHash = crypto.createHash('sha256').update(token).digest('hex');
+  const setupToken = await prisma.passwordSetupToken.findUnique({
+    where: { tokenHash },
+    include: {
+      user: {
+        select: { id: true, email: true, name: true }
+      }
+    }
+  });
+
+  if (!setupToken || setupToken.usedAt || setupToken.expiresAt < new Date()) {
+    return res.status(400).json({
+      success: false,
+      error: 'Ссылка недействительна или истекла'
+    } as ApiResponse);
+  }
+
+  return res.json({
+    success: true,
+    data: {
+      valid: true,
+      email: setupToken.user.email,
+      name: setupToken.user.name,
+      expiresAt: setupToken.expiresAt.toISOString(),
+    }
+  } as ApiResponse);
+});
+
+// Установка пароля по одноразовому invite-токену
+router.post('/set-password', async (req: Request, res: Response) => {
+  try {
+    const validatedData = setPasswordSchema.parse(req.body);
+    const tokenHash = crypto.createHash('sha256').update(validatedData.token).digest('hex');
+    const now = new Date();
+
+    const setupToken = await prisma.passwordSetupToken.findUnique({
+      where: { tokenHash },
+    });
+
+    if (!setupToken || setupToken.usedAt || setupToken.expiresAt < now) {
+      return res.status(400).json({
+        success: false,
+        error: 'Ссылка недействительна или истекла'
+      } as ApiResponse);
+    }
+
+    const hashedPassword = await hashPassword(validatedData.password);
+
+    await prisma.$transaction([
+      prisma.user.update({
+        where: { id: setupToken.userId },
+        data: { password: hashedPassword },
+      }),
+      prisma.passwordSetupToken.update({
+        where: { id: setupToken.id },
+        data: { usedAt: now },
+      }),
+    ]);
+
+    return res.json({
+      success: true,
+      message: 'Пароль успешно установлен'
+    } as ApiResponse);
+  } catch (error) {
+    if (error instanceof z.ZodError) {
+      return res.status(400).json({
+        success: false,
+        error: 'Ошибка валидации',
+        details: error.errors
+      } as ApiResponse);
+    }
+    console.error('Set password error:', error);
+    return res.status(500).json({
       success: false,
       error: 'Внутренняя ошибка сервера'
     } as ApiResponse);

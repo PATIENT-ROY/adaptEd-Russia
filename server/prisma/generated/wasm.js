@@ -136,6 +136,15 @@ exports.Prisma.UserScalarFieldEnum = {
   gender: 'gender'
 };
 
+exports.Prisma.PasswordSetupTokenScalarFieldEnum = {
+  id: 'id',
+  userId: 'userId',
+  tokenHash: 'tokenHash',
+  expiresAt: 'expiresAt',
+  usedAt: 'usedAt',
+  createdAt: 'createdAt'
+};
+
 exports.Prisma.ProfileScalarFieldEnum = {
   id: 'id',
   userId: 'userId',
@@ -363,6 +372,7 @@ exports.Prisma.NullsOrder = {
 
 exports.Prisma.ModelName = {
   User: 'User',
+  PasswordSetupToken: 'PasswordSetupToken',
   Profile: 'Profile',
   Note: 'Note',
   Reminder: 'Reminder',

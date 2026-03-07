@@ -55,8 +55,24 @@ model User {
   questionLikes QuestionLike[]
   reviews      Review[]
   guideReads   GuideRead[]
+  passwordSetupTokens PasswordSetupToken[]
   
   @@map("users")
+}
+
+model PasswordSetupToken {
+  id         String   @id @default(cuid())
+  userId     String
+  tokenHash  String   @unique
+  expiresAt  DateTime
+  usedAt     DateTime?
+  createdAt  DateTime @default(now())
+
+  user       User     @relation(fields: [userId], references: [id], onDelete: Cascade)
+
+  @@index([userId])
+  @@index([expiresAt])
+  @@map("password_setup_tokens")
 }
 
 // Профили пользователей
