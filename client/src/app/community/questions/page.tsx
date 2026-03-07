@@ -68,7 +68,7 @@ export default function CommunityQuestionsPage() {
     deleteQuestion,
   } = useQuestions();
 
-  const [activeSort, setActiveSort] = useState<"popular" | "new">("popular");
+  const [activeSort, setActiveSort] = useState<"popular" | "new">("new");
   const [isFormVisible, setIsFormVisible] = useState(false);
   const [expandedQuestionId, setExpandedQuestionId] = useState<string | null>(
     null,

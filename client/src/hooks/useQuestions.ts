@@ -77,7 +77,7 @@ export const useQuestions = () => {
 
   const fetchQuestions = useCallback(
     async (
-      sort: "popular" | "new" = "popular",
+      sort: "popular" | "new" = "new",
       search?: string,
       page = 1,
     ) => {

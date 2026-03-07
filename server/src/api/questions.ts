@@ -21,7 +21,7 @@ const createAnswerSchema = z.object({
 
 // Схема для query параметров
 const querySchema = z.object({
-  sort: z.enum(['popular', 'new']).default('popular'),
+  sort: z.enum(['popular', 'new']).default('new'),
   page: z.coerce.number().int().positive().default(1),
   limit: z.coerce.number().int().min(1).max(100).default(20),
   search: z.string().optional(),
