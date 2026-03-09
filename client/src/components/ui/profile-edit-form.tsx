@@ -23,6 +23,7 @@ import {
 } from "lucide-react";
 import type { User as UserType } from "@/types";
 import { RUSSIAN_CITIES } from "@/constants/russianCities";
+import { RUSSIAN_UNIVERSITIES } from "@/constants/universities";
 
 const POPULAR_RUSSIAN_CITIES = [
   "Москва",
@@ -33,6 +34,17 @@ const POPULAR_RUSSIAN_CITIES = [
   "Нижний Новгород",
   "Краснодар",
   "Ростов-на-Дону",
+];
+
+const POPULAR_RUSSIAN_UNIVERSITIES = [
+  "МГУ имени М.В. Ломоносова",
+  "СПбГУ",
+  "НИУ ВШЭ",
+  "МФТИ",
+  "МГТУ им. Н.Э. Баумана",
+  "МГИМО",
+  "РУДН",
+  "КФУ",
 ];
 
 interface ExtendedUser extends UserType {
@@ -70,7 +82,10 @@ export function ProfileEditForm({
   const [error, setError] = useState("");
   const [showCitySuggestions, setShowCitySuggestions] = useState(false);
   const [activeCityIndex, setActiveCityIndex] = useState(-1);
+  const [showUniversitySuggestions, setShowUniversitySuggestions] = useState(false);
+  const [activeUniversityIndex, setActiveUniversityIndex] = useState(-1);
   const cityFieldRef = useRef<HTMLDivElement | null>(null);
+  const universityFieldRef = useRef<HTMLDivElement | null>(null);
 
   useEffect(() => {
     setFormData({
@@ -86,10 +101,20 @@ export function ProfileEditForm({
 
   useEffect(() => {
     const handleClickOutside = (event: MouseEvent) => {
-      if (!cityFieldRef.current) return;
-      if (!cityFieldRef.current.contains(event.target as Node)) {
+      if (
+        cityFieldRef.current &&
+        !cityFieldRef.current.contains(event.target as Node)
+      ) {
         setShowCitySuggestions(false);
         setActiveCityIndex(-1);
+      }
+
+      if (
+        universityFieldRef.current &&
+        !universityFieldRef.current.contains(event.target as Node)
+      ) {
+        setShowUniversitySuggestions(false);
+        setActiveUniversityIndex(-1);
       }
     };
 
@@ -124,13 +149,51 @@ export function ProfileEditForm({
     return source.slice(0, 8);
   }, [formData.city]);
 
+  const universitySuggestions = useMemo(() => {
+    const query = formData.university
+      .trim()
+      .toLocaleLowerCase("ru")
+      .replace(/ё/g, "е");
+
+    if (!query) {
+      return Array.from(new Set(POPULAR_RUSSIAN_UNIVERSITIES))
+        .sort((a, b) => a.localeCompare(b, "ru"))
+        .slice(0, 8);
+    }
+
+    const exactMatches: string[] = [];
+    const startsWithMatches: string[] = [];
+    const includesMatches: string[] = [];
+
+    for (const university of RUSSIAN_UNIVERSITIES) {
+      const normalized = university.toLocaleLowerCase("ru").replace(/ё/g, "е");
+      if (normalized === query) {
+        exactMatches.push(university);
+      } else if (normalized.startsWith(query)) {
+        startsWithMatches.push(university);
+      } else if (normalized.includes(query)) {
+        includesMatches.push(university);
+      }
+    }
+
+    const ordered = [...exactMatches, ...startsWithMatches, ...includesMatches];
+    return Array.from(new Set(ordered)).slice(0, 8);
+  }, [formData.university]);
+
   const applyCity = (city: string) => {
     setFormData((prev) => ({ ...prev, city }));
     setShowCitySuggestions(false);
     setActiveCityIndex(-1);
   };
 
+  const applyUniversity = (university: string) => {
+    setFormData((prev) => ({ ...prev, university }));
+    setShowUniversitySuggestions(false);
+    setActiveUniversityIndex(-1);
+  };
+
   const shouldShowCitySuggestions = showCitySuggestions;
+  const shouldShowUniversitySuggestions = showUniversitySuggestions;
 
   const handleSubmit = async (e: React.FormEvent) => {
     e.preventDefault();
@@ -218,7 +281,7 @@ export function ProfileEditForm({
               >
                 Университет
               </label>
-              <div className="relative">
+              <div className="relative" ref={universityFieldRef}>
                 <GraduationCap className="absolute left-3 top-1/2 transform -translate-y-1/2 h-4 w-4 text-slate-400" />
                 <Input
                   id="university"
@@ -226,9 +289,80 @@ export function ProfileEditForm({
                   type="text"
                   placeholder="Название университета"
                   value={formData.university}
-                  onChange={handleChange}
-                  className="pl-10 h-12 border-slate-200 focus:border-blue-500 focus:ring-blue-500"
+                  onChange={(e) => {
+                    handleChange(e);
+                    setShowUniversitySuggestions(true);
+                    setActiveUniversityIndex(-1);
+                  }}
+                  onFocus={() => setShowUniversitySuggestions(true)}
+                  onKeyDown={(e) => {
+                    if (
+                      !showUniversitySuggestions ||
+                      universitySuggestions.length === 0
+                    ) {
+                      return;
+                    }
+
+                    if (e.key === "ArrowDown") {
+                      e.preventDefault();
+                      setActiveUniversityIndex((prev) =>
+                        prev < universitySuggestions.length - 1 ? prev + 1 : 0,
+                      );
+                    } else if (e.key === "ArrowUp") {
+                      e.preventDefault();
+                      setActiveUniversityIndex((prev) =>
+                        prev > 0 ? prev - 1 : universitySuggestions.length - 1,
+                      );
+                    } else if (e.key === "Enter" && activeUniversityIndex >= 0) {
+                      e.preventDefault();
+                      applyUniversity(universitySuggestions[activeUniversityIndex]);
+                    } else if (e.key === "Escape") {
+                      setShowUniversitySuggestions(false);
+                      setActiveUniversityIndex(-1);
+                    }
+                  }}
+                  className="pl-10 pr-10 h-12 border-slate-200 focus:border-blue-500 focus:ring-blue-500"
+                  autoComplete="off"
                 />
+                <button
+                  type="button"
+                  aria-label="Показать университеты"
+                  onClick={() => setShowUniversitySuggestions((prev) => !prev)}
+                  className="absolute right-3 top-1/2 -translate-y-1/2 text-slate-500 hover:text-slate-700"
+                >
+                  <ChevronDown
+                    className={`h-4 w-4 transition-transform ${showUniversitySuggestions ? "rotate-180" : ""}`}
+                  />
+                </button>
+                {shouldShowUniversitySuggestions &&
+                  universitySuggestions.length > 0 && (
+                    <div className="absolute left-0 right-0 top-full z-50 mt-1 rounded-lg border border-slate-200 bg-white shadow-lg max-h-56 overflow-y-auto">
+                      {universitySuggestions.map((university, index) => (
+                        <button
+                          key={university}
+                          type="button"
+                          onMouseEnter={() => setActiveUniversityIndex(index)}
+                          onMouseDown={(e) => {
+                            e.preventDefault();
+                            applyUniversity(university);
+                          }}
+                          className={`w-full px-3 py-2 text-left text-sm ${
+                            index === activeUniversityIndex
+                              ? "bg-blue-50 text-blue-700"
+                              : "hover:bg-slate-50"
+                          }`}
+                        >
+                          {university}
+                        </button>
+                      ))}
+                    </div>
+                  )}
+                {shouldShowUniversitySuggestions &&
+                  universitySuggestions.length === 0 && (
+                    <div className="absolute left-0 right-0 top-full z-50 mt-1 rounded-lg border border-slate-200 bg-white shadow-lg px-3 py-2 text-sm text-slate-500">
+                      Университет не найден
+                    </div>
+                  )}
               </div>
             </div>
 

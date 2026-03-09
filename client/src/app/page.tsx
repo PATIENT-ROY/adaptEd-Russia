@@ -13,6 +13,7 @@ import {
   Bell,
   MessageSquare,
   Sparkles,
+  ArrowUp,
   Crown,
   CreditCard,
   Zap,
@@ -40,6 +41,7 @@ import { ReviewCard } from "@/components/home/ReviewCard";
 export default function HomePage() {
   const { t } = useTranslation();
   const [showScrollIndicator, setShowScrollIndicator] = useState(true);
+  const [showScrollTopButton, setShowScrollTopButton] = useState(false);
   const [reviews, setReviews] = useState<PublicReview[]>([]);
   const [trustStats, setTrustStats] = useState<TrustStatsType | null>(null);
   const [reviewsLoading, setReviewsLoading] = useState(true);
@@ -47,12 +49,17 @@ export default function HomePage() {
   useEffect(() => {
     const handleScroll = () => {
       setShowScrollIndicator(window.scrollY === 0);
+      setShowScrollTopButton(window.scrollY > 500);
     };
 
     handleScroll();
     window.addEventListener("scroll", handleScroll, { passive: true });
     return () => window.removeEventListener("scroll", handleScroll);
   }, []);
+
+  const scrollToTop = () => {
+    window.scrollTo({ top: 0, behavior: "smooth" });
+  };
 
   useEffect(() => {
     let cancelled = false;
@@ -272,6 +279,17 @@ export default function HomePage() {
       <StructuredData data={websiteStructuredData} />
       <StructuredData data={organizationStructuredData} />
       <Layout>
+        {showScrollTopButton && (
+          <button
+            type="button"
+            onClick={scrollToTop}
+            aria-label="Наверх"
+            className="fixed bottom-5 right-5 z-50 inline-flex h-12 w-12 items-center justify-center rounded-2xl border border-white/30 bg-gradient-to-r from-blue-600 to-purple-600 text-white shadow-2xl shadow-blue-500/30 transition-all duration-300 hover:-translate-y-0.5 hover:from-blue-700 hover:to-purple-700 hover:shadow-blue-500/40 focus-visible:outline-none focus-visible:ring-2 focus-visible:ring-blue-400 focus-visible:ring-offset-2 focus-visible:ring-offset-white"
+          >
+            <ArrowUp className="h-5 w-5" aria-hidden />
+          </button>
+        )}
+
         {/* Hero Section */}
         <div className="relative overflow-hidden bg-gradient-to-br from-blue-600 via-purple-600 to-indigo-700 py-8 sm:py-12 md:py-24 rounded-2xl sm:rounded-3xl mt-4 sm:mt-6 mb-6 sm:mb-8 lg:mb-10">
           <div className="absolute inset-0 bg-black/10" aria-hidden="true" />
