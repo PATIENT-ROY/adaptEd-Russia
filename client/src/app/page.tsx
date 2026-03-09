@@ -12,7 +12,6 @@ import {
   BookOpen,
   Bell,
   MessageSquare,
-  Globe,
   Sparkles,
   Crown,
   CreditCard,
@@ -21,18 +20,10 @@ import {
   Users,
 
   Shield,
-  Award,
-  Target,
   Rocket,
   ScanLine,
-  Bot,
-  Clock,
-  FileText,
-  GraduationCap,
-  Heart,
 } from "lucide-react";
 import Link from "next/link";
-import Image from "next/image";
 import {
   StructuredData,
   websiteStructuredData,
@@ -40,13 +31,11 @@ import {
 } from "@/components/seo/structured-data";
 import { useTranslation } from "@/hooks/useTranslation";
 import { useEffect, useState, useMemo } from "react";
-import dynamic from "next/dynamic";
 import { API_BASE_URL } from "@/lib/api";
 import { PublicReview, TrustStats as TrustStatsType } from "@/types";
 import { HeroTypewriter } from "@/components/home/HeroTypewriter";
-
-const TrustStats = dynamic(() => import("@/components/home/TrustStats").then(m => m.TrustStats), { ssr: false });
-const ReviewCard = dynamic(() => import("@/components/home/ReviewCard").then(m => m.ReviewCard), { ssr: false });
+import { TrustStats } from "@/components/home/TrustStats";
+import { ReviewCard } from "@/components/home/ReviewCard";
 
 export default function HomePage() {
   const { t } = useTranslation();
@@ -144,37 +133,27 @@ export default function HomePage() {
   const benefits = useMemo(
     () => [
       {
-        icon: Globe,
-        title: t("home.benefits.clear"),
-        description: t("home.benefits.clear.desc"),
-      },
-      {
-        icon: Shield,
-        title: t("home.benefits.updated"),
-        description: t("home.benefits.updated.desc"),
+        icon: BookOpen,
+        title: "Пошаговые инструкции",
+        description: "Гайды по учебе, документам и правилам вузов.",
       },
       {
         icon: Bell,
-        title: t("home.benefits.personal"),
-        description: t("home.benefits.personal.desc"),
+        title: "Умные напоминания",
+        description: "Не пропускайте важные даты: регистрация, экзамены, документы.",
       },
       {
         icon: MessageSquare,
-        title: t("home.benefits.support"),
-        description: t("home.benefits.support.desc"),
+        title: "AI-помощник 24/7",
+        description: "Получайте быстрые ответы об учебе и жизни в России.",
       },
       {
-        icon: Users,
-        title: t("home.benefits.messengers"),
-        description: t("home.benefits.messengers.desc"),
-      },
-      {
-        icon: Award,
-        title: t("home.benefits.verified"),
-        description: t("home.benefits.verified.desc"),
+        icon: Shield,
+        title: "Проверенные материалы",
+        description: "Гайды основаны на реальном опыте иностранных студентов в российских вузах.",
       },
     ],
-    [t]
+    []
   );
 
   const pricingPlans = useMemo(
@@ -220,6 +199,36 @@ export default function HomePage() {
       },
     ],
     [t]
+  );
+
+  const quickStartItems = useMemo(
+    () => [
+      {
+        icon: BookOpen,
+        title: "Найти гайд по учебе",
+        description:
+          "Пошаговые инструкции по учёбе, требованиям вуза и академическим правилам.",
+        cta: "① Найти гайд",
+        href: "/education-guide",
+      },
+      {
+        icon: MessageSquare,
+        title: "Спросить AI-помощника",
+        description:
+          "Задайте вопрос о документах, учёбе или адаптации и получите быстрый ответ.",
+        cta: "② Спросить AI",
+        href: "/ai-helper",
+      },
+      {
+        icon: Users,
+        title: "Задать вопрос в Community",
+        description:
+          "Получайте поддержку от студентов, кураторов и администрации в одном месте.",
+        cta: "③ Задать вопрос",
+        href: "/community/questions",
+      },
+    ],
+    []
   );
 
   const slogans = useMemo(
@@ -345,10 +354,55 @@ export default function HomePage() {
           )}
         </div>
 
+        {/* Quick Start Section */}
+        <section
+          aria-label="С чего начать"
+          className="py-10 sm:py-12 md:py-16 bg-white rounded-2xl sm:rounded-3xl my-6 sm:my-8 lg:my-10"
+        >
+          <div className="max-w-7xl mx-auto px-4 sm:px-6 lg:px-8">
+            <div className="text-center mb-8 sm:mb-10">
+              <h2 className="text-2xl sm:text-3xl md:text-4xl font-bold text-slate-900 mb-3 sm:mb-4">
+                С чего начать
+              </h2>
+              <p className="text-sm sm:text-base md:text-lg text-slate-600 max-w-3xl mx-auto">
+                Три простых шага, чтобы быстро адаптироваться к учёбе и жизни в России.
+              </p>
+            </div>
+
+            <div className="grid grid-cols-1 md:grid-cols-3 gap-4 sm:gap-6">
+              {quickStartItems.map((item) => {
+                const Icon = item.icon;
+                return (
+                  <Card key={item.href} className="border border-slate-200 shadow-sm hover:shadow-lg transition-all duration-300">
+                    <CardContent className="p-5 sm:p-6 h-full flex flex-col">
+                      <div className="w-12 h-12 rounded-xl bg-blue-100 text-blue-700 flex items-center justify-center mb-4">
+                        <Icon className="h-6 w-6" aria-hidden />
+                      </div>
+                      <h3 className="text-lg font-bold text-slate-900 mb-2">
+                        {item.title}
+                      </h3>
+                      <p className="text-sm text-slate-600 leading-relaxed mb-5 flex-grow">
+                        {item.description}
+                      </p>
+                      <Link
+                        href={item.href}
+                        className="inline-flex items-center justify-center rounded-xl bg-slate-900 text-white text-sm font-semibold px-4 py-2.5 hover:bg-slate-800 transition-colors"
+                      >
+                        {item.cta}
+                      </Link>
+                    </CardContent>
+                  </Card>
+                );
+              })}
+            </div>
+          </div>
+        </section>
+
+        <div className="flex flex-col">
         {/* Features Section - Detailed */}
         <section
           aria-label={t("home.section.features.title")}
-          className="py-12 sm:py-16 md:py-24 bg-gradient-to-br from-slate-50 via-white to-blue-50 rounded-2xl sm:rounded-3xl my-6 sm:my-8 lg:my-10"
+          className="order-3 py-12 sm:py-16 md:py-24 bg-gradient-to-br from-slate-50 via-white to-blue-50 rounded-2xl sm:rounded-3xl my-6 sm:my-8 lg:my-10"
         >
           <div className="max-w-7xl mx-auto px-4 sm:px-6 lg:px-8">
             <div className="text-center mb-8 sm:mb-12">
@@ -400,7 +454,7 @@ export default function HomePage() {
         {/* Benefits Section */}
         <section
           aria-label={t("home.section.benefits.title")}
-          className="below-fold py-12 sm:py-16 md:py-24 relative overflow-hidden rounded-2xl sm:rounded-3xl my-6 sm:my-8 lg:my-10"
+          className="order-1 below-fold py-12 sm:py-16 md:py-24 relative overflow-hidden rounded-2xl sm:rounded-3xl my-6 sm:my-8 lg:my-10"
         >
           <div className="absolute inset-0 bg-gradient-to-br from-purple-600 via-blue-600 to-indigo-700"></div>
           <div className="relative max-w-7xl mx-auto px-4 sm:px-6 lg:px-8">
@@ -417,7 +471,7 @@ export default function HomePage() {
               </p>
             </div>
 
-            <div className="grid grid-cols-1 sm:grid-cols-2 lg:grid-cols-3 gap-4 sm:gap-6 lg:gap-8">
+            <div className="grid grid-cols-1 sm:grid-cols-2 gap-4 sm:gap-6 lg:gap-8">
               {benefits.map((benefit, index) => {
                 const Icon = benefit.icon;
                 return (
@@ -441,93 +495,144 @@ export default function HomePage() {
           </div>
         </section>
 
-        {/* About Section */}
+        {/* Product In Action */}
         <section
-          aria-label={t("home.section.about.title")}
-          className="below-fold py-12 sm:py-16 md:py-24 bg-white rounded-2xl sm:rounded-3xl my-6 sm:my-8 lg:my-10"
+          aria-label="Как работает платформа"
+          className="order-2 py-12 sm:py-16 md:py-20 bg-white rounded-2xl sm:rounded-3xl my-6 sm:my-8 lg:my-10"
         >
-          <div className="mx-auto max-w-4xl px-3 sm:px-4 lg:px-6">
+          <div className="max-w-7xl mx-auto px-4 sm:px-6 lg:px-8">
             <div className="text-center mb-8 sm:mb-10">
-              <h2 className="text-2xl sm:text-3xl md:text-4xl font-bold tracking-tight text-slate-900 mb-3 sm:mb-4">
-                {t("home.section.about.title")}
+              <h2 className="text-2xl sm:text-3xl md:text-4xl font-bold text-slate-900 mb-3 sm:mb-4">
+                ⭐ Как работает платформа
               </h2>
+              <p className="text-sm sm:text-base md:text-lg text-slate-600 max-w-3xl mx-auto">
+                Три ключевых сценария: вопрос студентa, ответ AI, переход к гайдам и поддержка сообщества.
+              </p>
             </div>
-            <div className="relative rounded-2xl sm:rounded-3xl border border-slate-200 bg-slate-50/80 p-4 sm:p-6 md:p-8 shadow-sm sm:shadow-md">
-              <div className="relative space-y-4 sm:space-y-5 text-slate-800 text-sm sm:text-base leading-relaxed">
-                <h3 className="text-lg sm:text-xl font-semibold text-slate-900">
-                  {t("home.section.about.heading")}
-                </h3>
-                <div className="flex items-center gap-3 rounded-xl bg-white/80 px-3 py-2 shadow-sm">
-                  <Image
-                    src="/founder-avatar.png"
-                    alt={t("home.section.about.author.title")}
-                    width={36}
-                    height={36}
-                    className="rounded-full object-cover"
-                    loading="lazy"
-                    sizes="36px"
-                  />
-                  <div className="text-xs sm:text-sm text-slate-600 leading-tight">
-                    <div className="font-semibold text-slate-900">
-                      {t("home.section.about.author.title")}
+
+            <div className="grid grid-cols-1 lg:grid-cols-3 gap-4 sm:gap-6">
+              <Card className="group border border-slate-200 shadow-sm h-full transition-all duration-300 hover:-translate-y-1 hover:shadow-xl hover:border-slate-300 bg-gradient-to-b from-white to-slate-50">
+                <CardContent className="p-4 sm:p-5 h-full flex flex-col">
+                  <h3 className="text-base sm:text-lg font-bold text-slate-900 mb-3 min-h-[28px]">
+                    AI помощник
+                  </h3>
+                  <div className="rounded-xl border border-slate-200 bg-slate-50 overflow-hidden flex-1 transition-colors duration-300 group-hover:border-slate-300">
+                    <div className="h-8 bg-slate-900 flex items-center px-3 gap-1.5">
+                      <span className="w-2 h-2 rounded-full bg-red-400" />
+                      <span className="w-2 h-2 rounded-full bg-yellow-400" />
+                      <span className="w-2 h-2 rounded-full bg-green-400" />
                     </div>
-                    <div>{t("home.section.about.author.subtitle")}</div>
+                    <div className="p-3 space-y-2.5">
+                      <div className="rounded-lg bg-white border border-slate-200 p-2">
+                        <p className="text-[11px] font-semibold text-slate-900">AI Помощник — Учёба</p>
+                        <div className="mt-1 flex gap-1">
+                          <span className="text-[10px] px-2 py-0.5 rounded-md bg-blue-500 text-white">Учёба</span>
+                          <span className="text-[10px] px-2 py-0.5 rounded-md bg-slate-100 text-slate-600">Жизнь</span>
+                          <span className="text-[10px] px-2 py-0.5 rounded-md bg-slate-100 text-slate-600">Генератор</span>
+                        </div>
+                      </div>
+                      <div className="ml-auto max-w-[85%] rounded-lg bg-blue-500 text-white text-[11px] p-2">
+                        Помоги подготовиться к экзамену
+                      </div>
+                      <div className="max-w-[90%] rounded-lg bg-white border border-slate-200 text-[11px] p-2 text-slate-700">
+                        Сессия: повторите темы за месяц, уточните формат зачёта, запишитесь на консультацию.
+                      </div>
+                      <div className="flex flex-wrap gap-1">
+                        <span className="text-[10px] px-2 py-1 rounded-md bg-blue-100 text-blue-700">Быстрые вопросы</span>
+                        <span className="text-[10px] px-2 py-1 rounded-md bg-purple-100 text-purple-700">Шаблоны</span>
+                      </div>
+                      <div className="rounded-lg bg-white border border-slate-200 px-2 py-1.5">
+                        <p className="text-[10px] text-slate-400">Задайте вопрос...</p>
+                      </div>
+                    </div>
                   </div>
-                </div>
-                <div className="space-y-3">
-                  <h4 className="text-sm sm:text-base font-semibold text-slate-900 uppercase tracking-wide">
-                    {t("home.section.about.experience.title")}
-                  </h4>
-                  <p>{t("home.section.about.experience.p1")}</p>
-                  <p>
-                    {t("home.section.about.experience.p2.prefix")}{" "}
-                    <span className="inline-flex items-center rounded-md bg-indigo-50 px-2 py-0.5 font-semibold text-indigo-700">
-                      {t("home.section.about.experience.highlight")}
-                    </span>
-                    {t("home.section.about.experience.p2.suffix")}
-                  </p>
-                  <p>{t("home.section.about.experience.p3")}</p>
-                </div>
-                <div className="h-px w-full bg-slate-200/80"></div>
-                <div className="space-y-3">
-                  <h4 className="text-sm sm:text-base font-semibold text-slate-900 uppercase tracking-wide">
-                    {t("home.section.about.purpose.title")}
-                  </h4>
-                  <p>{t("home.section.about.purpose.intro")}</p>
-                  <ul className="space-y-2 sm:space-y-2.5 pl-4">
-                    <li className="flex items-start gap-2">
-                      <Bot className="h-4 w-4 text-slate-500 mt-0.5 flex-shrink-0" />
-                      <span>{t("home.section.about.purpose.bullet1")}</span>
-                    </li>
-                    <li className="flex items-start gap-2">
-                      <Clock className="h-4 w-4 text-slate-500 mt-0.5 flex-shrink-0" />
-                      <span>{t("home.section.about.purpose.bullet2")}</span>
-                    </li>
-                    <li className="flex items-start gap-2">
-                      <FileText className="h-4 w-4 text-slate-500 mt-0.5 flex-shrink-0" />
-                      <span>{t("home.section.about.purpose.bullet3")}</span>
-                    </li>
-                    <li className="flex items-start gap-2">
-                      <Globe className="h-4 w-4 text-slate-500 mt-0.5 flex-shrink-0" />
-                      <span>{t("home.section.about.purpose.bullet4")}</span>
-                    </li>
-                  </ul>
-                  <p>{t("home.section.about.purpose.support")}</p>
-                </div>
-                <div className="pt-2 sm:pt-3 flex flex-col sm:flex-row sm:items-center sm:justify-between gap-3 sm:gap-4">
-                  <div className="flex items-center gap-2 text-lg sm:text-xl font-semibold italic text-slate-900 border-l-4 border-slate-300 pl-4">
-                    <Heart className="h-5 w-5 text-slate-400 flex-shrink-0" />
-                    <span>{t("home.section.about.closing")}</span>
+                </CardContent>
+              </Card>
+
+              <Card className="group border border-slate-200 shadow-sm h-full transition-all duration-300 hover:-translate-y-1 hover:shadow-xl hover:border-slate-300 bg-gradient-to-b from-white to-slate-50">
+                <CardContent className="p-4 sm:p-5 h-full flex flex-col">
+                  <h3 className="text-base sm:text-lg font-bold text-slate-900 mb-3 min-h-[28px]">
+                    Страница гайда
+                  </h3>
+                  <div className="rounded-xl border border-slate-200 bg-slate-50 overflow-hidden flex-1 transition-colors duration-300 group-hover:border-slate-300">
+                    <div className="h-8 bg-slate-900 flex items-center px-3 gap-1.5">
+                      <span className="w-2 h-2 rounded-full bg-red-400" />
+                      <span className="w-2 h-2 rounded-full bg-yellow-400" />
+                      <span className="w-2 h-2 rounded-full bg-green-400" />
+                    </div>
+                    <div className="p-3 space-y-2.5">
+                      <div className="rounded-lg bg-white border border-slate-200 px-2 py-1.5">
+                        <p className="text-[11px] text-slate-400">Поиск по гайдам...</p>
+                      </div>
+                      <div className="grid grid-cols-3 gap-1.5">
+                        <span className="text-[10px] px-2 py-1 rounded-md bg-blue-500 text-white text-center">Все</span>
+                        <span className="text-[10px] px-2 py-1 rounded-md bg-white border border-slate-200 text-slate-600 text-center">Экзамены</span>
+                        <span className="text-[10px] px-2 py-1 rounded-md bg-white border border-slate-200 text-slate-600 text-center">Документы</span>
+                      </div>
+                      <div className="space-y-1.5">
+                        <div className="rounded-md bg-white border border-slate-200 p-2">
+                          <p className="text-[11px] font-medium text-slate-800 line-clamp-1">Как проходит обучение в России</p>
+                          <p className="text-[10px] text-slate-500 mt-0.5">Пошаговое руководство • 9 минут</p>
+                        </div>
+                        <div className="rounded-md bg-white border border-slate-200 p-2">
+                          <p className="text-[11px] font-medium text-slate-800 line-clamp-1">Словарь студенческого сленга</p>
+                          <p className="text-[10px] text-slate-500 mt-0.5">Часто используемые термины</p>
+                        </div>
+                        <div className="rounded-md bg-white border border-slate-200 p-2">
+                          <p className="text-[11px] font-medium text-slate-800 line-clamp-1">Миграционный учет: пошагово</p>
+                          <p className="text-[10px] text-slate-500 mt-0.5">Документы, сроки и подача заявления</p>
+                        </div>
+                      </div>
+                    </div>
                   </div>
-                  <span className="inline-flex items-center gap-1.5 rounded-full bg-slate-200/70 px-3 py-1 text-xs sm:text-sm font-semibold text-slate-700">
-                    <GraduationCap className="h-3.5 w-3.5" />
-                    {t("home.section.about.badge.alumni")}
-                  </span>
-                </div>
-              </div>
+                </CardContent>
+              </Card>
+
+              <Card className="group border border-slate-200 shadow-sm h-full transition-all duration-300 hover:-translate-y-1 hover:shadow-xl hover:border-slate-300 bg-gradient-to-b from-white to-slate-50">
+                <CardContent className="p-4 sm:p-5 h-full flex flex-col">
+                  <h3 className="text-base sm:text-lg font-bold text-slate-900 mb-3 min-h-[28px]">
+                    Community
+                  </h3>
+                  <div className="rounded-xl border border-slate-200 bg-slate-50 overflow-hidden flex-1 transition-colors duration-300 group-hover:border-slate-300">
+                    <div className="h-8 bg-slate-900 flex items-center px-3 gap-1.5">
+                      <span className="w-2 h-2 rounded-full bg-red-400" />
+                      <span className="w-2 h-2 rounded-full bg-yellow-400" />
+                      <span className="w-2 h-2 rounded-full bg-green-400" />
+                    </div>
+                    <div className="p-3 space-y-2.5">
+                      <div className="rounded-lg bg-gradient-to-r from-indigo-600 via-purple-600 to-pink-500 text-white p-2">
+                        <p className="text-[11px] font-semibold">Сообщество</p>
+                        <div className="mt-1 flex gap-1.5">
+                          <span className="text-[10px] px-1.5 py-0.5 rounded bg-white/25">181</span>
+                          <span className="text-[10px] px-1.5 py-0.5 rounded bg-white/20">8</span>
+                          <span className="text-[10px] px-1.5 py-0.5 rounded bg-white/20">173</span>
+                        </div>
+                      </div>
+                      <div className="rounded-lg bg-white border border-slate-200 px-2 py-1.5">
+                        <p className="text-[10px] text-slate-400">Поиск вопросов...</p>
+                      </div>
+                      <div className="flex gap-1.5">
+                        <span className="text-[10px] px-2 py-1 rounded-md bg-indigo-600 text-white">Популярные</span>
+                        <span className="text-[10px] px-2 py-1 rounded-md bg-white border border-slate-200 text-slate-600">Новые</span>
+                      </div>
+                      <div className="rounded-lg bg-white border border-slate-200 p-2">
+                        <p className="text-[11px] font-medium text-slate-900">Что делать при незачёте?</p>
+                        <p className="text-[10px] text-slate-500 mt-1">12 ответов • 24 лайка</p>
+                      </div>
+                      <div className="rounded-lg bg-slate-100 p-2">
+                        <p className="text-[10px] text-slate-700">Ответ: уточни пересдачу у преподавателя и деканата.</p>
+                      </div>
+                      <div className="rounded-lg bg-slate-100 p-2">
+                        <p className="text-[10px] text-slate-700">Ответ: подготовь план и попроси консультацию.</p>
+                      </div>
+                    </div>
+                  </div>
+                </CardContent>
+              </Card>
             </div>
           </div>
         </section>
+        </div>
 
         {/* Testimonials / Reviews Section */}
         <section
@@ -698,49 +803,6 @@ export default function HomePage() {
           </div>
         </section>
 
-        {/* CTA Section */}
-        <section
-          aria-label={t("home.cta.title")}
-          className="below-fold py-12 sm:py-16 md:py-24 bg-gradient-to-br from-slate-900 via-purple-900 to-blue-900 relative overflow-hidden rounded-2xl sm:rounded-3xl mt-4 sm:mt-6 mb-8 sm:mb-12 lg:mb-16"
-        >
-          <div className="absolute inset-0" aria-hidden="true">
-            <div
-              className="absolute top-0 left-0 w-full h-full opacity-30"
-              style={{
-                backgroundImage: `url("data:image/svg+xml,%3Csvg width='60' height='60' viewBox='0 0 60 60' xmlns='http://www.w3.org/2000/svg'%3E%3Cg fill='none' fill-rule='evenodd'%3E%3Cg fill='%23ffffff' fill-opacity='0.05'%3E%3Ccircle cx='30' cy='30' r='2'/%3E%3C/g%3E%3C/g%3E%3C/svg%3E")`,
-              }}
-            />
-          </div>
-
-          <div className="relative z-10 mx-auto max-w-5xl text-center px-3 sm:px-4 lg:px-6">
-            <h2 className="text-2xl sm:text-3xl md:text-4xl lg:text-5xl xl:text-6xl font-bold tracking-tight text-white mb-6 sm:mb-8">
-              {t("home.cta.title")}
-            </h2>
-            <p className="text-sm sm:text-base md:text-lg lg:text-xl xl:text-2xl text-white mb-8 sm:mb-12 max-w-3xl mx-auto px-2">
-              {t("home.cta.subtitle")}
-            </p>
-            <div className="flex flex-col sm:flex-row gap-4 sm:gap-6 justify-center">
-              <Link
-                href="/register"
-                className="inline-flex items-center justify-center group text-sm sm:text-base lg:text-lg px-4 sm:px-6 lg:px-8 py-3 sm:py-4 h-12 rounded-xl font-semibold bg-gradient-to-r from-blue-500 to-purple-600 hover:from-blue-600 hover:to-purple-700 text-white shadow-2xl sm:hover:scale-105 transition-all duration-300 focus-visible:outline-none focus-visible:ring-2 focus-visible:ring-white focus-visible:ring-offset-2 focus-visible:ring-offset-slate-900"
-              >
-                <Rocket className="mr-2 h-4 w-4 sm:h-5 sm:w-5 group-hover:translate-x-1 transition-transform duration-200" aria-hidden="true" />
-                <span className="group-hover:translate-x-1 transition-transform duration-200">
-                  {t("home.cta.register")}
-                </span>
-              </Link>
-              <Link
-                href="/login"
-                className="inline-flex items-center justify-center group text-sm sm:text-base lg:text-lg px-4 sm:px-6 lg:px-8 py-3 sm:py-4 h-12 border-2 border-white/30 bg-white/15 text-white rounded-xl font-semibold hover:bg-white/25 shadow-xl sm:hover:scale-105 transition-all duration-300 focus-visible:outline-none focus-visible:ring-2 focus-visible:ring-white focus-visible:ring-offset-2 focus-visible:ring-offset-slate-900"
-              >
-                <Target className="mr-2 h-4 w-4 sm:h-5 sm:w-5 group-hover:translate-x-1 transition-transform duration-200" aria-hidden="true" />
-                <span className="group-hover:translate-x-1 transition-transform duration-200">
-                  {t("home.cta.login")}
-                </span>
-              </Link>
-            </div>
-          </div>
-        </section>
       </Layout>
     </>
   );

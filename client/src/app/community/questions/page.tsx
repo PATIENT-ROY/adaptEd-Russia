@@ -2,6 +2,7 @@
 
 import { useCallback, useEffect, useRef, useState } from "react";
 import { useRouter } from "next/navigation";
+import Link from "next/link";
 import { Layout } from "@/components/layout/layout";
 import { ProtectedRoute } from "@/components/auth/ProtectedRoute";
 import { FeaturePreviewGate } from "@/components/auth/FeaturePreviewGate";
@@ -21,6 +22,7 @@ import {
   Loader2,
   AlertCircle,
   X,
+  Pin,
 } from "lucide-react";
 
 function SkeletonCard() {
@@ -235,6 +237,21 @@ export default function CommunityQuestionsPage() {
     unanswered: unansweredCount,
   };
 
+  const pinnedTopics = [
+    {
+      title: "Как продлить визу",
+      href: "/life-guide",
+    },
+    {
+      title: "Что делать при незачете",
+      href: "/education-guide",
+    },
+    {
+      title: "Как оформить общежитие",
+      href: "/life-guide",
+    },
+  ];
+
   return (
     <ProtectedRoute
       fallback={
@@ -385,6 +402,29 @@ export default function CommunityQuestionsPage() {
                   <Plus className="h-4 w-4 sm:mr-2" />
                   <span className="hidden sm:inline">Задать вопрос</span>
                 </Button>
+              </div>
+            </div>
+
+            {/* Pinned Topics */}
+            <div className="mb-6 sm:mb-8">
+              <div className="flex items-center gap-2 mb-3 sm:mb-4">
+                <Pin className="h-4 w-4 sm:h-5 sm:w-5 text-indigo-600" />
+                <h2 className="text-lg sm:text-xl font-semibold text-slate-900">
+                  Закреплённые темы
+                </h2>
+              </div>
+              <div className="grid grid-cols-1 md:grid-cols-3 gap-3 sm:gap-4">
+                {pinnedTopics.map((topic) => (
+                  <Link
+                    key={topic.title}
+                    href={topic.href}
+                    className="block rounded-xl border border-indigo-200 bg-indigo-50/70 p-4 hover:bg-indigo-50 hover:border-indigo-300 transition-colors"
+                  >
+                    <div className="text-sm sm:text-base font-medium text-slate-900">
+                      📌 {topic.title}
+                    </div>
+                  </Link>
+                ))}
               </div>
             </div>
 

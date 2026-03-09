@@ -23,6 +23,7 @@ import type { Reminder, UserProgress, DailyQuest } from "@/types";
 import { Language } from "@/types";
 import { UserProgressComponent } from "@/components/ui/user-progress";
 import { DailyQuestsComponent } from "@/components/ui/daily-quests";
+import { AdaptationProgress } from "@/components/ui/adaptation-progress";
 import { fetchDashboardOverview } from "@/lib/api";
 
 const dashboardCardClass = "border-0 shadow-xl";
@@ -300,6 +301,8 @@ export default function DashboardPage() {
               </CardContent>
             </Card>
           )}
+
+          <AdaptationProgress />
 
           {/* User Progress & Daily Quests */}
           {userProgress ? (
