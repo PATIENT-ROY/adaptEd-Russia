@@ -19,6 +19,7 @@ import {
   Zap,
   Star,
   Users,
+  GraduationCap,
 
   Shield,
   Rocket,
@@ -681,6 +682,105 @@ export default function HomePage() {
           </div>
         </section>
         </div>
+
+        {/* About Section */}
+        <section
+          aria-label={t("home.section.about.title")}
+          className="below-fold py-12 sm:py-16 md:py-20 bg-gradient-to-br from-slate-50 via-white to-indigo-50 rounded-2xl sm:rounded-3xl my-6 sm:my-8 lg:my-10"
+        >
+          <div className="mx-auto max-w-5xl px-4 sm:px-6 lg:px-8">
+            <Card className="relative border border-slate-200 shadow-sm bg-white overflow-visible">
+              <CardContent className="p-5 sm:p-7 lg:p-8">
+                <div
+                  className="absolute -top-4 left-6 text-2xl select-none"
+                  aria-hidden
+                >
+                  ✍️
+                </div>
+
+                <h2 className="text-2xl sm:text-3xl font-bold text-slate-900 mb-5">
+                  {t("home.section.about.heading")}
+                </h2>
+
+                <div className="rounded-xl border border-slate-100 bg-slate-50 p-4 sm:p-5 mb-6">
+                  <div className="flex items-center gap-3">
+                    <div className="w-10 h-10 rounded-full overflow-hidden border border-slate-200 bg-white">
+                      <Image
+                        src="/images/founder-avatar.svg"
+                        alt="Аватар основателя"
+                        width={40}
+                        height={40}
+                        className="w-full h-full object-cover"
+                      />
+                    </div>
+                    <div>
+                      <p className="text-base sm:text-lg font-semibold text-slate-900">
+                        {t("home.section.about.author.title")}
+                      </p>
+                      <p className="text-sm sm:text-base text-slate-600">
+                        {t("home.section.about.author.subtitle")}
+                      </p>
+                      <div className="mt-2 space-y-1">
+                        <p className="text-xs sm:text-sm text-slate-700">
+                          🎓 учился в российском университете
+                        </p>
+                        <p className="text-xs sm:text-sm text-slate-700">
+                          📍 прошёл путь от прилёта до диплома
+                        </p>
+                      </div>
+                    </div>
+                  </div>
+                </div>
+
+                <h3 className="text-lg sm:text-xl font-extrabold tracking-wide text-slate-900 uppercase mb-4">
+                  {t("home.section.about.experience.title")}
+                </h3>
+                <div className="space-y-3 text-base sm:text-lg text-slate-800">
+                  <p>{t("home.section.about.experience.p1")}</p>
+                  <p>
+                    {t("home.section.about.experience.p2.prefix")}{" "}
+                    <span className="font-bold text-indigo-700">
+                      {t("home.section.about.experience.highlight")}
+                    </span>
+                    {t("home.section.about.experience.p2.suffix")}
+                  </p>
+                  <p>{t("home.section.about.experience.p3")}</p>
+                </div>
+
+                <div className="h-px bg-slate-200 my-6" />
+
+                <h3 className="text-lg sm:text-xl font-extrabold tracking-wide text-slate-900 uppercase mb-4">
+                  {t("home.section.about.purpose.title")}
+                </h3>
+                <p className="text-base sm:text-lg text-slate-800 mb-4">
+                  {t("home.section.about.purpose.intro")}
+                </p>
+                <ul className="space-y-2.5 text-base sm:text-lg text-slate-800">
+                  <li>🧭 {t("home.section.about.purpose.bullet1")}</li>
+                  <li>⏰ {t("home.section.about.purpose.bullet2")}</li>
+                  <li>📄 {t("home.section.about.purpose.bullet3")}</li>
+                  <li>🌍 {t("home.section.about.purpose.bullet4")}</li>
+                </ul>
+
+                <p className="text-base sm:text-lg text-slate-800 mt-5">
+                  {t("home.section.about.purpose.support")}
+                </p>
+
+                <p className="mt-7 text-xl sm:text-2xl font-semibold italic text-slate-900">
+                  {t("home.section.about.closing")}
+                </p>
+
+                <div
+                  className="absolute -bottom-4 right-6 flex items-center gap-2 text-3xl select-none"
+                  aria-hidden
+                >
+                  <GraduationCap className="h-8 w-8 text-slate-800" />
+                  <span>🇷🇺</span>
+                </div>
+              </CardContent>
+            </Card>
+          </div>
+        </section>
 
         {/* Testimonials / Reviews Section */}
         <section

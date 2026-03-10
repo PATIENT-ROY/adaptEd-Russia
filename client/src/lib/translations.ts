@@ -479,7 +479,7 @@ const translations: Record<Language, Record<string, string>> = {
     "home.section.about.author.title": "Основатель AdaptEd Russia",
     "home.section.about.author.subtitle": "бывший иностранный студент",
     "home.section.about.experience.title": "Опыт",
-    "home.section.about.experience.p1": "Я — бывший иностранный студент.",
+    "home.section.about.experience.p1": "Я — бывший иностранный студент, который прошёл весь путь адаптации в России.",
     "home.section.about.experience.p2.prefix": "Я прошёл путь",
     "home.section.about.experience.highlight": "от первого прилёта в Россию до защиты диплома",
     "home.section.about.experience.p2.suffix": ".",
@@ -490,7 +490,7 @@ const translations: Record<Language, Record<string, string>> = {
     "home.section.about.purpose.bullet2": "не пропускать важные сроки",
     "home.section.about.purpose.bullet3": "разбираться с документами",
     "home.section.about.purpose.bullet4": "получать помощь на своём языке",
-    "home.section.about.purpose.support": "Сегодня я развиваю проект вместе с выпускниками, менторами и экспертами в международном образовании.",
+    "home.section.about.purpose.support": "Сегодня я развиваю AdaptEd вместе с выпускниками, менторами и экспертами международного образования.",
     "home.section.about.closing": "AdaptEd Russia — адаптация без стресса",
     "home.section.about.badge.alumni": "Выпускники вузов РФ",
     "home.section.about.p1": "Я — бывший иностранный студент, который прошёл весь путь: от первого прилёта в Россию до защиты диплома. Помню, как терялся в терминах вроде «зачётка», «ГОСТ», «миграционный учёт»… Как искал, где продлить страховку, как писать заявление на РВП, как просто понять, что от тебя хотят на кафедре.",
@@ -5296,4 +5296,3 @@ const translations: Record<Language, Record<string, string>> = {
 };
 
 export { getTranslations };
-
