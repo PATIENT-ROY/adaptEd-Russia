@@ -8,7 +8,25 @@ interface SendInviteEmailParams {
 interface SendInviteEmailResult {
   sent: boolean;
   provider: 'resend' | 'none';
+  attempts?: number;
   error?: string;
+}
+
+const DEFAULT_EMAIL_TIMEOUT_MS = 10_000;
+const DEFAULT_EMAIL_MAX_RETRIES = 2;
+
+function parsePositiveInt(value: string | undefined, fallback: number) {
+  if (!value) return fallback;
+  const parsed = Number.parseInt(value, 10);
+  return Number.isFinite(parsed) && parsed > 0 ? parsed : fallback;
+}
+
+function shouldRetryStatus(status: number) {
+  return status === 408 || status === 409 || status === 429 || status >= 500;
+}
+
+function sleep(ms: number) {
+  return new Promise((resolve) => setTimeout(resolve, ms));
 }
 
 function buildInviteHtml({
@@ -42,46 +60,88 @@ function buildInviteHtml({
 export async function sendInviteEmail(params: SendInviteEmailParams): Promise<SendInviteEmailResult> {
   const resendApiKey = process.env.RESEND_API_KEY;
   const fromEmail = process.env.EMAIL_FROM;
+  const replyTo = process.env.EMAIL_REPLY_TO;
+  const timeoutMs = parsePositiveInt(process.env.EMAIL_REQUEST_TIMEOUT_MS, DEFAULT_EMAIL_TIMEOUT_MS);
+  const maxRetries = parsePositiveInt(process.env.EMAIL_MAX_RETRIES, DEFAULT_EMAIL_MAX_RETRIES);
 
   if (!resendApiKey || !fromEmail) {
     return {
       sent: false,
       provider: 'none',
+      attempts: 0,
       error: 'RESEND_API_KEY или EMAIL_FROM не настроены',
     };
   }
 
-  try {
-    const response = await fetch('https://api.resend.com/emails', {
-      method: 'POST',
-      headers: {
-        Authorization: `Bearer ${resendApiKey}`,
-        'Content-Type': 'application/json',
-      },
-      body: JSON.stringify({
-        from: fromEmail,
-        to: [params.to],
-        subject: 'Активация аккаунта AdaptEd Russia',
-        html: buildInviteHtml(params),
-      }),
-    });
+  let lastError = 'Unknown email error';
+  let attempts = 0;
 
-    if (!response.ok) {
+  for (let attempt = 0; attempt <= maxRetries; attempt += 1) {
+    attempts = attempt + 1;
+    const controller = new AbortController();
+    const timeoutId = setTimeout(() => controller.abort(), timeoutMs);
+
+    try {
+      const response = await fetch('https://api.resend.com/emails', {
+        method: 'POST',
+        headers: {
+          Authorization: `Bearer ${resendApiKey}`,
+          'Content-Type': 'application/json',
+          // Helps avoid duplicate emails when retrying the same invitation.
+          'Idempotency-Key': `invite:${params.to}:${params.expiresAtIso}`,
+        },
+        body: JSON.stringify({
+          from: fromEmail,
+          to: [params.to],
+          ...(replyTo ? { reply_to: replyTo } : {}),
+          subject: 'Активация аккаунта AdaptEd Russia',
+          html: buildInviteHtml(params),
+        }),
+        signal: controller.signal,
+      });
+
+      clearTimeout(timeoutId);
+
+      if (response.ok) {
+        return { sent: true, provider: 'resend', attempts };
+      }
+
       const payload = await response.text();
+      lastError = `Resend error ${response.status}: ${payload}`;
+
+      if (attempt < maxRetries && shouldRetryStatus(response.status)) {
+        await sleep(300 * Math.pow(2, attempt));
+        continue;
+      }
+
       return {
         sent: false,
         provider: 'resend',
-        error: `Resend error: ${payload}`,
+        attempts,
+        error: lastError,
+      };
+    } catch (error) {
+      clearTimeout(timeoutId);
+      lastError = error instanceof Error ? error.message : 'Unknown email error';
+
+      if (attempt < maxRetries) {
+        await sleep(300 * Math.pow(2, attempt));
+        continue;
+      }
+
+      return {
+        sent: false,
+        provider: 'resend',
+        attempts,
+        error: lastError,
       };
     }
-
-    return { sent: true, provider: 'resend' };
-  } catch (error) {
-    return {
-      sent: false,
-      provider: 'resend',
-      error: error instanceof Error ? error.message : 'Unknown email error',
-    };
   }
-}
 
+  return {
+    sent: false,
+    provider: 'resend',
+    attempts,
+    error: lastError,
+  };
+}

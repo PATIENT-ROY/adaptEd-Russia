@@ -240,6 +240,13 @@ NODE_ENV=development
 # Клиент
 CLIENT_URL="http://localhost:3000"
 
+# Email (Resend)
+RESEND_API_KEY="re_xxxxxxxxx"
+EMAIL_FROM="AdaptEd Russia <noreply@your-domain.com>"
+EMAIL_REPLY_TO="support@your-domain.com"
+EMAIL_REQUEST_TIMEOUT_MS=10000
+EMAIL_MAX_RETRIES=2
+
 # Rate Limiting
 RATE_LIMIT_WINDOW_MS=900000
 RATE_LIMIT_MAX_REQUESTS=100

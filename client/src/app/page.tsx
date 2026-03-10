@@ -25,6 +25,7 @@ import {
   ScanLine,
 } from "lucide-react";
 import Link from "next/link";
+import Image from "next/image";
 import {
   StructuredData,
   websiteStructuredData,
@@ -255,20 +256,26 @@ export default function HomePage() {
       {
         name: t("home.testimonial.1.name"),
         country: t("home.testimonial.1.country"),
+        university: "УРГЭУ",
         text: t("home.testimonial.1.text"),
         rating: 5,
+        avatarUrl: "https://i.pravatar.cc/120?img=12",
       },
       {
         name: t("home.testimonial.2.name"),
         country: t("home.testimonial.2.country"),
+        university: "ТУСУР",
         text: t("home.testimonial.2.text"),
         rating: 5,
+        avatarUrl: "https://i.pravatar.cc/120?img=55",
       },
       {
         name: t("home.testimonial.3.name"),
         country: t("home.testimonial.3.country"),
+        university: "РУДН",
         text: t("home.testimonial.3.text"),
         rating: 5,
+        avatarUrl: "https://i.pravatar.cc/120?img=33",
       },
     ],
     [t]
@@ -735,15 +742,25 @@ export default function HomePage() {
                         &ldquo;{testimonial.text}&rdquo;
                       </p>
                       <div className="flex items-center mt-auto">
-                        <div className="w-10 h-10 sm:w-12 sm:h-12 rounded-full bg-gradient-to-br from-blue-500 to-purple-600 flex items-center justify-center text-white font-bold text-sm sm:text-lg mr-3 sm:mr-4">
-                          {testimonial.name.charAt(0)}
-                        </div>
+                        {testimonial.avatarUrl ? (
+                          <Image
+                            src={testimonial.avatarUrl}
+                            alt={testimonial.name}
+                            width={48}
+                            height={48}
+                            className="w-10 h-10 sm:w-12 sm:h-12 rounded-full object-cover mr-3 sm:mr-4 border border-slate-200"
+                          />
+                        ) : (
+                          <div className="w-10 h-10 sm:w-12 sm:h-12 rounded-full bg-gradient-to-br from-blue-500 to-purple-600 flex items-center justify-center text-white font-bold text-sm sm:text-lg mr-3 sm:mr-4">
+                            {testimonial.name.charAt(0)}
+                          </div>
+                        )}
                         <div>
                           <div className="font-semibold text-slate-900 text-sm sm:text-base">
                             {testimonial.name}
                           </div>
-                          <div className="text-slate-600 text-xs sm:text-sm">
-                            {testimonial.country}
+                          <div className="text-slate-600 text-sm sm:text-base font-medium tracking-wide uppercase">
+                            {testimonial.country} • {testimonial.university}
                           </div>
                         </div>
                       </div>
