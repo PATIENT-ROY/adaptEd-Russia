@@ -214,30 +214,27 @@ export default function HomePage() {
     () => [
       {
         icon: BookOpen,
-        title: "Найти гайд по учебе",
-        description:
-          "Пошаговые инструкции по учёбе, требованиям вуза и академическим правилам.",
-        cta: "① Найти гайд",
+        title: t("home.gettingStarted.card1.title"),
+        description: t("home.gettingStarted.card1.description"),
+        cta: t("home.gettingStarted.card1.cta"),
         href: "/education-guide",
       },
       {
         icon: MessageSquare,
-        title: "Спросить AI-помощника",
-        description:
-          "Задайте вопрос о документах, учёбе или адаптации и получите быстрый ответ.",
-        cta: "② Спросить AI",
+        title: t("home.gettingStarted.card2.title"),
+        description: t("home.gettingStarted.card2.description"),
+        cta: t("home.gettingStarted.card2.cta"),
         href: "/ai-helper",
       },
       {
         icon: Users,
-        title: "Задать вопрос в Community",
-        description:
-          "Получайте поддержку от студентов, кураторов и администрации в одном месте.",
-        cta: "③ Задать вопрос",
+        title: t("home.gettingStarted.card3.title"),
+        description: t("home.gettingStarted.card3.description"),
+        cta: t("home.gettingStarted.card3.cta"),
         href: "/community/questions",
       },
     ],
-    []
+    [t]
   );
 
   const slogans = useMemo(
@@ -382,16 +379,16 @@ export default function HomePage() {
 
         {/* Quick Start Section */}
         <section
-          aria-label="С чего начать"
+          aria-label={t("home.gettingStarted.title")}
           className="py-10 sm:py-12 md:py-16 bg-white rounded-2xl sm:rounded-3xl my-6 sm:my-8 lg:my-10"
         >
           <div className="max-w-7xl mx-auto px-4 sm:px-6 lg:px-8">
             <div className="text-center mb-8 sm:mb-10">
               <h2 className="text-2xl sm:text-3xl md:text-4xl font-bold text-slate-900 mb-3 sm:mb-4">
-                С чего начать
+                {t("home.gettingStarted.title")}
               </h2>
               <p className="text-sm sm:text-base md:text-lg text-slate-600 max-w-3xl mx-auto">
-                Три простых шага, чтобы быстро адаптироваться к учёбе и жизни в России.
+                {t("home.gettingStarted.subtitle")}
               </p>
             </div>
 
