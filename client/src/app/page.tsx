@@ -146,26 +146,26 @@ export default function HomePage() {
     () => [
       {
         icon: BookOpen,
-        title: "Пошаговые инструкции",
-        description: "Гайды по учебе, документам и правилам вузов.",
+        title: t("home.features.navigator"),
+        description: t("home.features.navigator.desc"),
       },
       {
         icon: Bell,
-        title: "Умные напоминания",
-        description: "Не пропускайте важные даты: регистрация, экзамены, документы.",
+        title: t("home.features.reminders"),
+        description: t("home.features.reminders.desc"),
       },
       {
         icon: MessageSquare,
-        title: "AI-помощник 24/7",
-        description: "Получайте быстрые ответы об учебе и жизни в России.",
+        title: t("home.features.ai"),
+        description: t("home.features.ai.desc"),
       },
       {
         icon: Shield,
-        title: "Проверенные материалы",
-        description: "Гайды основаны на реальном опыте иностранных студентов в российских вузах.",
+        title: t("home.benefits.verified"),
+        description: t("home.benefits.verified.desc"),
       },
     ],
-    []
+    [t]
   );
 
   const pricingPlans = useMemo(
