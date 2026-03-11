@@ -230,9 +230,11 @@ const translations: Record<Language, Record<string, string>> = {
     "home.pricing.premium": "Премиум",
     "home.pricing.premium.price": "299₽/мес",
     
-    "home.cta.title": "Готовы начать?",
-    "home.cta.subtitle": "Присоединяйтесь к тысячам иностранных студентов, которые уже используют нашу платформу для успешной адаптации в России",
+    "home.cta.title": "Готовы начать адаптацию?",
+    "home.cta.subtitle": "Получите доступ к образовательным гайдам, AI-помощнику и сообществу студентов.",
     "home.cta.register": "Зарегистрироваться",
+    "home.cta.start": "Начать бесплатно",
+    "home.cta.feeNote": "Без оплаты • Регистрация за 1 минуту",
     "home.cta.login": "Войти в аккаунт",
 
     // Life Guide - Categories & Emergency Contacts
@@ -417,6 +419,8 @@ const translations: Record<Language, Record<string, string>> = {
     "home.section.features.stats.community": "Живые ответы",
     "home.features.docscan.stats": "OCR + Перевод",
     "home.section.features.badge": "Главные возможности платформы",
+    "home.section.howItWorks.title": "Как работает платформа",
+    "home.section.howItWorks.subtitle": "Три ключевых сценария: вопрос студента, ответ AI, переход к гайдам и поддержку сообщества.",
     
     "home.section.benefits.badge": "Проверено тысячами студентов",
     "home.section.benefits.title": "Почему выбирают AdaptEd Russia?",
@@ -1302,9 +1306,11 @@ const translations: Record<Language, Record<string, string>> = {
     "home.pricing.premium": "Premium",
     "home.pricing.premium.price": "299₽/mo",
     
-    "home.cta.title": "Ready to Start?",
-    "home.cta.subtitle": "Join thousands of international students who are already using our platform for successful adaptation in Russia",
+    "home.cta.title": "Ready to start adapting?",
+    "home.cta.subtitle": "Get access to educational guides, AI assistant, and student community.",
     "home.cta.register": "Sign Up",
+    "home.cta.start": "Start for Free",
+    "home.cta.feeNote": "No payment • Sign up in 1 minute",
     "home.cta.login": "Sign In",
 
     // Life Guide - Categories & Emergency Contacts
@@ -1489,6 +1495,8 @@ const translations: Record<Language, Record<string, string>> = {
     "home.section.features.stats.community": "Live answers",
     "home.features.docscan.stats": "OCR + Translation",
     "home.section.features.badge": "Key platform features",
+    "home.section.howItWorks.title": "How the platform works",
+    "home.section.howItWorks.subtitle": "Three key scenarios: a student question, AI answer, transition to guides and community support.",
     
     "home.section.benefits.badge": "Verified by thousands of students",
     "home.section.benefits.title": "Why choose AdaptEd Russia?",
@@ -2373,9 +2381,11 @@ const translations: Record<Language, Record<string, string>> = {
     "home.pricing.premium": "Premium",
     "home.pricing.premium.price": "299₽/mois",
     
-    "home.cta.title": "Prêt à commencer?",
-    "home.cta.subtitle": "Rejoignez des milliers d'étudiants internationaux qui utilisent déjà notre plateforme pour une adaptation réussie en Russie",
+    "home.cta.title": "Prêt à commencer votre adaptation?",
+    "home.cta.subtitle": "Accédez aux guides éducatifs, à l'assistant IA et à la communauté d'étudiants.",
     "home.cta.register": "S'inscrire",
+    "home.cta.start": "Commencer gratuitement",
+    "home.cta.feeNote": "Sans paiement • Inscription en 1 minute",
     "home.cta.login": "Se connecter",
 
     // Life Guide - Categories & Emergency Contacts
@@ -2560,6 +2570,8 @@ const translations: Record<Language, Record<string, string>> = {
     "home.section.features.stats.community": "Réponses en direct",
     "home.features.docscan.stats": "OCR + Traduction",
     "home.section.features.badge": "Fonctionnalités clés de la plateforme",
+    "home.section.howItWorks.title": "Comment fonctionne la plateforme",
+    "home.section.howItWorks.subtitle": "Trois scénarios clés: la question de l’étudiant, la réponse de l’IA, le passage vers les guides et le soutien de la communauté.",
     
     "home.section.benefits.badge": "Vérifié par des milliers d'étudiants",
     "home.section.benefits.title": "Pourquoi choisir AdaptEd Russia?",
@@ -3376,9 +3388,11 @@ const translations: Record<Language, Record<string, string>> = {
     "home.pricing.premium": "بريميوم",
     "home.pricing.premium.price": "299₽/شهر",
     
-    "home.cta.title": "هل أنت مستعد للبدء؟",
-    "home.cta.subtitle": "انضم إلى آلاف الطلاب الدوليين الذين يستخدمون بالفعل منصتنا للتكيف الناجح في روسيا",
+    "home.cta.title": "مستعد لبدء التكيف؟",
+    "home.cta.subtitle": "احصل على وصول إلى الأدلة التعليمية، ومساعد الذكاء الاصطناعي، ومجتمع الطلاب.",
     "home.cta.register": "التسجيل",
+    "home.cta.start": "ابدأ مجاناً",
+    "home.cta.feeNote": "بدون دفع • التسجيل خلال دقيقة واحدة",
     "home.cta.login": "تسجيل الدخول",
 
     // Life Guide - Categories & Emergency Contacts
@@ -3563,6 +3577,8 @@ const translations: Record<Language, Record<string, string>> = {
     "home.section.features.stats.community": "إجابات مباشرة",
     "home.features.docscan.stats": "OCR + ترجمة",
     "home.section.features.badge": "الميزات الرئيسية للمنصة",
+    "home.section.howItWorks.title": "كيف تعمل المنصة",
+    "home.section.howItWorks.subtitle": "ثلاثة سيناريوهات رئيسية: سؤال الطالب، إجابة الذكاء الاصطناعي، الانتقال إلى الأدلة، ودعم المجتمع.",
     
     "home.section.benefits.badge": "تم التحقق منه من قبل آلاف الطلاب",
     "home.section.benefits.title": "لماذا تختار AdaptEd Russia?",
@@ -4443,9 +4459,11 @@ const translations: Record<Language, Record<string, string>> = {
     "home.pricing.premium": "高级版",
     "home.pricing.premium.price": "299₽/月",
     
-    "home.cta.title": "准备开始了吗？",
-    "home.cta.subtitle": "加入数千名已经在使用我们平台成功适应俄罗斯的国际学生",
+    "home.cta.title": "准备好开始适应了吗？",
+    "home.cta.subtitle": "获取教育指南、AI 助手和学生社区的访问权限。",
     "home.cta.register": "注册",
+    "home.cta.start": "免费开始",
+    "home.cta.feeNote": "无须付费 • 1 分钟内完成注册",
     "home.cta.login": "登录",
 
     // Life Guide - Categories & Emergency Contacts
@@ -4630,6 +4648,8 @@ const translations: Record<Language, Record<string, string>> = {
     "home.section.features.stats.community": "实时回答",
     "home.features.docscan.stats": "OCR + 翻译",
     "home.section.features.badge": "平台核心功能",
+    "home.section.howItWorks.title": "平台如何运作",
+    "home.section.howItWorks.subtitle": "三个核心场景：学生提问、AI 回答、跳转到指南并得到社区支持。",
     
     "home.section.benefits.badge": "经数千名学生验证",
     "home.section.benefits.title": "为什么选择 AdaptEd Russia?",

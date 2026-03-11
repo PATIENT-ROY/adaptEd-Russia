@@ -523,16 +523,16 @@ export default function HomePage() {
 
         {/* Product In Action */}
         <section
-          aria-label="Как работает платформа"
+          aria-label={t("home.section.howItWorks.title")}
           className="order-2 py-12 sm:py-16 md:py-20 bg-white rounded-2xl sm:rounded-3xl my-6 sm:my-8 lg:my-10"
         >
           <div className="max-w-7xl mx-auto px-4 sm:px-6 lg:px-8">
             <div className="text-center mb-8 sm:mb-10">
               <h2 className="text-2xl sm:text-3xl md:text-4xl font-bold text-slate-900 mb-3 sm:mb-4">
-                ⭐ Как работает платформа
+                ⭐ {t("home.section.howItWorks.title")}
               </h2>
               <p className="text-sm sm:text-base md:text-lg text-slate-600 max-w-3xl mx-auto">
-                Три ключевых сценария: вопрос студентa, ответ AI, переход к гайдам и поддержка сообщества.
+                {t("home.section.howItWorks.subtitle")}
               </p>
             </div>
 
@@ -660,24 +660,24 @@ export default function HomePage() {
         </section>
 
         <section
-          aria-label="Начать адаптацию"
+          aria-label={t("home.cta.title")}
           className="order-2 py-12 sm:py-16 md:py-20 rounded-2xl sm:rounded-3xl my-6 sm:my-8 lg:my-10 bg-gradient-to-br from-slate-50 via-white to-blue-50 border border-slate-100"
         >
           <div className="max-w-3xl mx-auto px-4 sm:px-6 lg:px-8 text-center">
             <h2 className="text-2xl sm:text-3xl md:text-4xl font-bold text-slate-900 mb-3 sm:mb-4">
-              Готовы начать адаптацию?
+              {t("home.cta.title")}
             </h2>
             <p className="text-sm sm:text-base md:text-lg text-slate-600 max-w-2xl mx-auto mb-6 sm:mb-8">
-              Получите доступ к образовательным гайдам, AI-помощнику и сообществу студентов.
+              {t("home.cta.subtitle")}
             </p>
             <Link
               href="/register"
               className="inline-flex items-center justify-center rounded-xl bg-gradient-to-r from-blue-600 to-purple-600 px-6 py-3 text-sm sm:text-base font-semibold text-white shadow-lg transition-all duration-300 hover:from-blue-700 hover:to-purple-700 hover:shadow-xl focus-visible:outline-none focus-visible:ring-2 focus-visible:ring-blue-500 focus-visible:ring-offset-2"
             >
-              Начать бесплатно
+              {t("home.cta.start")}
             </Link>
             <p className="mt-3 text-xs sm:text-sm text-slate-500">
-              Без оплаты • Регистрация за 1 минуту
+              {t("home.cta.feeNote")}
             </p>
           </div>
         </section>
