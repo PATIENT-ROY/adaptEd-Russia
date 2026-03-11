@@ -123,9 +123,14 @@ export function LanguageSwitcher({
               className="absolute -top-1.5 right-5 h-3 w-3 rotate-45 border-l border-t border-slate-200 bg-white/95"
             />
             <div className="flex items-start justify-between gap-2">
-              <p className="text-xs font-medium text-slate-800 sm:text-sm">
-                🌍 Choose your language
-              </p>
+              <div className="leading-tight">
+                <p className="text-xs font-medium text-slate-800 sm:text-sm">
+                  🌍 Choose your language
+                </p>
+                <p className="mt-1 text-[11px] text-slate-500 sm:text-xs">
+                  Top right corner
+                </p>
+              </div>
               <button
                 type="button"
                 onClick={dismissHint}
