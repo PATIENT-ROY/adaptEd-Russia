@@ -187,6 +187,7 @@ export function Navigation({
             <LanguageSwitcher
               currentLanguage={currentLanguage}
               onLanguageChange={onLanguageChange}
+              enableFirstVisitHint={pathname === "/"}
             />
 
             {/* Profile Button */}
