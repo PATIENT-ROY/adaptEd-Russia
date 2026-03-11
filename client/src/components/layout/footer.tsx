@@ -9,11 +9,7 @@ import {
   Mail,
   Phone,
   MapPin,
-  Facebook,
-  Twitter,
-  Instagram,
-  Linkedin,
-  Youtube,
+  Send,
   Heart,
   Shield,
   BookOpen,
@@ -42,11 +38,8 @@ export function Footer() {
   };
 
   const socialLinks = [
-    { href: "#", icon: Facebook, label: "Facebook" },
-    { href: "#", icon: Twitter, label: "Twitter" },
-    { href: "#", icon: Instagram, label: "Instagram" },
-    { href: "#", icon: Linkedin, label: "LinkedIn" },
-    { href: "#", icon: Youtube, label: "YouTube" },
+    { href: "#", type: "telegram" as const, label: "Телеграм" },
+    { href: "#", type: "vk" as const, label: "Вк" },
   ];
 
   return (
@@ -79,18 +72,28 @@ export function Footer() {
               Помогаем иностранным студентам адаптироваться к жизни и учёбе в
               российских вузах. Гайды, AI-помощник с 3 режимами и шаблонами.
             </p>
-            <div className="flex space-x-2 sm:space-x-3">
+            <div className="space-y-2 sm:space-y-3">
               {socialLinks.map((social, index) => {
-                const Icon = social.icon;
                 return (
                   <a
                     key={social.label}
                     href={social.href}
-                    className="h-7 w-7 sm:h-8 sm:w-8 lg:h-10 lg:w-10 rounded-lg bg-slate-700 hover:bg-blue-600 flex items-center justify-center transition-all duration-300 hover:scale-110 hover:shadow-lg footer-icon-animate"
+                    className="group inline-flex items-center gap-3 rounded-lg px-1 py-0.5 text-slate-300 transition-colors duration-300 hover:text-white"
                     aria-label={social.label}
                     style={{ animationDelay: `${index * 100}ms` }}
                   >
-                    <Icon className="h-3 w-3 sm:h-4 sm:w-4 lg:h-5 lg:w-5 text-slate-300 hover:text-white" />
+                    <span className="inline-flex h-8 w-8 sm:h-9 sm:w-9 items-center justify-center rounded-xl bg-slate-600 text-white transition-all duration-300 group-hover:bg-blue-600 footer-icon-animate">
+                      {social.type === "telegram" ? (
+                        <Send className="h-4 w-4 sm:h-5 sm:w-5" />
+                      ) : (
+                        <span className="text-xs sm:text-sm font-bold leading-none">
+                          VK
+                        </span>
+                      )}
+                    </span>
+                    <span className="text-xl sm:text-2xl font-medium tracking-tight text-slate-300 group-hover:text-white">
+                      {social.label}
+                    </span>
                   </a>
                 );
               })}

@@ -241,6 +241,195 @@
     animation: slideInFromTop 0.3s ease-out forwards;
 }
 
+@keyframes ctaGlowPulse {
+    0% {
+        transform: scale(1) translate3d(0, 0, 0);
+        opacity: 0.45;
+    }
+    50% {
+        transform: scale(1.08) translate3d(0, -6px, 0);
+        opacity: 0.62;
+    }
+    100% {
+        transform: scale(1) translate3d(0, 0, 0);
+        opacity: 0.45;
+    }
+}
+
+@keyframes ctaFloat {
+    0% {
+        transform: translate3d(0, 0, 0) rotate(var(--cta-rotate, 0deg));
+    }
+    50% {
+        transform: translate3d(0, -8px, 0) rotate(var(--cta-rotate, 0deg));
+    }
+    100% {
+        transform: translate3d(0, 0, 0) rotate(var(--cta-rotate, 0deg));
+    }
+}
+
+@keyframes founderStickerFloat {
+    0% {
+        transform: translate3d(0, 0, 0) rotate(-9deg);
+    }
+    50% {
+        transform: translate3d(0, -4px, 0) rotate(-7deg);
+    }
+    100% {
+        transform: translate3d(0, 0, 0) rotate(-9deg);
+    }
+}
+
+@keyframes founderStickerWiggle {
+    0% {
+        filter: drop-shadow(0 2px 0 rgba(15, 23, 42, 0.08));
+    }
+    50% {
+        filter: drop-shadow(0 6px 10px rgba(15, 23, 42, 0.14));
+    }
+    100% {
+        filter: drop-shadow(0 2px 0 rgba(15, 23, 42, 0.08));
+    }
+}
+
+.founder-sticker {
+    transform-origin: 25% 85%;
+    animation:
+        founderStickerFloat 7.5s ease-in-out infinite,
+        founderStickerWiggle 7.5s ease-in-out infinite;
+}
+
+.cta-glow {
+    position: absolute;
+    border-radius: 9999px;
+    filter: blur(42px);
+    will-change: transform, opacity;
+    animation: ctaGlowPulse 12s ease-in-out infinite;
+}
+
+.cta-glow-primary {
+    width: 22rem;
+    height: 22rem;
+    top: -9rem;
+    left: -7rem;
+    background: radial-gradient(circle, rgba(59, 130, 246, 0.34) 0%, rgba(59, 130, 246, 0.12) 45%, transparent 72%);
+}
+
+.cta-glow-secondary {
+    width: 20rem;
+    height: 20rem;
+    right: -6rem;
+    bottom: -8rem;
+    background: radial-gradient(circle, rgba(129, 140, 248, 0.32) 0%, rgba(168, 85, 247, 0.1) 45%, transparent 72%);
+    animation-delay: -4s;
+}
+
+.cta-float-icon {
+    position: absolute;
+    width: 3.45rem;
+    height: 3.45rem;
+    display: inline-flex;
+    align-items: center;
+    justify-content: center;
+    border-radius: 9999px;
+    background:
+        linear-gradient(180deg, rgba(255, 255, 255, 0.82), rgba(255, 255, 255, 0.56));
+    border: 1px solid rgba(148, 163, 184, 0.16);
+    box-shadow:
+        0 16px 32px rgba(30, 41, 59, 0.06),
+        inset 0 1px 0 rgba(255, 255, 255, 0.58);
+    backdrop-filter: blur(10px);
+    opacity: 0.88;
+    animation: ctaFloat 7s ease-in-out infinite;
+}
+
+.cta-float-icon-globe {
+    top: 16%;
+    left: 12%;
+    animation-delay: -1s;
+    --cta-rotate: -10deg;
+}
+
+.cta-float-icon-cap {
+    top: 14%;
+    right: 13%;
+    animation-delay: -3s;
+    --cta-rotate: 8deg;
+}
+
+.cta-float-icon-book {
+    left: 16%;
+    bottom: 17%;
+    animation-delay: -2s;
+    --cta-rotate: -8deg;
+}
+
+.cta-float-icon-doc {
+    right: 18%;
+    bottom: 16%;
+    animation-delay: -5s;
+    --cta-rotate: 10deg;
+}
+
+@media (max-width: 640px) {
+    .cta-float-icon {
+        width: 2.6rem;
+        height: 2.6rem;
+        opacity: 0.8;
+    }
+
+    .cta-float-icon-globe {
+        top: 9%;
+        left: 8%;
+    }
+
+    .cta-float-icon-cap {
+        top: 10%;
+        right: 8%;
+    }
+
+    .cta-float-icon-book {
+        left: 10%;
+        bottom: 11%;
+    }
+
+    .cta-float-icon-doc {
+        right: 11%;
+        bottom: 10%;
+    }
+}
+
+.cta-primary-button::selection,
+.cta-primary-button *::selection {
+    background: #ffffff;
+    color: #000000;
+    -webkit-text-fill-color: #000000;
+}
+
+.cta-primary-button::-moz-selection,
+.cta-primary-button *::-moz-selection {
+    background: #ffffff;
+    color: #000000;
+}
+
+.cta-primary-button-label {
+    user-select: text;
+    -webkit-user-select: text;
+}
+
+.cta-primary-button {
+    user-select: text;
+    -webkit-user-select: text;
+}
+
+@media (prefers-reduced-motion: reduce) {
+    .cta-glow,
+    .cta-float-icon,
+    .founder-sticker {
+        animation: none;
+    }
+}
+
 
 /* Градиентный текст */
 

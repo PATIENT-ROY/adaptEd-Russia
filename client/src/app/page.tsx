@@ -20,6 +20,9 @@ import {
   Star,
   Users,
   GraduationCap,
+  Globe,
+  FileText,
+  BookOpenCheck,
 
   Shield,
   Rocket,
@@ -658,9 +661,35 @@ export default function HomePage() {
 
         <section
           aria-label={t("home.cta.title")}
-          className="order-2 py-12 sm:py-16 md:py-20 rounded-2xl sm:rounded-3xl my-6 sm:my-8 lg:my-10 bg-gradient-to-br from-slate-50 via-white to-blue-50 border border-slate-100"
+          className="order-2 relative isolate overflow-hidden py-12 sm:py-16 md:py-20 rounded-2xl sm:rounded-3xl my-6 sm:my-8 lg:my-10 border border-slate-100 bg-gradient-to-br from-slate-50 via-white to-blue-50"
         >
-          <div className="max-w-3xl mx-auto px-4 sm:px-6 lg:px-8 text-center">
+          <div
+            aria-hidden
+            className="pointer-events-none absolute inset-0"
+          >
+            <div className="cta-glow cta-glow-primary" />
+            <div className="cta-glow cta-glow-secondary" />
+          </div>
+
+          <div
+            aria-hidden
+            className="pointer-events-none absolute inset-0 z-[1]"
+          >
+            <div className="cta-float-icon cta-float-icon-globe">
+              <Globe className="h-[1.5rem] w-[1.5rem] sm:h-[1.95rem] sm:w-[1.95rem] text-blue-600/50" />
+            </div>
+            <div className="cta-float-icon cta-float-icon-book">
+              <BookOpenCheck className="h-[1.5rem] w-[1.5rem] sm:h-[1.95rem] sm:w-[1.95rem] text-sky-600/50" />
+            </div>
+            <div className="cta-float-icon cta-float-icon-cap">
+              <GraduationCap className="h-[1.5rem] w-[1.5rem] sm:h-[1.95rem] sm:w-[1.95rem] text-indigo-600/50" />
+            </div>
+            <div className="cta-float-icon cta-float-icon-doc">
+              <FileText className="h-[1.5rem] w-[1.5rem] sm:h-[1.95rem] sm:w-[1.95rem] text-violet-600/50" />
+            </div>
+          </div>
+
+          <div className="relative z-[2] max-w-3xl mx-auto px-4 sm:px-6 lg:px-8 text-center">
             <h2 className="text-2xl sm:text-3xl md:text-4xl font-bold text-slate-900 mb-3 sm:mb-4">
               {t("home.cta.title")}
             </h2>
@@ -669,9 +698,12 @@ export default function HomePage() {
             </p>
             <Link
               href="/register"
-              className="inline-flex items-center justify-center rounded-xl bg-gradient-to-r from-blue-600 to-purple-600 px-6 py-3 text-sm sm:text-base font-semibold text-white shadow-lg transition-all duration-300 hover:from-blue-700 hover:to-purple-700 hover:shadow-xl focus-visible:outline-none focus-visible:ring-2 focus-visible:ring-blue-500 focus-visible:ring-offset-2"
+              draggable={false}
+              className="cta-primary-button inline-flex min-h-14 select-text items-center justify-center rounded-full bg-gradient-to-r from-[#2f67e8] via-[#5a56ea] to-[#8b3fe8] px-8 sm:px-12 py-3.5 text-base sm:text-[2rem] font-semibold tracking-[-0.02em] text-white shadow-[0_18px_40px_rgba(79,95,234,0.26)] transition-transform duration-300 hover:scale-[1.03] focus-visible:outline-none focus-visible:ring-2 focus-visible:ring-blue-500 focus-visible:ring-offset-2"
             >
-              {t("home.cta.start")}
+              <span className="cta-primary-button-label cursor-text select-text">
+                {t("home.cta.start")}
+              </span>
             </Link>
             <p className="mt-3 text-xs sm:text-sm text-slate-500">
               {t("home.cta.feeNote")}
@@ -689,7 +721,7 @@ export default function HomePage() {
             <Card className="relative border border-slate-200 shadow-sm bg-white overflow-visible">
               <CardContent className="p-5 sm:p-7 lg:p-8">
                 <div
-                  className="absolute -top-4 left-6 text-2xl select-none"
+                  className="founder-sticker absolute -top-4 left-6 text-2xl select-none"
                   aria-hidden
                 >
                   ✍️
