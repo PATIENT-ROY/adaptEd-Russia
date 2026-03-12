@@ -27,6 +27,7 @@ const translations: Record<Language, Record<string, string>> = {
     "nav.admin": "Админ",
     "nav.login": "Войти",
     "nav.profile": "Профиль",
+    "common.new": "Новые",
 
     // AI Helper
     "aiHelper.header.title": "AI Помощник",
@@ -192,6 +193,8 @@ const translations: Record<Language, Record<string, string>> = {
     "home.subtitle": "Полная поддержка иностранных студентов: от поступления до успешной адаптации к жизни и учёбе в российских вузах",
     "home.start": "Начать адаптацию",
     "home.guides": "Образовательные гайды",
+    "home.scrollTop": "Наверх",
+    "home.about.avatarAlt": "Аватар основателя",
     "home.gettingStarted.title": "С чего начать",
     "home.gettingStarted.subtitle": "Три простых шага, чтобы быстро адаптироваться к учёбе и жизни в России.",
     "home.gettingStarted.card1.title": "Найти гайд по учёбе",
@@ -1114,6 +1117,7 @@ const translations: Record<Language, Record<string, string>> = {
     "nav.admin": "Admin",
     "nav.login": "Login",
     "nav.profile": "Profile",
+    "common.new": "New",
 
     // AI Helper
     "aiHelper.header.title": "AI Helper",
@@ -1279,6 +1283,8 @@ const translations: Record<Language, Record<string, string>> = {
     "home.subtitle": "Complete support for international students: from admission to successful adaptation to life and studies in Russian universities",
     "home.start": "Start Adaptation",
     "home.guides": "Educational Guides",
+    "home.scrollTop": "Back to top",
+    "home.about.avatarAlt": "Founder avatar",
     "home.gettingStarted.title": "Getting Started",
     "home.gettingStarted.subtitle": "Three simple steps to quickly adapt to study and life in Russia.",
     "home.gettingStarted.card1.title": "Find a Study Guide",
@@ -2199,6 +2205,7 @@ const translations: Record<Language, Record<string, string>> = {
     "nav.admin": "Admin",
     "nav.login": "Connexion",
     "nav.profile": "Profil",
+    "common.new": "Nouveaux",
 
     // AI Helper
     "aiHelper.header.title": "Assistant IA",
@@ -2365,6 +2372,8 @@ const translations: Record<Language, Record<string, string>> = {
     "home.subtitle": "Soutien complet pour les étudiants internationaux: de l'admission à l'adaptation réussie à la vie et aux études dans les universités russes",
     "home.start": "Commencer l'adaptation",
     "home.guides": "Guides éducatifs",
+    "home.scrollTop": "Haut de page",
+    "home.about.avatarAlt": "Avatar du fondateur",
     "home.gettingStarted.title": "Par où commencer",
     "home.gettingStarted.subtitle": "Trois étapes simples pour s'adapter rapidement à la vie et aux études en Russie.",
     "home.gettingStarted.card1.title": "Trouver un guide d'études",
@@ -3218,6 +3227,7 @@ const translations: Record<Language, Record<string, string>> = {
     "nav.admin": "المسؤول",
     "nav.login": "تسجيل الدخول",
     "nav.profile": "الملف الشخصي",
+    "common.new": "جديد",
 
     // AI Helper
     "aiHelper.header.title": "مساعد الذكاء الاصطناعي",
@@ -3383,6 +3393,8 @@ const translations: Record<Language, Record<string, string>> = {
     "home.subtitle": "دعم كامل للطلاب الدوليين: من القبول إلى التكيف الناجح مع الحياة والدراسة في الجامعات الروسية",
     "home.start": "بدء التكيف",
     "home.guides": "الأدلة التعليمية",
+    "home.scrollTop": "العودة للأعلى",
+    "home.about.avatarAlt": "صورة مؤسس المشروع",
     "home.gettingStarted.title": "من أين نبدأ",
     "home.gettingStarted.subtitle": "ثلاث خطوات بسيطة للتكيف بسرعة مع الدراسة والحياة في روسيا.",
     "home.gettingStarted.card1.title": "ابحث عن دليل دراسي",
@@ -4300,6 +4312,7 @@ const translations: Record<Language, Record<string, string>> = {
     "nav.admin": "管理",
     "nav.login": "登录",
     "nav.profile": "个人资料",
+    "common.new": "最新",
 
     // AI Helper
     "aiHelper.header.title": "AI 助手",
@@ -4465,6 +4478,8 @@ const translations: Record<Language, Record<string, string>> = {
     "home.subtitle": "为国际学生提供全面支持：从录取到成功适应俄罗斯大学的生活和学习",
     "home.start": "开始适应",
     "home.guides": "教育指南",
+    "home.scrollTop": "返回顶部",
+    "home.about.avatarAlt": "创始人头像",
     "home.gettingStarted.title": "从哪里开始",
     "home.gettingStarted.subtitle": "三步快速适应俄罗斯的学习和生活。",
     "home.gettingStarted.card1.title": "查找学习指南",

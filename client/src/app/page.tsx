@@ -291,7 +291,7 @@ export default function HomePage() {
           <button
             type="button"
             onClick={scrollToTop}
-            aria-label="Наверх"
+            aria-label={t("home.scrollTop")}
             className="fixed bottom-5 right-5 z-50 inline-flex h-12 w-12 items-center justify-center rounded-2xl border border-white/30 bg-gradient-to-r from-blue-600 to-purple-600 text-white shadow-2xl shadow-blue-500/30 transition-all duration-300 hover:-translate-y-0.5 hover:from-blue-700 hover:to-purple-700 hover:shadow-blue-500/40 focus-visible:outline-none focus-visible:ring-2 focus-visible:ring-blue-400 focus-visible:ring-offset-2 focus-visible:ring-offset-white"
           >
             <ArrowUp className="h-5 w-5" aria-hidden />
@@ -540,7 +540,7 @@ export default function HomePage() {
               <Card className="group border border-slate-200 shadow-sm h-full transition-all duration-300 hover:-translate-y-1 hover:shadow-xl hover:border-slate-300 bg-gradient-to-b from-white to-slate-50">
                 <CardContent className="p-4 sm:p-5 h-full flex flex-col">
                   <h3 className="text-base sm:text-lg font-bold text-slate-900 mb-3 min-h-[28px]">
-                    AI помощник
+                    {t("nav.aiHelper")}
                   </h3>
                   <div className="rounded-xl border border-slate-200 bg-slate-50 overflow-hidden flex-1 transition-colors duration-300 group-hover:border-slate-300">
                     <div className="h-8 bg-slate-900 flex items-center px-3 gap-1.5">
@@ -550,25 +550,27 @@ export default function HomePage() {
                     </div>
                     <div className="p-3 space-y-2.5">
                       <div className="rounded-lg bg-white border border-slate-200 p-2">
-                        <p className="text-[11px] font-semibold text-slate-900">AI Помощник — Учёба</p>
+                        <p className="text-[11px] font-semibold text-slate-900">
+                          {t("nav.aiHelper")} - {t("aiHelper.mode.study")}
+                        </p>
                         <div className="mt-1 flex gap-1">
-                          <span className="text-[10px] px-2 py-0.5 rounded-md bg-blue-500 text-white">Учёба</span>
-                          <span className="text-[10px] px-2 py-0.5 rounded-md bg-slate-100 text-slate-600">Жизнь</span>
-                          <span className="text-[10px] px-2 py-0.5 rounded-md bg-slate-100 text-slate-600">Генератор</span>
+                          <span className="text-[10px] px-2 py-0.5 rounded-md bg-blue-500 text-white">{t("aiHelper.mode.study")}</span>
+                          <span className="text-[10px] px-2 py-0.5 rounded-md bg-slate-100 text-slate-600">{t("aiHelper.mode.life")}</span>
+                          <span className="text-[10px] px-2 py-0.5 rounded-md bg-slate-100 text-slate-600">{t("aiHelper.mode.generator")}</span>
                         </div>
                       </div>
                       <div className="ml-auto max-w-[85%] rounded-lg bg-blue-500 text-white text-[11px] p-2">
-                        Помоги подготовиться к экзамену
+                        {t("aiHelper.quickQuestions.study.1")}
                       </div>
                       <div className="max-w-[90%] rounded-lg bg-white border border-slate-200 text-[11px] p-2 text-slate-700">
-                        Сессия: повторите темы за месяц, уточните формат зачёта, запишитесь на консультацию.
+                        {t("aiHelper.tips.study.2")}
                       </div>
                       <div className="flex flex-wrap gap-1">
-                        <span className="text-[10px] px-2 py-1 rounded-md bg-blue-100 text-blue-700">Быстрые вопросы</span>
-                        <span className="text-[10px] px-2 py-1 rounded-md bg-purple-100 text-purple-700">Шаблоны</span>
+                        <span className="text-[10px] px-2 py-1 rounded-md bg-blue-100 text-blue-700">{t("aiHelper.quickQuestions.title")}</span>
+                        <span className="text-[10px] px-2 py-1 rounded-md bg-purple-100 text-purple-700">{t("aiHelper.templates")}</span>
                       </div>
                       <div className="rounded-lg bg-white border border-slate-200 px-2 py-1.5">
-                        <p className="text-[10px] text-slate-400">Задайте вопрос...</p>
+                        <p className="text-[10px] text-slate-400">{t("aiHelper.input.placeholder")}</p>
                       </div>
                     </div>
                   </div>
@@ -578,7 +580,7 @@ export default function HomePage() {
               <Card className="group border border-slate-200 shadow-sm h-full transition-all duration-300 hover:-translate-y-1 hover:shadow-xl hover:border-slate-300 bg-gradient-to-b from-white to-slate-50">
                 <CardContent className="p-4 sm:p-5 h-full flex flex-col">
                   <h3 className="text-base sm:text-lg font-bold text-slate-900 mb-3 min-h-[28px]">
-                    Страница гайда
+                    {t("educationGuide.header.title")}
                   </h3>
                   <div className="rounded-xl border border-slate-200 bg-slate-50 overflow-hidden flex-1 transition-colors duration-300 group-hover:border-slate-300">
                     <div className="h-8 bg-slate-900 flex items-center px-3 gap-1.5">
@@ -588,25 +590,25 @@ export default function HomePage() {
                     </div>
                     <div className="p-3 space-y-2.5">
                       <div className="rounded-lg bg-white border border-slate-200 px-2 py-1.5">
-                        <p className="text-[11px] text-slate-400">Поиск по гайдам...</p>
+                        <p className="text-[11px] text-slate-400">{t("educationGuide.search.placeholder")}</p>
                       </div>
                       <div className="grid grid-cols-3 gap-1.5">
-                        <span className="text-[10px] px-2 py-1 rounded-md bg-blue-500 text-white text-center">Все</span>
-                        <span className="text-[10px] px-2 py-1 rounded-md bg-white border border-slate-200 text-slate-600 text-center">Экзамены</span>
-                        <span className="text-[10px] px-2 py-1 rounded-md bg-white border border-slate-200 text-slate-600 text-center">Документы</span>
+                        <span className="text-[10px] px-2 py-1 rounded-md bg-blue-500 text-white text-center">{t("educationGuide.categories.all")}</span>
+                        <span className="text-[10px] px-2 py-1 rounded-md bg-white border border-slate-200 text-slate-600 text-center">{t("educationGuide.categories.exams")}</span>
+                        <span className="text-[10px] px-2 py-1 rounded-md bg-white border border-slate-200 text-slate-600 text-center">{t("educationGuide.categories.documents")}</span>
                       </div>
                       <div className="space-y-1.5">
                         <div className="rounded-md bg-white border border-slate-200 p-2">
-                          <p className="text-[11px] font-medium text-slate-800 line-clamp-1">Как проходит обучение в России</p>
-                          <p className="text-[10px] text-slate-500 mt-0.5">Пошаговое руководство • 9 минут</p>
+                          <p className="text-[11px] font-medium text-slate-800 line-clamp-1">{t("educationGuide.header.subtitle")}</p>
+                          <p className="text-[10px] text-slate-500 mt-0.5">{t("home.benefits.clear")}</p>
                         </div>
                         <div className="rounded-md bg-white border border-slate-200 p-2">
-                          <p className="text-[11px] font-medium text-slate-800 line-clamp-1">Словарь студенческого сленга</p>
-                          <p className="text-[10px] text-slate-500 mt-0.5">Часто используемые термины</p>
+                          <p className="text-[11px] font-medium text-slate-800 line-clamp-1">{t("studentSlang.title")}</p>
+                          <p className="text-[10px] text-slate-500 mt-0.5">{t("studentSlang.searchPlaceholder")}</p>
                         </div>
                         <div className="rounded-md bg-white border border-slate-200 p-2">
-                          <p className="text-[11px] font-medium text-slate-800 line-clamp-1">Миграционный учет: пошагово</p>
-                          <p className="text-[10px] text-slate-500 mt-0.5">Документы, сроки и подача заявления</p>
+                          <p className="text-[11px] font-medium text-slate-800 line-clamp-1">{t("educationGuide.categories.documents")}</p>
+                          <p className="text-[10px] text-slate-500 mt-0.5">{t("home.features.navigator.desc")}</p>
                         </div>
                       </div>
                     </div>
@@ -617,7 +619,7 @@ export default function HomePage() {
               <Card className="group border border-slate-200 shadow-sm h-full transition-all duration-300 hover:-translate-y-1 hover:shadow-xl hover:border-slate-300 bg-gradient-to-b from-white to-slate-50">
                 <CardContent className="p-4 sm:p-5 h-full flex flex-col">
                   <h3 className="text-base sm:text-lg font-bold text-slate-900 mb-3 min-h-[28px]">
-                    Community
+                    {t("home.features.community")}
                   </h3>
                   <div className="rounded-xl border border-slate-200 bg-slate-50 overflow-hidden flex-1 transition-colors duration-300 group-hover:border-slate-300">
                     <div className="h-8 bg-slate-900 flex items-center px-3 gap-1.5">
@@ -627,7 +629,7 @@ export default function HomePage() {
                     </div>
                     <div className="p-3 space-y-2.5">
                       <div className="rounded-lg bg-gradient-to-r from-indigo-600 via-purple-600 to-pink-500 text-white p-2">
-                        <p className="text-[11px] font-semibold">Сообщество</p>
+                        <p className="text-[11px] font-semibold">{t("home.features.community")}</p>
                         <div className="mt-1 flex gap-1.5">
                           <span className="text-[10px] px-1.5 py-0.5 rounded bg-white/25">181</span>
                           <span className="text-[10px] px-1.5 py-0.5 rounded bg-white/20">8</span>
@@ -635,21 +637,21 @@ export default function HomePage() {
                         </div>
                       </div>
                       <div className="rounded-lg bg-white border border-slate-200 px-2 py-1.5">
-                        <p className="text-[10px] text-slate-400">Поиск вопросов...</p>
+                        <p className="text-[10px] text-slate-400">{t("aiHelper.input.placeholder")}</p>
                       </div>
                       <div className="flex gap-1.5">
-                        <span className="text-[10px] px-2 py-1 rounded-md bg-indigo-600 text-white">Популярные</span>
-                        <span className="text-[10px] px-2 py-1 rounded-md bg-white border border-slate-200 text-slate-600">Новые</span>
+                        <span className="text-[10px] px-2 py-1 rounded-md bg-indigo-600 text-white">{t("studentSlang.stats.popular")}</span>
+                        <span className="text-[10px] px-2 py-1 rounded-md bg-white border border-slate-200 text-slate-600">{t("common.new")}</span>
                       </div>
                       <div className="rounded-lg bg-white border border-slate-200 p-2">
-                        <p className="text-[11px] font-medium text-slate-900">Что делать при незачёте?</p>
-                        <p className="text-[10px] text-slate-500 mt-1">12 ответов • 24 лайка</p>
+                        <p className="text-[11px] font-medium text-slate-900">{t("aiHelper.quickQuestions.life.4")}</p>
+                        <p className="text-[10px] text-slate-500 mt-1">12 • 24</p>
                       </div>
                       <div className="rounded-lg bg-slate-100 p-2">
-                        <p className="text-[10px] text-slate-700">Ответ: уточни пересдачу у преподавателя и деканата.</p>
+                        <p className="text-[10px] text-slate-700">{t("aiHelper.tips.life.1")}</p>
                       </div>
                       <div className="rounded-lg bg-slate-100 p-2">
-                        <p className="text-[10px] text-slate-700">Ответ: подготовь план и попроси консультацию.</p>
+                        <p className="text-[10px] text-slate-700">{t("aiHelper.tips.study.3")}</p>
                       </div>
                     </div>
                   </div>
@@ -736,7 +738,7 @@ export default function HomePage() {
                     <div className="w-10 h-10 rounded-full overflow-hidden border border-slate-200 bg-white">
                       <Image
                         src="/images/founder-avatar.svg"
-                        alt="Аватар основателя"
+                        alt={t("home.about.avatarAlt")}
                         width={40}
                         height={40}
                         className="w-full h-full object-cover"

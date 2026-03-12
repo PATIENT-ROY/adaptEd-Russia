@@ -72,13 +72,13 @@ export function Footer() {
               Помогаем иностранным студентам адаптироваться к жизни и учёбе в
               российских вузах. Гайды, AI-помощник с 3 режимами и шаблонами.
             </p>
-            <div className="space-y-2 sm:space-y-3">
+            <div className="flex items-center gap-2 sm:gap-3">
               {socialLinks.map((social, index) => {
                 return (
                   <a
                     key={social.label}
                     href={social.href}
-                    className="group inline-flex items-center gap-3 rounded-lg px-1 py-0.5 text-slate-300 transition-colors duration-300 hover:text-white"
+                    className="group inline-flex items-center rounded-lg p-0.5 text-slate-300 transition-colors duration-300 hover:text-white"
                     aria-label={social.label}
                     style={{ animationDelay: `${index * 100}ms` }}
                   >
@@ -90,9 +90,6 @@ export function Footer() {
                           VK
                         </span>
                       )}
-                    </span>
-                    <span className="text-xl sm:text-2xl font-medium tracking-tight text-slate-300 group-hover:text-white">
-                      {social.label}
                     </span>
                   </a>
                 );
