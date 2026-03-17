@@ -67,7 +67,7 @@ export const HeroTypewriter = memo(function HeroTypewriter({
 
   return (
     <div ref={containerRef} className="max-w-3xl mx-auto px-4 mb-8 sm:mb-12">
-      <div className="relative h-[44px] sm:h-[52px] md:h-[56px] rounded-2xl bg-white/15 border border-white/20 shadow-[0_0_20px_rgba(255,255,255,0.1)] overflow-hidden">
+      <div className="relative h-[44px] cursor-default sm:h-[52px] md:h-[56px] rounded-2xl border-none bg-white/15 shadow-[0_0_20px_rgba(255,255,255,0.1)] overflow-hidden">
         <div
           className="absolute -left-2 top-1/2 w-8 h-8 sm:w-10 sm:h-10 rounded-full bg-white/10 hero-float-center1"
           style={{ animationPlayState: playState }}
@@ -89,14 +89,13 @@ export const HeroTypewriter = memo(function HeroTypewriter({
           style={{ animationPlayState: playState }}
         />
 
-        <div className="absolute inset-0 flex items-center justify-center z-10 px-3">
+        <div className="absolute inset-0 z-10 flex cursor-default items-center justify-center gap-2 px-3 select-none">
+          <span aria-hidden="true" className="text-sm sm:text-base md:text-xl lg:text-2xl text-white">
+            👉
+          </span>
           <span className="text-xs sm:text-sm md:text-lg lg:text-xl font-semibold whitespace-nowrap text-white drop-shadow-[0_0_8px_rgba(255,255,255,0.2)]">
             {displayText}
           </span>
-          <span
-            className="inline-block w-[2px] h-[1.1em] bg-white/90 rounded-full shrink-0 ml-0.5 hero-blink"
-            style={{ animationPlayState: playState }}
-          />
         </div>
       </div>
     </div>

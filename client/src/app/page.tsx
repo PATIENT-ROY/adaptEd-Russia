@@ -46,6 +46,7 @@ import { ReviewCard } from "@/components/home/ReviewCard";
 export default function HomePage() {
   const { t } = useTranslation();
   const [showScrollIndicator, setShowScrollIndicator] = useState(true);
+  const [scrollIndicatorSlow, setScrollIndicatorSlow] = useState(false);
   const [showScrollTopButton, setShowScrollTopButton] = useState(false);
   const [reviews, setReviews] = useState<PublicReview[]>([]);
   const [trustStats, setTrustStats] = useState<TrustStatsType | null>(null);
@@ -60,6 +61,14 @@ export default function HomePage() {
     handleScroll();
     window.addEventListener("scroll", handleScroll, { passive: true });
     return () => window.removeEventListener("scroll", handleScroll);
+  }, []);
+
+  useEffect(() => {
+    const timer = window.setTimeout(() => {
+      setScrollIndicatorSlow(true);
+    }, 12000);
+
+    return () => window.clearTimeout(timer);
   }, []);
 
   const scrollToTop = () => {
@@ -372,9 +381,13 @@ export default function HomePage() {
 
           {/* Scroll indicator */}
           {showScrollIndicator && (
-            <div className="absolute bottom-4 sm:bottom-6 left-1/2 transform -translate-x-1/2 motion-safe:animate-bounce" aria-hidden="true">
-              <div className="w-6 h-10 sm:w-7 sm:h-12 border-2 border-white/60 rounded-full flex justify-center shadow-[0_0_12px_rgba(255,255,255,0.35)]">
-                <div className="w-1.5 h-3 sm:h-4 bg-white/90 rounded-full mt-1.5 sm:mt-2"></div>
+            <div className="absolute bottom-4 sm:bottom-6 left-1/2 -translate-x-1/2" aria-hidden="true">
+              <div
+                className={`${scrollIndicatorSlow ? "hero-scroll-gentle" : "motion-safe:animate-bounce"} transition-transform duration-1000 ease-out`}
+              >
+                <div className="w-6 h-10 sm:w-7 sm:h-12 border-2 border-white/60 rounded-full flex justify-center shadow-[0_0_12px_rgba(255,255,255,0.35)]">
+                  <div className="w-1.5 h-3 sm:h-4 bg-white/90 rounded-full mt-1.5 sm:mt-2"></div>
+                </div>
               </div>
             </div>
           )}

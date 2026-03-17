@@ -710,12 +710,17 @@ nextjs-portal:not(:has(> *)) {
     0%, 100% { transform: translateY(-50%); }
     50% { transform: translateY(calc(-50% + 5px)); }
 }
+@keyframes heroScrollGentle {
+    0%, 100% { transform: translateY(0); }
+    50% { transform: translateY(-2px); }
+}
 .hero-blink { animation: heroBlink 1s step-end infinite; }
 .hero-float1 { animation: heroFloat1 3s ease-in-out infinite; }
 .hero-float2 { animation: heroFloat2 5s ease-in-out infinite; }
 .hero-float3 { animation: heroFloat3 3.5s ease-in-out infinite; }
 .hero-float-center1 { animation: heroFloatCenter1 4s ease-in-out infinite; }
 .hero-float-center2 { animation: heroFloatCenter2 4.5s ease-in-out infinite; }
+.hero-scroll-gentle { animation: heroScrollGentle 10s ease-in-out infinite; }
 
 /* Offscreen content optimization */
 .below-fold {
