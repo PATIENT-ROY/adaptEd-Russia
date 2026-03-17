@@ -301,7 +301,7 @@ export default function HomePage() {
             type="button"
             onClick={scrollToTop}
             aria-label={t("home.scrollTop")}
-            className="fixed bottom-5 right-5 z-50 inline-flex h-12 w-12 items-center justify-center rounded-2xl border border-white/30 bg-gradient-to-r from-blue-600 to-purple-600 text-white shadow-2xl shadow-blue-500/30 transition-all duration-300 hover:-translate-y-0.5 hover:from-blue-700 hover:to-purple-700 hover:shadow-blue-500/40 focus-visible:outline-none focus-visible:ring-2 focus-visible:ring-blue-400 focus-visible:ring-offset-2 focus-visible:ring-offset-white"
+            className="fixed bottom-5 right-5 z-50 inline-flex h-12 w-12 items-center justify-center rounded-2xl border border-white/30 bg-gradient-to-r from-blue-600 to-purple-600 text-white shadow-xl shadow-blue-500/20 transition-all duration-200 hover:-translate-y-0.5 hover:from-blue-700 hover:to-purple-700 hover:shadow-blue-500/30 focus-visible:outline-none focus-visible:ring-2 focus-visible:ring-blue-400 focus-visible:ring-offset-2 focus-visible:ring-offset-white"
           >
             <ArrowUp className="h-5 w-5" aria-hidden />
           </button>
@@ -330,14 +330,14 @@ export default function HomePage() {
               <div className="flex flex-col sm:flex-row gap-3 sm:gap-4 justify-center mb-8 sm:mb-12 max-w-2xl mx-auto">
                 <Link
                   href="/register"
-                  className="inline-flex items-center justify-center w-full sm:w-auto text-sm sm:text-base lg:text-lg px-4 sm:px-6 lg:px-8 py-3 sm:py-4 border-2 bg-white/20 border-white/40 text-white rounded-xl font-semibold sm:hover:bg-white/30 sm:hover:border-white/50 active:bg-white/35 active:scale-95 shadow-lg sm:hover:shadow-xl active:shadow-md transition-all duration-300 focus-visible:outline-none focus-visible:ring-2 focus-visible:ring-white focus-visible:ring-offset-2 focus-visible:ring-offset-transparent"
+                  className="inline-flex items-center justify-center w-full sm:w-auto text-sm sm:text-base lg:text-lg px-4 sm:px-6 lg:px-8 py-3 sm:py-4 border-2 bg-white/18 border-white/35 text-white rounded-xl font-semibold sm:hover:bg-white/22 sm:hover:border-white/40 active:bg-white/28 active:scale-[0.985] shadow-md sm:hover:shadow-md active:shadow-sm transition-all duration-200 focus-visible:outline-none focus-visible:ring-2 focus-visible:ring-white focus-visible:ring-offset-2 focus-visible:ring-offset-transparent"
                 >
                   <Rocket className="mr-2 h-4 w-4 sm:h-5 sm:w-5" aria-hidden="true" />
                   {t("home.start")}
                 </Link>
                 <Link
                   href="/education-guide"
-                  className="inline-flex items-center justify-center w-full sm:w-auto text-sm sm:text-base lg:text-lg px-4 sm:px-6 lg:px-8 py-3 sm:py-4 border-2 border-white/40 text-white bg-white/15 rounded-xl font-semibold sm:hover:bg-white/90 sm:hover:text-indigo-700 sm:hover:border-white active:bg-white/35 active:scale-95 shadow-lg sm:hover:shadow-xl active:shadow-md transition-all duration-300 focus-visible:outline-none focus-visible:ring-2 focus-visible:ring-white focus-visible:ring-offset-2 focus-visible:ring-offset-transparent"
+                  className="inline-flex items-center justify-center w-full sm:w-auto text-sm sm:text-base lg:text-lg px-4 sm:px-6 lg:px-8 py-3 sm:py-4 border-2 border-white/35 text-white bg-white/12 rounded-xl font-semibold sm:hover:bg-white/75 sm:hover:text-indigo-700 sm:hover:border-white/80 active:bg-white/28 active:scale-[0.985] shadow-md sm:hover:shadow-md active:shadow-sm transition-all duration-200 focus-visible:outline-none focus-visible:ring-2 focus-visible:ring-white focus-visible:ring-offset-2 focus-visible:ring-offset-transparent"
                 >
                   <BookOpen className="mr-2 h-4 w-4 sm:h-5 sm:w-5" aria-hidden="true" />
                   {t("home.guides")}
@@ -358,8 +358,8 @@ export default function HomePage() {
                         href={feature.href}
                         className="group"
                       >
-                        <div className="bg-white/20 border border-white/25 rounded-xl sm:rounded-2xl p-3 sm:p-4 hover:bg-white/30 hover:border-white/40 transition-all duration-300 h-full flex flex-col items-center text-center">
-                          <div className="w-10 h-10 sm:w-14 sm:h-14 rounded-lg sm:rounded-xl bg-white/25 flex items-center justify-center mb-2 sm:mb-3 group-hover:scale-110 transition-transform duration-300 flex-shrink-0">
+                        <div className="bg-white/16 border border-white/20 rounded-xl sm:rounded-2xl p-3 sm:p-4 hover:bg-white/20 hover:border-white/28 transition-all duration-200 h-full flex flex-col items-center text-center">
+                          <div className="w-10 h-10 sm:w-14 sm:h-14 rounded-lg sm:rounded-xl bg-white/25 flex items-center justify-center mb-2 sm:mb-3 group-hover:scale-105 transition-transform duration-200 flex-shrink-0">
                             <Icon className="h-5 w-5 sm:h-7 sm:w-7 text-white" />
                           </div>
                           <h3 className="text-xs sm:text-sm lg:text-base font-bold text-white mb-1 sm:mb-2 flex-shrink-0 leading-tight">
@@ -385,7 +385,7 @@ export default function HomePage() {
               <div
                 className={`${scrollIndicatorSlow ? "hero-scroll-gentle" : "motion-safe:animate-bounce"} transition-transform duration-1000 ease-out`}
               >
-                <div className="w-6 h-10 sm:w-7 sm:h-12 border-2 border-white/60 rounded-full flex justify-center shadow-[0_0_12px_rgba(255,255,255,0.35)]">
+                <div className="w-6 h-10 sm:w-7 sm:h-12 border-2 border-white/50 rounded-full flex justify-center shadow-[0_0_10px_rgba(255,255,255,0.22)]">
                   <div className="w-1.5 h-3 sm:h-4 bg-white/90 rounded-full mt-1.5 sm:mt-2"></div>
                 </div>
               </div>
@@ -412,7 +412,7 @@ export default function HomePage() {
               {quickStartItems.map((item) => {
                 const Icon = item.icon;
                 return (
-                  <Card key={item.href} className="border border-slate-200 shadow-sm hover:shadow-lg transition-all duration-300">
+                  <Card key={item.href} className="border border-slate-200 shadow-sm hover:shadow-md transition-all duration-200">
                     <CardContent className="p-5 sm:p-6 h-full flex flex-col">
                       <div className="w-12 h-12 rounded-xl bg-blue-100 text-blue-700 flex items-center justify-center mb-4">
                         <Icon className="h-6 w-6" aria-hidden />
@@ -463,11 +463,11 @@ export default function HomePage() {
                 return (
                   <Card
                     key={index}
-                    className="border-0 shadow-xl h-full bg-white"
+                    className="border-0 shadow-lg h-full bg-white"
                   >
                     <CardContent className="p-2.5 sm:p-6 lg:p-8 relative z-10 flex flex-col min-h-[200px] sm:min-h-0 h-full">
                       <div
-                        className={`w-9 h-9 sm:w-16 sm:h-16 rounded-lg sm:rounded-2xl bg-gradient-to-br ${feature.gradient} flex items-center justify-center mb-1.5 sm:mb-6 shadow-lg flex-shrink-0`}
+                        className={`w-9 h-9 sm:w-16 sm:h-16 rounded-lg sm:rounded-2xl bg-gradient-to-br ${feature.gradient} flex items-center justify-center mb-1.5 sm:mb-6 shadow-md flex-shrink-0`}
                       >
                         <Icon className="h-4 w-4 sm:h-8 sm:w-8 text-white" />
                       </div>
@@ -498,7 +498,7 @@ export default function HomePage() {
           <div className="absolute inset-0 bg-gradient-to-br from-purple-600 via-blue-600 to-indigo-700"></div>
           <div className="relative max-w-7xl mx-auto px-4 sm:px-6 lg:px-8">
             <div className="text-center mb-12 sm:mb-16">
-              <div className="inline-flex items-center rounded-full bg-white/20 px-4 sm:px-6 py-2 sm:py-3 text-xs sm:text-sm font-semibold text-white mb-6 sm:mb-8 shadow-lg border border-white/20">
+              <div className="inline-flex items-center rounded-full bg-white/16 px-4 sm:px-6 py-2 sm:py-3 text-xs sm:text-sm font-semibold text-white mb-6 sm:mb-8 shadow-md border border-white/16">
                 <Sparkles className="mr-2 h-3 w-3 sm:h-4 sm:w-4" />
                 {t("home.section.benefits.badge")}
               </div>
@@ -516,9 +516,9 @@ export default function HomePage() {
                 return (
                   <div
                     key={index}
-                    className="p-4 sm:p-6 lg:p-8 rounded-2xl bg-white/15 border border-white/20"
+                    className="p-4 sm:p-6 lg:p-8 rounded-2xl bg-white/12 border border-white/16"
                   >
-                    <div className="w-12 h-12 sm:w-16 sm:h-16 rounded-2xl bg-white/20 flex items-center justify-center mb-4 sm:mb-6">
+                    <div className="w-12 h-12 sm:w-16 sm:h-16 rounded-2xl bg-white/16 flex items-center justify-center mb-4 sm:mb-6">
                       <Icon className="h-6 w-6 sm:h-8 sm:w-8 text-white" />
                     </div>
                     <h3 className="text-lg sm:text-xl font-bold text-white mb-2 sm:mb-3">
@@ -550,12 +550,12 @@ export default function HomePage() {
             </div>
 
             <div className="grid grid-cols-1 lg:grid-cols-3 gap-4 sm:gap-6">
-              <Card className="group border border-slate-200 shadow-sm h-full transition-all duration-300 hover:-translate-y-1 hover:shadow-xl hover:border-slate-300 bg-gradient-to-b from-white to-slate-50">
+              <Card className="group border border-slate-200 shadow-sm h-full transition-all duration-200 hover:shadow-md hover:border-slate-300 bg-gradient-to-b from-white to-slate-50">
                 <CardContent className="p-4 sm:p-5 h-full flex flex-col">
                   <h3 className="text-base sm:text-lg font-bold text-slate-900 mb-3 min-h-[28px]">
                     {t("nav.aiHelper")}
                   </h3>
-                  <div className="rounded-xl border border-slate-200 bg-slate-50 overflow-hidden flex-1 transition-colors duration-300 group-hover:border-slate-300">
+                  <div className="rounded-xl border border-slate-200 bg-slate-50 overflow-hidden flex-1 transition-colors duration-200 group-hover:border-slate-300">
                     <div className="h-8 bg-slate-900 flex items-center px-3 gap-1.5">
                       <span className="w-2 h-2 rounded-full bg-red-400" />
                       <span className="w-2 h-2 rounded-full bg-yellow-400" />
@@ -590,12 +590,12 @@ export default function HomePage() {
                 </CardContent>
               </Card>
 
-              <Card className="group border border-slate-200 shadow-sm h-full transition-all duration-300 hover:-translate-y-1 hover:shadow-xl hover:border-slate-300 bg-gradient-to-b from-white to-slate-50">
+              <Card className="group border border-slate-200 shadow-sm h-full transition-all duration-200 hover:shadow-md hover:border-slate-300 bg-gradient-to-b from-white to-slate-50">
                 <CardContent className="p-4 sm:p-5 h-full flex flex-col">
                   <h3 className="text-base sm:text-lg font-bold text-slate-900 mb-3 min-h-[28px]">
                     {t("educationGuide.header.title")}
                   </h3>
-                  <div className="rounded-xl border border-slate-200 bg-slate-50 overflow-hidden flex-1 transition-colors duration-300 group-hover:border-slate-300">
+                  <div className="rounded-xl border border-slate-200 bg-slate-50 overflow-hidden flex-1 transition-colors duration-200 group-hover:border-slate-300">
                     <div className="h-8 bg-slate-900 flex items-center px-3 gap-1.5">
                       <span className="w-2 h-2 rounded-full bg-red-400" />
                       <span className="w-2 h-2 rounded-full bg-yellow-400" />
@@ -629,12 +629,12 @@ export default function HomePage() {
                 </CardContent>
               </Card>
 
-              <Card className="group border border-slate-200 shadow-sm h-full transition-all duration-300 hover:-translate-y-1 hover:shadow-xl hover:border-slate-300 bg-gradient-to-b from-white to-slate-50">
+              <Card className="group border border-slate-200 shadow-sm h-full transition-all duration-200 hover:shadow-md hover:border-slate-300 bg-gradient-to-b from-white to-slate-50">
                 <CardContent className="p-4 sm:p-5 h-full flex flex-col">
                   <h3 className="text-base sm:text-lg font-bold text-slate-900 mb-3 min-h-[28px]">
                     {t("home.features.community")}
                   </h3>
-                  <div className="rounded-xl border border-slate-200 bg-slate-50 overflow-hidden flex-1 transition-colors duration-300 group-hover:border-slate-300">
+                  <div className="rounded-xl border border-slate-200 bg-slate-50 overflow-hidden flex-1 transition-colors duration-200 group-hover:border-slate-300">
                     <div className="h-8 bg-slate-900 flex items-center px-3 gap-1.5">
                       <span className="w-2 h-2 rounded-full bg-red-400" />
                       <span className="w-2 h-2 rounded-full bg-yellow-400" />
@@ -714,7 +714,7 @@ export default function HomePage() {
             <Link
               href="/register"
               draggable={false}
-              className="cta-primary-button inline-flex min-h-14 select-text items-center justify-center rounded-full bg-gradient-to-r from-[#2f67e8] via-[#5a56ea] to-[#8b3fe8] px-8 sm:px-12 py-3.5 text-base sm:text-[2rem] font-semibold tracking-[-0.02em] text-white shadow-[0_18px_40px_rgba(79,95,234,0.26)] transition-transform duration-300 hover:scale-[1.03] focus-visible:outline-none focus-visible:ring-2 focus-visible:ring-blue-500 focus-visible:ring-offset-2"
+              className="cta-primary-button inline-flex min-h-14 select-text items-center justify-center rounded-full bg-gradient-to-r from-[#2f67e8] via-[#5a56ea] to-[#8b3fe8] px-8 sm:px-12 py-3.5 text-base sm:text-[2rem] font-semibold tracking-[-0.02em] text-white shadow-[0_14px_28px_rgba(79,95,234,0.2)] transition-transform duration-200 hover:scale-[1.03] focus-visible:outline-none focus-visible:ring-2 focus-visible:ring-blue-500 focus-visible:ring-offset-2"
             >
               <span className="cta-primary-button-label cursor-text select-text">
                 {t("home.cta.start")}

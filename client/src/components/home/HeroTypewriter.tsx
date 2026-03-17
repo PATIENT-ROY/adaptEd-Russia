@@ -11,6 +11,7 @@ export const HeroTypewriter = memo(function HeroTypewriter({
 }: HeroTypewriterProps) {
   const containerRef = useRef<HTMLDivElement>(null);
   const [visible, setVisible] = useState(false);
+  const [animateDecor, setAnimateDecor] = useState(true);
   const [sloganIndex, setSloganIndex] = useState(0);
   const [displayText, setDisplayText] = useState("");
   const [phase, setPhase] = useState<"typing" | "pause" | "deleting">("typing");
@@ -24,6 +25,14 @@ export const HeroTypewriter = memo(function HeroTypewriter({
     );
     observer.observe(el);
     return () => observer.disconnect();
+  }, []);
+
+  useEffect(() => {
+    const timer = window.setTimeout(() => {
+      setAnimateDecor(false);
+    }, 12000);
+
+    return () => window.clearTimeout(timer);
   }, []);
 
   useEffect(() => {
@@ -63,7 +72,7 @@ export const HeroTypewriter = memo(function HeroTypewriter({
     }
   }, [displayText, phase, sloganIndex, slogans, visible]);
 
-  const playState = visible ? "running" : "paused";
+  const playState = visible && animateDecor ? "running" : "paused";
 
   return (
     <div ref={containerRef} className="max-w-3xl mx-auto px-4 mb-8 sm:mb-12">
