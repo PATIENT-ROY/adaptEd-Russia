@@ -42,6 +42,7 @@ import { PublicReview, TrustStats as TrustStatsType } from "@/types";
 import { HeroTypewriter } from "@/components/home/HeroTypewriter";
 import { TrustStats } from "@/components/home/TrustStats";
 import { ReviewCard } from "@/components/home/ReviewCard";
+import { TestimonialCardSkeleton } from "@/components/ui/skeleton";
 
 export default function HomePage() {
   const { t } = useTranslation();
@@ -852,7 +853,13 @@ export default function HomePage() {
               />
             )}
 
-            {!reviewsLoading && reviews.length > 0 ? (
+            {reviewsLoading ? (
+              <div className="grid grid-cols-1 md:grid-cols-3 gap-4 sm:gap-6 lg:gap-8">
+                {Array.from({ length: 3 }).map((_, index) => (
+                  <TestimonialCardSkeleton key={index} />
+                ))}
+              </div>
+            ) : reviews.length > 0 ? (
               <div className="grid grid-cols-1 md:grid-cols-3 gap-4 sm:gap-6 lg:gap-8">
                 {reviews.map((review) => (
                   <ReviewCard
@@ -870,10 +877,14 @@ export default function HomePage() {
                 {testimonials.map((testimonial, index) => (
                   <Card
                     key={index}
-                    className="border-0 shadow-xl h-full bg-white"
+                    className="group relative h-full overflow-hidden rounded-3xl border-0 bg-white shadow-[0_18px_45px_-28px_rgba(15,23,42,0.28)] transition-all duration-300 ease-out hover:-translate-y-1.5 hover:shadow-[0_28px_60px_-26px_rgba(37,99,235,0.28)]"
                   >
-                    <CardContent className="p-4 sm:p-6 lg:p-8 h-full flex flex-col">
-                      <div className="flex items-center mb-3 sm:mb-4" role="img" aria-label={`${testimonial.rating} ${t("home.section.testimonials.stars")}`}>
+                    <div
+                      aria-hidden
+                      className="pointer-events-none absolute inset-x-0 bottom-0 h-[46%] rounded-b-3xl bg-gradient-to-t from-blue-600 via-violet-600/90 to-transparent opacity-0 transition-opacity duration-300 ease-out group-hover:opacity-100"
+                    />
+                    <CardContent className="relative z-10 flex h-full flex-col p-4 sm:p-6 lg:p-8">
+                      <div className="mb-3 flex items-center sm:mb-4" role="img" aria-label={`${testimonial.rating} ${t("home.section.testimonials.stars")}`}>
                         {[...Array(testimonial.rating)].map((_, i) => (
                           <Star
                             key={i}
@@ -885,26 +896,28 @@ export default function HomePage() {
                       <p className="text-slate-700 text-sm sm:text-base lg:text-lg leading-relaxed mb-4 sm:mb-6 italic flex-1">
                         &ldquo;{testimonial.text}&rdquo;
                       </p>
-                      <div className="flex items-center mt-auto">
-                        {testimonial.avatarUrl ? (
-                          <Image
-                            src={testimonial.avatarUrl}
-                            alt={testimonial.name}
-                            width={48}
-                            height={48}
-                            className="w-10 h-10 sm:w-12 sm:h-12 rounded-full object-cover mr-3 sm:mr-4 border border-slate-200"
-                          />
-                        ) : (
-                          <div className="w-10 h-10 sm:w-12 sm:h-12 rounded-full bg-gradient-to-br from-blue-500 to-purple-600 flex items-center justify-center text-white font-bold text-sm sm:text-lg mr-3 sm:mr-4">
-                            {testimonial.name.charAt(0)}
-                          </div>
-                        )}
-                        <div>
-                          <div className="font-semibold text-slate-900 text-sm sm:text-base">
-                            {testimonial.name}
-                          </div>
-                          <div className="text-slate-600 text-sm sm:text-base font-medium tracking-wide uppercase">
-                            {testimonial.country} • {testimonial.university}
+                      <div className="mt-auto rounded-2xl px-1 py-1 transition-colors duration-300 ease-out group-hover:bg-white/10">
+                        <div className="flex items-center">
+                          {testimonial.avatarUrl ? (
+                            <Image
+                              src={testimonial.avatarUrl}
+                              alt={testimonial.name}
+                              width={48}
+                              height={48}
+                              className="mr-3 h-10 w-10 rounded-full border border-slate-200 object-cover sm:mr-4 sm:h-12 sm:w-12"
+                            />
+                          ) : (
+                            <div className="mr-3 flex h-10 w-10 items-center justify-center rounded-full bg-gradient-to-br from-blue-500 to-purple-600 text-sm font-bold text-white sm:mr-4 sm:h-12 sm:w-12 sm:text-lg">
+                              {testimonial.name.charAt(0)}
+                            </div>
+                          )}
+                          <div>
+                            <div className="text-sm font-semibold text-slate-900 transition-colors duration-300 ease-out group-hover:text-white sm:text-base">
+                              {testimonial.name}
+                            </div>
+                            <div className="text-sm font-medium uppercase tracking-wide text-slate-600 transition-colors duration-300 ease-out group-hover:text-blue-50 sm:text-base">
+                              {testimonial.country} • {testimonial.university}
+                            </div>
                           </div>
                         </div>
                       </div>

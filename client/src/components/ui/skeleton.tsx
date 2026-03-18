@@ -87,3 +87,30 @@ export function CalendarSkeleton() {
     </div>
   );
 }
+
+export function TestimonialCardSkeleton() {
+  return (
+    <div className="h-full overflow-hidden rounded-3xl border-0 bg-white p-4 shadow-[0_18px_45px_-28px_rgba(15,23,42,0.22)] sm:p-6 lg:p-8">
+      <div className="mb-3 flex items-center gap-2 sm:mb-4">
+        {Array.from({ length: 5 }).map((_, i) => (
+          <Skeleton key={i} className="h-4 w-4 rounded-full sm:h-5 sm:w-5" />
+        ))}
+      </div>
+
+      <div className="mb-6 space-y-3">
+        <Skeleton className="h-4 w-full" />
+        <Skeleton className="h-4 w-[92%]" />
+        <Skeleton className="h-4 w-[80%]" />
+        <Skeleton className="h-4 w-[68%]" />
+      </div>
+
+      <div className="mt-auto flex items-center rounded-2xl bg-slate-50/80 px-3 py-3">
+        <Skeleton className="mr-3 h-10 w-10 rounded-full sm:mr-4 sm:h-12 sm:w-12" />
+        <div className="min-w-0 flex-1">
+          <Skeleton className="mb-2 h-4 w-32 sm:w-40" />
+          <Skeleton className="h-3.5 w-24 sm:w-32" />
+        </div>
+      </div>
+    </div>
+  );
+}
