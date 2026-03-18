@@ -1,7 +1,9 @@
 "use client";
 
+import { useEffect, useRef, useState } from "react";
 import { TrustStats as TrustStatsType } from "@/types";
 import { Users, GraduationCap, Globe, Star } from "lucide-react";
+import { CountUp } from "@/components/ui/count-up";
 
 interface TrustStatsProps {
   stats: TrustStatsType;
@@ -22,16 +24,64 @@ export function TrustStats({
   variant = "light",
 }: TrustStatsProps) {
   const isDark = variant === "dark";
+  const sectionRef = useRef<HTMLDivElement | null>(null);
+  const [hasEnteredView, setHasEnteredView] = useState(false);
+
+  useEffect(() => {
+    const node = sectionRef.current;
+
+    if (!node || hasEnteredView) return;
+
+    const observer = new IntersectionObserver(
+      ([entry]) => {
+        if (!entry?.isIntersecting) return;
+
+        setHasEnteredView(true);
+        observer.disconnect();
+      },
+      {
+        threshold: 0.35,
+      },
+    );
+
+    observer.observe(node);
+
+    return () => observer.disconnect();
+  }, [hasEnteredView]);
+
   const items = [
-    { icon: Users, value: stats.totalStudents.toLocaleString(), label: studentsLabel },
-    { icon: GraduationCap, value: stats.totalUniversities.toLocaleString(), label: universitiesLabel },
-    { icon: Globe, value: stats.totalCountries.toLocaleString(), label: countriesLabel },
-    { icon: Star, value: stats.averageRating.toFixed(1), label: starsLabel },
+    {
+      icon: Users,
+      end: stats.totalStudents,
+      label: studentsLabel,
+      decimals: 0,
+    },
+    {
+      icon: GraduationCap,
+      end: stats.totalUniversities,
+      label: universitiesLabel,
+      decimals: 0,
+    },
+    {
+      icon: Globe,
+      end: stats.totalCountries,
+      label: countriesLabel,
+      decimals: 0,
+    },
+    {
+      icon: Star,
+      end: stats.averageRating,
+      label: starsLabel,
+      decimals: 1,
+    },
   ];
 
   return (
-    <div className="grid grid-cols-2 sm:grid-cols-4 gap-3 sm:gap-4 mb-8 sm:mb-12">
-      {items.map(({ icon: Icon, value, label }) => (
+    <div
+      ref={sectionRef}
+      className="grid grid-cols-2 sm:grid-cols-4 gap-3 sm:gap-4 mb-8 sm:mb-12"
+    >
+      {items.map(({ icon: Icon, end, label, decimals }, index) => (
         <div
           key={label}
           className={`text-center p-3 sm:p-4 rounded-xl sm:rounded-2xl ${
@@ -44,7 +94,13 @@ export function TrustStats({
             <Icon className="h-5 w-5 sm:h-6 sm:w-6" aria-hidden />
           </div>
           <div className={`text-lg sm:text-xl md:text-2xl font-bold ${isDark ? "text-white" : "text-slate-900"}`}>
-            {value}
+            <CountUp
+              end={end}
+              duration={1200}
+              decimals={decimals}
+              start={hasEnteredView}
+              delay={index * 100}
+            />
           </div>
           <div className={`text-xs sm:text-sm leading-tight ${isDark ? "text-white/90" : "text-slate-600"}`}>
             {label}
