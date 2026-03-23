@@ -114,7 +114,7 @@ export function GuideCard({ guide, onClick, className, isRead, onRead }: GuideCa
               onClick={handleReadMore}
               className="h-auto p-0 text-blue-600 hover:text-blue-700 text-sm font-medium group transition-all duration-300"
             >
-              {isRead ? "Перечитать" : "Читать далее"}
+              Открыть
               <ArrowRight className="ml-1 h-3.5 w-3.5 group-hover:translate-x-1 transition-transform duration-300" />
             </Button>
           </>

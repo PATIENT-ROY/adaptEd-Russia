@@ -17,6 +17,7 @@ import {
   Clock,
   Languages,
   AlertTriangle,
+  ArrowRight,
 } from "lucide-react";
 import { useState, useMemo, useEffect, useCallback } from "react";
 import Link from "next/link";
@@ -50,7 +51,7 @@ const educationGuides: Guide[] = [
       "Как проходит обучение в российском вузе: полный гид для иностранных студентов",
     category: GuideCategory.EDUCATION,
     content:
-      "Пошаговое руководство по учебному процессу в России. 1️⃣ Семестры: учебный год делится на 2 семестра (сентябрь-декабрь и февраль-май). 2️⃣ Лекции и семинары: посещение обязательно, ведётся учёт. 3️⃣ Контрольные точки: в течение семестра сдаёте контрольные работы и тесты. 4️⃣ Сессия: в конце семестра сдаёте зачёты и экзамены. 5️⃣ Оценки: используется 5-балльная система (5-отлично, 4-хорошо, 3-удовлетворительно, 2-неудовлетворительно). 6️⃣ Каникулы: летние (2 месяца) и зимние (2 недели). 7️⃣ Курсовые работы: пишете научные работы по специальности. 8️⃣ Практика: проходите производственную практику. 9️⃣ Дипломная работа: в конце обучения защищаете выпускную квалификационную работу.",
+      "Обзор того, как устроена учёба в российском вузе. Учебный год обычно делится на два семестра: осенний и весенний. В течение семестра вы ходите на лекции и семинары, выполняете задания, сдаёте тесты и контрольные точки. В конце семестра проходит сессия, где бывают зачёты и экзамены. Оценки чаще всего ставят по 5-балльной системе. Во время обучения могут быть курсовые работы, практика и в конце диплом. Этот гид нужен как общая карта; подробности про сессию, экзамены, зачёты и учебные работы лучше смотреть в отдельных материалах.",
     language: Language.RU,
     tags: ["обучение", "процесс", "семестр", "для новичков", "начало"],
     difficulty: Difficulty.BEGINNER,
@@ -525,34 +526,13 @@ const educationGuides: Guide[] = [
 
 # 7. Оформление работы
 
-📋 **Требования к оформлению (уточните в вашем вузе!):**
+📋 **Как не запутаться с оформлением:**
 
-**Общие требования:**
-• Шрифт: Times New Roman, 14pt
-• Межстрочный интервал: 1,5
-• Поля: левое - 30мм, остальные - 20мм
-• Выравнивание: по ширине
-• Отступ красной строки: 1,25см
-• Нумерация страниц: снизу по центру
-
-**Оформление заголовков:**
-• Главы: заглавными буквами, жирным, по центру
-• Параграфы: строчными, жирным, слева
-• Подпараграфы: строчными, курсивом
-
-**Оформление списка литературы:**
-• По алфавиту или по порядку упоминания
-• Фамилия, инициалы автора. Название. - Город: Издательство, год. - Количество страниц.
-• Для интернет-источников: URL и дата обращения
-
-**Оформление цитат:**
-• Цитаты в кавычках
-• После цитаты в квадратных скобках номер источника: [5, с. 23]
-
-**Оформление таблиц и рисунков:**
-• Нумерация: "Таблица 1. Название" или "Рисунок 1. Название"
-• Подпись сверху для таблиц, снизу для рисунков
-• Ссылки в тексте: "как видно из таблицы 1..."
+• Сначала уточните требования именно вашего вуза и кафедры
+• Не откладывайте оформление на последний день
+• Сразу используйте единый шаблон документа
+• Отдельно проверьте титульный лист, нумерацию, заголовки и список литературы
+• Подробные правила по полям, шрифту, ссылкам и списку литературы смотрите в гайде **"Что такое ГОСТ и как его использовать"**
 
 # 8. Проверка и защита
 
@@ -564,10 +544,10 @@ const educationGuides: Guide[] = [
 • Попросите кого-то проверить текст
 
 **Оформление:**
-• Проверьте все поля и отступы
+• Проверьте, что документ оформлен единообразно
 • Проверьте нумерацию страниц
-• Проверьте оформление списка литературы
-• Проверьте все таблицы и рисунки
+• Проверьте список литературы и подписи к таблицам/рисункам
+• Сверьтесь с требованиями кафедры и гайдом по ГОСТ
 
 **Содержание:**
 • Логичность изложения
@@ -654,23 +634,17 @@ const educationGuides: Guide[] = [
 3. Обдумайте, почему получили незачёт
 4. Начинайте готовить план действий
 
-# 2. Как договориться о пересдаче
+# 2. Что выяснить у преподавателя
 
-📞 **Шаги к пересдаче:**
+📞 **Главная задача: понять, что именно исправлять**
 
-**1. Выясните причины незачёта:**
+**Спросите прямо:**
 • Подойдите к преподавателю ЛИЧНО
 • Спросите, за что именно получен незачёт
 • Возьмите зачётную книжку для понимания допущенных ошибок
 • Выясните, что именно нужно исправить
 
-**2. Договоритесь о пересдаче:**
-• Подойдите к преподавателю в специально отведённое время (консультации)
-• Уточните сроки, когда можно пересдать
-• Обычно пересдача даётся в течение недели после окончания сессии
-• Запишитесь на конкретное время и дату
-
-**3. Покажите, что вы готовы исправиться:**
+**Покажите, что вы готовы исправиться:**
 • Попросите список вопросов для подготовки
 • Спросите, какие материалы нужно повторить
 • Покажите заинтересованность в успешной пересдаче
@@ -694,32 +668,22 @@ const educationGuides: Guide[] = [
 • Подойдите уверенно к пересдаче
 • Будьте вежливы с преподавателем
 
-# 4. Важно: незачёт влияет на стипендию
+# 4. Когда уже пора идти не только к преподавателю
 
-💰 **Как незачёт влияет на стипендию:**
+⚠️ **Подключайте деканат и куратора, если:**
 
-**Стипендию НЕ выплачивают, если:**
-• Есть хотя бы один незачёт по любому предмету
-• Есть оценки "удовлетворительно" (3) по всем предметам
-• Если вы на академическом отпуске
+• Непонятно, когда и как будет пересдача
+• Преподаватель недоступен или не даёт чётких требований
+• Это не первый долг за сессию
+• Есть риск не допуска к следующим экзаменам
+• Из-за проблем со здоровьем или личной ситуации вы не успеваете подготовиться
 
-**Как вернуть стипендию:**
-• Пересдайте незачёт
-• Получите оценку "зачёт" или выше
-• Стипендия начнётся со следующего месяца после пересдачи
+💡 **Важно:**
+• Один незачёт - ещё не катастрофа
+• Ваша задача сейчас - закрыть конкретный предмет
+• Если долгов становится несколько, переходите к гайду про академическую неуспеваемость
 
-**Не затягивайте с пересдачей:**
-• Чем раньше пересдадите - тем раньше вернёте стипендию
-• Пересдача в следующем семестре - риск потерять больше денег
-• Обычно есть 3 попытки пересдачи
-
-**Если пересдача не удалась:**
-• Узнайте, когда будет вторая пересдача
-• При необходимости обратитесь в деканат
-• Расскажите о проблеме куратору
-• Если очень тяжело - поговорите с преподавателем лично
-
-❗ **ПОМНИТЕ: Чем раньше пересдадите, тем меньше потеряете стипендии!**`,
+❗ **ПОМНИТЕ: Незачёт лучше закрывать сразу, пока требования преподавателя и материал ещё свежие.**`,
     language: Language.RU,
     tags: ["незачёт", "пересдача", "проблемы", "сессия"],
     difficulty: Difficulty.INTERMEDIATE,
@@ -1276,28 +1240,32 @@ const educationGuides: Guide[] = [
 
 **Если уже есть проблемы:**
 
-**1. Как оформить пересдачу:**
-• Обратитесь в деканат в течение 3 дней после получения оценки
-• Напишите заявление на пересдачу
-• Уточните даты пересдач (обычно в течение 2 недель после сессии)
-• Подготовьтесь к пересдаче: повторите материал, посетите консультации
+**1. Оцените масштаб проблемы:**
+• Один долг - это ещё локальная проблема
+• Несколько долгов по разным предметам - уже системный риск
+• Если есть уведомление от деканата, действовать нужно сразу
 
-**2. Когда можно взять академ:**
-• При серьёзных проблемах со здоровьем
-• При семейных обстоятельствах
-• При необходимости восстановить академическую успеваемость
-• Подайте заявление в деканат с документами-обоснованиями
-• Срок академа: до 2 лет (обычно 1 семестр или 1 год)
+**2. Соберите полную картину:**
+• Выпишите все долги и несданные дисциплины
+• Отдельно отметьте сроки пересдач по каждому предмету
+• Поймите, что можно закрыть быстро, а где нужна помощь
 
 **3. Куда идти:**
 • **Деканат** — для оформления пересдач, академа, получения справок
 • **Кафедра** — для консультаций с преподавателями, уточнения требований
 • **Учебный отдел** — для вопросов по расписанию пересдач
 
-**4. Срочные действия:**
+**4. Когда думать об академе:**
+• Если проблемы со здоровьем не дают учиться в обычном режиме
+• Если семейные обстоятельства мешают закрыть долги
+• Если вы понимаете, что не успеваете восстановиться в этот семестр
+• Процедуру и условия смотрите в отдельном гайде про академический отпуск
+
+**5. Срочные действия:**
 • Немедленно свяжитесь с деканатом, если получили уведомление
-• Составьте план исправления ситуации
+• Составьте реалистичный план закрытия долгов
 • Соберите все необходимые документы
+• Не пытайтесь решить всё в последний день
 • Не пропускайте назначенные встречи
 
 ❗ **ВАЖНО: У вас есть 30 дней на исправление ситуации после получения уведомления!**`,
@@ -1623,43 +1591,43 @@ type Category = {
   id: string;
   name: string;
   icon: React.ComponentType<{ className?: string }>;
-  isLink?: boolean;
-  href?: string;
 };
 
 const categoriesConfig: Omit<Category, "name">[] = [
   { id: "all", icon: BookOpen },
-  { id: "schedule", icon: Clock },
   { id: "exams", icon: GraduationCap },
   { id: "papers", icon: FileText },
   { id: "documents", icon: FileText },
   { id: "structure", icon: Calendar },
-  { id: "dictionary", icon: BookOpen },
   { id: "expulsion-risks", icon: AlertTriangle },
-  {
-    id: "translation-centers",
-    icon: Languages,
-    isLink: true,
-    href: "/education/translation-centers",
-  },
 ];
+
+type ToolCard = {
+  id: "schedule" | "dictionary" | "translation-centers";
+  name: string;
+  description: string;
+  icon: React.ComponentType<{ className?: string }>;
+  href?: string;
+};
+
+const articleGuides = educationGuides.filter(
+  (guide) => guide.id !== "slang-dictionary"
+);
 
 const ENABLED_CATEGORY_IDS = new Set([
   "all",
-  "schedule",
   "exams",
   "papers",
   "documents",
   "structure",
-  "dictionary",
   "expulsion-risks",
-  "translation-centers",
 ]);
 
 export function EducationGuideContent() {
   const { t } = useTranslation();
   const [searchQuery, setSearchQuery] = useState("");
   const [selectedCategory, setSelectedCategory] = useState("all");
+  const [selectedTool, setSelectedTool] = useState<"schedule" | null>(null);
   const [showSchedule, setShowSchedule] = useState(false);
   const [isLoading, setIsLoading] = useState(false);
   const [isInitialLoading, setIsInitialLoading] = useState(true);
@@ -1667,7 +1635,7 @@ export function EducationGuideContent() {
   const {
     isRead,
     markAsRead,
-  } = useGuideProgress("education", educationGuides.length);
+  } = useGuideProgress("education", articleGuides.length);
 
   const handleMarkRead = useCallback((guideId: string) => {
     markAsRead(guideId);
@@ -1680,6 +1648,28 @@ export function EducationGuideContent() {
       ...category,
       name: t(`educationGuide.categories.${category.id}`),
     }));
+  const toolCards: ToolCard[] = [
+    {
+      id: "schedule",
+      name: t("educationGuide.categories.schedule"),
+      description: "Поиск расписания занятий по параметрам вуза.",
+      icon: Clock,
+    },
+    {
+      id: "dictionary",
+      name: t("educationGuide.categories.dictionary"),
+      description: "Быстрый словарь студенческих слов и выражений.",
+      icon: BookOpen,
+      href: "/student-slang",
+    },
+    {
+      id: "translation-centers",
+      name: t("educationGuide.categories.translation-centers"),
+      description: "Подбор центров перевода документов в нужном городе.",
+      icon: Languages,
+      href: "/education/translation-centers",
+    },
+  ];
   const safeSelectedCategory = ENABLED_CATEGORY_IDS.has(selectedCategory)
     ? selectedCategory
     : "all";
@@ -1717,7 +1707,7 @@ export function EducationGuideContent() {
 
   // Фильтрация гайдов
   const filteredGuides = useMemo(() => {
-    let filtered = educationGuides;
+    let filtered = articleGuides;
 
     // Фильтр по поиску
     if (searchQuery.trim()) {
@@ -1735,10 +1725,6 @@ export function EducationGuideContent() {
     if (safeSelectedCategory !== "all") {
       filtered = filtered.filter((guide) => {
         switch (safeSelectedCategory) {
-          case "schedule":
-            return guide.tags.some((tag) =>
-              ["расписание", "пары", "занятия", "время"].includes(tag)
-            );
           case "exams":
             return guide.tags.some((tag) =>
               ["сессия", "экзамены", "незачёт", "пересдача"].includes(tag)
@@ -1765,10 +1751,6 @@ export function EducationGuideContent() {
           case "structure":
             return guide.tags.some((tag) =>
               ["структура", "кафедра", "деканат", "ГОСТ"].includes(tag)
-            );
-          case "dictionary":
-            return guide.tags.some((tag) =>
-              ["сленг", "словарь", "термины", "выражения"].includes(tag)
             );
           case "expulsion-risks":
             return guide.tags.some((tag) =>
@@ -1868,7 +1850,137 @@ export function EducationGuideContent() {
         </div>
 
         {/* Search and Filters */}
+        <div className="bg-white rounded-2xl sm:rounded-3xl p-4 sm:p-6 border border-blue-100">
+          <div className="flex flex-col gap-2 sm:flex-row sm:items-end sm:justify-between mb-4">
+            <div>
+              <h2 className="text-base sm:text-lg font-semibold text-gray-900">
+                Быстрые действия
+              </h2>
+              <p className="text-sm text-gray-600">
+                Всё, что помогает быстро найти нужное и перейти к делу.
+              </p>
+            </div>
+            {selectedTool === "schedule" && (
+              <Button
+                variant="outline"
+                size="sm"
+                onClick={() => {
+                  setSelectedTool(null);
+                  setShowSchedule(false);
+                }}
+              >
+                Скрыть
+              </Button>
+            )}
+          </div>
+          <div className="grid grid-cols-1 md:grid-cols-3 gap-4">
+            {toolCards.map((tool) => {
+              const Icon = tool.icon;
+              const isScheduleTool = tool.id === "schedule";
+              const isActive = selectedTool === tool.id;
+
+              const cardContent = (
+                <div
+                  className={`h-full rounded-2xl border p-4 transition-all duration-300 ${
+                    isActive
+                      ? "border-blue-300 bg-blue-50 shadow-sm"
+                      : "border-gray-200 bg-gray-50 hover:bg-white hover:shadow-sm"
+                  }`}
+                >
+                  <div className="flex items-start justify-between gap-3 mb-4">
+                    <div className="rounded-xl bg-white p-3 shadow-sm">
+                      <Icon className="h-5 w-5 text-blue-600" />
+                    </div>
+                    <span className="text-xs font-medium text-gray-500">
+                      {isScheduleTool ? "Открывается здесь" : "Открывается отдельно"}
+                    </span>
+                  </div>
+                  <div className="space-y-2">
+                    <h3 className="text-base font-semibold text-gray-900">
+                      {tool.name}
+                    </h3>
+                    <p className="text-sm text-gray-600 min-h-[40px]">
+                      {tool.description}
+                    </p>
+                  </div>
+                  <div className="mt-4 flex items-center text-sm font-medium text-blue-700">
+                    <span>{isScheduleTool ? "Открыть" : "Перейти"}</span>
+                    <ArrowRight className="ml-1 h-4 w-4" />
+                  </div>
+                </div>
+              );
+
+              if (tool.href) {
+                return (
+                  <Link key={tool.id} href={tool.href} className="block h-full">
+                    {cardContent}
+                  </Link>
+                );
+              }
+
+              return (
+                <button
+                  key={tool.id}
+                  type="button"
+                  className="text-left h-full"
+                  onClick={() => {
+                    setSelectedTool(isActive ? null : "schedule");
+                    setShowSchedule(false);
+                  }}
+                >
+                  {cardContent}
+                </button>
+              );
+            })}
+          </div>
+
+          {selectedTool === "schedule" && (
+            <div className="mt-6 space-y-6">
+              <ScheduleFilter onShowSchedule={handleShowSchedule} />
+              {isLoading && (
+                <div className="bg-white rounded-2xl sm:rounded-3xl p-6">
+                  <div className="text-center py-12">
+                    <div className="animate-spin mb-4">
+                      <Clock className="h-12 w-12 text-blue-600 mx-auto" />
+                    </div>
+                    <h3 className="text-lg font-medium text-gray-900 mb-2">
+                      {t("educationGuide.schedule.searching")}
+                    </h3>
+                    <p className="text-gray-600">
+                      {t("educationGuide.schedule.pleaseWait")}
+                    </p>
+                  </div>
+                </div>
+              )}
+              {showSchedule && (
+                <div className="bg-white rounded-2xl sm:rounded-3xl p-6 shadow-sm">
+                  <div className="text-center py-12">
+                    <div className="mb-4">
+                      <Clock className="h-12 w-12 text-gray-400 mx-auto" />
+                    </div>
+                    <h3 className="text-lg font-medium text-gray-900 mb-2">
+                      {t("educationGuide.schedule.notFound")}
+                    </h3>
+                    <p className="text-gray-600">
+                      {t("educationGuide.schedule.notFoundDescription")}
+                    </p>
+                  </div>
+                </div>
+              )}
+            </div>
+          )}
+        </div>
+
+        {/* Search and Filters */}
         <div className="bg-white rounded-2xl sm:rounded-3xl p-4 sm:p-6 transition-all duration-300">
+          <div className="mb-4">
+            <h2 className="text-base sm:text-lg font-semibold text-gray-900">
+              Что полезно знать
+            </h2>
+            <p className="text-sm text-gray-600">
+              Короткие и понятные материалы про учёбу, документы и важные правила.
+            </p>
+          </div>
           <div className="flex flex-col sm:flex-row gap-4">
             <div className="flex-1 relative">
               <Search className="absolute left-3 top-1/2 transform -translate-y-1/2 h-4 w-4 text-gray-400 transition-colors duration-300" />
@@ -1903,23 +2015,7 @@ export function EducationGuideContent() {
             {categories.map((category) => {
               const Icon = category.icon;
               const isActive = safeSelectedCategory === category.id;
-              const isLink = category.isLink;
-              const href = category.href;
-              
-              if (isLink && href) {
-                return (
-                  <Link key={category.id} href={href}>
-                    <Button
-                      variant="outline"
-                      className="flex flex-col items-center space-y-2 h-auto p-3 sm:p-4 text-sm sm:text-base transition-all duration-300 ease-out hover:bg-gray-50 hover:shadow-md w-full"
-                    >
-                      <Icon className="h-5 w-5 sm:h-6 sm:w-6 transition-all duration-300 text-gray-600" />
-                      <span className="font-medium">{category.name}</span>
-                    </Button>
-                  </Link>
-                );
-              }
-              
+
               return (
                 <Button
                   key={category.id}
@@ -1943,108 +2039,71 @@ export function EducationGuideContent() {
           </div>
         </div>
 
-        {/* Content based on selected category */}
-        {safeSelectedCategory === "schedule" ? (
-          <div className="space-y-6">
-            <ScheduleFilter onShowSchedule={handleShowSchedule} />
-            {isLoading && (
-              <div className="bg-white rounded-2xl sm:rounded-3xl p-6">
-                <div className="text-center py-12">
-                  <div className="animate-spin mb-4">
-                    <Clock className="h-12 w-12 text-blue-600 mx-auto" />
-                  </div>
-                  <h3 className="text-lg font-medium text-gray-900 mb-2">
-                    {t("educationGuide.schedule.searching")}
-                  </h3>
-                  <p className="text-gray-600">
-                    {t("educationGuide.schedule.pleaseWait")}
-                  </p>
-                </div>
-              </div>
-            )}
-            {showSchedule && (
-              <div className="bg-white rounded-2xl sm:rounded-3xl p-6 shadow-sm">
-                <div className="text-center py-12">
-                  <div className="mb-4">
-                    <Clock className="h-12 w-12 text-gray-400 mx-auto" />
-                  </div>
-                  <h3 className="text-lg font-medium text-gray-900 mb-2">
-                    {t("educationGuide.schedule.notFound")}
-                  </h3>
-                  <p className="text-gray-600">
-                    {t("educationGuide.schedule.notFoundDescription")}
-                  </p>
-                </div>
-              </div>
+        <div className="bg-white rounded-2xl sm:rounded-3xl p-4 sm:p-6">
+          <div className="flex items-center justify-between mb-4 sm:mb-5">
+            <h2 className="text-base sm:text-lg font-semibold text-gray-900 transition-all duration-300">
+              {filteredGuides.length === 0
+                ? t("educationGuide.guidesNotFound")
+                : t("educationGuide.guidesFound").replace(
+                    "{count}",
+                    String(filteredGuides.length),
+                  )}
+            </h2>
+            {(searchQuery || safeSelectedCategory !== "all") && (
+              <Button
+                variant="outline"
+                size="sm"
+                className="transition-all duration-300 hover:bg-gray-50"
+                onClick={() => {
+                  setSearchQuery("");
+                  setSelectedCategory("all");
+                }}
+              >
+                {t("educationGuide.showAll")}
+              </Button>
             )}
           </div>
-        ) : (
-          <div className="bg-white rounded-2xl sm:rounded-3xl p-4 sm:p-6">
-            <div className="flex items-center justify-between mb-4 sm:mb-5">
-              <h2 className="text-base sm:text-lg font-semibold text-gray-900 transition-all duration-300">
-                {filteredGuides.length === 0
-                  ? t("educationGuide.guidesNotFound")
-                  : t("educationGuide.guidesFound").replace(
-                      "{count}",
-                      String(filteredGuides.length),
-                    )}
-              </h2>
-              {(searchQuery || safeSelectedCategory !== "all") && (
-                <Button
-                  variant="outline"
-                  size="sm"
-                  className="transition-all duration-300 hover:bg-gray-50"
-                  onClick={() => {
-                    setSearchQuery("");
-                    setSelectedCategory("all");
-                  }}
-                >
-                  {t("educationGuide.showAll")}
-                </Button>
+          {filteredGuides.length > 0 ? (
+            <>
+              <div className="grid grid-cols-1 sm:grid-cols-2 lg:grid-cols-3 gap-4 sm:gap-6 transition-all duration-500 ease-out">
+                {filteredGuides.slice(0, guidesVisibleCount).map((guide) => (
+                  <div
+                    key={`guide-${guide.id}`}
+                    className="h-[280px]"
+                  >
+                    <GuideCard
+                      guide={guide}
+                      isRead={isRead(guide.id)}
+                      onRead={handleMarkRead}
+                    />
+                  </div>
+                ))}
+              </div>
+              {filteredGuides.length > guidesVisibleCount && (
+                <div className="mt-6 text-center">
+                  <Button
+                    variant="outline"
+                    size="lg"
+                    onClick={() => setGuidesVisibleCount((n) => n + 12)}
+                    className="min-w-[200px]"
+                  >
+                    {t("educationGuide.showMore")}
+                  </Button>
+                </div>
               )}
+            </>
+          ) : (
+            <div className="text-center py-12 animate-fade-in">
+              <BookOpen className="h-12 w-12 text-gray-400 mx-auto mb-4 transition-all duration-300" />
+              <h3 className="text-lg font-medium text-gray-900 mb-2">
+                {t("educationGuide.guides.notFound")}
+              </h3>
+              <p className="text-gray-600">
+                {t("educationGuide.guides.tryChangeSearch")}
+              </p>
             </div>
-            {filteredGuides.length > 0 ? (
-              <>
-                <div className="grid grid-cols-1 sm:grid-cols-2 lg:grid-cols-3 gap-4 sm:gap-6 transition-all duration-500 ease-out">
-                  {filteredGuides.slice(0, guidesVisibleCount).map((guide) => (
-                    <div
-                      key={`guide-${guide.id}`}
-                      className="h-[280px]"
-                    >
-                      <GuideCard
-                        guide={guide}
-                        isRead={isRead(guide.id)}
-                        onRead={handleMarkRead}
-                      />
-                    </div>
-                  ))}
-                </div>
-                {filteredGuides.length > guidesVisibleCount && (
-                  <div className="mt-6 text-center">
-                    <Button
-                      variant="outline"
-                      size="lg"
-                      onClick={() => setGuidesVisibleCount((n) => n + 12)}
-                      className="min-w-[200px]"
-                    >
-                      {t("educationGuide.showMore")}
-                    </Button>
-                  </div>
-                )}
-              </>
-            ) : (
-              <div className="text-center py-12 animate-fade-in">
-                <BookOpen className="h-12 w-12 text-gray-400 mx-auto mb-4 transition-all duration-300" />
-                <h3 className="text-lg font-medium text-gray-900 mb-2">
-                  {t("educationGuide.guides.notFound")}
-                </h3>
-                <p className="text-gray-600">
-                  {t("educationGuide.guides.tryChangeSearch")}
-                </p>
-              </div>
-            )}
-          </div>
-        )}
+          )}
+        </div>
       </div>
     </Layout>
   );

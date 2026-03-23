@@ -122,7 +122,7 @@ export function GuideDetailModal({
   isOpen,
   onClose,
 }: GuideDetailModalProps) {
-  const [showFullContent, setShowFullContent] = useState(false);
+  const [showQuickSummary, setShowQuickSummary] = useState(true);
 
   // Prevent body scroll when modal is open
   useEffect(() => {
@@ -139,7 +139,7 @@ export function GuideDetailModal({
 
   useEffect(() => {
     if (isOpen) {
-      setShowFullContent(false);
+      setShowQuickSummary(true);
     }
   }, [isOpen, guide?.id]);
 
@@ -157,12 +157,12 @@ export function GuideDetailModal({
       />
 
       <Card
-        className="relative z-10 w-[min(95vw,32rem)] max-w-xl max-h-[75vh] flex flex-col rounded-2xl shadow-2xl overflow-hidden animate-fade-in no-hover"
+        className="relative z-10 w-[min(96vw,56rem)] max-w-4xl max-h-[88vh] flex flex-col rounded-2xl shadow-2xl overflow-hidden animate-fade-in no-hover"
         onClick={(e) => e.stopPropagation()}
       >
-        <CardHeader className="border-b pb-3 pt-4 flex-shrink-0 bg-white sticky top-0 z-20">
+        <CardHeader className="border-b pb-4 pt-5 px-5 sm:px-6 flex-shrink-0 bg-white sticky top-0 z-20">
           <div className="flex items-start justify-between gap-3 pr-2">
-            <CardTitle className="text-lg font-bold text-gray-900 pr-2 flex-1 break-words">
+            <CardTitle className="text-xl sm:text-2xl font-bold text-gray-900 pr-2 flex-1 break-words leading-tight">
               {guide.title}
             </CardTitle>
             <Button
@@ -176,15 +176,15 @@ export function GuideDetailModal({
           </div>
         </CardHeader>
 
-        <CardContent className="space-y-4 p-4 overflow-y-auto flex-1">
+        <CardContent className="space-y-5 p-5 sm:p-6 overflow-y-auto flex-1">
           {/* Meta Info */}
-          <div className="flex flex-wrap items-center gap-3 text-xs text-gray-600">
+          <div className="flex flex-wrap items-center gap-3 text-sm text-gray-600">
             <div className="flex items-center gap-2">
-              <Clock className="h-3 w-3" />
+              <Clock className="h-4 w-4" />
               <span>{formatDate(guide.updatedAt)}</span>
             </div>
             <div className="flex items-center gap-2">
-              <BookOpen className="h-3 w-3" />
+              <BookOpen className="h-4 w-4" />
               <span>
                 {guide.category === "EDUCATION"
                   ? "Образование"
@@ -194,7 +194,7 @@ export function GuideDetailModal({
               </span>
             </div>
             <div className="flex items-center gap-2">
-              <Tag className="h-3 w-3" />
+              <Tag className="h-4 w-4" />
               <span>
                 {guide.difficulty === "BEGINNER"
                   ? "Начальный"
@@ -209,45 +209,46 @@ export function GuideDetailModal({
             Актуальность: материалы пересмотрены в 2026 году. Нормы, пошлины и сроки могут отличаться по региону и вузу, проверяйте официальные источники (вуз, Госуслуги, МВД, ФНС, СФР).
           </div>
 
-          <div className="rounded-lg border border-blue-200 bg-blue-50 px-3 py-3">
-            <p className="text-sm font-semibold text-blue-900 mb-2">Кратко и понятно:</p>
-            <ul className="list-disc ml-5 space-y-1 text-sm text-blue-900">
-              {quickPoints.map((point, index) => (
-                <li key={`${guide.id}-quick-${index}`}>{point}</li>
-              ))}
-            </ul>
-          </div>
-
-          {/* Content */}
-          <div>
+          <div className="rounded-xl border border-slate-200 bg-slate-50 px-4 py-3">
             <Button
               type="button"
-              variant="outline"
-              className="mb-3 w-full"
-              onClick={() => setShowFullContent((prev) => !prev)}
+              variant="ghost"
+              className="mb-2 h-auto w-full justify-between px-0 py-0 text-left hover:bg-transparent"
+              onClick={() => setShowQuickSummary((prev) => !prev)}
             >
-              {showFullContent ? (
+              {showQuickSummary ? (
                 <>
-                  <ChevronUp className="h-4 w-4 mr-2" />
-                  Скрыть полную версию
+                  <span className="text-sm font-semibold text-slate-900">
+                    Кратко и понятно
+                  </span>
+                  <ChevronUp className="h-4 w-4" />
                 </>
               ) : (
                 <>
-                  <ChevronDown className="h-4 w-4 mr-2" />
-                  Показать полную версию
+                  <span className="text-sm font-semibold text-slate-900">
+                    Показать краткое summary
+                  </span>
+                  <ChevronDown className="h-4 w-4" />
                 </>
               )}
             </Button>
-            {showFullContent && (
-              <div className="prose max-w-none prose-sm">
-                <div 
-                  className="text-sm text-gray-700 leading-relaxed whitespace-pre-line"
-                  dangerouslySetInnerHTML={{
-                    __html: formatMarkdown(guide.content)
-                  }}
-                />
-              </div>
+            {showQuickSummary && (
+              <ul className="list-disc ml-5 space-y-1.5 text-sm text-slate-800">
+                {quickPoints.map((point, index) => (
+                  <li key={`${guide.id}-quick-${index}`}>{point}</li>
+                ))}
+              </ul>
             )}
+          </div>
+
+          {/* Content */}
+          <div className="prose max-w-none prose-sm sm:prose-base">
+            <div
+              className="text-[15px] sm:text-base text-gray-700 leading-7 whitespace-pre-line"
+              dangerouslySetInnerHTML={{
+                __html: formatMarkdown(guide.content)
+              }}
+            />
           </div>
 
           {/* Tags */}
