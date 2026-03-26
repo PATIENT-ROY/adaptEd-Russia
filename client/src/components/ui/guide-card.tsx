@@ -7,6 +7,7 @@ import { formatDate } from "@/lib/date-utils";
 import { useRouter } from "next/navigation";
 import { GuideDetailModal } from "./guide-detail-modal";
 import { GuideCardBase } from "./guide-card-base";
+import { useTranslation } from "@/hooks/useTranslation";
 
 interface GuideCardProps {
   guide: Guide;
@@ -27,6 +28,7 @@ const categoryIcons = {
 
 export function GuideCard({ guide, onClick, className, isRead, onRead }: GuideCardProps) {
   const router = useRouter();
+  const { t } = useTranslation();
   const [showModal, setShowModal] = React.useState(false);
   const Icon = categoryIcons[guide.category];
 
@@ -114,7 +116,7 @@ export function GuideCard({ guide, onClick, className, isRead, onRead }: GuideCa
               onClick={handleReadMore}
               className="h-auto p-0 text-blue-600 hover:text-blue-700 text-sm font-medium group transition-all duration-300"
             >
-              Открыть
+              {t("guideCard.open")}
               <ArrowRight className="ml-1 h-3.5 w-3.5 group-hover:translate-x-1 transition-transform duration-300" />
             </Button>
           </>

@@ -1652,20 +1652,20 @@ export function EducationGuideContent() {
     {
       id: "schedule",
       name: t("educationGuide.categories.schedule"),
-      description: "Поиск расписания занятий по параметрам вуза.",
+      description: t("educationGuide.tools.scheduleDescription"),
       icon: Clock,
     },
     {
       id: "dictionary",
       name: t("educationGuide.categories.dictionary"),
-      description: "Быстрый словарь студенческих слов и выражений.",
+      description: t("educationGuide.tools.dictionaryDescription"),
       icon: BookOpen,
       href: "/student-slang",
     },
     {
       id: "translation-centers",
       name: t("educationGuide.categories.translation-centers"),
-      description: "Подбор центров перевода документов в нужном городе.",
+      description: t("educationGuide.tools.translationCentersDescription"),
       icon: Languages,
       href: "/education/translation-centers",
     },
@@ -1854,10 +1854,10 @@ export function EducationGuideContent() {
           <div className="flex flex-col gap-2 sm:flex-row sm:items-end sm:justify-between mb-4">
             <div>
               <h2 className="text-base sm:text-lg font-semibold text-gray-900">
-                Быстрые действия
+                {t("educationGuide.tools.title")}
               </h2>
               <p className="text-sm text-gray-600">
-                Всё, что помогает быстро найти нужное и перейти к делу.
+                {t("educationGuide.tools.subtitle")}
               </p>
             </div>
             {selectedTool === "schedule" && (
@@ -1869,7 +1869,7 @@ export function EducationGuideContent() {
                   setShowSchedule(false);
                 }}
               >
-                Скрыть
+                {t("educationGuide.tools.hide")}
               </Button>
             )}
           </div>
@@ -1892,7 +1892,9 @@ export function EducationGuideContent() {
                       <Icon className="h-5 w-5 text-blue-600" />
                     </div>
                     <span className="text-xs font-medium text-gray-500">
-                      {isScheduleTool ? "Открывается здесь" : "Открывается отдельно"}
+                      {isScheduleTool
+                        ? t("educationGuide.tools.inline")
+                        : t("educationGuide.tools.separate")}
                     </span>
                   </div>
                   <div className="space-y-2">
@@ -1904,7 +1906,11 @@ export function EducationGuideContent() {
                     </p>
                   </div>
                   <div className="mt-4 flex items-center text-sm font-medium text-blue-700">
-                    <span>{isScheduleTool ? "Открыть" : "Перейти"}</span>
+                    <span>
+                      {isScheduleTool
+                        ? t("educationGuide.tools.open")
+                        : t("educationGuide.tools.goTo")}
+                    </span>
                     <ArrowRight className="ml-1 h-4 w-4" />
                   </div>
                 </div>
@@ -1975,10 +1981,10 @@ export function EducationGuideContent() {
         <div className="bg-white rounded-2xl sm:rounded-3xl p-4 sm:p-6 transition-all duration-300">
           <div className="mb-4">
             <h2 className="text-base sm:text-lg font-semibold text-gray-900">
-              Что полезно знать
+              {t("educationGuide.learn.title")}
             </h2>
             <p className="text-sm text-gray-600">
-              Короткие и понятные материалы про учёбу, документы и важные правила.
+              {t("educationGuide.learn.subtitle")}
             </p>
           </div>
           <div className="flex flex-col sm:flex-row gap-4">
