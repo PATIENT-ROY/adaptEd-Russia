@@ -44,9 +44,13 @@ import { TrustStats } from "@/components/home/TrustStats";
 import { AdaptationHeroSection } from "@/components/home/AdaptationHeroSection";
 import { ReviewCard } from "@/components/home/ReviewCard";
 import { TestimonialCardSkeleton } from "@/components/ui/skeleton";
-
+import { useAdaptationCta } from "@/hooks/useAdaptationCta";
+import { ScrollReveal } from "@/components/home/ScrollReveal";
+import { StaggerReveal, StaggerItem } from "@/components/home/StaggerReveal";
+import { motion } from "framer-motion";
 export default function HomePage() {
   const { t } = useTranslation();
+  const { href: adaptationCtaHref, label: adaptationCtaLabel } = useAdaptationCta();
   const [showScrollIndicator, setShowScrollIndicator] = useState(true);
   const [scrollIndicatorSlow, setScrollIndicatorSlow] = useState(false);
   const [showScrollTopButton, setShowScrollTopButton] = useState(false);
@@ -331,11 +335,11 @@ export default function HomePage() {
 
               <div className="flex flex-col sm:flex-row gap-3 sm:gap-4 justify-center mb-8 sm:mb-12 max-w-2xl mx-auto">
                 <Link
-                  href="/register"
+                  href={adaptationCtaHref}
                   className="inline-flex items-center justify-center w-full sm:w-auto text-sm sm:text-base lg:text-lg px-4 sm:px-6 lg:px-8 py-3 sm:py-4 border-2 bg-white/18 border-white/35 text-white rounded-xl font-semibold sm:hover:bg-white/22 sm:hover:border-white/40 active:bg-white/28 active:scale-[0.985] shadow-md sm:hover:shadow-md active:shadow-sm transition-all duration-200 focus-visible:outline-none focus-visible:ring-2 focus-visible:ring-white focus-visible:ring-offset-2 focus-visible:ring-offset-transparent"
                 >
                   <Rocket className="mr-2 h-4 w-4 sm:h-5 sm:w-5" aria-hidden="true" />
-                  {t("home.start")}
+                  {adaptationCtaLabel}
                 </Link>
                 <Link
                   href="/education-guide"
@@ -401,20 +405,21 @@ export default function HomePage() {
           className="py-10 sm:py-12 md:py-16 bg-white rounded-2xl sm:rounded-3xl my-6 sm:my-8 lg:my-10"
         >
           <div className="max-w-7xl mx-auto px-4 sm:px-6 lg:px-8">
-            <div className="text-center mb-8 sm:mb-10">
+            <ScrollReveal className="text-center mb-8 sm:mb-10">
               <h2 className="text-2xl sm:text-3xl md:text-4xl font-bold text-slate-900 mb-3 sm:mb-4">
                 {t("home.gettingStarted.title")}
               </h2>
               <p className="text-sm sm:text-base md:text-lg text-slate-600 max-w-3xl mx-auto">
                 {t("home.gettingStarted.subtitle")}
               </p>
-            </div>
+            </ScrollReveal>
 
-            <div className="grid grid-cols-1 md:grid-cols-3 gap-4 sm:gap-6">
+            <StaggerReveal className="grid grid-cols-1 md:grid-cols-3 gap-4 sm:gap-6">
               {quickStartItems.map((item) => {
                 const Icon = item.icon;
                 return (
-                  <Card key={item.href} className="border border-slate-200 shadow-sm hover:shadow-md transition-all duration-200">
+                  <StaggerItem key={item.href}>
+                  <Card className="border border-slate-200 shadow-sm hover:shadow-md transition-all duration-200 h-full">
                     <CardContent className="p-5 sm:p-6 h-full flex flex-col">
                       <div className="w-12 h-12 rounded-xl bg-blue-100 text-blue-700 flex items-center justify-center mb-4">
                         <Icon className="h-6 w-6" aria-hidden />
@@ -433,9 +438,10 @@ export default function HomePage() {
                       </Link>
                     </CardContent>
                   </Card>
+                  </StaggerItem>
                 );
               })}
-            </div>
+            </StaggerReveal>
           </div>
         </section>
 
@@ -446,7 +452,7 @@ export default function HomePage() {
           className="order-5 py-12 sm:py-16 md:py-24 bg-gradient-to-br from-slate-50 via-white to-blue-50 rounded-2xl sm:rounded-3xl my-6 sm:my-8 lg:my-10"
         >
           <div className="max-w-7xl mx-auto px-4 sm:px-6 lg:px-8">
-            <div className="text-center mb-8 sm:mb-12">
+            <ScrollReveal className="text-center mb-8 sm:mb-12">
               <div className="inline-flex items-center rounded-full bg-blue-100 px-4 py-2 text-xs sm:text-sm font-semibold text-blue-700 mb-4">
                 <Sparkles className="mr-2 h-3 w-3 sm:h-4 sm:w-4" />
                 {t("home.section.features.badge")}
@@ -457,14 +463,14 @@ export default function HomePage() {
               <p className="text-base sm:text-lg md:text-xl text-slate-600 max-w-3xl mx-auto px-4">
                 {t("home.section.features.subtitle")}
               </p>
-            </div>
+            </ScrollReveal>
 
-            <div className="grid grid-cols-2 gap-1.5 sm:gap-4 lg:gap-6">
+            <StaggerReveal className="grid grid-cols-2 gap-1.5 sm:gap-4 lg:gap-6">
               {features.map((feature, index) => {
                 const Icon = feature.icon;
                 return (
+                  <StaggerItem key={index}>
                   <Card
-                    key={index}
                     className="border-0 shadow-lg h-full bg-white"
                   >
                     <CardContent className="p-2.5 sm:p-6 lg:p-8 relative z-10 flex flex-col min-h-[200px] sm:min-h-0 h-full">
@@ -486,9 +492,10 @@ export default function HomePage() {
                       )}
                     </CardContent>
                   </Card>
+                  </StaggerItem>
                 );
               })}
-            </div>
+            </StaggerReveal>
           </div>
         </section>
 
@@ -499,7 +506,7 @@ export default function HomePage() {
         >
           <div className="absolute inset-0 bg-gradient-to-br from-purple-600 via-blue-600 to-indigo-700"></div>
           <div className="relative max-w-7xl mx-auto px-4 sm:px-6 lg:px-8">
-            <div className="text-center mb-12 sm:mb-16">
+            <ScrollReveal className="text-center mb-12 sm:mb-16">
               <div className="inline-flex items-center rounded-full bg-white/16 px-4 sm:px-6 py-2 sm:py-3 text-xs sm:text-sm font-semibold text-white mb-6 sm:mb-8 shadow-md border border-white/16">
                 <Sparkles className="mr-2 h-3 w-3 sm:h-4 sm:w-4" />
                 {t("home.section.benefits.badge")}
@@ -510,15 +517,15 @@ export default function HomePage() {
               <p className="text-base sm:text-lg md:text-xl text-white max-w-3xl mx-auto px-4">
                 {t("home.section.benefits.subtitle")}
               </p>
-            </div>
+            </ScrollReveal>
 
-            <div className="grid grid-cols-1 sm:grid-cols-2 gap-4 sm:gap-6 lg:gap-8">
+            <StaggerReveal className="grid grid-cols-1 sm:grid-cols-2 gap-4 sm:gap-6 lg:gap-8">
               {benefits.map((benefit, index) => {
                 const Icon = benefit.icon;
                 return (
+                  <StaggerItem key={index}>
                   <div
-                    key={index}
-                    className="p-4 sm:p-6 lg:p-8 rounded-2xl bg-white/12 border border-white/16"
+                    className="p-4 sm:p-6 lg:p-8 rounded-2xl bg-white/12 border border-white/16 h-full"
                   >
                     <div className="w-12 h-12 sm:w-16 sm:h-16 rounded-2xl bg-white/16 flex items-center justify-center mb-4 sm:mb-6">
                       <Icon className="h-6 w-6 sm:h-8 sm:w-8 text-white" />
@@ -530,9 +537,10 @@ export default function HomePage() {
                       {benefit.description}
                     </p>
                   </div>
+                  </StaggerItem>
                 );
               })}
-            </div>
+            </StaggerReveal>
           </div>
         </section>
 
@@ -544,16 +552,17 @@ export default function HomePage() {
           className="order-3 py-12 sm:py-16 md:py-20 bg-white rounded-2xl sm:rounded-3xl my-6 sm:my-8 lg:my-10"
         >
           <div className="max-w-7xl mx-auto px-4 sm:px-6 lg:px-8">
-            <div className="text-center mb-8 sm:mb-10">
+            <ScrollReveal className="text-center mb-8 sm:mb-10">
               <h2 className="text-2xl sm:text-3xl md:text-4xl font-bold text-slate-900 mb-3 sm:mb-4">
                 ⭐ {t("home.section.howItWorks.title")}
               </h2>
               <p className="text-sm sm:text-base md:text-lg text-slate-600 max-w-3xl mx-auto">
                 {t("home.section.howItWorks.subtitle")}
               </p>
-            </div>
+            </ScrollReveal>
 
-            <div className="grid grid-cols-1 lg:grid-cols-3 gap-4 sm:gap-6">
+            <StaggerReveal className="grid grid-cols-1 lg:grid-cols-3 gap-4 sm:gap-6">
+              <StaggerItem>
               <Card className="group border border-slate-200 shadow-sm h-full transition-all duration-200 hover:shadow-md hover:border-slate-300 bg-gradient-to-b from-white to-slate-50">
                 <CardContent className="p-4 sm:p-5 h-full flex flex-col">
                   <h3 className="text-base sm:text-lg font-bold text-slate-900 mb-3 min-h-[28px]">
@@ -593,7 +602,9 @@ export default function HomePage() {
                   </div>
                 </CardContent>
               </Card>
+              </StaggerItem>
 
+              <StaggerItem>
               <Card className="group border border-slate-200 shadow-sm h-full transition-all duration-200 hover:shadow-md hover:border-slate-300 bg-gradient-to-b from-white to-slate-50">
                 <CardContent className="p-4 sm:p-5 h-full flex flex-col">
                   <h3 className="text-base sm:text-lg font-bold text-slate-900 mb-3 min-h-[28px]">
@@ -632,7 +643,9 @@ export default function HomePage() {
                   </div>
                 </CardContent>
               </Card>
+              </StaggerItem>
 
+              <StaggerItem>
               <Card className="group border border-slate-200 shadow-sm h-full transition-all duration-200 hover:shadow-md hover:border-slate-300 bg-gradient-to-b from-white to-slate-50">
                 <CardContent className="p-4 sm:p-5 h-full flex flex-col">
                   <h3 className="text-base sm:text-lg font-bold text-slate-900 mb-3 min-h-[28px]">
@@ -674,7 +687,8 @@ export default function HomePage() {
                   </div>
                 </CardContent>
               </Card>
-            </div>
+              </StaggerItem>
+            </StaggerReveal>
           </div>
         </section>
 
@@ -708,26 +722,28 @@ export default function HomePage() {
             </div>
           </div>
 
-          <div className="relative z-[2] max-w-3xl mx-auto px-4 sm:px-6 lg:px-8 text-center">
+          <ScrollReveal className="relative z-[2] max-w-3xl mx-auto px-4 sm:px-6 lg:px-8 text-center">
             <h2 className="text-2xl sm:text-3xl md:text-4xl font-bold text-slate-900 mb-3 sm:mb-4">
               {t("home.cta.title")}
             </h2>
             <p className="text-sm sm:text-base md:text-lg text-slate-600 max-w-2xl mx-auto mb-6 sm:mb-8">
               {t("home.cta.subtitle")}
             </p>
+            <motion.div whileHover={{ scale: 1.03 }} whileTap={{ scale: 0.98 }}>
             <Link
               href="/register"
               draggable={false}
-              className="cta-primary-button inline-flex min-h-14 select-text items-center justify-center rounded-full bg-gradient-to-r from-[#2f67e8] via-[#5a56ea] to-[#8b3fe8] px-8 sm:px-12 py-3.5 text-base sm:text-[2rem] font-semibold tracking-[-0.02em] text-white shadow-[0_14px_28px_rgba(79,95,234,0.2)] transition-transform duration-200 hover:scale-[1.03] focus-visible:outline-none focus-visible:ring-2 focus-visible:ring-blue-500 focus-visible:ring-offset-2"
+              className="cta-primary-button inline-flex min-h-14 cursor-pointer items-center justify-center rounded-full bg-gradient-to-r from-[#2f67e8] via-[#5a56ea] to-[#8b3fe8] px-8 sm:px-12 py-3.5 text-base sm:text-[2rem] font-semibold tracking-[-0.02em] text-white shadow-[0_14px_28px_rgba(79,95,234,0.2)] transition-shadow duration-200 hover:shadow-[0_18px_36px_rgba(79,95,234,0.28)] focus-visible:outline-none focus-visible:ring-2 focus-visible:ring-blue-500 focus-visible:ring-offset-2"
             >
-              <span className="cta-primary-button-label cursor-text select-text">
+              <span className="cta-primary-button-label cursor-pointer">
                 {t("home.cta.start")}
               </span>
             </Link>
+            </motion.div>
             <p className="mt-3 text-xs sm:text-sm text-slate-500">
               {t("home.cta.feeNote")}
             </p>
-          </div>
+          </ScrollReveal>
         </section>
         </div>
 
@@ -754,11 +770,11 @@ export default function HomePage() {
                   <div className="flex items-center gap-3">
                     <div className="w-10 h-10 rounded-full overflow-hidden border border-slate-200 bg-white">
                       <Image
-                        src="/images/founder-avatar.svg"
+                        src="/founder-avatar.png"
                         alt={t("home.about.avatarAlt")}
-                        width={40}
-                        height={40}
-                        className="w-full h-full object-cover"
+                        width={320}
+                        height={174}
+                        className="w-full h-full object-cover object-center"
                       />
                     </div>
                     <div>

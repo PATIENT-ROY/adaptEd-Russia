@@ -1,4 +1,11 @@
+"use client";
+
+import { motion, useReducedMotion } from "framer-motion";
+import { floatLoop, planeLoop } from "@/components/home/home-motion";
+
 export function StudentAdaptationIllustration() {
+  const shouldReduceMotion = useReducedMotion();
+
   return (
     <svg
       viewBox="0 0 560 580"
@@ -7,69 +14,176 @@ export function StudentAdaptationIllustration() {
       className="h-[320px] w-full sm:h-[420px] md:h-[520px] lg:h-[580px] max-w-[560px] mx-auto"
       aria-hidden="true"
     >
-      <ellipse cx="280" cy="548" rx="210" ry="22" fill="#8B5CF6" fillOpacity="0.12" />
+      <defs>
+        <linearGradient id="skyGlow" x1="80" y1="40" x2="480" y2="420" gradientUnits="userSpaceOnUse">
+          <stop stopColor="#EEF2FF" />
+          <stop offset="1" stopColor="#F5F3FF" stopOpacity="0.2" />
+        </linearGradient>
+        <linearGradient id="buildingFill" x1="360" y1="180" x2="520" y2="420" gradientUnits="userSpaceOnUse">
+          <stop stopColor="#E0E7FF" />
+          <stop offset="1" stopColor="#C7D2FE" />
+        </linearGradient>
+        <linearGradient id="jacketFill" x1="150" y1="300" x2="290" y2="470" gradientUnits="userSpaceOnUse">
+          <stop stopColor="#4F46E5" />
+          <stop offset="1" stopColor="#6366F1" />
+        </linearGradient>
+        <linearGradient id="planeFill" x1="70" y1="70" x2="180" y2="120" gradientUnits="userSpaceOnUse">
+          <stop stopColor="#FFFFFF" />
+          <stop offset="1" stopColor="#EEF2FF" />
+        </linearGradient>
+        <filter id="softShadow" x="-20%" y="-20%" width="140%" height="140%">
+          <feDropShadow dx="0" dy="8" stdDeviation="12" floodColor="#6366F1" floodOpacity="0.12" />
+        </filter>
+      </defs>
 
-      <rect x="330" y="250" width="170" height="130" rx="18" fill="#EEF2FF" stroke="#6366F1" strokeWidth="3" />
-      <rect x="350" y="280" width="36" height="36" rx="8" fill="#C7D2FE" />
-      <rect x="402" y="280" width="36" height="36" rx="8" fill="#C7D2FE" />
-      <rect x="454" y="280" width="36" height="36" rx="8" fill="#C7D2FE" />
-      <rect x="350" y="332" width="36" height="36" rx="8" fill="#C7D2FE" />
-      <rect x="402" y="332" width="36" height="36" rx="8" fill="#C7D2FE" />
-      <rect x="454" y="332" width="36" height="36" rx="8" fill="#C7D2FE" />
-      <path d="M415 250V210H415.5C430 210 442 198 442 183.5C442 169 430 157 415.5 157H400" stroke="#6366F1" strokeWidth="4" strokeLinecap="round" />
-      <circle cx="400" cy="157" r="10" fill="#6366F1" />
-      <path d="M360 380H470" stroke="#6366F1" strokeWidth="4" strokeLinecap="round" />
+      <rect width="560" height="580" fill="url(#skyGlow)" rx="24" />
 
-      <rect x="78" y="360" width="118" height="88" rx="16" fill="#3B82F6" fillOpacity="0.18" stroke="#3B82F6" strokeWidth="3" />
-      <rect x="92" y="374" width="90" height="12" rx="6" fill="#93C5FD" />
-      <rect x="92" y="396" width="68" height="10" rx="5" fill="#BFDBFE" />
-      <rect x="92" y="416" width="78" height="10" rx="5" fill="#BFDBFE" />
-      <circle cx="178" cy="432" r="10" fill="#2563EB" />
-      <rect x="168" y="418" width="20" height="8" rx="4" fill="#2563EB" />
-
-      <path
-        d="M248 470C248 430 268 398 296 378C324 358 356 352 356 352C356 352 348 318 320 296C292 274 252 268 220 286C188 304 168 342 168 382C168 422 188 458 220 476"
-        fill="#F5D0A8"
+      <motion.path
+        d="M48 92C120 78 190 96 248 118"
+        stroke="#93C5FD"
+        strokeWidth="2"
+        strokeDasharray="6 10"
+        strokeLinecap="round"
+        opacity="0.7"
+        animate={
+          shouldReduceMotion
+            ? undefined
+            : { strokeDashoffset: [0, -32] }
+        }
+        transition={
+          shouldReduceMotion
+            ? undefined
+            : { duration: 2.8, repeat: Infinity, ease: "linear" }
+        }
       />
-      <circle cx="248" cy="250" r="52" fill="#6B4423" />
-      <circle cx="248" cy="258" r="44" fill="#F5D0A8" />
-      <path d="M210 248C210 228 226 212 248 212C270 212 286 228 286 248" fill="#6B4423" />
-      <circle cx="232" cy="258" r="5" fill="#1E293B" />
-      <circle cx="264" cy="258" r="5" fill="#1E293B" />
-      <path d="M236 282C242 288 254 288 260 282" stroke="#BE8B63" strokeWidth="4" strokeLinecap="round" />
 
-      <path
-        d="M196 330C176 350 168 392 168 430V470H328V430C328 392 320 350 300 330"
-        fill="#6366F1"
+      <motion.g
+        filter="url(#softShadow)"
+        style={{ transformOrigin: "274px 118px", rotate: -8 }}
+        animate={shouldReduceMotion ? undefined : planeLoop}
+      >
+        <g transform="translate(228 108)">
+          <path
+            d="M0 18L88 10L96 18L88 26L0 18Z"
+            fill="url(#planeFill)"
+            stroke="#6366F1"
+            strokeWidth="1.5"
+          />
+          <path d="M34 18L52 0L58 18L52 36L34 18Z" fill="#818CF8" />
+          <path d="M72 18L84 14V22L72 18Z" fill="#A5B4FC" />
+          <circle cx="18" cy="18" r="3" fill="#6366F1" opacity="0.35" />
+        </g>
+      </motion.g>
+
+      <motion.g
+        filter="url(#softShadow)"
+        animate={shouldReduceMotion ? undefined : { scale: [1, 1.015, 1] }}
+        transition={
+          shouldReduceMotion
+            ? undefined
+            : { duration: 5, repeat: Infinity, ease: "easeInOut" }
+        }
+        style={{ transformOrigin: "420px 340px" }}
+      >
+        <path d="M318 420H522V250H318V420Z" fill="url(#buildingFill)" />
+        <path d="M300 250H540L420 188L300 250Z" fill="#A5B4FC" />
+        <rect x="318" y="250" width="204" height="8" fill="#818CF8" opacity="0.55" />
+        <rect x="348" y="286" width="34" height="34" rx="4" fill="#FFFFFF" opacity="0.85" />
+        <rect x="402" y="286" width="34" height="34" rx="4" fill="#FFFFFF" opacity="0.85" />
+        <rect x="456" y="286" width="34" height="34" rx="4" fill="#FFFFFF" opacity="0.85" />
+        <rect x="348" y="338" width="34" height="34" rx="4" fill="#FFFFFF" opacity="0.7" />
+        <rect x="402" y="338" width="34" height="34" rx="4" fill="#FFFFFF" opacity="0.7" />
+        <rect x="456" y="338" width="34" height="34" rx="4" fill="#FFFFFF" opacity="0.7" />
+        <rect x="372" y="388" width="22" height="32" rx="2" fill="#6366F1" opacity="0.25" />
+        <rect x="408" y="388" width="22" height="32" rx="2" fill="#6366F1" opacity="0.25" />
+        <rect x="444" y="388" width="22" height="32" rx="2" fill="#6366F1" opacity="0.25" />
+        <path d="M334 420H506" stroke="#818CF8" strokeWidth="3" strokeLinecap="round" />
+        <path d="M352 420V250M420 420V250M488 420V250" stroke="#818CF8" strokeWidth="2" opacity="0.45" />
+      </motion.g>
+
+      <ellipse cx="280" cy="536" rx="220" ry="18" fill="#8B5CF6" fillOpacity="0.1" />
+
+      <motion.g
+        transform="translate(118 430)"
+        animate={shouldReduceMotion ? undefined : { y: [0, -4, 0], rotate: [0, -1.5, 0] }}
+        transition={
+          shouldReduceMotion
+            ? undefined
+            : { duration: 3.6, repeat: Infinity, ease: "easeInOut", delay: 0.4 }
+        }
+      >
+        <rect x="0" y="0" width="74" height="52" rx="10" fill="#FFFFFF" stroke="#6366F1" strokeWidth="2" />
+        <rect x="10" y="10" width="54" height="8" rx="4" fill="#C7D2FE" />
+        <rect x="10" y="24" width="38" height="6" rx="3" fill="#E0E7FF" />
+        <path d="M27 -8C27 -14 33 -18 37 -18C41 -18 47 -14 47 -8" stroke="#6366F1" strokeWidth="2.5" strokeLinecap="round" />
+        <circle cx="18" cy="52" r="6" fill="#4F46E5" />
+        <circle cx="56" cy="52" r="6" fill="#4F46E5" />
+      </motion.g>
+
+      <motion.g
+        filter="url(#softShadow)"
+        animate={shouldReduceMotion ? undefined : floatLoop}
+        style={{ transformOrigin: "248px 400px" }}
+      >
+        <path d="M214 470L198 536H228L236 470H214Z" fill="#312E81" />
+        <path d="M262 470L254 536H284L270 470H262Z" fill="#312E81" />
+        <path d="M188 536H238C238 528 232 522 224 522H202C194 522 188 528 188 536Z" fill="#1E1B4B" />
+        <path d="M244 536H294C294 528 288 522 280 522H258C250 522 244 528 244 536Z" fill="#1E1B4B" />
+        <path
+          d="M188 332C188 300 214 276 248 276C282 276 308 300 308 332V470H188V332Z"
+          fill="url(#jacketFill)"
+        />
+        <path d="M224 332H272V362C272 372 262 380 248 380C234 380 224 372 224 362V332Z" fill="#818CF8" opacity="0.55" />
+        <rect x="292" y="302" width="54" height="88" rx="14" fill="#4338CA" />
+        <rect x="304" y="318" width="30" height="10" rx="5" fill="#6366F1" />
+        <rect x="304" y="338" width="30" height="10" rx="5" fill="#6366F1" opacity="0.75" />
+        <path d="M292 318C276 318 268 332 268 348" stroke="#312E81" strokeWidth="4" strokeLinecap="round" />
+        <path d="M346 318C362 318 370 332 370 348" stroke="#312E81" strokeWidth="4" strokeLinecap="round" />
+        <circle cx="248" cy="236" r="40" fill="#9A6B43" />
+        <path
+          d="M208 228C210 196 226 176 248 176C270 176 286 196 288 228C284 214 268 204 248 204C228 204 212 214 208 228Z"
+          fill="#1E1B4B"
+        />
+        <ellipse cx="248" cy="248" rx="34" ry="30" fill="#B8835A" />
+        <rect x="168" y="360" width="34" height="44" rx="6" fill="#FFFFFF" stroke="#6366F1" strokeWidth="1.5" />
+        <path d="M176 374H194M176 384H188M176 394H192" stroke="#C7D2FE" strokeWidth="2" strokeLinecap="round" />
+      </motion.g>
+
+      <motion.circle
+        cx="88"
+        cy="170"
+        r="28"
+        fill="#DBEAFE"
+        opacity="0.65"
+        animate={shouldReduceMotion ? undefined : { scale: [1, 1.12, 1], opacity: [0.45, 0.75, 0.45] }}
+        transition={shouldReduceMotion ? undefined : { duration: 4, repeat: Infinity, ease: "easeInOut" }}
       />
-      <path d="M196 330L248 362L300 330" fill="#818CF8" />
-      <rect x="214" y="362" width="68" height="18" rx="9" fill="#4F46E5" />
-
-      <path
-        d="M300 318C322 332 334 360 334 392V470H368V392C368 344 346 304 312 286"
-        fill="#8B5CF6"
+      <motion.circle
+        cx="500"
+        cy="150"
+        r="18"
+        fill="#EDE9FE"
+        opacity="0.8"
+        animate={shouldReduceMotion ? undefined : { scale: [1, 1.15, 1], opacity: [0.55, 0.9, 0.55] }}
+        transition={
+          shouldReduceMotion
+            ? undefined
+            : { duration: 3.5, repeat: Infinity, ease: "easeInOut", delay: 0.8 }
+        }
       />
-      <rect x="312" y="286" width="34" height="48" rx="10" fill="#A78BFA" />
-      <path d="M312 310H346" stroke="#7C3AED" strokeWidth="3" />
-
-      <path
-        d="M196 318C174 332 162 360 162 392V470H128V392C128 344 150 304 184 286"
-        fill="#3B82F6"
+      <motion.circle
+        cx="468"
+        cy="468"
+        r="12"
+        fill="#C7D2FE"
+        opacity="0.55"
+        animate={shouldReduceMotion ? undefined : { scale: [1, 1.2, 1] }}
+        transition={
+          shouldReduceMotion
+            ? undefined
+            : { duration: 3, repeat: Infinity, ease: "easeInOut", delay: 1.4 }
+        }
       />
-      <rect x="184" y="286" width="34" height="48" rx="10" fill="#60A5FA" />
-      <path d="M184 310H218" stroke="#2563EB" strokeWidth="3" />
-
-      <rect x="220" y="368" width="56" height="70" rx="14" fill="#2563EB" stroke="#1D4ED8" strokeWidth="3" />
-      <rect x="232" y="382" width="32" height="8" rx="4" fill="#93C5FD" />
-      <rect x="232" y="398" width="24" height="8" rx="4" fill="#BFDBFE" />
-      <path d="M248 438V470" stroke="#1D4ED8" strokeWidth="8" strokeLinecap="round" />
-
-      <circle cx="118" cy="188" r="34" fill="#DBEAFE" fillOpacity="0.9" />
-      <path d="M118 168V208M98 188H138" stroke="#3B82F6" strokeWidth="5" strokeLinecap="round" />
-      <circle cx="430" cy="118" r="26" fill="#EDE9FE" fillOpacity="0.95" />
-      <path d="M430 104V132M416 118H444" stroke="#8B5CF6" strokeWidth="4" strokeLinecap="round" />
-      <circle cx="92" cy="118" r="18" fill="#E0E7FF" />
-      <circle cx="468" cy="320" r="14" fill="#DBEAFE" />
     </svg>
   );
 }
