@@ -229,6 +229,39 @@
     animation: fadeInUp 0.6s ease-out;
 }
 
+.adaptation-hero-text {
+    opacity: 0;
+    transform: translateY(24px);
+    transition: opacity 700ms ease-out, transform 700ms ease-out;
+}
+
+.adaptation-hero-text.is-visible {
+    opacity: 1;
+    transform: translateY(0);
+}
+
+.adaptation-hero-illustration {
+    opacity: 0;
+    transform: scale(0.95);
+    transition: opacity 900ms ease-out, transform 900ms ease-out;
+}
+
+.adaptation-hero-illustration.is-visible {
+    opacity: 1;
+    transform: scale(1);
+}
+
+.adaptation-hero-check {
+    opacity: 0;
+    transform: translateY(12px);
+    transition: opacity 500ms ease-out, transform 500ms ease-out;
+}
+
+.adaptation-hero-check.is-visible {
+    opacity: 1;
+    transform: translateY(0);
+}
+
 .animate-slide-in-right {
     animation: slideInRight 0.6s ease-out;
 }

@@ -41,6 +41,7 @@ import { API_BASE_URL } from "@/lib/api";
 import { PublicReview, TrustStats as TrustStatsType } from "@/types";
 import { HeroTypewriter } from "@/components/home/HeroTypewriter";
 import { TrustStats } from "@/components/home/TrustStats";
+import { AdaptationHeroSection } from "@/components/home/AdaptationHeroSection";
 import { ReviewCard } from "@/components/home/ReviewCard";
 import { TestimonialCardSkeleton } from "@/components/ui/skeleton";
 
@@ -442,7 +443,7 @@ export default function HomePage() {
         {/* Features Section - Detailed */}
         <section
           aria-label={t("home.section.features.title")}
-          className="order-3 py-12 sm:py-16 md:py-24 bg-gradient-to-br from-slate-50 via-white to-blue-50 rounded-2xl sm:rounded-3xl my-6 sm:my-8 lg:my-10"
+          className="order-5 py-12 sm:py-16 md:py-24 bg-gradient-to-br from-slate-50 via-white to-blue-50 rounded-2xl sm:rounded-3xl my-6 sm:my-8 lg:my-10"
         >
           <div className="max-w-7xl mx-auto px-4 sm:px-6 lg:px-8">
             <div className="text-center mb-8 sm:mb-12">
@@ -535,10 +536,12 @@ export default function HomePage() {
           </div>
         </section>
 
+        <AdaptationHeroSection />
+
         {/* Product In Action */}
         <section
           aria-label={t("home.section.howItWorks.title")}
-          className="order-2 py-12 sm:py-16 md:py-20 bg-white rounded-2xl sm:rounded-3xl my-6 sm:my-8 lg:my-10"
+          className="order-3 py-12 sm:py-16 md:py-20 bg-white rounded-2xl sm:rounded-3xl my-6 sm:my-8 lg:my-10"
         >
           <div className="max-w-7xl mx-auto px-4 sm:px-6 lg:px-8">
             <div className="text-center mb-8 sm:mb-10">
@@ -677,7 +680,7 @@ export default function HomePage() {
 
         <section
           aria-label={t("home.cta.title")}
-          className="order-2 relative isolate overflow-hidden py-12 sm:py-16 md:py-20 rounded-2xl sm:rounded-3xl my-6 sm:my-8 lg:my-10 border border-slate-100 bg-gradient-to-br from-slate-50 via-white to-blue-50"
+          className="order-4 relative isolate overflow-hidden py-12 sm:py-16 md:py-20 rounded-2xl sm:rounded-3xl my-6 sm:my-8 lg:my-10 border border-slate-100 bg-gradient-to-br from-slate-50 via-white to-blue-50"
         >
           <div
             aria-hidden
