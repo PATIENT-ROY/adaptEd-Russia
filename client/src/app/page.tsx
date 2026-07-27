@@ -661,9 +661,13 @@ export default function HomePage() {
         {/* Mid CTA */}
         <section
           aria-label={t("home.cta.title")}
-          className="below-fold py-12 sm:py-16 rounded-2xl sm:rounded-3xl my-6 sm:my-8 bg-gradient-to-br from-blue-600 via-indigo-600 to-purple-700"
+          className="below-fold relative overflow-hidden py-12 sm:py-16 rounded-2xl sm:rounded-3xl my-6 sm:my-8 bg-cover bg-center bg-no-repeat"
+          style={{
+            backgroundImage:
+              "linear-gradient(to bottom right, rgba(45, 91, 255, 0.82), rgba(112, 52, 255, 0.82)), url(/images/illustration/universitet.png)",
+          }}
         >
-          <ScrollReveal className="max-w-2xl mx-auto px-4 sm:px-6 text-center">
+          <ScrollReveal className="relative z-10 max-w-2xl mx-auto px-4 sm:px-6 text-center">
             <h2 className="text-2xl sm:text-3xl md:text-4xl font-bold text-white mb-4">
               {t("home.cta.title")}
             </h2>
