@@ -18,7 +18,7 @@ function PaymentPathHandlerContent() {
     if (paymentId) {
       router.replace(`/payment/callback?payment_id=${paymentId}`);
     } else {
-      router.replace("/payment/test");
+      router.replace("/payment");
     }
   }, [searchParams, router]);
 

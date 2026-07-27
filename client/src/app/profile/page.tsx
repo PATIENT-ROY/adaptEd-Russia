@@ -5,6 +5,7 @@ import { Layout } from "@/components/layout/layout";
 import { Card, CardContent, CardHeader, CardTitle } from "@/components/ui/card";
 import { Button } from "@/components/ui/button";
 import { useTranslation } from "@/hooks/useTranslation";
+import { PREMIUM_CHECKOUT_PATH } from "@/constants/routes";
 import {
   User,
   Mail,
@@ -899,7 +900,7 @@ export default function ProfilePage() {
                     }`}
                   />
                 </Button>
-                <Link href="/payment/test" className="w-full sm:w-auto">
+                <Link href={PREMIUM_CHECKOUT_PATH} className="w-full sm:w-auto">
                   <Button
                     variant="outline"
                     className="w-full sm:w-auto flex items-center justify-center space-x-2 hover:bg-green-50 hover:border-green-300 hover:text-green-700 transition-all duration-300 text-sm sm:text-base py-2 px-3 sm:px-4"

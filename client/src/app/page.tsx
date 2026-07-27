@@ -44,8 +44,33 @@ import { ScrollReveal } from "@/components/home/ScrollReveal";
 import { StaggerReveal, StaggerItem } from "@/components/home/StaggerReveal";
 import { motion } from "framer-motion";
 import { TOTAL_GUIDES_COUNT, SUPPORTED_LANGUAGES_COUNT } from "@/constants/content-stats";
+import { PREMIUM_CHECKOUT_PATH } from "@/constants/routes";
 
 const PREMIUM_FEATURES_VISIBLE = 6;
+
+function HowItWorksStepHeader({
+  step,
+  title,
+  caption,
+}: {
+  step: string;
+  title: string;
+  caption: string;
+}) {
+  return (
+    <div className="mb-4">
+      <div className="flex items-start gap-3">
+        <span className="flex h-9 w-9 shrink-0 items-center justify-center rounded-full bg-blue-600 text-sm font-bold text-white shadow-sm">
+          {step}
+        </span>
+        <div className="min-w-0">
+          <h3 className="text-lg font-bold text-slate-900">{title}</h3>
+          <p className="mt-1 text-sm text-slate-600">{caption}</p>
+        </div>
+      </div>
+    </div>
+  );
+}
 
 export default function HomePage() {
   const { t } = useTranslation();
@@ -108,6 +133,12 @@ export default function HomePage() {
 
   const showContentProof = !reviewsLoading && !showTrustBar;
 
+  const pricingTeaser = useMemo(
+    () =>
+      `${t("home.pricing.freemium.price")} · Premium ${t("home.pricing.premium.price")}`,
+    [t],
+  );
+
   const contentProofItems = useMemo(
     () => [
       t("home.contentProof.guides").replace("{count}", String(TOTAL_GUIDES_COUNT)),
@@ -165,7 +196,8 @@ export default function HomePage() {
         description: t("home.benefits.verified.desc"),
         gradient: "from-emerald-500 to-teal-600",
         stats: t("home.section.features.stats.verified"),
-        href: "/education-guide",
+        href: "#home-about",
+        ctaLabel: t("home.features.verified.cta"),
       },
     ],
     [t],
@@ -210,7 +242,7 @@ export default function HomePage() {
         ],
         popular: true,
         buttonText: t("home.pricing.button.premium"),
-        buttonHref: "/payment/test",
+        buttonHref: PREMIUM_CHECKOUT_PATH,
       },
     ],
     [t, adaptationCtaHref],
@@ -328,7 +360,16 @@ export default function HomePage() {
           >
             <div className="max-w-3xl mx-auto px-4 sm:px-6 text-center">
               <p className="text-sm sm:text-base font-medium text-slate-600">
-                {contentProofItems.join(" · ")}
+                {contentProofItems.join(" · ")}{" "}
+                <span className="text-slate-300" aria-hidden>
+                  ·
+                </span>{" "}
+                <Link
+                  href="#home-pricing"
+                  className="font-semibold text-blue-600 hover:text-blue-700 hover:underline focus-visible:outline-none focus-visible:ring-2 focus-visible:ring-blue-500 focus-visible:ring-offset-2 rounded-sm"
+                >
+                  {pricingTeaser}
+                </Link>
               </p>
             </div>
           </section>
@@ -355,9 +396,11 @@ export default function HomePage() {
               <StaggerItem>
                 <Card className="group border border-slate-200 shadow-sm h-full hover:shadow-md transition-shadow bg-gradient-to-b from-white to-slate-50">
                   <CardContent className="p-5 h-full flex flex-col">
-                    <h3 className="text-lg font-bold text-slate-900 mb-3">
-                      {t("nav.aiHelper")}
-                    </h3>
+                    <HowItWorksStepHeader
+                      step="01"
+                      title={t("nav.aiHelper")}
+                      caption={t("home.section.howItWorks.step1.caption")}
+                    />
                     <div className="rounded-xl border border-slate-200 bg-slate-50 overflow-hidden flex-1">
                       <div className="h-8 bg-slate-900 flex items-center px-3 gap-1.5">
                         <span className="w-2 h-2 rounded-full bg-red-400" />
@@ -389,9 +432,11 @@ export default function HomePage() {
               <StaggerItem>
                 <Card className="group border border-slate-200 shadow-sm h-full hover:shadow-md transition-shadow bg-gradient-to-b from-white to-slate-50">
                   <CardContent className="p-5 h-full flex flex-col">
-                    <h3 className="text-lg font-bold text-slate-900 mb-3">
-                      {t("educationGuide.header.title")}
-                    </h3>
+                    <HowItWorksStepHeader
+                      step="02"
+                      title={t("educationGuide.header.title")}
+                      caption={t("home.section.howItWorks.step2.caption")}
+                    />
                     <div className="rounded-xl border border-slate-200 bg-slate-50 overflow-hidden flex-1">
                       <div className="h-8 bg-slate-900 flex items-center px-3 gap-1.5">
                         <span className="w-2 h-2 rounded-full bg-red-400" />
@@ -423,9 +468,11 @@ export default function HomePage() {
               <StaggerItem>
                 <Card className="group border border-slate-200 shadow-sm h-full hover:shadow-md transition-shadow bg-gradient-to-b from-white to-slate-50">
                   <CardContent className="p-5 h-full flex flex-col">
-                    <h3 className="text-lg font-bold text-slate-900 mb-3">
-                      {t("home.features.community")}
-                    </h3>
+                    <HowItWorksStepHeader
+                      step="03"
+                      title={t("home.features.community")}
+                      caption={t("home.section.howItWorks.step3.caption")}
+                    />
                     <div className="rounded-xl border border-slate-200 bg-slate-50 overflow-hidden flex-1">
                       <div className="h-8 bg-slate-900 flex items-center px-3 gap-1.5">
                         <span className="w-2 h-2 rounded-full bg-red-400" />
@@ -497,7 +544,7 @@ export default function HomePage() {
                             </p>
                           )}
                           <span className="inline-flex items-center gap-1 text-sm font-semibold text-blue-600 mt-4 group-hover:gap-2 transition-all">
-                            {t("common.learnMore")}
+                            {(feature as { ctaLabel?: string }).ctaLabel ?? t("common.learnMore")}
                             <ArrowRight className="h-4 w-4" aria-hidden />
                           </span>
                         </CardContent>
@@ -510,176 +557,11 @@ export default function HomePage() {
           </div>
         </section>
 
-        {/* Mid CTA */}
+        {/* Pricing — moved up for visibility */}
         <section
-          aria-label={t("home.cta.title")}
-          className="below-fold py-12 sm:py-16 rounded-2xl sm:rounded-3xl my-6 sm:my-8 bg-gradient-to-br from-blue-600 via-indigo-600 to-purple-700"
-        >
-          <ScrollReveal className="max-w-2xl mx-auto px-4 sm:px-6 text-center">
-            <h2 className="text-2xl sm:text-3xl md:text-4xl font-bold text-white mb-4">
-              {t("home.cta.title")}
-            </h2>
-            <p className="text-base sm:text-lg text-white/90 mb-8">
-              {t("home.cta.subtitle")}
-            </p>
-            <motion.div whileHover={{ scale: 1.02 }} whileTap={{ scale: 0.98 }}>
-              <Link
-                href={adaptationCtaHref}
-                className="inline-flex min-h-12 items-center justify-center rounded-xl bg-white px-8 py-3.5 text-base sm:text-lg font-semibold text-indigo-700 shadow-lg hover:bg-white/95 focus-visible:outline-none focus-visible:ring-2 focus-visible:ring-white focus-visible:ring-offset-2 focus-visible:ring-offset-indigo-600"
-              >
-                {adaptationCtaLabel}
-              </Link>
-            </motion.div>
-            <p className="mt-4 text-sm text-white/70">
-              {t("home.cta.feeNote")}
-            </p>
-          </ScrollReveal>
-        </section>
-
-        {/* About */}
-        <section
-          aria-label={t("home.section.about.title")}
-          className="below-fold py-12 sm:py-16 md:py-20 bg-white rounded-2xl sm:rounded-3xl my-6 sm:my-8"
-        >
-          <div className="mx-auto max-w-5xl px-4 sm:px-6 lg:px-8">
-            <Card className="border border-slate-200 shadow-sm bg-white">
-              <CardContent className="p-6 sm:p-8 lg:p-10">
-                <h2 className="text-2xl sm:text-3xl font-bold text-slate-900 mb-6">
-                  {t("home.section.about.heading")}
-                </h2>
-
-                <div className="rounded-xl border border-slate-100 bg-slate-50 p-4 sm:p-5 mb-8">
-                  <div className="flex items-start gap-4">
-                    <div className="w-14 h-14 shrink-0 rounded-full overflow-hidden border-2 border-slate-200 bg-white">
-                      <Image
-                        src="/founder-avatar.png"
-                        alt={t("home.about.avatarAlt")}
-                        width={112}
-                        height={112}
-                        className="w-full h-full object-cover object-top"
-                      />
-                    </div>
-                    <div>
-                      <p className="text-lg font-semibold text-slate-900">
-                        {t("home.section.about.author.title")}
-                      </p>
-                      <p className="text-sm text-slate-600">
-                        {t("home.section.about.author.subtitle")}
-                      </p>
-                      <ul className="mt-3 space-y-1 text-sm text-slate-700">
-                        <li>{t("home.section.about.author.fact1")}</li>
-                        <li>{t("home.section.about.author.fact2")}</li>
-                      </ul>
-                    </div>
-                  </div>
-                </div>
-
-                <h3 className="text-lg font-bold text-slate-900 uppercase tracking-wide mb-3">
-                  {t("home.section.about.experience.title")}
-                </h3>
-                <div className="space-y-3 text-base text-slate-800 mb-8">
-                  <p>{t("home.section.about.experience.p1")}</p>
-                  <p>
-                    {t("home.section.about.experience.p2.prefix")}{" "}
-                    <span className="font-bold text-indigo-700">
-                      {t("home.section.about.experience.highlight")}
-                    </span>
-                    {t("home.section.about.experience.p2.suffix")}
-                  </p>
-                  <p>{t("home.section.about.experience.p3")}</p>
-                </div>
-
-                <h3 className="text-lg font-bold text-slate-900 uppercase tracking-wide mb-3">
-                  {t("home.section.about.purpose.title")}
-                </h3>
-                <p className="text-base text-slate-800 mb-4">
-                  {t("home.section.about.purpose.intro")}
-                </p>
-                <ul className="space-y-2 text-base text-slate-800 mb-4 list-disc pl-5">
-                  <li>{t("home.section.about.purpose.bullet1")}</li>
-                  <li>{t("home.section.about.purpose.bullet2")}</li>
-                  <li>{t("home.section.about.purpose.bullet3")}</li>
-                  <li>{t("home.section.about.purpose.bullet4")}</li>
-                </ul>
-                <p className="text-base text-slate-800">
-                  {t("home.section.about.purpose.support")}
-                </p>
-                <p className="mt-6 text-xl font-semibold italic text-slate-900">
-                  {t("home.section.about.closing")}
-                </p>
-              </CardContent>
-            </Card>
-          </div>
-        </section>
-
-        {/* Reviews */}
-        <section
-          aria-label={t("home.section.testimonials.title")}
-          className="below-fold py-12 sm:py-16 md:py-20 bg-slate-50 rounded-2xl sm:rounded-3xl my-6 sm:my-8"
-        >
-          <div className="mx-auto max-w-6xl px-4 sm:px-6">
-            <div className="text-center mb-8 sm:mb-10">
-              <h2 className="text-2xl sm:text-3xl md:text-4xl font-bold text-slate-900 mb-4">
-                {t("home.section.testimonials.title")}
-              </h2>
-              <p className="text-base sm:text-lg text-slate-600 max-w-2xl mx-auto">
-                {t("home.section.testimonials.subtitle")}
-              </p>
-            </div>
-
-            {reviewsLoading ? (
-              <div
-                aria-busy="true"
-                aria-label={t("home.section.testimonials.title")}
-                className="grid grid-cols-1 md:grid-cols-3 gap-6"
-              >
-                {Array.from({ length: 3 }).map((_, index) => (
-                  <TestimonialCardSkeleton key={index} />
-                ))}
-              </div>
-            ) : reviews.length > 0 ? (
-              <div className="grid grid-cols-1 md:grid-cols-3 gap-6">
-                {reviews.map((review) => (
-                  <ReviewCard
-                    key={review.id}
-                    review={review}
-                    starsLabel={t("home.section.testimonials.stars")}
-                    showMoreLabel={t("home.review.showMore")}
-                    showLessLabel={t("home.review.showLess")}
-                    publishedLabel={t("home.review.publishedAfterModeration")}
-                  />
-                ))}
-              </div>
-            ) : (
-              <div className="mx-auto max-w-xl rounded-2xl border border-blue-100 bg-gradient-to-br from-blue-50 via-white to-indigo-50 px-6 py-10 sm:px-8 sm:py-12 text-center shadow-sm">
-                <div
-                  className="mx-auto mb-5 flex h-14 w-14 items-center justify-center rounded-2xl bg-gradient-to-br from-blue-500 to-purple-600 text-white shadow-lg shadow-blue-500/25"
-                  aria-hidden
-                >
-                  <Star className="h-7 w-7 fill-current" />
-                </div>
-                <p className="text-xl sm:text-2xl font-bold text-slate-900 leading-snug">
-                  {t("home.section.testimonials.empty")}
-                </p>
-                <p className="mt-3 text-sm sm:text-base text-slate-600 leading-relaxed">
-                  {t("home.section.testimonials.emptyDescription")}
-                </p>
-                <Link
-                  href="/profile"
-                  className="mt-8 inline-flex min-h-12 items-center justify-center rounded-xl bg-gradient-to-r from-blue-600 to-purple-600 px-8 py-3.5 text-base font-semibold text-white shadow-lg shadow-blue-500/25 transition-all hover:from-blue-700 hover:to-purple-700 hover:shadow-xl hover:shadow-blue-500/30 focus-visible:outline-none focus-visible:ring-2 focus-visible:ring-blue-500 focus-visible:ring-offset-2"
-                >
-                  <MessageSquare className="mr-2 h-5 w-5" aria-hidden />
-                  {t("home.section.testimonials.emptyCta")}
-                </Link>
-              </div>
-            )}
-          </div>
-        </section>
-
-        {/* Pricing */}
-        <section
+          id="home-pricing"
           aria-label={t("home.section.pricing.title")}
-          className="below-fold py-12 sm:py-16 md:py-20 bg-white rounded-2xl sm:rounded-3xl my-6 sm:my-8 mb-10"
+          className="below-fold scroll-mt-28 py-12 sm:py-16 md:py-20 bg-white rounded-2xl sm:rounded-3xl my-6 sm:my-8"
         >
           <div className="mx-auto max-w-5xl px-4 sm:px-6">
             <div className="text-center mb-10 sm:mb-12">
@@ -773,6 +655,166 @@ export default function HomePage() {
                 </Card>
               ))}
             </div>
+          </div>
+        </section>
+
+        {/* Mid CTA */}
+        <section
+          aria-label={t("home.cta.title")}
+          className="below-fold py-12 sm:py-16 rounded-2xl sm:rounded-3xl my-6 sm:my-8 bg-gradient-to-br from-blue-600 via-indigo-600 to-purple-700"
+        >
+          <ScrollReveal className="max-w-2xl mx-auto px-4 sm:px-6 text-center">
+            <h2 className="text-2xl sm:text-3xl md:text-4xl font-bold text-white mb-4">
+              {t("home.cta.title")}
+            </h2>
+            <p className="text-base sm:text-lg text-white/90 mb-8">
+              {t("home.cta.subtitle")}
+            </p>
+            <motion.div whileHover={{ scale: 1.02 }} whileTap={{ scale: 0.98 }}>
+              <Link
+                href={adaptationCtaHref}
+                className="inline-flex min-h-12 items-center justify-center rounded-xl bg-white px-8 py-3.5 text-base sm:text-lg font-semibold text-indigo-700 shadow-lg hover:bg-white/95 focus-visible:outline-none focus-visible:ring-2 focus-visible:ring-white focus-visible:ring-offset-2 focus-visible:ring-offset-indigo-600"
+              >
+                {adaptationCtaLabel}
+              </Link>
+            </motion.div>
+            <p className="mt-4 text-sm text-white/70">
+              {t("home.cta.feeNote")}
+            </p>
+          </ScrollReveal>
+        </section>
+
+        {/* About */}
+        <section
+          id="home-about"
+          aria-label={t("home.section.about.title")}
+          className="below-fold scroll-mt-28 py-12 sm:py-16 md:py-20 bg-white rounded-2xl sm:rounded-3xl my-6 sm:my-8"
+        >
+          <div className="mx-auto max-w-3xl px-4 sm:px-6 lg:px-8">
+            <Card className="border border-slate-200 shadow-sm bg-white">
+              <CardContent className="p-6 sm:p-8">
+                <h2 className="text-2xl sm:text-3xl font-bold text-slate-900 mb-6">
+                  {t("home.section.about.heading")}
+                </h2>
+
+                <div className="rounded-xl border border-slate-100 bg-slate-50 p-4 sm:p-5 mb-6">
+                  <div className="flex items-start gap-4">
+                    <div className="w-16 h-16 shrink-0 rounded-full overflow-hidden border-2 border-slate-200 bg-white">
+                      <Image
+                        src="/founder-avatar.png"
+                        alt={t("home.about.avatarAlt")}
+                        width={128}
+                        height={128}
+                        className="w-full h-full object-cover object-top"
+                      />
+                    </div>
+                    <div>
+                      <p className="text-lg font-semibold text-slate-900">
+                        {t("home.section.about.author.title")}
+                      </p>
+                      <p className="text-sm text-slate-600">
+                        {t("home.section.about.author.subtitle")}
+                      </p>
+                      <ul className="mt-2 space-y-1 text-sm text-slate-700">
+                        <li>{t("home.section.about.author.fact1")}</li>
+                        <li>{t("home.section.about.author.fact2")}</li>
+                      </ul>
+                    </div>
+                  </div>
+                </div>
+
+                <p className="text-base sm:text-lg text-slate-800 leading-relaxed mb-6">
+                  {t("home.section.about.summary")}
+                </p>
+
+                <ul className="grid grid-cols-1 sm:grid-cols-2 gap-x-6 gap-y-2 text-sm sm:text-base text-slate-800 mb-6">
+                  <li className="flex gap-2">
+                    <span className="text-blue-600 shrink-0" aria-hidden>•</span>
+                    <span>{t("home.section.about.purpose.bullet1")}</span>
+                  </li>
+                  <li className="flex gap-2">
+                    <span className="text-blue-600 shrink-0" aria-hidden>•</span>
+                    <span>{t("home.section.about.purpose.bullet2")}</span>
+                  </li>
+                  <li className="flex gap-2">
+                    <span className="text-blue-600 shrink-0" aria-hidden>•</span>
+                    <span>{t("home.section.about.purpose.bullet3")}</span>
+                  </li>
+                  <li className="flex gap-2">
+                    <span className="text-blue-600 shrink-0" aria-hidden>•</span>
+                    <span>{t("home.section.about.purpose.bullet4")}</span>
+                  </li>
+                </ul>
+
+                <p className="text-lg sm:text-xl font-semibold italic text-slate-900">
+                  {t("home.section.about.closing")}
+                </p>
+              </CardContent>
+            </Card>
+          </div>
+        </section>
+
+        {/* Reviews */}
+        <section
+          aria-label={t("home.section.testimonials.title")}
+          className="below-fold py-12 sm:py-16 md:py-20 bg-slate-50 rounded-2xl sm:rounded-3xl my-6 sm:my-8"
+        >
+          <div className="mx-auto max-w-6xl px-4 sm:px-6">
+            <div className="text-center mb-8 sm:mb-10">
+              <h2 className="text-2xl sm:text-3xl md:text-4xl font-bold text-slate-900 mb-4">
+                {t("home.section.testimonials.title")}
+              </h2>
+              <p className="text-base sm:text-lg text-slate-600 max-w-2xl mx-auto">
+                {t("home.section.testimonials.subtitle")}
+              </p>
+            </div>
+
+            {reviewsLoading ? (
+              <div
+                aria-busy="true"
+                aria-label={t("home.section.testimonials.title")}
+                className="grid grid-cols-1 md:grid-cols-3 gap-6"
+              >
+                {Array.from({ length: 3 }).map((_, index) => (
+                  <TestimonialCardSkeleton key={index} />
+                ))}
+              </div>
+            ) : reviews.length > 0 ? (
+              <div className="grid grid-cols-1 md:grid-cols-3 gap-6">
+                {reviews.map((review) => (
+                  <ReviewCard
+                    key={review.id}
+                    review={review}
+                    starsLabel={t("home.section.testimonials.stars")}
+                    showMoreLabel={t("home.review.showMore")}
+                    showLessLabel={t("home.review.showLess")}
+                    publishedLabel={t("home.review.publishedAfterModeration")}
+                  />
+                ))}
+              </div>
+            ) : (
+              <div className="mx-auto max-w-xl rounded-2xl border border-blue-100 bg-gradient-to-br from-blue-50 via-white to-indigo-50 px-6 py-10 sm:px-8 sm:py-12 text-center shadow-sm">
+                <div
+                  className="mx-auto mb-5 flex h-14 w-14 items-center justify-center rounded-2xl bg-gradient-to-br from-blue-500 to-purple-600 text-white shadow-lg shadow-blue-500/25"
+                  aria-hidden
+                >
+                  <Star className="h-7 w-7 fill-current" />
+                </div>
+                <p className="text-xl sm:text-2xl font-bold text-slate-900 leading-snug">
+                  {t("home.section.testimonials.empty")}
+                </p>
+                <p className="mt-3 text-sm sm:text-base text-slate-600 leading-relaxed">
+                  {t("home.section.testimonials.emptyDescription")}
+                </p>
+                <Link
+                  href="/profile"
+                  className="mt-8 inline-flex min-h-12 items-center justify-center rounded-xl bg-gradient-to-r from-blue-600 to-purple-600 px-8 py-3.5 text-base font-semibold text-white shadow-lg shadow-blue-500/25 transition-all hover:from-blue-700 hover:to-purple-700 hover:shadow-xl hover:shadow-blue-500/30 focus-visible:outline-none focus-visible:ring-2 focus-visible:ring-blue-500 focus-visible:ring-offset-2"
+                >
+                  <MessageSquare className="mr-2 h-5 w-5" aria-hidden />
+                  {t("home.section.testimonials.emptyCta")}
+                </Link>
+              </div>
+            )}
           </div>
         </section>
       </Layout>

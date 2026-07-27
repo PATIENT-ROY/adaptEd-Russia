@@ -255,6 +255,7 @@ const translations: Record<Language, Record<string, string>> = {
     "home.contentProof.guides": "{count} гайдов",
     "home.contentProof.languages": "{count} языков",
     "home.contentProof.ai": "AI-помощник",
+    "home.contentProof.pricingLink": "Тарифы",
     "home.cta.login": "Войти в аккаунт",
 
     // Life Guide - Categories & Emergency Contacts
@@ -456,6 +457,9 @@ const translations: Record<Language, Record<string, string>> = {
     "home.section.features.badge": "Главные возможности платформы",
     "home.section.howItWorks.title": "Как работает платформа",
     "home.section.howItWorks.subtitle": "Три ключевых сценария: вопрос студента, ответ AI, переход к гайдам и поддержку сообщества.",
+    "home.section.howItWorks.step1.caption": "Спросите AI на своём языке",
+    "home.section.howItWorks.step2.caption": "Откройте пошаговый гайд",
+    "home.section.howItWorks.step3.caption": "Задайте вопрос сообществу",
     "home.mock.community.tab.questions": "Вопросы",
     "home.mock.community.tab.answers": "Ответы",
     "home.mock.community.tab.members": "Участники",
@@ -474,6 +478,7 @@ const translations: Record<Language, Record<string, string>> = {
     "home.benefits.messengers.desc": "Получайте уведомления в Telegram, WhatsApp и других приложениях",
     "home.benefits.verified": "Проверенные материалы",
     "home.benefits.verified.desc": "Гайды проверены экспертами и обновляются по мере изменения правил",
+    "home.features.verified.cta": "Кто это проверяет",
     
     "home.section.testimonials.title": "Что говорят наши студенты",
     "home.section.testimonials.subtitle": "Реальные отзывы от иностранных студентов, которые уже используют нашу платформу",
@@ -534,6 +539,7 @@ const translations: Record<Language, Record<string, string>> = {
     "home.section.about.author.subtitle": "бывший иностранный студент",
     "home.section.about.author.fact1": "Учился в российском университете",
     "home.section.about.author.fact2": "Прошёл путь от прилёта до диплома",
+    "home.section.about.summary": "Я сам прошёл путь иностранного студента в России — от прилёта до диплома. Знаю, каково это: документы, дедлайны и вопросы без понятных ответов. AdaptEd Russia создан, чтобы вам было проще.",
     "home.section.about.experience.title": "Опыт",
     "home.section.about.experience.p1": "Я сам учился в России как иностранный студент и прошёл весь путь —",
     "home.section.about.experience.p2.prefix": "от первого прилёта",
@@ -1387,6 +1393,7 @@ const translations: Record<Language, Record<string, string>> = {
     "home.contentProof.guides": "{count} guides",
     "home.contentProof.languages": "{count} languages",
     "home.contentProof.ai": "AI assistant",
+    "home.contentProof.pricingLink": "Pricing",
     "home.cta.login": "Sign In",
 
     // Life Guide - Categories & Emergency Contacts
@@ -1588,6 +1595,9 @@ const translations: Record<Language, Record<string, string>> = {
     "home.section.features.badge": "Key platform features",
     "home.section.howItWorks.title": "How the platform works",
     "home.section.howItWorks.subtitle": "Three key scenarios: a student question, AI answer, transition to guides and community support.",
+    "home.section.howItWorks.step1.caption": "Ask the AI in your language",
+    "home.section.howItWorks.step2.caption": "Open a step-by-step guide",
+    "home.section.howItWorks.step3.caption": "Ask the community",
     "home.mock.community.tab.questions": "Questions",
     "home.mock.community.tab.answers": "Answers",
     "home.mock.community.tab.members": "Members",
@@ -1606,6 +1616,7 @@ const translations: Record<Language, Record<string, string>> = {
     "home.benefits.messengers.desc": "Receive notifications in Telegram, WhatsApp and other apps",
     "home.benefits.verified": "Verified Materials",
     "home.benefits.verified.desc": "Guides are expert-reviewed and updated as rules change",
+    "home.features.verified.cta": "Who verifies this",
     
     "home.section.testimonials.title": "What our students say",
     "home.section.testimonials.subtitle": "Real reviews from international students who are already using our platform",
@@ -1671,6 +1682,7 @@ const translations: Record<Language, Record<string, string>> = {
     "home.section.about.author.subtitle": "former international student",
     "home.section.about.author.fact1": "Studied at a Russian university",
     "home.section.about.author.fact2": "From first arrival to graduation",
+    "home.section.about.summary": "I went through the full journey as an international student in Russia — from arrival to graduation. I know the documents, deadlines, and stress of unclear answers. AdaptEd Russia exists to make it easier for you.",
     "home.section.about.experience.title": "Experience",
     "home.section.about.experience.p1": "I studied in Russia as an international student and went through the whole journey,",
     "home.section.about.experience.p2.prefix": "from my first arrival",
@@ -2518,6 +2530,7 @@ const translations: Record<Language, Record<string, string>> = {
     "home.contentProof.guides": "{count} guides",
     "home.contentProof.languages": "{count} langues",
     "home.contentProof.ai": "Assistant IA",
+    "home.contentProof.pricingLink": "Tarifs",
     "home.cta.login": "Se connecter",
 
     // Life Guide - Categories & Emergency Contacts
@@ -2719,6 +2732,9 @@ const translations: Record<Language, Record<string, string>> = {
     "home.section.features.badge": "Fonctionnalités clés de la plateforme",
     "home.section.howItWorks.title": "Comment fonctionne la plateforme",
     "home.section.howItWorks.subtitle": "Trois scénarios clés: la question de l’étudiant, la réponse de l’IA, le passage vers les guides et le soutien de la communauté.",
+    "home.section.howItWorks.step1.caption": "Posez une question à l’IA dans votre langue",
+    "home.section.howItWorks.step2.caption": "Ouvrez un guide pas à pas",
+    "home.section.howItWorks.step3.caption": "Posez une question à la communauté",
     "home.mock.community.tab.questions": "Questions",
     "home.mock.community.tab.answers": "Réponses",
     "home.mock.community.tab.members": "Membres",
@@ -2737,6 +2753,7 @@ const translations: Record<Language, Record<string, string>> = {
     "home.benefits.messengers.desc": "Recevez des notifications sur Telegram, WhatsApp et d'autres applications",
     "home.benefits.verified": "Matériaux vérifiés",
     "home.benefits.verified.desc": "Guides vérifiés par des experts et mis à jour selon les règles",
+    "home.features.verified.cta": "Qui vérifie le contenu",
     
     "home.section.testimonials.title": "Ce que disent nos étudiants",
     "home.section.testimonials.subtitle": "Avis réels d'étudiants internationaux qui utilisent déjà notre plateforme",
@@ -2802,6 +2819,7 @@ const translations: Record<Language, Record<string, string>> = {
     "home.section.about.author.subtitle": "ancien étudiant étranger",
     "home.section.about.author.fact1": "A étudié dans une université russe",
     "home.section.about.author.fact2": "De la première arrivée au diplôme",
+    "home.section.about.summary": "J’ai vécu tout le parcours d’étudiant étranger en Russie — de l’arrivée au diplôme. Je connais les documents, les échéances et le stress des réponses floues. AdaptEd Russia existe pour vous simplifier la vie.",
     "home.section.about.experience.title": "Parcours",
     "home.section.about.experience.p1": "J’ai étudié en Russie comme étudiant étranger et j’ai traversé tout le parcours,",
     "home.section.about.experience.p2.prefix": "de mon arrivée en Russie",
@@ -3579,6 +3597,7 @@ const translations: Record<Language, Record<string, string>> = {
     "home.contentProof.guides": "{count} دليل",
     "home.contentProof.languages": "{count} لغات",
     "home.contentProof.ai": "مساعد الذكاء الاصطناعي",
+    "home.contentProof.pricingLink": "الأسعار",
     "home.cta.login": "تسجيل الدخول",
 
     // Life Guide - Categories & Emergency Contacts
@@ -3780,6 +3799,9 @@ const translations: Record<Language, Record<string, string>> = {
     "home.section.features.badge": "الميزات الرئيسية للمنصة",
     "home.section.howItWorks.title": "كيف تعمل المنصة",
     "home.section.howItWorks.subtitle": "ثلاثة سيناريوهات رئيسية: سؤال الطالب، إجابة الذكاء الاصطناعي، الانتقال إلى الأدلة، ودعم المجتمع.",
+    "home.section.howItWorks.step1.caption": "اسأل الذكاء الاصطناعي بلغتك",
+    "home.section.howItWorks.step2.caption": "افتح دليلاً خطوة بخطوة",
+    "home.section.howItWorks.step3.caption": "اسأل المجتمع",
     "home.mock.community.tab.questions": "أسئلة",
     "home.mock.community.tab.answers": "إجابات",
     "home.mock.community.tab.members": "أعضاء",
@@ -3798,6 +3820,7 @@ const translations: Record<Language, Record<string, string>> = {
     "home.benefits.messengers.desc": "استقبل الإشعارات على Telegram و WhatsApp وتطبيقات أخرى",
     "home.benefits.verified": "مواد تم التحقق منها",
     "home.benefits.verified.desc": "أدلة مراجَعة من خبراء ومحدّثة مع تغيّر القوانين",
+    "home.features.verified.cta": "من يراجع المحتوى",
     
     "home.section.testimonials.title": "ماذا يقول طلابنا",
     "home.section.testimonials.subtitle": "آراء حقيقية من الطلاب الدوليين الذين يستخدمون بالفعل منصتنا",
@@ -3820,6 +3843,7 @@ const translations: Record<Language, Record<string, string>> = {
     "home.section.about.author.subtitle": "طالب دولي سابق",
     "home.section.about.author.fact1": "درس في جامعة روسية",
     "home.section.about.author.fact2": "من الوصول الأول حتى التخرج",
+    "home.section.about.summary": "مررتُ بكل مراحل الطالب الدولي في روسيا — من الوصول حتى التخرج. أعرف المستندات والمواعيد والضغط عندما لا توجد إجابات واضحة. AdaptEd Russia وُجد ليجعل الأمر أسهل لك.",
     "home.section.about.experience.title": "التجربة",
     "home.section.about.experience.p1": "لقد درست في روسيا كطالب دولي ومررت بكل الطريق،",
     "home.section.about.experience.p2.prefix": "من أول وصول لي",
@@ -4704,6 +4728,7 @@ const translations: Record<Language, Record<string, string>> = {
     "home.contentProof.guides": "{count} 篇指南",
     "home.contentProof.languages": "{count} 种语言",
     "home.contentProof.ai": "AI 助手",
+    "home.contentProof.pricingLink": "定价",
     "home.cta.login": "登录",
 
     // Life Guide - Categories & Emergency Contacts
@@ -4905,6 +4930,9 @@ const translations: Record<Language, Record<string, string>> = {
     "home.section.features.badge": "平台核心功能",
     "home.section.howItWorks.title": "平台如何运作",
     "home.section.howItWorks.subtitle": "三个核心场景：学生提问、AI 回答、跳转到指南并得到社区支持。",
+    "home.section.howItWorks.step1.caption": "用您的语言向 AI 提问",
+    "home.section.howItWorks.step2.caption": "打开分步指南",
+    "home.section.howItWorks.step3.caption": "向社区提问",
     "home.mock.community.tab.questions": "问题",
     "home.mock.community.tab.answers": "回答",
     "home.mock.community.tab.members": "成员",
@@ -4923,6 +4951,7 @@ const translations: Record<Language, Record<string, string>> = {
     "home.benefits.messengers.desc": "在 Telegram、WhatsApp 和其他应用中接收通知",
     "home.benefits.verified": "已验证的材料",
     "home.benefits.verified.desc": "指南经专家审核，并随规则变化更新",
+    "home.features.verified.cta": "谁审核内容",
     
     "home.section.testimonials.title": "我们的学生怎么说",
     "home.section.testimonials.subtitle": "来自已经在使用我们平台的外国学生的真实评价",
@@ -4945,6 +4974,7 @@ const translations: Record<Language, Record<string, string>> = {
     "home.section.about.author.subtitle": "前国际学生",
     "home.section.about.author.fact1": "曾在俄罗斯大学学习",
     "home.section.about.author.fact2": "从抵俄到毕业的全过程",
+    "home.section.about.summary": "我亲身走过了在俄罗斯留学的全过程——从抵俄到毕业。我懂文件、截止日期，以及找不到清晰答案时的压力。AdaptEd Russia 就是为了让这一切更简单。",
     "home.section.about.experience.title": "经历",
     "home.section.about.experience.p1": "我曾以国际学生身份在俄罗斯学习，也亲身走完整个过程，",
     "home.section.about.experience.p2.prefix": "从第一次来到俄罗斯",
