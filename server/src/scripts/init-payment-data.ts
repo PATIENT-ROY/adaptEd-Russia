@@ -25,7 +25,7 @@ async function initPaymentData() {
       },
       {
         name: 'Премиум (месяц)',
-        price: 299,
+        price: 199,
         currency: 'RUB',
         interval: 'MONTHLY',
         features: JSON.stringify([

@@ -55,7 +55,7 @@ export const getPayment = async (paymentId: string) => {
     id: paymentId,
     status: 'succeeded',
     amount: {
-      value: '299.00',
+      value: '199.00',
       currency: 'RUB',
     },
     description: 'Test payment',
@@ -87,7 +87,7 @@ export const checkPaymentStatus = async (paymentId: string) => {
     id: paymentId,
     status: 'succeeded',
     amount: {
-      value: '299.00',
+      value: '199.00',
       currency: 'RUB',
     },
     description: 'Test payment',

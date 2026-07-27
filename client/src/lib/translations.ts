@@ -272,7 +272,7 @@ const translations: Record<Language, Record<string, string>> = {
     "home.pricing.freemium": "Базовый",
     "home.pricing.freemium.price": "Бесплатно",
     "home.pricing.premium": "Премиум",
-    "home.pricing.premium.price": "299₽/мес",
+    "home.pricing.premium.price": "199₽/мес",
     
     "home.cta.title": "Готовы начать адаптацию?",
     "home.cta.subtitle": "Получите доступ к образовательным гайдам, AI-помощнику и сообществу студентов.",
@@ -1507,7 +1507,7 @@ const translations: Record<Language, Record<string, string>> = {
     "home.pricing.freemium": "Freemium",
     "home.pricing.freemium.price": "Free",
     "home.pricing.premium": "Premium",
-    "home.pricing.premium.price": "299₽/mo",
+    "home.pricing.premium.price": "199₽/mo",
     
     "home.cta.title": "Ready to start adapting?",
     "home.cta.subtitle": "Get access to educational guides, AI assistant, and student community.",
@@ -2743,7 +2743,7 @@ const translations: Record<Language, Record<string, string>> = {
     "home.pricing.freemium": "Basique",
     "home.pricing.freemium.price": "Gratuit",
     "home.pricing.premium": "Premium",
-    "home.pricing.premium.price": "299₽/mois",
+    "home.pricing.premium.price": "199₽/mois",
     
     "home.cta.title": "Prêt à commencer votre adaptation?",
     "home.cta.subtitle": "Accédez aux guides éducatifs, à l'assistant IA et à la communauté d'étudiants.",
@@ -3909,7 +3909,7 @@ const translations: Record<Language, Record<string, string>> = {
     "home.pricing.freemium": "فريميوم",
     "home.pricing.freemium.price": "مجاني",
     "home.pricing.premium": "بريميوم",
-    "home.pricing.premium.price": "299₽/شهر",
+    "home.pricing.premium.price": "199₽/شهر",
     
     "home.cta.title": "مستعد لبدء التكيف؟",
     "home.cta.subtitle": "احصل على وصول إلى الأدلة التعليمية، ومساعد الذكاء الاصطناعي، ومجتمع الطلاب.",
@@ -5139,7 +5139,7 @@ const translations: Record<Language, Record<string, string>> = {
     "home.pricing.freemium": "免费版",
     "home.pricing.freemium.price": "免费",
     "home.pricing.premium": "高级版",
-    "home.pricing.premium.price": "299₽/月",
+    "home.pricing.premium.price": "199₽/月",
     
     "home.cta.title": "准备好开始适应了吗？",
     "home.cta.subtitle": "获取教育指南、AI 助手和学生社区的访问权限。",
