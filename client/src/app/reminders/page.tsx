@@ -1278,7 +1278,7 @@ function RemindersContent() {
               {completedReminders.length === 0 ? (
                 <Card>
                   <CardContent className="p-6 text-center text-gray-600">
-                    Пока нет завершённых напоминаний.
+                    {t("reminders.empty.completed")}
                   </CardContent>
                 </Card>
               ) : (

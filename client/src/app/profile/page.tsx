@@ -61,6 +61,7 @@ import {
   ProfileOverview,
   ProfileQuickAction,
   Role,
+  Language,
 } from "@/types";
 import { useReview } from "@/hooks/useReview";
 
@@ -84,49 +85,48 @@ interface ExtendedUser extends UserType {
   country?: string;
 }
 
-const fallbackQuickActions: ProfileQuickAction[] = [
-  {
-    id: "education-guide",
-    title: "Образовательный навигатор",
-    description: "Гайды по образовательной системе",
-    icon: "BookOpen",
-    color: "from-blue-500 to-blue-600",
-    href: "/education-guide",
-  },
-  {
-    id: "smart-reminders",
-    title: "Умные заметки и напоминания",
-    description: "Заметки + AI автоматически создаёт напоминания",
-    icon: "Sparkles",
-    color: "from-purple-500 to-indigo-600",
-    href: "/reminders",
-  },
-  {
-    id: "ai-assistant",
-    title: "AI Помощник",
-    description: "3 режима + Шаблоны для курсовых, резюме, писем",
-    icon: "MessageSquare",
-    color: "from-orange-500 to-orange-600",
-    href: "/ai-helper",
-  },
-  {
-    id: "docscan",
-    title: "DocScan",
-    description: "OCR из PDF и фото, перевод и экспорт",
-    icon: "ScanLine",
-    color: "from-indigo-500 to-indigo-600",
-    href: "/docscan",
-  },
-  {
-    id: "support",
-    title: "Поддержка",
-    description: "Помощь и консультации",
-    icon: "HelpCircle",
-    color: "from-green-500 to-green-600",
-    href: "/support",
-  },
-];
+const getLocaleByLanguage = (language?: Language): string => {
+  const map: Record<string, string> = {
+    [Language.EN]: "en-US",
+    [Language.FR]: "fr-FR",
+    [Language.AR]: "ar",
+    [Language.ZH]: "zh-CN",
+    [Language.RU]: "ru-RU",
+  };
+  return (language && map[language]) || "ru-RU";
+};
 
+const formatRelativeTime = (timestamp: string, locale: string) => {
+  const relativeTimeFormatter = new Intl.RelativeTimeFormat(locale, {
+    numeric: "auto",
+  });
+  const date = new Date(timestamp);
+  const now = new Date();
+  const diffInSeconds = Math.round((date.getTime() - now.getTime()) / 1000);
+  const diffInMinutes = Math.round(diffInSeconds / 60);
+  const diffInHours = Math.round(diffInMinutes / 60);
+  const diffInDays = Math.round(diffInHours / 24);
+
+  if (Math.abs(diffInSeconds) < 60) {
+    return relativeTimeFormatter.format(diffInSeconds, "second");
+  }
+  if (Math.abs(diffInMinutes) < 60) {
+    return relativeTimeFormatter.format(diffInMinutes, "minute");
+  }
+  if (Math.abs(diffInHours) < 24) {
+    return relativeTimeFormatter.format(diffInHours, "hour");
+  }
+  if (Math.abs(diffInDays) < 7) {
+    return relativeTimeFormatter.format(diffInDays, "day");
+  }
+
+  return date.toLocaleString(locale, {
+    day: "2-digit",
+    month: "long",
+    hour: "2-digit",
+    minute: "2-digit",
+  });
+};
 const profileCardClass = "border-0 shadow-xl";
 const profileCardStyle = {
   background:
@@ -166,39 +166,6 @@ const activityGradientMap: Record<string, string> = {
 
 const getIconByName = (iconName: string) =>
   iconMap[iconName as keyof typeof iconMap] ?? Activity;
-
-const relativeTimeFormatter = new Intl.RelativeTimeFormat("ru", {
-  numeric: "auto",
-});
-
-const formatRelativeTime = (timestamp: string) => {
-  const date = new Date(timestamp);
-  const now = new Date();
-  const diffInSeconds = Math.round((date.getTime() - now.getTime()) / 1000);
-  const diffInMinutes = Math.round(diffInSeconds / 60);
-  const diffInHours = Math.round(diffInMinutes / 60);
-  const diffInDays = Math.round(diffInHours / 24);
-
-  if (Math.abs(diffInSeconds) < 60) {
-    return relativeTimeFormatter.format(diffInSeconds, "second");
-  }
-  if (Math.abs(diffInMinutes) < 60) {
-    return relativeTimeFormatter.format(diffInMinutes, "minute");
-  }
-  if (Math.abs(diffInHours) < 24) {
-    return relativeTimeFormatter.format(diffInHours, "hour");
-  }
-  if (Math.abs(diffInDays) < 7) {
-    return relativeTimeFormatter.format(diffInDays, "day");
-  }
-
-  return date.toLocaleString("ru-RU", {
-    day: "2-digit",
-    month: "long",
-    hour: "2-digit",
-    minute: "2-digit",
-  });
-};
 
 const normalizeRole = (role?: string): Role => {
   switch ((role ?? "").toUpperCase()) {
@@ -251,12 +218,12 @@ function SettingsPanel({
   isOpen,
   onToggle,
   onLogout,
-  showToast,
+  t,
 }: {
   isOpen: boolean;
   onToggle: () => void;
   onLogout: () => void;
-  showToast: (msg: string) => void;
+  t: (key: string) => string;
 }) {
   return (
     <Card
@@ -274,7 +241,7 @@ function SettingsPanel({
             <div className="w-10 h-10 rounded-2xl bg-gradient-to-br from-slate-400 to-slate-600 flex items-center justify-center shadow-lg">
               <Settings className="h-5 w-5 text-white" />
             </div>
-            <span className="text-xl font-bold">Настройки</span>
+            <span className="text-xl font-bold">{t("profile.settings.title")}</span>
           </div>
           <div
             className={`transition-transform duration-300 ${isOpen ? "rotate-180" : ""}`}
@@ -291,36 +258,39 @@ function SettingsPanel({
         <CardContent className="space-y-3 pb-6">
           <Button
             variant="outline"
-            className="w-full justify-start h-12 hover:bg-slate-50 transition-all duration-300"
-            onClick={() =>
-              showToast("Функция уведомлений скоро будет доступна")
-            }
+            disabled
+            title={t("profile.settings.comingSoon")}
+            className="w-full justify-start h-12 opacity-60 cursor-not-allowed"
           >
             <Bell className="mr-3 h-5 w-5" />
-            Уведомления
-            <ChevronRight className="ml-auto h-4 w-4" />
+            {t("profile.settings.notifications")}
+            <span className="ml-auto text-xs text-slate-400">
+              {t("profile.settings.comingSoon")}
+            </span>
           </Button>
           <Button
             variant="outline"
-            className="w-full justify-start h-12 hover:bg-slate-50 transition-all duration-300"
-            onClick={() =>
-              showToast("Функция безопасности скоро будет доступна")
-            }
+            disabled
+            title={t("profile.settings.comingSoon")}
+            className="w-full justify-start h-12 opacity-60 cursor-not-allowed"
           >
             <Shield className="mr-3 h-5 w-5" />
-            Безопасность
-            <ChevronRight className="ml-auto h-4 w-4" />
+            {t("profile.settings.security")}
+            <span className="ml-auto text-xs text-slate-400">
+              {t("profile.settings.comingSoon")}
+            </span>
           </Button>
           <Button
             variant="outline"
-            className="w-full justify-start h-12 hover:bg-red-50 hover:text-red-700 transition-all duration-300 border-red-200 text-red-600"
-            onClick={() =>
-              showToast("Функция удаления аккаунта скоро будет доступна")
-            }
+            disabled
+            title={t("profile.settings.comingSoon")}
+            className="w-full justify-start h-12 opacity-60 cursor-not-allowed border-red-200 text-red-600"
           >
             <Trash2 className="mr-3 h-5 w-5" />
-            Удалить аккаунт
-            <ChevronRight className="ml-auto h-4 w-4" />
+            {t("profile.settings.deleteAccount")}
+            <span className="ml-auto text-xs text-slate-400">
+              {t("profile.settings.comingSoon")}
+            </span>
           </Button>
           <Button
             variant="outline"
@@ -328,7 +298,7 @@ function SettingsPanel({
             className="w-full justify-start h-12 hover:bg-slate-50 transition-all duration-300"
           >
             <LogOut className="mr-3 h-5 w-5" />
-            Выйти
+            {t("profile.settings.logout")}
             <ChevronRight className="ml-auto h-4 w-4" />
           </Button>
         </CardContent>
@@ -355,7 +325,7 @@ export default function ProfilePage() {
   const avatarInputRef = useRef<HTMLInputElement>(null);
   const paymentSyncAttemptedRef = useRef(false);
   const { user, logout, updateProfile, syncUser } = useAuth();
-  const { t } = useTranslation();
+  const { t, currentLanguage } = useTranslation();
   const {
     review,
     loading: reviewLoading,
@@ -364,6 +334,54 @@ export default function ProfilePage() {
     saveError: reviewSaveError,
     createOrUpdate: saveReview,
   } = useReview();
+
+  const locale = getLocaleByLanguage(currentLanguage);
+
+  const fallbackQuickActions = useMemo<ProfileQuickAction[]>(
+    () => [
+      {
+        id: "education-guide",
+        title: t("profile.quickAction.educationGuide.title"),
+        description: t("profile.quickAction.educationGuide.desc"),
+        icon: "BookOpen",
+        color: "from-blue-500 to-blue-600",
+        href: "/education-guide",
+      },
+      {
+        id: "smart-reminders",
+        title: t("profile.quickAction.reminders.title"),
+        description: t("profile.quickAction.reminders.desc"),
+        icon: "Sparkles",
+        color: "from-purple-500 to-indigo-600",
+        href: "/reminders",
+      },
+      {
+        id: "ai-assistant",
+        title: t("profile.quickAction.ai.title"),
+        description: t("profile.quickAction.ai.desc"),
+        icon: "MessageSquare",
+        color: "from-orange-500 to-orange-600",
+        href: "/ai-helper",
+      },
+      {
+        id: "docscan",
+        title: t("profile.quickAction.docscan.title"),
+        description: t("profile.quickAction.docscan.desc"),
+        icon: "ScanLine",
+        color: "from-indigo-500 to-indigo-600",
+        href: "/docscan",
+      },
+      {
+        id: "support",
+        title: t("profile.quickAction.support.title"),
+        description: t("profile.quickAction.support.desc"),
+        icon: "HelpCircle",
+        color: "from-green-500 to-green-600",
+        href: "/support",
+      },
+    ],
+    [t],
+  );
 
   const showToast = useCallback((msg: string) => {
     setToastMessage(msg);
@@ -401,11 +419,11 @@ export default function ProfilePage() {
     setAvatarError(null);
 
     if (!file.type.startsWith("image/")) {
-      setAvatarError("Выберите изображение (PNG, JPEG, WebP)");
+      setAvatarError(t("profile.avatar.invalidType"));
       return;
     }
     if (file.size > 5_000_000) {
-      setAvatarError("Файл слишком большой. Максимум 5MB.");
+      setAvatarError(t("profile.avatar.tooLarge"));
       return;
     }
 
@@ -423,12 +441,12 @@ export default function ProfilePage() {
       });
       if (res.ok) {
         setAvatarUrl(base64);
-        showToast("Аватар обновлён");
+        showToast(t("profile.avatar.updated"));
       } else {
-        setAvatarError("Не удалось загрузить аватар");
+        setAvatarError(t("profile.avatar.uploadFailed"));
       }
     } catch {
-      setAvatarError("Ошибка при загрузке аватара");
+      setAvatarError(t("profile.avatar.uploadError"));
     } finally {
       setIsUploadingAvatar(false);
     }
@@ -479,13 +497,11 @@ export default function ProfilePage() {
       }
     } catch (error) {
       console.error("Failed to load profile overview:", error);
-      setProfileError(
-        "Не удалось загрузить данные профиля. Попробуйте обновить страницу.",
-      );
+      setProfileError(t("profile.error.loadFailed"));
     } finally {
       setIsProfileLoading(false);
     }
-  }, [user, syncUser]);
+  }, [user, syncUser, t]);
 
   useEffect(() => {
     loadProfileOverview();
@@ -528,8 +544,8 @@ export default function ProfilePage() {
   if (!user || !mergedUser) {
     return (
       <Layout>
-        <div className="min-h-screen bg-gradient-to-br from-slate-50 via-blue-50 to-indigo-50 rounded-2xl sm:rounded-3xl mx-4 sm:mx-6 lg:mx-8 my-4 sm:my-6 lg:my-8 overflow-hidden">
-          <div className="relative overflow-hidden bg-gradient-to-br from-blue-600 via-purple-600 to-indigo-700 py-8 sm:py-12 md:py-16 rounded-2xl sm:rounded-3xl mx-4 sm:mx-6 lg:mx-8 mt-4 sm:mt-6 mb-6 sm:mb-8 lg:mb-10">
+        <div className="min-h-screen bg-gradient-to-br from-slate-50 via-blue-50 to-indigo-50 rounded-2xl sm:rounded-3xl overflow-hidden">
+          <div className="relative overflow-hidden bg-gradient-to-br from-blue-600 via-purple-600 to-indigo-700 py-8 sm:py-12 md:py-16 rounded-2xl sm:rounded-3xl mb-6 sm:mb-8">
             <div className="relative max-w-7xl mx-auto px-3 sm:px-4 lg:px-6">
               <div className="flex flex-col lg:flex-row items-center space-y-4 sm:space-y-6 lg:space-y-0 lg:space-x-8">
                 <div className="w-20 h-20 sm:w-24 sm:h-24 md:w-28 md:h-28 lg:w-32 lg:h-32 rounded-full bg-gray-300 animate-pulse" />
@@ -585,15 +601,16 @@ export default function ProfilePage() {
   const quickActionsToRender =
     profileOverview?.quickActions ?? fallbackQuickActions;
 
-  const reviewCardTitle = review ? "Редактировать отзыв" : "Оставить отзыв";
-  const reviewCardDescription =
-    !review
-      ? "Поделитесь своим мнением"
-      : review.status === "PENDING"
-        ? "Проверка обычно занимает до 24 часов"
-        : review.status === "APPROVED"
-          ? "Спасибо! Отзыв виден на главной"
-          : "Исправьте текст и отправьте заново";
+  const reviewCardTitle = review
+    ? t("profile.quickAction.editReview")
+    : t("profile.quickAction.leaveReview");
+  const reviewCardDescription = !review
+    ? t("profile.quickAction.reviewDesc.new")
+    : review.status === "PENDING"
+      ? t("profile.quickAction.reviewDesc.pending")
+      : review.status === "APPROVED"
+        ? t("profile.quickAction.reviewDesc.approved")
+        : t("profile.quickAction.reviewDesc.rejected");
 
   const customQuickActions = [
     {
@@ -615,9 +632,9 @@ export default function ProfilePage() {
 
   return (
     <Layout>
-      <div className="min-h-screen bg-gradient-to-br from-slate-50 via-blue-50 to-indigo-50 rounded-2xl sm:rounded-3xl mx-4 sm:mx-6 lg:mx-8 my-4 sm:my-6 lg:my-8 overflow-hidden">
+      <div className="min-h-screen bg-gradient-to-br from-slate-50 via-blue-50 to-indigo-50 rounded-2xl sm:rounded-3xl overflow-hidden">
         {/* Hero Section */}
-        <div className="relative overflow-hidden bg-gradient-to-br from-blue-600 via-purple-600 to-indigo-700 py-5 sm:py-10 md:py-14 rounded-2xl sm:rounded-3xl mx-4 sm:mx-6 lg:mx-8 mt-4 sm:mt-6 mb-6 sm:mb-8 lg:mb-10">
+        <div className="relative overflow-hidden bg-gradient-to-br from-blue-600 via-purple-600 to-indigo-700 py-5 sm:py-10 md:py-14 rounded-2xl sm:rounded-3xl mb-6 sm:mb-8">
           <div className="absolute inset-0 bg-black/10" />
           <div
             className="absolute inset-0"
@@ -630,7 +647,7 @@ export default function ProfilePage() {
             <div className="flex flex-col lg:flex-row items-center space-y-3 sm:space-y-6 lg:space-y-0 lg:space-x-8">
               {/* Avatar */}
               <div className="relative group">
-                <div className="w-18 h-18 sm:w-24 sm:h-24 md:w-28 md:h-28 lg:w-32 lg:h-32 rounded-full bg-gradient-to-br from-white/20 to-white/10 backdrop-blur-sm border-4 border-white/30 flex items-center justify-center text-white text-2xl sm:text-3xl md:text-4xl lg:text-5xl font-bold shadow-2xl overflow-hidden">
+                <div className="w-20 h-20 sm:w-24 sm:h-24 md:w-28 md:h-28 lg:w-32 lg:h-32 rounded-full bg-gradient-to-br from-white/20 to-white/10 backdrop-blur-sm border-4 border-white/30 flex items-center justify-center text-white text-2xl sm:text-3xl md:text-4xl lg:text-5xl font-bold shadow-2xl overflow-hidden">
                   {avatarUrl ? (
                     <Image
                       src={avatarUrl}
@@ -646,8 +663,8 @@ export default function ProfilePage() {
                 <button
                   onClick={() => avatarInputRef.current?.click()}
                   disabled={isUploadingAvatar}
-                  aria-label="Загрузить аватар"
-                  className="absolute inset-0 w-18 h-18 sm:w-24 sm:h-24 md:w-28 md:h-28 lg:w-32 lg:h-32 rounded-full bg-black/0 group-hover:bg-black/40 flex items-center justify-center transition-all duration-200 cursor-pointer"
+                  aria-label={t("profile.avatar.uploadAria")}
+                  className="absolute inset-0 w-20 h-20 sm:w-24 sm:h-24 md:w-28 md:h-28 lg:w-32 lg:h-32 rounded-full bg-black/0 group-hover:bg-black/40 flex items-center justify-center transition-all duration-200 cursor-pointer"
                 >
                   <Camera className="h-6 w-6 sm:h-8 sm:w-8 text-white opacity-0 group-hover:opacity-100 transition-opacity duration-200" />
                 </button>
@@ -673,7 +690,7 @@ export default function ProfilePage() {
                   {user.name}
                 </h1>
                 <p className="text-xs sm:text-base md:text-lg lg:text-xl text-white/80 mb-2 sm:mb-4">
-                  {extendedUser.university || "Университет не указан"}
+                  {extendedUser.university || t("profile.hero.universityMissing")}
                   {extendedUser.country && (
                     <span className="ml-2 text-white/60">
                       &middot; {extendedUser.country}
@@ -691,11 +708,11 @@ export default function ProfilePage() {
                 <div className="flex flex-wrap justify-center lg:justify-start gap-1.5 sm:gap-3 md:gap-4 text-xs sm:text-sm md:text-base">
                   <span className="inline-flex items-center px-2 sm:px-3 md:px-4 py-1 md:py-2 rounded-full bg-white/20 backdrop-blur-sm">
                     <GraduationCap className="mr-1 sm:mr-2 h-3 w-3 sm:h-4 sm:w-4 md:h-5 md:w-5" />
-                    {extendedUser.faculty || "Факультет не указан"}
+                    {extendedUser.faculty || t("profile.hero.facultyMissing")}
                   </span>
                   <span className="inline-flex items-center px-2 sm:px-3 md:px-4 py-1 md:py-2 rounded-full bg-white/20 backdrop-blur-sm">
                     <Calendar className="mr-1 sm:mr-2 h-3 w-3 sm:h-4 sm:w-4 md:h-5 md:w-5" />
-                    {extendedUser.year || "Курс не указан"}
+                    {extendedUser.year || t("profile.hero.yearMissing")}
                   </span>
                   {extendedUser.plan === Plan.PREMIUM ? (
                     <span className="inline-flex items-center px-2 sm:px-3 md:px-4 py-1 md:py-2 rounded-full bg-gradient-to-r from-yellow-400 to-orange-500">
@@ -704,7 +721,7 @@ export default function ProfilePage() {
                     </span>
                   ) : (
                     <span className="inline-flex items-center gap-2">
-                      <span className="inline-flex items-center px-2 sm:px-3 md:px-4 py-1 md:py-2 rounded-full bg-red-500 text-white border-2 border-red-600">
+                      <span className="inline-flex items-center px-2 sm:px-3 md:px-4 py-1 md:py-2 rounded-full bg-white/20 backdrop-blur-sm text-white border border-white/30">
                         <Zap className="mr-1 sm:mr-2 h-3 w-3 sm:h-4 sm:w-4 md:h-5 md:w-5" />
                         {t("home.pricing.freemium")}
                       </span>
@@ -716,15 +733,19 @@ export default function ProfilePage() {
                           onClick={async () => {
                             try {
                               await fixMyPlan();
-                              showToast("Премиум применён!");
+                              showToast(t("profile.plan.premiumApplied"));
                               await loadProfileOverview();
                               setTimeout(() => window.location.reload(), 500);
                             } catch (e) {
-                              showToast(e instanceof Error ? e.message : "Ошибка");
+                              showToast(
+                                e instanceof Error
+                                  ? e.message
+                                  : t("profile.error.generic"),
+                              );
                             }
                           }}
                         >
-                          Исправить план
+                          {t("profile.plan.fixPlan")}
                         </Button>
                       )}
                     </span>
@@ -788,20 +809,29 @@ export default function ProfilePage() {
           )}
           <div>
             <h2 className="text-xl sm:text-2xl font-bold text-slate-900 mb-4 sm:mb-6">
-              Быстрые действия
+              {t("profile.quickActions.title")}
             </h2>
-            <div className="grid grid-cols-2 lg:grid-cols-3 gap-1.5 sm:gap-4 lg:gap-6">
+            <div className="grid grid-cols-1 sm:grid-cols-2 lg:grid-cols-3 gap-3 sm:gap-4 lg:gap-6">
               {customQuickActions.map((action) => {
                 const Icon = getIconByName(action.icon);
                 const isReviewAction = action.id === "leave-review";
                 const reviewStatus = "reviewStatus" in action ? (action as { reviewStatus?: string }).reviewStatus : undefined;
                 const statusBadge =
                   reviewStatus === "PENDING"
-                    ? { label: "На модерации", className: "bg-amber-100 text-amber-800" }
+                    ? {
+                        label: t("profile.review.badge.pending"),
+                        className: "bg-amber-100 text-amber-800",
+                      }
                     : reviewStatus === "APPROVED"
-                      ? { label: "Опубликован", className: "bg-green-100 text-green-800" }
+                      ? {
+                          label: t("profile.review.badge.approved"),
+                          className: "bg-green-100 text-green-800",
+                        }
                       : reviewStatus === "REJECTED"
-                        ? { label: "Отклонён", className: "bg-red-100 text-red-800" }
+                        ? {
+                            label: t("profile.review.badge.rejected"),
+                            className: "bg-red-100 text-red-800",
+                          }
                         : null;
                 const card = (
                   <Card
@@ -810,7 +840,7 @@ export default function ProfilePage() {
                     }`}
                     style={profileCardStyle}
                   >
-                    <CardContent className="p-2.5 sm:p-6 relative z-10 flex flex-col h-full">
+                    <CardContent className="p-4 sm:p-6 relative z-10 flex flex-col h-full">
                       {statusBadge && (
                         <span
                           className={`absolute top-2.5 right-2.5 sm:top-4 sm:right-4 inline-flex items-center px-2 py-0.5 rounded-full text-xs font-medium ${statusBadge.className}`}
@@ -819,19 +849,19 @@ export default function ProfilePage() {
                         </span>
                       )}
                       <div
-                        className={`w-9 h-9 sm:w-14 sm:h-14 md:w-16 md:h-16 rounded-lg sm:rounded-2xl bg-gradient-to-br ${action.color} flex items-center justify-center mb-1.5 sm:mb-4 shadow-lg flex-shrink-0`}
+                        className={`w-11 h-11 sm:w-14 sm:h-14 md:w-16 md:h-16 rounded-xl sm:rounded-2xl bg-gradient-to-br ${action.color} flex items-center justify-center mb-3 sm:mb-4 shadow-lg flex-shrink-0`}
                       >
-                        <Icon className="h-4 w-4 sm:h-7 sm:w-7 md:h-8 md:w-8 text-white" />
+                        <Icon className="h-5 w-5 sm:h-7 sm:w-7 md:h-8 md:w-8 text-white" />
                       </div>
-                      <h3 className="text-xs sm:text-lg lg:text-xl font-bold text-slate-900 mb-1 sm:mb-2 flex-shrink-0 leading-tight line-clamp-2 pr-16 sm:pr-20">
+                      <h3 className="text-sm sm:text-lg lg:text-xl font-bold text-slate-900 mb-1.5 sm:mb-2 flex-shrink-0 leading-snug line-clamp-2 pr-16 sm:pr-20">
                         {action.title}
                       </h3>
-                      <p className="text-[11px] sm:text-sm lg:text-base text-slate-600 flex-grow overflow-hidden line-clamp-4 sm:line-clamp-none leading-snug">
+                      <p className="text-sm sm:text-base text-slate-600 flex-grow leading-relaxed">
                         {action.description}
                       </p>
                       {review?.status === "APPROVED" && isReviewAction && (
                         <p className="mt-2 text-sm text-green-700 bg-green-50 rounded-lg px-2 py-1.5">
-                          Ваш отзыв опубликован
+                          {t("profile.review.status.approved")}
                         </p>
                       )}
                     </CardContent>
@@ -868,7 +898,7 @@ export default function ProfilePage() {
             saveError={reviewSaveError}
             onSave={async (data) => {
               await saveReview(data);
-              showToast("Отзыв отправлен на модерацию");
+              showToast(t("profile.review.submitted"));
               setTimeout(() => setIsReviewModalOpen(false), 800);
             }}
           />
@@ -879,7 +909,7 @@ export default function ProfilePage() {
           <div>
             <div className="flex flex-col sm:flex-row sm:items-center sm:justify-between gap-3 sm:gap-0 mb-4 sm:mb-6">
               <h2 className="text-xl sm:text-2xl font-bold text-slate-900">
-                История платежей
+                {t("profile.billing.title")}
               </h2>
               <div className="flex flex-col sm:flex-row items-stretch sm:items-center gap-2 sm:gap-3">
                 <Button
@@ -892,7 +922,9 @@ export default function ProfilePage() {
                 >
                   <Receipt className="h-4 w-4" />
                   <span>
-                    {isBillingHistoryOpen ? "Скрыть" : "Показать"}
+                    {isBillingHistoryOpen
+                      ? t("profile.billing.hide")
+                      : t("profile.billing.show")}
                   </span>
                   <ChevronDown
                     className={`h-4 w-4 transition-transform duration-300 ${
@@ -907,7 +939,7 @@ export default function ProfilePage() {
                   >
                     <CreditCard className="h-4 w-4" />
                     <span className="whitespace-nowrap">
-                      Управление подпиской
+                      {t("profile.billing.manageSubscription")}
                     </span>
                   </Button>
                 </Link>
@@ -921,16 +953,16 @@ export default function ProfilePage() {
                     <div className="w-10 h-10 rounded-2xl bg-gradient-to-br from-green-500 to-emerald-600 flex items-center justify-center shadow-lg">
                       <Receipt className="h-5 w-5 text-white" />
                     </div>
-                    <span>Счета и платежи</span>
+                    <span>{t("profile.billing.invoicesTitle")}</span>
                   </CardTitle>
                 </CardHeader>
                 <CardContent>
                   {billingHistoryData.length === 0 ? (
                     <div className="text-center py-8 text-slate-500">
                       <Receipt className="h-10 w-10 mx-auto mb-3 text-slate-300" />
-                      <p className="font-medium">Нет истории платежей</p>
+                      <p className="font-medium">{t("profile.billing.empty.title")}</p>
                       <p className="text-sm mt-1">
-                        Платежи появятся здесь после оформления подписки
+                        {t("profile.billing.empty.desc")}
                       </p>
                     </div>
                   ) : (
@@ -971,9 +1003,7 @@ export default function ProfilePage() {
                                     &middot;
                                   </span>
                                   <span className="truncate">
-                                    {new Date(
-                                      invoice.date,
-                                    ).toLocaleDateString("ru-RU")}
+                                    {new Date(invoice.date).toLocaleDateString(locale)}
                                   </span>
                                 </div>
                               </div>
@@ -991,15 +1021,15 @@ export default function ProfilePage() {
                                   }`}
                                 >
                                   {invoice.status === "free"
-                                    ? "Бесплатно"
+                                    ? t("profile.billing.amount.free")
                                     : `${invoice.amount} ₽`}
                                 </p>
                                 <p className="text-xs sm:text-sm text-slate-500 capitalize">
                                   {invoice.status === "paid"
-                                    ? "Оплачено"
+                                    ? t("profile.billing.status.paid")
                                     : invoice.status === "free"
-                                      ? "Активен"
-                                      : "В ожидании"}
+                                      ? t("profile.billing.status.active")
+                                      : t("profile.billing.status.pending")}
                                 </p>
                               </div>
 
@@ -1012,26 +1042,27 @@ export default function ProfilePage() {
                                     onClick={async () => {
                                       try {
                                         await applyPremium(invoice.id);
-                                        showToast("Премиум применён!");
+                                        showToast(t("profile.plan.premiumApplied"));
                                         await loadProfileOverview();
                                         setTimeout(() => window.location.reload(), 500);
                                       } catch (e) {
-                                        showToast(e instanceof Error ? e.message : "Ошибка");
+                                        showToast(
+                                          e instanceof Error
+                                            ? e.message
+                                            : t("profile.error.generic"),
+                                        );
                                       }
                                     }}
                                   >
-                                    Применить Premium
+                                    {t("profile.billing.applyPremium")}
                                   </Button>
                                 )}
                                 <Button
                                   variant="ghost"
                                   size="sm"
-                                  className="h-7 w-7 sm:h-8 sm:w-8 p-0 hover:bg-slate-200"
-                                  onClick={() =>
-                                    showToast(
-                                      `Просмотр счёта ${invoice.invoiceNumber} скоро будет доступен`,
-                                    )
-                                  }
+                                  disabled
+                                  title={t("profile.settings.comingSoon")}
+                                  className="h-7 w-7 sm:h-8 sm:w-8 p-0 opacity-50 cursor-not-allowed"
                                 >
                                   <Eye className="h-3.5 w-3.5 sm:h-4 sm:w-4" />
                                 </Button>
@@ -1039,12 +1070,9 @@ export default function ProfilePage() {
                                   <Button
                                     variant="ghost"
                                     size="sm"
-                                    className="h-7 w-7 sm:h-8 sm:w-8 p-0 hover:bg-slate-200"
-                                    onClick={() =>
-                                      showToast(
-                                        `Скачивание счёта ${invoice.invoiceNumber} скоро будет доступно`,
-                                      )
-                                    }
+                                    disabled
+                                    title={t("profile.settings.comingSoon")}
+                                    className="h-7 w-7 sm:h-8 sm:w-8 p-0 opacity-50 cursor-not-allowed"
                                   >
                                     <Download className="h-3.5 w-3.5 sm:h-4 sm:w-4" />
                                   </Button>
@@ -1058,10 +1086,11 @@ export default function ProfilePage() {
                       <div className="mt-6 pt-4 border-t border-slate-200">
                         <div className="flex items-center justify-between text-sm text-slate-600">
                           <span>
-                            Всего счетов: {billingHistoryData.length}
+                            {t("profile.billing.totalInvoices")}{" "}
+                            {billingHistoryData.length}
                           </span>
                           <span>
-                            Общая сумма:{" "}
+                            {t("profile.billing.totalAmount")}{" "}
                             {billingHistoryData
                               .filter((inv) => inv.status === "paid")
                               .reduce((sum, inv) => sum + inv.amount, 0)}{" "}
@@ -1087,7 +1116,7 @@ export default function ProfilePage() {
                       <User className="h-5 w-5 text-white" />
                     </div>
                     <span className="text-xl font-bold">
-                      Личная информация
+                      {t("profile.personalInfo.title")}
                     </span>
                   </CardTitle>
                 </CardHeader>
@@ -1096,7 +1125,7 @@ export default function ProfilePage() {
                     <div className="flex items-center space-x-3 p-3 rounded-xl bg-slate-50">
                       <Mail className="h-5 w-5 text-slate-500" />
                       <div>
-                        <p className="text-sm text-slate-500">Email</p>
+                        <p className="text-sm text-slate-500">{t("profile.personalInfo.email")}</p>
                         <p className="font-medium text-slate-900">
                           {user.email}
                         </p>
@@ -1105,22 +1134,22 @@ export default function ProfilePage() {
                     <div className="flex items-center space-x-3 p-3 rounded-xl bg-slate-50">
                       <Phone className="h-5 w-5 text-slate-500" />
                       <div>
-                        <p className="text-sm text-slate-500">Телефон</p>
+                        <p className="text-sm text-slate-500">{t("profile.personalInfo.phone")}</p>
                         <p className="font-medium text-slate-900">
-                          {extendedUser.phone || "Телефон не указан"}
+                          {extendedUser.phone || t("profile.personalInfo.phoneMissing")}
                         </p>
                       </div>
                     </div>
                     <div className="flex items-center space-x-3 p-3 rounded-xl bg-slate-50">
                       <User className="h-5 w-5 text-slate-500" />
                       <div>
-                        <p className="text-sm text-slate-500">Пол</p>
+                        <p className="text-sm text-slate-500">{t("profile.personalInfo.gender")}</p>
                         <p className="font-medium text-slate-900">
                           {extendedUser.gender === "male"
-                            ? "Мужской"
+                            ? t("profile.personalInfo.gender.male")
                             : extendedUser.gender === "female"
-                              ? "Женский"
-                              : "Не указан"}
+                              ? t("profile.personalInfo.gender.female")
+                              : t("profile.personalInfo.gender.unspecified")}
                         </p>
                       </div>
                     </div>
@@ -1130,7 +1159,7 @@ export default function ProfilePage() {
                     onClick={() => setIsEditFormVisible(true)}
                   >
                     <Edit className="mr-3 h-5 w-5" />
-                    Редактировать профиль
+                    {t("profile.personalInfo.edit")}
                     <ChevronRight className="ml-auto h-4 w-4" />
                   </Button>
                 </CardContent>
@@ -1142,7 +1171,7 @@ export default function ProfilePage() {
                   isOpen={isSettingsOpen}
                   onToggle={() => setIsSettingsOpen(!isSettingsOpen)}
                   onLogout={handleLogout}
-                  showToast={showToast}
+                  t={t}
                 />
               </div>
             </div>
@@ -1157,7 +1186,7 @@ export default function ProfilePage() {
                       <Activity className="h-5 w-5 text-white" />
                     </div>
                     <span className="text-xl font-bold">
-                      Последняя активность
+                      {t("profile.activity.title")}
                     </span>
                   </CardTitle>
                 </CardHeader>
@@ -1165,9 +1194,9 @@ export default function ProfilePage() {
                   {recentActivityToRender.length === 0 ? (
                     <div className="text-center py-8 text-slate-500">
                       <Activity className="h-10 w-10 mx-auto mb-3 text-slate-300" />
-                      <p className="font-medium">Нет недавней активности</p>
+                      <p className="font-medium">{t("profile.activity.empty.title")}</p>
                       <p className="text-sm mt-1">
-                        Ваши действия будут отображаться здесь
+                        {t("profile.activity.empty.desc")}
                       </p>
                     </div>
                   ) : (
@@ -1176,6 +1205,7 @@ export default function ProfilePage() {
                         const Icon = getIconByName(activity.icon);
                         const activityTime = formatRelativeTime(
                           activity.timestamp,
+                          locale,
                         );
                         const gradient =
                           activityGradientMap[activity.color] ??
@@ -1214,7 +1244,7 @@ export default function ProfilePage() {
                     <div className="w-10 h-10 rounded-2xl bg-gradient-to-br from-yellow-400 to-orange-500 flex items-center justify-center shadow-lg">
                       <Award className="h-5 w-5 text-white" />
                     </div>
-                    <span className="text-xl font-bold">Достижения</span>
+                    <span className="text-xl font-bold">{t("profile.achievements.title")}</span>
                   </CardTitle>
                 </CardHeader>
                 <CardContent className="relative z-10">
@@ -1222,10 +1252,10 @@ export default function ProfilePage() {
                     <div className="text-center py-8 text-slate-500">
                       <Award className="h-10 w-10 mx-auto mb-3 text-slate-300" />
                       <p className="font-medium">
-                        Достижения появятся позже
+                        {t("profile.achievements.empty.title")}
                       </p>
                       <p className="text-sm mt-1">
-                        Продолжайте использовать платформу
+                        {t("profile.achievements.empty.desc")}
                       </p>
                     </div>
                   ) : (
@@ -1289,7 +1319,7 @@ export default function ProfilePage() {
                   isOpen={isSettingsOpen}
                   onToggle={() => setIsSettingsOpen(!isSettingsOpen)}
                   onLogout={handleLogout}
-                  showToast={showToast}
+                  t={t}
                 />
               </div>
             </div>
@@ -1306,7 +1336,7 @@ export default function ProfilePage() {
             user={extendedUser}
             onSave={async (data) => {
               const ok = await updateProfile(data);
-              if (ok) showToast("Профиль обновлён");
+              if (ok) showToast(t("profile.profileUpdated"));
               return ok;
             }}
             onCancel={() => setIsEditFormVisible(false)}

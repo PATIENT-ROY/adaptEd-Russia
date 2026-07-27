@@ -20,7 +20,7 @@ import {
 export function Footer() {
   const currentYear = getCurrentYear();
   const { user } = useAuth();
-  const { t } = useTranslation();
+  const { t, currentLanguage } = useTranslation();
 
   const footerLinks = {
     platform: [
@@ -28,18 +28,19 @@ export function Footer() {
       { href: "/education-guide", labelKey: "nav.education" },
       { href: "/life-guide", labelKey: "nav.life" },
       { href: "/reminders", labelKey: "nav.reminders" },
+      { href: "/support", labelKey: "footer.support" },
     ],
     features: user
-        ? [
-            { href: "/ai-helper", labelKey: "nav.aiHelper" },
+      ? [
+          { href: "/ai-helper", labelKey: "nav.aiHelper" },
           { href: "/docscan", labelKey: "nav.docscan" },
-          ]
+        ]
       : [],
   };
 
   const socialLinks = [
-    { href: "#", type: "telegram" as const, label: "Телеграм" },
-    { href: "#", type: "vk" as const, label: "Вк" },
+    { href: "#", type: "telegram" as const, labelKey: "footer.social.telegram" },
+    { href: "#", type: "vk" as const, labelKey: "footer.social.vk" },
   ];
 
   return (
@@ -69,17 +70,18 @@ export function Footer() {
               </div>
             </div>
             <p className="text-slate-300 text-xs sm:text-sm leading-relaxed mb-3 sm:mb-4">
-              Помогаем иностранным студентам адаптироваться к жизни и учёбе в
-              российских вузах. Гайды, AI-помощник с 3 режимами и шаблонами.
+              {t("footer.description")}
             </p>
             <div className="flex items-center gap-2 sm:gap-3">
               {socialLinks.map((social, index) => {
+                const label = t(social.labelKey);
                 return (
                   <a
-                    key={social.label}
+                    key={social.type}
                     href={social.href}
                     className="group inline-flex items-center rounded-lg p-0.5 text-slate-300 transition-colors duration-300 hover:text-white"
-                    aria-label={social.label}
+                    aria-label={label}
+                    title={label}
                     style={{ animationDelay: `${index * 100}ms` }}
                   >
                     <span className="inline-flex h-8 w-8 sm:h-9 sm:w-9 items-center justify-center rounded-xl bg-slate-600 text-white transition-all duration-300 group-hover:bg-blue-600 footer-icon-animate">
@@ -128,57 +130,67 @@ export function Footer() {
           >
             {user && footerLinks.features.length > 0 ? (
               <>
-            <h3 className="text-sm sm:text-base lg:text-lg font-semibold text-white mb-3 sm:mb-4 flex items-center">
-              <Shield className="h-4 w-4 sm:h-5 sm:w-5 mr-2 text-blue-400" />
-                  Возможности
-            </h3>
-            <ul className="space-y-0.5 sm:space-y-1 mb-3 sm:mb-4">
+                <h3 className="text-sm sm:text-base lg:text-lg font-semibold text-white mb-3 sm:mb-4 flex items-center">
+                  <Shield className="h-4 w-4 sm:h-5 sm:w-5 mr-2 text-blue-400" />
+                  {t("footer.features")}
+                </h3>
+                <ul className="space-y-0.5 sm:space-y-1 mb-3 sm:mb-4">
                   {footerLinks.features.map((link, index) => (
-                <li key={link.href}>
-                  <Link
-                    href={link.href}
-                    className="text-xs sm:text-sm text-slate-300 hover:text-blue-400 transition-colors duration-300 hover:translate-x-1 inline-block py-0.5"
-                    style={{ animationDelay: `${(index + 1) * 50}ms` }}
-                  >
-                    {t(link.labelKey)}
-                  </Link>
-                </li>
-              ))}
-            </ul>
+                    <li key={link.href}>
+                      <Link
+                        href={link.href}
+                        className="text-xs sm:text-sm text-slate-300 hover:text-blue-400 transition-colors duration-300 hover:translate-x-1 inline-block py-0.5"
+                        style={{ animationDelay: `${(index + 1) * 50}ms` }}
+                      >
+                        {t(link.labelKey)}
+                      </Link>
+                    </li>
+                  ))}
+                </ul>
               </>
             ) : null}
 
             {/* Contact Info */}
             <h3 className="text-sm sm:text-base lg:text-lg font-semibold text-white mb-3 sm:mb-4 flex items-center">
-              <Shield className="h-4 w-4 sm:h-5 sm:w-5 mr-2 text-blue-400" />
-              Контакты
+              <Mail className="h-4 w-4 sm:h-5 sm:w-5 mr-2 text-blue-400" />
+              {t("footer.contacts")}
             </h3>
             <div className="space-y-0.5 sm:space-y-1 mb-3 sm:mb-4">
               <div className="flex items-center space-x-2 sm:space-x-3 text-slate-300 text-xs sm:text-sm">
                 <Mail className="h-3 w-3 sm:h-4 sm:w-4 text-blue-400 flex-shrink-0" />
-                <span className="break-all">support@adapted-russia.com</span>
+                <a
+                  href="mailto:support@adapted-russia.com"
+                  className="break-all hover:text-blue-400 transition-colors"
+                >
+                  support@adapted-russia.com
+                </a>
               </div>
               <div className="flex items-center space-x-2 sm:space-x-3 text-slate-300 text-xs sm:text-sm">
                 <Phone className="h-3 w-3 sm:h-4 sm:w-4 text-blue-400 flex-shrink-0" />
-                <span>+7 (495) 123-45-67</span>
+                <a
+                  href="tel:+74951234567"
+                  className="hover:text-blue-400 transition-colors"
+                >
+                  +7 (495) 123-45-67
+                </a>
               </div>
               <div className="flex items-center space-x-2 sm:space-x-3 text-slate-300 text-xs sm:text-sm">
                 <MapPin className="h-3 w-3 sm:h-4 sm:w-4 text-blue-400 flex-shrink-0" />
-                <span>Екатеринбург, Россия</span>
+                <span>{t("footer.location")}</span>
               </div>
             </div>
 
             {/* Requisites */}
             <h3 className="text-sm sm:text-base lg:text-lg font-semibold text-white mb-3 sm:mb-4 flex items-center">
               <FileText className="h-4 w-4 sm:h-5 sm:w-5 mr-2 text-blue-400" />
-              Реквизиты
+              {t("footer.requisites")}
             </h3>
             <div className="space-y-0.5 sm:space-y-1">
               <div className="text-slate-300 text-xs sm:text-sm">
-                ИП Рой Мбая
+                {t("footer.legalEntity")}
               </div>
               <div className="text-slate-300 text-xs sm:text-sm">
-                ИНН 773373765379
+                {t("footer.inn")}
               </div>
             </div>
           </div>
@@ -189,7 +201,7 @@ export function Footer() {
       <div className="border-t border-slate-700">
         <div className="mx-auto max-w-screen-2xl px-3 sm:px-4 lg:px-8 py-3 sm:py-4 lg:py-5">
           <div className="flex flex-col sm:flex-row items-center justify-between space-y-2 sm:space-y-0">
-            <div className="flex items-center space-x-2 text-slate-400 text-xs sm:text-sm text-center sm:text-left">
+            <div className="flex items-center flex-wrap justify-center sm:justify-start gap-x-2 gap-y-1 text-slate-400 text-xs sm:text-sm text-center sm:text-left">
               <span>
                 © {currentYear} AdaptEd Russia. {t("footer.copyright")}.
               </span>
@@ -208,9 +220,12 @@ export function Footer() {
               >
                 {t("footer.privacy")}
               </Link>
-              <div className="flex items-center space-x-1 sm:space-x-2 text-slate-400">
+              <div
+                className="flex items-center space-x-1 sm:space-x-2 text-slate-400"
+                aria-label={currentLanguage}
+              >
                 <Globe className="h-3 w-3 sm:h-4 sm:w-4" />
-                <span className="flex items-center">RU</span>
+                <span>{currentLanguage}</span>
               </div>
             </div>
           </div>

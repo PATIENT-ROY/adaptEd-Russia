@@ -2,6 +2,7 @@
 
 import { Layout } from "@/components/layout/layout";
 import { ProtectedRoute } from "@/components/auth/ProtectedRoute";
+import { FeaturePreviewGate } from "@/components/auth/FeaturePreviewGate";
 import { useTranslation } from "@/hooks/useTranslation";
 import { Button } from "@/components/ui/button";
 import { Card, CardContent } from "@/components/ui/card";
@@ -285,7 +286,7 @@ export function DocScanContent() {
       if (file.type === "application/pdf") {
         setProgress(20);
         const pdfResult = await processPdf(file, ocrWorker);
-        if (!pdfResult.text) throw new Error("No text detected");
+        if (!pdfResult.text) throw new Error(t("docscan.error.noText"));
         scanResult = pdfResult;
       } else {
         const originalImageUrl = URL.createObjectURL(file);
@@ -302,7 +303,7 @@ export function DocScanContent() {
         ]);
 
         const text = ocrResult.data.text?.trim() || "";
-        if (!text) throw new Error("No text detected");
+        if (!text) throw new Error(t("docscan.error.noText"));
 
         scanResult = {
           text,
@@ -326,7 +327,9 @@ export function DocScanContent() {
         try { await ocrWorker.terminate(); } catch { /* ignore */ }
       }
       setError(
-        err instanceof Error ? err.message : "OCR error. Try another file."
+        err instanceof Error && err.message !== t("docscan.error.noText")
+          ? err.message
+          : t("docscan.error.ocr"),
       );
     } finally {
       setIsProcessing(false);
@@ -338,10 +341,6 @@ export function DocScanContent() {
     if (selectedFile) processDocument(selectedFile);
     // eslint-disable-next-line react-hooks/exhaustive-deps
   }, [selectedFile]);
-
-  const handleCameraScan = useCallback(() => {
-    showToast(t("docscan.camera.soon"));
-  }, [showToast, t]);
 
   const handleCloseModal = useCallback(() => {
     setShowModal(false);
@@ -431,7 +430,7 @@ export function DocScanContent() {
       }
     } catch (err) {
       console.error("Translation error:", err);
-      setError(err instanceof Error ? err.message : "Translation error");
+      setError(t("docscan.error.translation"));
     } finally {
       setIsTranslating(false);
     }
@@ -462,7 +461,15 @@ export function DocScanContent() {
   }, [showModal]);
 
   return (
-    <ProtectedRoute>
+    <ProtectedRoute
+      fallback={
+        <FeaturePreviewGate
+          featureName={t("nav.docscan")}
+          previewTitle={t("docscan.preview.title")}
+          previewText={t("docscan.preview.text")}
+        />
+      }
+    >
       <Layout>
         <div className="space-y-6 sm:space-y-8">
           {/* Header */}
@@ -572,10 +579,10 @@ export function DocScanContent() {
                 </Button>
 
                 <Button
-                  onClick={handleCameraScan}
-                  disabled={isProcessing}
+                  disabled
+                  title={t("docscan.camera.soon")}
                   variant="outline"
-                  className="w-full border-2 border-[#6A5AE0] text-[#6A5AE0] hover:bg-[#6A5AE0] hover:text-white text-base sm:text-lg font-semibold py-4 sm:py-5 rounded-2xl transition-all duration-300 disabled:opacity-50 disabled:cursor-not-allowed"
+                  className="w-full border-2 border-[#6A5AE0]/40 text-[#6A5AE0]/60 text-base sm:text-lg font-semibold py-4 sm:py-5 rounded-2xl cursor-not-allowed opacity-70"
                 >
                   <Camera className="mr-2 h-5 w-5 sm:h-6 sm:w-6" />
                   {t("docscan.camera")}
@@ -654,7 +661,7 @@ export function DocScanContent() {
                 size="icon"
                 onClick={handleCloseModal}
                 className="h-9 w-9 text-white hover:bg-white/20"
-                aria-label="Close"
+                aria-label={t("docscan.close")}
               >
                 <X className="h-5 w-5" />
               </Button>

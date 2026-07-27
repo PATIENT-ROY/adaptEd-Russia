@@ -47,6 +47,7 @@ import {
 } from "lucide-react";
 import ReactMarkdown from "react-markdown";
 import Link from "next/link";
+import { PREMIUM_CHECKOUT_PATH } from "@/constants/routes";
 
 type AIMode = "study" | "life" | "generator";
 
@@ -95,10 +96,10 @@ const GRADIENT_COLORS: Record<AIMode, string> = {
   generator: "bg-gradient-to-br from-purple-500 to-pink-600",
 };
 
-const DEFAULT_RELATED_GUIDES = [
-  { title: "Регистрация в общежитии", url: "/life-guide", category: "life" },
-  { title: "Миграционный учет", url: "/life-guide", category: "life" },
-  { title: "Медицинская страховка", url: "/life-guide", category: "life" },
+const DEFAULT_RELATED_GUIDE_KEYS = [
+  "aiHelper.guides.default.1",
+  "aiHelper.guides.default.2",
+  "aiHelper.guides.default.3",
 ] as const;
 
 interface ISpeechRecognition extends EventTarget {
@@ -223,7 +224,7 @@ function UsageBar({
 
         {plan === "FREEMIUM" && (
           <Link
-            href="/pricing"
+            href={PREMIUM_CHECKOUT_PATH}
             className="mt-3 flex items-center justify-center space-x-1.5 w-full px-3 py-2 bg-gradient-to-r from-amber-400 to-orange-500 text-white rounded-lg text-xs font-medium hover:from-amber-500 hover:to-orange-600 transition-all"
           >
             <Sparkles className="h-3.5 w-3.5" />
@@ -262,7 +263,7 @@ function LimitOverlay({
         </p>
         {plan === "FREEMIUM" && (
           <Link
-            href="/pricing"
+            href={PREMIUM_CHECKOUT_PATH}
             className="inline-flex items-center space-x-2 px-6 py-3 bg-gradient-to-r from-amber-400 to-orange-500 text-white rounded-xl font-medium hover:from-amber-500 hover:to-orange-600 transition-all mb-3"
           >
             <Sparkles className="h-4 w-4" />
@@ -286,8 +287,10 @@ function LimitOverlay({
 
 function RelatedGuidesBlock({
   guides,
+  t,
 }: {
   guides: Array<{ title: string; url: string; category: string }>;
+  t: (key: string) => string;
 }) {
   if (guides.length === 0) return null;
 
@@ -295,7 +298,7 @@ function RelatedGuidesBlock({
     <div className="mt-2 p-3 bg-gradient-to-r from-indigo-50 to-purple-50 rounded-xl border border-indigo-100">
       <p className="text-xs font-semibold text-indigo-700 mb-2 flex items-center space-x-1">
         <BookOpen className="h-3.5 w-3.5" />
-        <span>📘 Полезные гайды</span>
+        <span>{t("aiHelper.guides.related")}</span>
       </p>
       <div className="flex flex-wrap gap-1.5">
         {guides.map((guide, i) => (
@@ -353,10 +356,30 @@ export default function AiHelperPage() {
   const [speechError, setSpeechError] = useState<string | null>(null);
   const unauthFallback = (
     <FeaturePreviewGate
-      featureName="AI-помощник"
-      previewTitle="Пример вопроса"
-      previewText='Например: "Как оформить академическую справку в университете?" После входа AI даст пошаговый ответ.'
+      featureName={t("aiHelper.header.title")}
+      previewTitle={t("aiHelper.preview.title")}
+      previewText={t("aiHelper.preview.text")}
     />
+  );
+
+  const defaultRelatedGuides = useMemo(
+    () =>
+      DEFAULT_RELATED_GUIDE_KEYS.map((key) => ({
+        title: t(key),
+        url: "/life-guide",
+        category: "life",
+      })),
+    [t],
+  );
+
+  const popularStudentQuestions = useMemo(
+    () => [
+      t("aiHelper.popular.1"),
+      t("aiHelper.popular.2"),
+      t("aiHelper.popular.3"),
+      t("aiHelper.popular.4"),
+    ],
+    [t],
   );
 
   const aiModes = useMemo<AIModeConfig[]>(() => [
@@ -564,16 +587,6 @@ export default function AiHelperPage() {
     }
   }, [sendMessage, currentMode]);
 
-  const popularStudentQuestions = useMemo(
-    () => [
-      "Как оформить миграционный учёт",
-      "Что делать если получил незачёт",
-      "Как продлить студенческую визу",
-      "Как написать курсовую по ГОСТ",
-    ],
-    []
-  );
-
   const handlePopularQuestionFill = useCallback((question: string) => {
     setInputMessage(question);
   }, []);
@@ -588,7 +601,7 @@ export default function AiHelperPage() {
         console.error("Error sending popular question:", err);
       }
     },
-    [sendMessage, currentMode]
+    [sendMessage, currentMode],
   );
 
   const handleKeyDown = useCallback((e: React.KeyboardEvent) => {
@@ -885,14 +898,15 @@ export default function AiHelperPage() {
                             {!message.isUser &&
                               message.id === lastAiMessageId &&
                               (lastRelatedGuides.length > 0 ||
-                                DEFAULT_RELATED_GUIDES.length > 0) && (
+                                defaultRelatedGuides.length > 0) && (
                                 <div className="flex justify-start mt-1 ml-0">
                                   <div className="max-w-[90%] sm:max-w-[85%] lg:max-w-[75%]">
                                     <RelatedGuidesBlock
+                                      t={t}
                                       guides={
                                         lastRelatedGuides.length > 0
                                           ? lastRelatedGuides
-                                          : [...DEFAULT_RELATED_GUIDES]
+                                          : defaultRelatedGuides
                                       }
                                     />
                                   </div>
@@ -917,7 +931,7 @@ export default function AiHelperPage() {
                     {/* Popular questions */}
                     <div className="rounded-xl border border-slate-200 bg-slate-50 p-3">
                       <p className="text-xs sm:text-sm font-semibold text-slate-800 mb-2">
-                        Популярные вопросы студентов
+                        {t("aiHelper.popular.title")}
                       </p>
                       <div className="space-y-2">
                         {popularStudentQuestions.map((question) => (
@@ -938,7 +952,7 @@ export default function AiHelperPage() {
                               disabled={loading || isAtLimit}
                               className="text-xs"
                             >
-                              Отправить
+                              {t("aiHelper.input.send")}
                             </Button>
                           </div>
                         ))}
