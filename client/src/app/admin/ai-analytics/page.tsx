@@ -20,6 +20,8 @@ import Link from "next/link";
 import { useAuth } from "@/contexts/AuthContext";
 import { Role } from "@/types";
 import { useTranslation } from "@/hooks/useTranslation";
+import { useEffect, useState } from "react";
+import { fetchAdminAiAnalytics } from "@/lib/admin-api";
 
 const cardClass = "border-0 shadow-xl backdrop-blur-sm bg-white/90";
 
@@ -35,12 +37,33 @@ function AiAnalyticsContent() {
   const { user } = useAuth();
   const { t } = useTranslation();
   const isAdmin = user?.role === Role.ADMIN;
+  const [analytics, setAnalytics] = useState<Awaited<ReturnType<typeof fetchAdminAiAnalytics>> | null>(null);
+  const [loading, setLoading] = useState(true);
+
+  useEffect(() => {
+    if (!isAdmin) return;
+    let cancelled = false;
+    (async () => {
+      setLoading(true);
+      try {
+        const data = await fetchAdminAiAnalytics();
+        if (!cancelled) setAnalytics(data);
+      } catch (error) {
+        console.error("Failed to load AI analytics:", error);
+      } finally {
+        if (!cancelled) setLoading(false);
+      }
+    })();
+    return () => {
+      cancelled = true;
+    };
+  }, [isAdmin]);
 
   const kpis = [
-    { label: t("admin.aiAnalytics.kpi.sessions"), value: "18 402", icon: MessageSquare },
-    { label: t("admin.aiAnalytics.kpi.solved"), value: "72%", icon: Sparkles },
-    { label: t("admin.aiAnalytics.kpi.avgRating"), value: "4.6", icon: Star },
-    { label: t("admin.aiAnalytics.kpi.avgDialog"), value: "4.2 мин", icon: Clock },
+    { label: t("admin.aiAnalytics.kpi.sessions"), value: loading ? "…" : String(analytics?.sessions ?? 0), icon: MessageSquare },
+    { label: t("admin.aiAnalytics.kpi.solved"), value: loading ? "…" : `${analytics?.solvedRate ?? 0}%`, icon: Sparkles },
+    { label: t("admin.aiAnalytics.kpi.avgRating"), value: loading ? "…" : analytics?.avgRating != null ? String(analytics.avgRating) : "—", icon: Star },
+    { label: t("admin.aiAnalytics.kpi.avgDialog"), value: loading ? "…" : analytics?.avgDialogMinutes != null ? `${analytics.avgDialogMinutes} мин` : "—", icon: Clock },
   ];
 
   if (!isAdmin) {
@@ -149,20 +172,9 @@ function AiAnalyticsContent() {
               </CardTitle>
             </CardHeader>
             <CardContent className="space-y-3 text-sm">
-              {[
-                [t("admin.aiAnalytics.topics.study"), "42%"],
-                [t("admin.aiAnalytics.topics.life"), "28%"],
-                [t("admin.aiAnalytics.topics.generator"), "18%"],
-                [t("admin.aiAnalytics.topics.templates"), "12%"],
-              ].map(([label, value]) => (
-                <div
-                  key={label}
-                  className="flex items-center justify-between rounded-lg bg-slate-50 px-3 py-2"
-                >
-                  <span>{label}</span>
-                  <span className="font-semibold">{value}</span>
-                </div>
-              ))}
+              <p className="text-slate-500 text-center py-6">
+                {loading ? "…" : t("admin.analytics.noBreakdown")}
+              </p>
             </CardContent>
           </Card>
         </div>
@@ -179,15 +191,17 @@ function AiAnalyticsContent() {
             <CardContent className="space-y-4 text-sm">
               <div className="flex items-center justify-between rounded-lg bg-slate-50 px-3 py-2">
                 <span>{t("admin.aiAnalytics.quality.avgRating")}</span>
-                <span className="font-semibold">4.6 / 5</span>
+                <span className="font-semibold">
+                  {analytics?.avgRating != null ? `${analytics.avgRating} / 5` : "—"}
+                </span>
               </div>
               <div className="flex items-center justify-between rounded-lg bg-slate-50 px-3 py-2">
                 <span>{t("admin.aiAnalytics.quality.complaints")}</span>
-                <span className="font-semibold">1.4%</span>
+                <span className="font-semibold">—</span>
               </div>
               <div className="flex items-center justify-between rounded-lg bg-slate-50 px-3 py-2">
                 <span>{t("admin.aiAnalytics.quality.edits")}</span>
-                <span className="font-semibold">9.8%</span>
+                <span className="font-semibold">—</span>
               </div>
             </CardContent>
           </Card>
@@ -202,15 +216,15 @@ function AiAnalyticsContent() {
             <CardContent className="space-y-3 text-sm">
               <div className="flex items-center justify-between rounded-lg bg-slate-50 px-3 py-2">
                 <span>{t("admin.aiAnalytics.efficiency.aiSolved")}</span>
-                <span className="font-semibold">72%</span>
+                <span className="font-semibold">{loading ? "…" : `${analytics?.solvedRate ?? 0}%`}</span>
               </div>
               <div className="flex items-center justify-between rounded-lg bg-slate-50 px-3 py-2">
                 <span>{t("admin.aiAnalytics.efficiency.escalation")}</span>
-                <span className="font-semibold">18%</span>
+                <span className="font-semibold">—</span>
               </div>
               <div className="flex items-center justify-between rounded-lg bg-slate-50 px-3 py-2">
-                <span>{t("admin.aiAnalytics.efficiency.needReview")}</span>
-                <span className="font-semibold">10%</span>
+                <span>{t("admin.aiAnalytics.efficiency.uniqueUsers")}</span>
+                <span className="font-semibold">{loading ? "…" : String(analytics?.uniqueUsers ?? 0)}</span>
               </div>
             </CardContent>
           </Card>

@@ -2,10 +2,9 @@
 
 import Link from "next/link";
 import Image from "next/image";
-import { Check } from "lucide-react";
+import { Check, BookOpen } from "lucide-react";
 import { motion, useReducedMotion } from "framer-motion";
 import { useTranslation } from "@/hooks/useTranslation";
-import { useAdaptationCta } from "@/hooks/useAdaptationCta";
 import {
   glowPulse,
   premiumEase,
@@ -24,13 +23,12 @@ const CHECKLIST_KEYS = [
 
 export function AdaptationHeroSection() {
   const { t } = useTranslation();
-  const { href, label } = useAdaptationCta();
   const shouldReduceMotion = useReducedMotion();
 
   return (
     <section
       aria-label={t("home.section.adaptation.title")}
-      className="order-2 my-6 sm:my-8 lg:my-10 px-3 sm:px-4 lg:px-8"
+      className="below-fold my-6 sm:my-8 lg:my-10 px-3 sm:px-4 lg:px-8"
     >
       <div className="relative mx-auto max-w-7xl overflow-hidden rounded-[32px] border border-blue-100/80 bg-[linear-gradient(135deg,rgba(59,130,246,0.06),rgba(139,92,246,0.08))] p-8 lg:p-20">
         <motion.div
@@ -97,12 +95,13 @@ export function AdaptationHeroSection() {
             </ul>
 
             <motion.div className="order-2 mt-8 md:order-none" variants={staggerItemVariants}>
-              <motion.div whileHover={{ scale: 1.03 }} whileTap={{ scale: 0.98 }}>
+              <motion.div whileHover={{ scale: 1.02 }} whileTap={{ scale: 0.98 }}>
                 <Link
-                  href={href}
-                  className="adaptation-hero-cta inline-flex min-h-12 items-center justify-center rounded-xl bg-gradient-to-r from-blue-600 to-indigo-600 px-8 py-3 text-base font-semibold text-white shadow-lg transition-colors duration-200 hover:from-blue-700 hover:to-indigo-700 hover:shadow-xl focus-visible:outline-none focus-visible:ring-2 focus-visible:ring-blue-500 focus-visible:ring-offset-2"
+                  href="/education-guide"
+                  className="inline-flex min-h-12 items-center justify-center rounded-xl border-2 border-blue-600 bg-white px-8 py-3 text-base font-semibold text-blue-700 shadow-sm transition-colors duration-200 hover:bg-blue-50 focus-visible:outline-none focus-visible:ring-2 focus-visible:ring-blue-500 focus-visible:ring-offset-2"
                 >
-                  {label}
+                  <BookOpen className="mr-2 h-5 w-5" aria-hidden />
+                  {t("home.guides")}
                 </Link>
               </motion.div>
             </motion.div>

@@ -19,6 +19,7 @@ import questionRoutes from './api/questions.js';
 import reviewRoutes from './api/reviews.js';
 import noteRoutes from './api/notes.js';
 import guideProgressRoutes from './api/guide-progress.js';
+import adminRoutes from './api/admin.js';
 
 // Загружаем переменные окружения
 dotenv.config();
@@ -246,6 +247,7 @@ app.use('/api/questions', questionRoutes);
 app.use('/api/notes', noteRoutes);
 app.use('/api', reviewRoutes);
 app.use('/api/guide-progress', guideProgressRoutes);
+app.use('/api/admin', adminRoutes);
 
 // 404 handler
 app.use('*', (req, res) => {

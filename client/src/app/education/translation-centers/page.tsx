@@ -37,87 +37,8 @@ interface TranslationCenter {
   isVerified?: boolean;
 }
 
-// Моковые данные центров перевода
-const mockCenters: TranslationCenter[] = [
-  {
-    id: "1",
-    name: "Lingua Pro",
-    address: "ул. Тверская, 12",
-    services: ["Нотариальные переводы", "Технические переводы"],
-    workingHours: "Пн–Пт 9:00–19:00",
-    phone: "+7 (495) 123-45-67",
-    coordinates: { lat: 55.7558, lon: 37.6173 },
-    city: "Москва",
-    rating: 4.8,
-    reviewsCount: 120,
-    isVerified: true,
-  },
-  {
-    id: "2",
-    name: "Переводческий центр",
-    address: "пр. Невский, 28",
-    services: ["Нотариальные переводы", "Медицинские переводы"],
-    workingHours: "Пн–Сб 10:00–20:00",
-    phone: "+7 (812) 234-56-78",
-    coordinates: { lat: 59.9343, lon: 30.3351 },
-    city: "Санкт-Петербург",
-    rating: 4.6,
-    reviewsCount: 89,
-    isVerified: true,
-  },
-  {
-    id: "3",
-    name: "Центр Переводчикъ",
-    address: "ул. Ленина, 50",
-    services: ["Нотариальные переводы", "Срочные переводы", "Апостилирование"],
-    workingHours: "Пн–Пт 9:00–18:00",
-    phone: "+7 (343) 123-45-67",
-    coordinates: { lat: 56.8431, lon: 60.6454 },
-    city: "Екатеринбург",
-    rating: 4.8,
-    reviewsCount: 33,
-    isVerified: true,
-  },
-  {
-    id: "4",
-    name: "Бюро переводов Екатеринбург",
-    address: "пр. Ленина, 24",
-    services: ["Нотариальные переводы", "Технические переводы", "Медицинские переводы"],
-    workingHours: "Пн–Сб 10:00–19:00",
-    phone: "+7 (343) 234-56-78",
-    coordinates: { lat: 56.8380, lon: 60.5973 },
-    city: "Екатеринбург",
-    rating: 4.3,
-    reviewsCount: 127,
-    isVerified: true,
-  },
-  {
-    id: "5",
-    name: "Глобус-М - Казанский центр переводов",
-    address: "ул. Баумана, 58",
-    services: ["Письменные переводы", "Устные переводы", "Нотариальные переводы"],
-    workingHours: "Пн–Пт 9:00–18:00",
-    phone: "+7 (843) 123-45-67",
-    coordinates: { lat: 55.7961, lon: 49.1064 },
-    city: "Казань",
-    rating: 4.7,
-    reviewsCount: 48,
-    isVerified: true,
-  },
-  {
-    id: "6",
-    name: "Бюро переводов Казань",
-    address: "ул. Кремлёвская, 35",
-    services: ["Нотариальные переводы", "Технические переводы", "Юридические переводы"],
-    workingHours: "Пн–Сб 10:00–20:00",
-    phone: "+7 (843) 234-56-78",
-    coordinates: { lat: 55.7986, lon: 49.1067 },
-    city: "Казань",
-    rating: 4.5,
-    reviewsCount: 85,
-    isVerified: true,
-  },
-];
+// Каталог центров перевода — из API/БД, когда будет подключён
+const translationCentersCatalog: TranslationCenter[] = [];
 
 const cities = RUSSIAN_CITIES;
 
@@ -145,7 +66,7 @@ export default function TranslationCentersPage() {
     // Имитация загрузки данных
     setIsLoading(true);
     setTimeout(() => {
-      const filteredCenters = mockCenters.filter(
+      const filteredCenters = translationCentersCatalog.filter(
         (center) => center.city === selectedCity
       );
       setCenters(filteredCenters);

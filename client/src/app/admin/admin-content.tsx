@@ -20,18 +20,11 @@ import Link from "next/link";
 import { useAuth } from "@/contexts/AuthContext";
 import { Role } from "@/types";
 import { useTranslation } from "@/hooks/useTranslation";
-
-const recentUsers = [
-  { id: "1", name: "Ахмед Аль-Махмуд", email: "ahmed@example.com", country: "Египет", status: "active", joinDate: "2024-01-15" },
-  { id: "2", name: "Мария Гонсалес", email: "maria@example.com", country: "Испания", status: "active", joinDate: "2024-01-14" },
-  { id: "3", name: "Чжан Вэй", email: "zhang@example.com", country: "Китай", status: "pending", joinDate: "2024-01-13" },
-];
-
-const recentGuides = [
-  { id: "1", title: "Как сдать сессию в российском вузе", category: "education", views: 234, status: "published", createdAt: "2024-01-15" },
-  { id: "2", title: "Регистрация в миграционной службе", category: "life", views: 189, status: "published", createdAt: "2024-01-14" },
-  { id: "3", title: "Получение ИНН и СНИЛС", category: "life", views: 156, status: "draft", createdAt: "2024-01-13" },
-];
+import { useEffect, useState } from "react";
+import {
+  fetchAdminDashboard,
+  type AdminDashboardData,
+} from "@/lib/admin-api";
 
 const cardClass = "border-0 shadow-xl backdrop-blur-sm bg-white/90";
 
@@ -39,13 +32,65 @@ export function AdminContent() {
   const { user } = useAuth();
   const { t } = useTranslation();
   const isAdmin = user?.role === Role.ADMIN;
+  const [dashboard, setDashboard] = useState<AdminDashboardData | null>(null);
+  const [loading, setLoading] = useState(true);
+
+  useEffect(() => {
+    if (!isAdmin) return;
+    let cancelled = false;
+    (async () => {
+      setLoading(true);
+      try {
+        const data = await fetchAdminDashboard();
+        if (!cancelled) setDashboard(data);
+      } catch (error) {
+        console.error("Failed to load admin dashboard:", error);
+      } finally {
+        if (!cancelled) setLoading(false);
+      }
+    })();
+    return () => {
+      cancelled = true;
+    };
+  }, [isAdmin]);
 
   const adminStats = [
-    { title: t("admin.dashboard.stats.users"), value: "12 480", change: "+4%", period: t("admin.dashboard.stats.perMonth"), icon: Users, color: "from-blue-500 to-blue-600" },
-    { title: t("admin.dashboard.stats.guides"), value: "512", change: "+12%", period: t("admin.dashboard.stats.updated"), icon: BookOpen, color: "from-green-500 to-green-600" },
-    { title: t("admin.dashboard.stats.ai"), value: "8 642", change: "+19%", period: t("admin.dashboard.stats.perWeek"), icon: MessageSquare, color: "from-purple-500 to-purple-600" },
-    { title: t("admin.dashboard.stats.docscan"), value: "1 204", change: "+27%", period: t("admin.dashboard.stats.perWeek"), icon: ScanLine, color: "from-indigo-500 to-indigo-600" },
+    {
+      title: t("admin.dashboard.stats.users"),
+      value: loading ? "…" : String(dashboard?.stats.users.value ?? 0),
+      change: dashboard?.stats.users.change ?? "0%",
+      period: t("admin.dashboard.stats.perMonth"),
+      icon: Users,
+      color: "from-blue-500 to-blue-600",
+    },
+    {
+      title: t("admin.dashboard.stats.guides"),
+      value: loading ? "…" : String(dashboard?.stats.guides.value ?? 0),
+      change: dashboard?.stats.guides.change ?? "0%",
+      period: t("admin.dashboard.stats.updated"),
+      icon: BookOpen,
+      color: "from-green-500 to-green-600",
+    },
+    {
+      title: t("admin.dashboard.stats.ai"),
+      value: loading ? "…" : String(dashboard?.stats.ai.value ?? 0),
+      change: dashboard?.stats.ai.change ?? "0%",
+      period: t("admin.dashboard.stats.perWeek"),
+      icon: MessageSquare,
+      color: "from-purple-500 to-purple-600",
+    },
+    {
+      title: t("admin.dashboard.stats.docscan"),
+      value: loading ? "…" : String(dashboard?.stats.docscan.value ?? 0),
+      change: dashboard?.stats.docscan.change ?? "0%",
+      period: t("admin.dashboard.stats.perWeek"),
+      icon: ScanLine,
+      color: "from-indigo-500 to-indigo-600",
+    },
   ];
+
+  const recentUsers = dashboard?.recentUsers ?? [];
+  const recentGuides = dashboard?.recentGuides ?? [];
 
   const adminActions = [
     { title: t("admin.dashboard.actions.users"), description: t("admin.dashboard.actions.usersDesc"), icon: Users, href: "/admin/users", color: "from-blue-500 to-blue-600" },
@@ -152,7 +197,12 @@ export function AdminContent() {
             </CardHeader>
             <CardContent>
               <div className="space-y-4">
-                {recentUsers.map((u) => (
+                {recentUsers.length === 0 ? (
+                  <p className="text-sm text-gray-500 py-4 text-center">
+                    {loading ? "…" : t("admin.dashboard.noUsers")}
+                  </p>
+                ) : (
+                recentUsers.map((u) => (
                   <div key={u.id} className="flex items-center justify-between p-3 rounded-lg bg-gray-50">
                     <div className="flex items-center space-x-3">
                       <div className="w-8 h-8 rounded-full bg-gradient-to-br from-blue-500 to-blue-600 flex items-center justify-center text-white text-sm font-bold">{u.name.charAt(0)}</div>
@@ -170,7 +220,8 @@ export function AdminContent() {
                       </Button>
                     </div>
                   </div>
-                ))}
+                ))
+                )}
               </div>
               <div className="mt-4">
                 <Link href="/admin/users">
@@ -189,7 +240,12 @@ export function AdminContent() {
             </CardHeader>
             <CardContent>
               <div className="space-y-4">
-                {recentGuides.map((guide) => (
+                {recentGuides.length === 0 ? (
+                  <p className="text-sm text-gray-500 py-4 text-center">
+                    {loading ? "…" : t("admin.dashboard.noGuides")}
+                  </p>
+                ) : (
+                recentGuides.map((guide) => (
                   <div key={guide.id} className="flex items-center justify-between p-3 rounded-lg bg-gray-50">
                     <div className="flex-1 min-w-0">
                       <p className="font-medium text-gray-900 truncate">{guide.title}</p>
@@ -209,7 +265,8 @@ export function AdminContent() {
                       </Button>
                     </div>
                   </div>
-                ))}
+                ))
+                )}
               </div>
               <div className="mt-4">
                 <Link href="/admin/guides">

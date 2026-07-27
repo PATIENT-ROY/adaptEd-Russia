@@ -16,6 +16,8 @@ import Link from "next/link";
 import { useAuth } from "@/contexts/AuthContext";
 import { Role } from "@/types";
 import { useTranslation } from "@/hooks/useTranslation";
+import { useEffect, useState } from "react";
+import { fetchAdminDocscanAnalytics } from "@/lib/admin-api";
 import { Button } from "@/components/ui/button";
 
 const cardClass = "border-0 shadow-xl backdrop-blur-sm bg-white/90";
@@ -32,12 +34,33 @@ function DocscanAnalyticsContent() {
   const { user } = useAuth();
   const { t } = useTranslation();
   const isAdmin = user?.role === Role.ADMIN;
+  const [analytics, setAnalytics] = useState<Awaited<ReturnType<typeof fetchAdminDocscanAnalytics>> | null>(null);
+  const [loading, setLoading] = useState(true);
+
+  useEffect(() => {
+    if (!isAdmin) return;
+    let cancelled = false;
+    (async () => {
+      setLoading(true);
+      try {
+        const data = await fetchAdminDocscanAnalytics();
+        if (!cancelled) setAnalytics(data);
+      } catch (error) {
+        console.error("Failed to load docscan analytics:", error);
+      } finally {
+        if (!cancelled) setLoading(false);
+      }
+    })();
+    return () => {
+      cancelled = true;
+    };
+  }, [isAdmin]);
 
   const kpis = [
-    { label: t("admin.docscan.kpi.totalScans"), value: "12 480", icon: ScanLine },
-    { label: t("admin.docscan.kpi.successOcr"), value: "96.2%", icon: FileText },
-    { label: t("admin.docscan.kpi.activeUsers"), value: "1 324", icon: Users },
-    { label: t("admin.docscan.kpi.ocrErrors"), value: "1.8%", icon: AlertTriangle },
+    { label: t("admin.docscan.kpi.totalScans"), value: loading ? "…" : String(analytics?.totalScans ?? 0), icon: ScanLine },
+    { label: t("admin.docscan.kpi.successOcr"), value: loading ? "…" : analytics?.successOcr != null ? `${analytics.successOcr}%` : "—", icon: FileText },
+    { label: t("admin.docscan.kpi.activeUsers"), value: loading ? "…" : String(analytics?.activeUsers ?? 0), icon: Users },
+    { label: t("admin.docscan.kpi.ocrErrors"), value: loading ? "…" : analytics?.ocrErrors != null ? `${analytics.ocrErrors}%` : "—", icon: AlertTriangle },
   ];
 
   if (!isAdmin) {
@@ -140,18 +163,9 @@ function DocscanAnalyticsContent() {
               </CardTitle>
             </CardHeader>
             <CardContent className="space-y-3">
-              <div className="flex items-center justify-between rounded-lg bg-slate-50 px-3 py-2 text-sm">
-                <span>{t("admin.docscan.funnel.upload")}</span>
-                <span className="font-semibold">100%</span>
-              </div>
-              <div className="flex items-center justify-between rounded-lg bg-slate-50 px-3 py-2 text-sm">
-                <span>{t("admin.docscan.funnel.ocr")}</span>
-                <span className="font-semibold">96%</span>
-              </div>
-              <div className="flex items-center justify-between rounded-lg bg-slate-50 px-3 py-2 text-sm">
-                <span>{t("admin.docscan.funnel.export")}</span>
-                <span className="font-semibold">72%</span>
-              </div>
+              <p className="text-sm text-slate-500 text-center py-4">
+                {loading ? "…" : t("admin.analytics.noBreakdown")}
+              </p>
             </CardContent>
           </Card>
         </div>

@@ -18,6 +18,8 @@ import {
 import Link from "next/link";
 import { useAuth } from "@/contexts/AuthContext";
 import { Role } from "@/types";
+import { useEffect, useState } from "react";
+import { fetchAdminAchievementsAnalytics } from "@/lib/admin-api";
 
 const cardClass = "border-0 shadow-xl backdrop-blur-sm bg-white/90";
 
@@ -33,39 +35,37 @@ function AchievementsContent() {
   const { user } = useAuth();
   const { t } = useTranslation();
   const isAdmin = user?.role === Role.ADMIN;
+  const [analytics, setAnalytics] = useState<Awaited<ReturnType<typeof fetchAdminAchievementsAnalytics>> | null>(null);
+  const [loading, setLoading] = useState(true);
+
+  useEffect(() => {
+    if (!isAdmin) return;
+    let cancelled = false;
+    (async () => {
+      setLoading(true);
+      try {
+        const data = await fetchAdminAchievementsAnalytics();
+        if (!cancelled) setAnalytics(data);
+      } catch (error) {
+        console.error("Failed to load achievements analytics:", error);
+      } finally {
+        if (!cancelled) setLoading(false);
+      }
+    })();
+    return () => {
+      cancelled = true;
+    };
+  }, [isAdmin]);
 
   const kpis = [
-    { label: t("admin.achievements.kpi.total"), value: "64", icon: Trophy },
-    { label: t("admin.achievements.kpi.avgProgress"), value: "41%", icon: TrendingUp },
-    { label: t("admin.achievements.kpi.activeUsers"), value: "3 248", icon: Users },
-    { label: t("admin.achievements.kpi.newMonth"), value: "+8", icon: Sparkles },
+    { label: t("admin.achievements.kpi.total"), value: loading ? "…" : String(analytics?.totalAchievements ?? 0), icon: Trophy },
+    { label: t("admin.achievements.kpi.avgProgress"), value: loading ? "…" : `${analytics?.avgProgress ?? 0}%`, icon: TrendingUp },
+    { label: t("admin.achievements.kpi.activeUsers"), value: loading ? "…" : String(analytics?.activeUsers ?? 0), icon: Users },
+    { label: t("admin.achievements.kpi.newMonth"), value: loading ? "…" : `+${analytics?.newUsersMonth ?? 0}`, icon: Sparkles },
   ];
 
-  const categories = [
-    { label: t("admin.achievements.categories.start"), value: "18", color: "bg-blue-100 text-blue-700" },
-    { label: t("admin.achievements.categories.study"), value: "16", color: "bg-purple-100 text-purple-700" },
-    { label: t("admin.achievements.categories.life"), value: "12", color: "bg-green-100 text-green-700" },
-    { label: t("admin.achievements.categories.activity"), value: "10", color: "bg-orange-100 text-orange-700" },
-    { label: t("admin.achievements.categories.expert"), value: "8", color: "bg-red-100 text-red-700" },
-  ];
-
-  const recentAchievements = [
-    {
-      title: t("admin.achievements.recent.readyForExams"),
-      category: t("admin.achievements.categories.study"),
-      rarity: t("admin.achievements.rarity.rare"),
-    },
-    {
-      title: t("admin.achievements.recent.firstSevenDays"),
-      category: t("admin.achievements.categories.start"),
-      rarity: t("admin.achievements.rarity.common"),
-    },
-    {
-      title: t("admin.achievements.recent.docGuru"),
-      category: t("admin.achievements.categories.expert"),
-      rarity: t("admin.achievements.rarity.epic"),
-    },
-  ];
+  const categories: Array<{ label: string; value: string; color: string }> = [];
+  const recentAchievements: Array<{ title: string; category: string; rarity: string }> = [];
 
   if (!isAdmin) {
     return (
@@ -159,7 +159,12 @@ function AchievementsContent() {
               </CardTitle>
             </CardHeader>
             <CardContent className="grid grid-cols-1 sm:grid-cols-2 gap-3">
-              {categories.map((item) => (
+              {categories.length === 0 ? (
+                <p className="text-sm text-slate-500 col-span-full text-center py-4">
+                  {loading ? "…" : t("admin.analytics.noBreakdown")}
+                </p>
+              ) : (
+              categories.map((item) => (
                 <div
                   key={item.label}
                   className="flex items-center justify-between rounded-lg bg-slate-50 px-3 py-2 text-sm"
@@ -169,7 +174,8 @@ function AchievementsContent() {
                     {item.value}
                   </span>
                 </div>
-              ))}
+              ))
+              )}
             </CardContent>
           </Card>
 
@@ -181,7 +187,12 @@ function AchievementsContent() {
               </CardTitle>
             </CardHeader>
             <CardContent className="space-y-3 text-sm">
-              {recentAchievements.map((item) => (
+              {recentAchievements.length === 0 ? (
+                <p className="text-slate-500 text-center py-4">
+                  {loading ? "…" : t("admin.analytics.noBreakdown")}
+                </p>
+              ) : (
+              recentAchievements.map((item) => (
                 <div
                   key={item.title}
                   className="rounded-lg bg-slate-50 px-3 py-2"
@@ -192,7 +203,8 @@ function AchievementsContent() {
                     <span>{item.rarity}</span>
                   </div>
                 </div>
-              ))}
+              ))
+              )}
             </CardContent>
           </Card>
         </div>

@@ -51,7 +51,7 @@ const lifeGuides: Guide[] = [
 
 **Дополнительно могут потребоваться:**
 • Справка о составе семьи
-• Копия миграционной карты (для иностранных студентов)
+• Документ о постановке на миграционный учёт / регистрации по месту пребывания (если уже есть)
 • Копия договора об обучении (для платного отделения)
 • Документы о льготах (если есть)
 
@@ -83,7 +83,7 @@ const lifeGuides: Guide[] = [
 
 # 4. Регистрация по месту пребывания
 
-📋 **Регистрация (прописка):**
+📋 **Регистрация по месту пребывания:**
 
 **Что нужно:**
 • Договор найма жилого помещения (из общежития)
@@ -96,9 +96,9 @@ const lifeGuides: Guide[] = [
 • Часто регистрацию можно оформить прямо в общежитии
 • Уточните в администрации общежития
 
-**Сроки:**
-• Регистрацию нужно оформить в течение 7-14 дней после заселения
-• Для иностранных студентов может быть другой срок (уточните)
+**Сроки (2026):**
+• Срок регистрации зависит от вашего статуса (виза, безвиз, ЕАЭС) — **уточните в международном отделе вуза**
+• Обычно это несколько рабочих дней после заселения; штрафы и правила — на gosuslugi.ru и в МВД
 • Штраф зависит от региона и статуса; актуальные суммы уточняйте на Госуслугах и в МВД
 
 # 5. Правила проживания в общежитии
@@ -228,7 +228,7 @@ const lifeGuides: Guide[] = [
 
 **Для иностранных граждан:**
 • Паспорт или вид на жительство (оригинал + копия)
-• Миграционная карта (копия)
+• Документ о регистрации по месту пребывания (если уже оформлена)
 • Документ о регистрации по месту пребывания
 • Заявление формы 2-2-Учёт
 
@@ -263,7 +263,7 @@ const lifeGuides: Guide[] = [
 **1. Социальный фонд России (СФР):**
 • По месту регистрации или фактического проживания
 • Приём по записи или в порядке очереди
-• Сайт: pfrf.ru
+• Сайт: sfr.gov.ru или через Госуслуги (gosuslugi.ru)
 
 **2. Многофункциональный центр (МФЦ):**
 • Можно подать заявление в любом МФЦ
@@ -285,7 +285,7 @@ const lifeGuides: Guide[] = [
 
 **Для иностранных граждан:**
 • Паспорт или вид на жительство (оригинал + копия)
-• Миграционная карта (копия)
+• Документ о регистрации по месту пребывания (если уже оформлена)
 • Документ о регистрации по месту пребывания
 • Заявление формы АДВ-1
 
@@ -475,7 +475,7 @@ const lifeGuides: Guide[] = [
 • Но проверьте статус ваших прав в России
 
 **ВАЖНО:**
-• Не теряйте миграционную карту!
+• Храните документы о регистрации и учёте в одном месте (оригиналы + копии).
 • Если потеряли - немедленно сообщите в МВД
 • Без документов вы не можете находиться в России легально
 
@@ -586,7 +586,7 @@ const lifeGuides: Guide[] = [
 • Дата рождения
 
 **Дополнительно:**
-• Есть ли у вас COVID-19 или подозрение на него (это важно!)
+• Есть ли температура, острая боль или другие тревожные симптомы
 • Пользуетесь ли лифтом (для инвалидов)
 • Особые условия доступа к дому
 
@@ -828,8 +828,8 @@ const lifeGuides: Guide[] = [
 
 **1. Мобильные приложения:**
 • Yandex.Taxi - самое популярное
-• Uber (работает в крупных городах)
-• Gett, Ситимобил
+• Яндекс Go — основное приложение такси
+• Maxim и местные сервисы в регионах
 • Установите приложение, зарегистрируйтесь
 • Введите адрес назначения
 • Выберите тариф (эконом, комфорт, бизнес)
@@ -890,7 +890,7 @@ const lifeGuides: Guide[] = [
 
 **Такси:**
 • Yandex.Taxi - самое популярное
-• Uber - работает в крупных городах
+• Яндекс Go — основное приложение
 
 # 8. Правила поведения
 
@@ -954,19 +954,19 @@ const lifeGuides: Guide[] = [
     language: Language.RU,
     tags: ["аренда", "квартира", "договор"],
     difficulty: Difficulty.ADVANCED,
-    isPublished: true,
+    isPublished: false,
     createdAt: "2024-01-03",
     updatedAt: "2026-03-07",
   },
   {
     id: "7",
-    title: "Проверка миграционной карты",
+    title: "Миграционный учёт и регистрация (скоро)",
     category: GuideCategory.LIFE,
     content: "Что проверяют при контроле миграционной карты...",
     language: Language.RU,
     tags: ["миграция", "карта", "контроль"],
     difficulty: Difficulty.ADVANCED,
-    isPublished: true,
+    isPublished: false,
     createdAt: "2024-01-07",
     updatedAt: "2026-03-07",
   },
@@ -978,7 +978,7 @@ const lifeGuides: Guide[] = [
     language: Language.RU,
     tags: ["банк", "карта", "платежи"],
     difficulty: Difficulty.INTERMEDIATE,
-    isPublished: true,
+    isPublished: false,
     createdAt: "2024-01-09",
     updatedAt: "2026-03-07",
   },
@@ -991,7 +991,7 @@ const lifeGuides: Guide[] = [
     language: Language.RU,
     tags: ["медицина", "полис", "ОМС", "страховка"],
     difficulty: Difficulty.INTERMEDIATE,
-    isPublished: true,
+    isPublished: false,
     createdAt: "2024-01-20",
     updatedAt: "2026-03-07",
   },
@@ -1004,7 +1004,7 @@ const lifeGuides: Guide[] = [
     language: Language.RU,
     tags: ["медицина", "врач", "запись", "приём"],
     difficulty: Difficulty.BEGINNER,
-    isPublished: true,
+    isPublished: false,
     createdAt: "2024-01-20",
     updatedAt: "2026-03-07",
   },
@@ -1017,7 +1017,7 @@ const lifeGuides: Guide[] = [
     language: Language.RU,
     tags: ["медицина", "стоматология", "зубы", "лечение"],
     difficulty: Difficulty.INTERMEDIATE,
-    isPublished: true,
+    isPublished: false,
     createdAt: "2024-01-20",
     updatedAt: "2026-03-07",
   },
@@ -1030,7 +1030,7 @@ const lifeGuides: Guide[] = [
     language: Language.RU,
     tags: ["медицина", "аптека", "лекарства", "рецепт"],
     difficulty: Difficulty.BEGINNER,
-    isPublished: true,
+    isPublished: false,
     createdAt: "2024-01-20",
     updatedAt: "2026-03-07",
   },
@@ -1043,7 +1043,7 @@ const lifeGuides: Guide[] = [
     language: Language.RU,
     tags: ["медицина", "скорая", "экстренная", "помощь"],
     difficulty: Difficulty.ADVANCED,
-    isPublished: true,
+    isPublished: false,
     createdAt: "2024-01-20",
     updatedAt: "2026-03-07",
   },
@@ -1282,6 +1282,7 @@ const lifeGuides: Guide[] = [
 
 const categoriesConfig = [
   { id: "all", icon: Home },
+  { id: "documents", icon: Shield },
   { id: "housing", icon: Building },
   { id: "transport", icon: Bus },
   { id: "health", icon: Shield },
@@ -1324,7 +1325,7 @@ export function LifeGuideContent() {
 
   // Фильтрация гайдов
   const filteredGuides = useMemo(() => {
-    let filtered = lifeGuides;
+    let filtered = lifeGuides.filter((guide) => guide.isPublished);
 
     // Фильтр по поиску
     if (searchQuery.trim()) {
@@ -1342,6 +1343,10 @@ export function LifeGuideContent() {
     if (selectedCategory !== "all") {
       filtered = filtered.filter((guide) => {
         switch (selectedCategory) {
+          case "documents":
+            return guide.tags.some((tag) =>
+              ["ИНН", "СНИЛС", "документы", "паспорт", "потеря", "замена", "миграция", "регистрация"].includes(tag)
+            );
           case "housing":
             return guide.tags.some((tag) =>
               [

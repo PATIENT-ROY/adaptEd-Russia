@@ -24,79 +24,12 @@ import {
 } from "lucide-react";
 import Link from "next/link";
 import { useAuth } from "@/contexts/AuthContext";
-import { useState, useMemo } from "react";
+import { useState, useMemo, useEffect } from "react";
 import { Language, Role } from "@/types";
 import { useTranslation } from "@/hooks/useTranslation";
 import { API_BASE_URL } from "@/lib/api";
 import { countrySuggestions } from "@/constants/countries";
-
-const mockUsers = [
-  {
-    id: "1",
-    name: "Ахмед Аль-Махмуд",
-    email: "ahmed@example.com",
-    country: "Египет",
-    language: "ar",
-    role: "student",
-    status: "active",
-    registeredAt: "2024-01-15",
-    lastLogin: "2024-01-20",
-    guidesRead: 12,
-    aiQuestions: 23,
-  },
-  {
-    id: "2",
-    name: "Мария Гонсалес",
-    email: "maria@example.com",
-    country: "Испания",
-    language: "es",
-    role: "student",
-    status: "active",
-    registeredAt: "2024-01-14",
-    lastLogin: "2024-01-19",
-    guidesRead: 8,
-    aiQuestions: 15,
-  },
-  {
-    id: "3",
-    name: "Чжан Вэй",
-    email: "zhang@example.com",
-    country: "Китай",
-    language: "ZH",
-    role: "student",
-    status: "pending",
-    registeredAt: "2024-01-13",
-    lastLogin: "2024-01-18",
-    guidesRead: 5,
-    aiQuestions: 7,
-  },
-  {
-    id: "4",
-    name: "Анна Петрова",
-    email: "anna@example.com",
-    country: "Россия",
-    language: "ru",
-    role: "admin",
-    status: "active",
-    registeredAt: "2024-01-10",
-    lastLogin: "2024-01-20",
-    guidesRead: 45,
-    aiQuestions: 12,
-  },
-  {
-    id: "5",
-    name: "Джон Смит",
-    email: "john@example.com",
-    country: "США",
-    language: "en",
-    role: "student",
-    status: "blocked",
-    registeredAt: "2024-01-12",
-    lastLogin: "2024-01-17",
-    guidesRead: 3,
-    aiQuestions: 2,
-  },
-];
+import { fetchAdminUsers, type AdminUserRow } from "@/lib/admin-api";
 
 const statusColors: Record<string, string> = {
   active: "bg-green-100 text-green-700",
@@ -123,7 +56,8 @@ function AdminUsersContent() {
   const { t } = useTranslation();
   const isAdmin = user?.role === Role.ADMIN;
 
-  const [users, setUsers] = useState(mockUsers);
+  const [users, setUsers] = useState<AdminUserRow[]>([]);
+  const [usersLoading, setUsersLoading] = useState(true);
   const [searchTerm, setSearchTerm] = useState("");
   const [statusFilter, setStatusFilter] = useState("all");
   const [roleFilter, setRoleFilter] = useState("all");
@@ -157,6 +91,25 @@ function AdminUsersContent() {
       return matchesSearch && matchesStatus && matchesRole;
     });
   }, [users, searchTerm, statusFilter, roleFilter]);
+
+  useEffect(() => {
+    if (!isAdmin) return;
+    let cancelled = false;
+    (async () => {
+      setUsersLoading(true);
+      try {
+        const data = await fetchAdminUsers();
+        if (!cancelled) setUsers(data);
+      } catch (error) {
+        console.error("Failed to load admin users:", error);
+      } finally {
+        if (!cancelled) setUsersLoading(false);
+      }
+    })();
+    return () => {
+      cancelled = true;
+    };
+  }, [isAdmin]);
 
   if (!isAdmin) {
     return (
@@ -268,7 +221,7 @@ function AdminUsersContent() {
         return;
       }
 
-      const createdUser = {
+      const createdUser: AdminUserRow = {
         id: payload.data.user.id,
         name: payload.data.user.name,
         email: payload.data.user.email,
@@ -280,7 +233,7 @@ function AdminUsersContent() {
         lastLogin: "—",
         guidesRead: 0,
         aiQuestions: 0,
-      } as typeof mockUsers[number];
+      };
 
       setUsers((prev) => [createdUser, ...prev]);
       setInviteLink(payload.data.setupLink || "");

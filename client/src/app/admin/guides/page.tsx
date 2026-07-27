@@ -25,77 +25,9 @@ import {
 } from "lucide-react";
 import Link from "next/link";
 import { useAuth } from "@/contexts/AuthContext";
-import { useState } from "react";
+import { useState, useEffect } from "react";
 import { Role } from "@/types";
-
-const mockGuides = [
-  {
-    id: "1",
-    title: "Как сдать сессию в российском вузе",
-    category: "education",
-    content:
-      "Подробное руководство по подготовке и сдаче экзаменов в российских университетах...",
-    language: "ru",
-    tags: ["сессия", "экзамены", "подготовка"],
-    status: "published",
-    views: 234,
-    createdAt: "2024-01-15",
-    updatedAt: "2024-01-20",
-    author: "Анна Петрова",
-  },
-  {
-    id: "2",
-    title: "Регистрация в миграционной службе",
-    category: "life",
-    content: "Пошаговая инструкция по регистрации иностранных студентов...",
-    language: "ru",
-    tags: ["регистрация", "миграция", "документы"],
-    status: "published",
-    views: 189,
-    createdAt: "2024-01-10",
-    updatedAt: "2024-01-18",
-    author: "Анна Петрова",
-  },
-  {
-    id: "3",
-    title: "Получение ИНН и СНИЛС",
-    category: "life",
-    content: "Как получить налоговый номер и страховое свидетельство...",
-    language: "ru",
-    tags: ["ИНН", "СНИЛС", "документы"],
-    status: "draft",
-    views: 0,
-    createdAt: "2024-01-08",
-    updatedAt: "2024-01-15",
-    author: "Анна Петрова",
-  },
-  {
-    id: "4",
-    title: "Структура вуза: кафедры, деканаты, ректорат",
-    category: "education",
-    content: "Кто есть кто в российском университете...",
-    language: "ru",
-    tags: ["структура", "кафедра", "деканат"],
-    status: "published",
-    views: 156,
-    createdAt: "2024-01-05",
-    updatedAt: "2024-01-12",
-    author: "Анна Петрова",
-  },
-  {
-    id: "5",
-    title: "Как писать курсовую работу",
-    category: "education",
-    content: "Пошаговое руководство по написанию курсовой...",
-    language: "ru",
-    tags: ["курсовая", "написание", "исследование"],
-    status: "published",
-    views: 298,
-    createdAt: "2024-01-08",
-    updatedAt: "2024-01-15",
-    author: "Анна Петрова",
-  },
-];
+import { fetchAdminGuides, type AdminGuideRow } from "@/lib/admin-api";
 
 const statusColors: Record<string, string> = {
   published: "bg-green-100 text-green-700",
@@ -116,7 +48,8 @@ function AdminGuidesContent() {
   const { t } = useTranslation();
   const isAdmin = user?.role === Role.ADMIN;
 
-  const [guides, setGuides] = useState(mockGuides);
+  const [guides, setGuides] = useState<AdminGuideRow[]>([]);
+  const [guidesLoading, setGuidesLoading] = useState(true);
   const [searchTerm, setSearchTerm] = useState("");
   const [statusFilter, setStatusFilter] = useState("all");
   const [categoryFilter, setCategoryFilter] = useState("all");
@@ -127,6 +60,25 @@ function AdminGuidesContent() {
     category: "education",
     status: "draft",
   });
+
+  useEffect(() => {
+    if (!isAdmin) return;
+    let cancelled = false;
+    (async () => {
+      setGuidesLoading(true);
+      try {
+        const data = await fetchAdminGuides();
+        if (!cancelled) setGuides(data);
+      } catch (error) {
+        console.error("Failed to load admin guides:", error);
+      } finally {
+        if (!cancelled) setGuidesLoading(false);
+      }
+    })();
+    return () => {
+      cancelled = true;
+    };
+  }, [isAdmin]);
 
   if (!isAdmin) {
     return (

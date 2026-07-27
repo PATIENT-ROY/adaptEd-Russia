@@ -302,7 +302,7 @@ export default function DashboardPage() {
             </Card>
           )}
 
-          <AdaptationProgress />
+          <AdaptationProgress reminders={reminders} />
 
           {/* User Progress & Daily Quests */}
           {userProgress ? (

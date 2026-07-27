@@ -1,8 +1,10 @@
 "use client";
 
-import { useState } from "react";
+import { useMemo } from "react";
 import { Card, CardContent, CardHeader, CardTitle } from "@/components/ui/card";
 import { CheckCircle2, Circle } from "lucide-react";
+import { useAuth } from "@/contexts/AuthContext";
+import { Reminder, ReminderCategory, ReminderStatus } from "@/types";
 
 type ProgressItem = {
   id: string;
@@ -10,15 +12,48 @@ type ProgressItem = {
   completed: boolean;
 };
 
-const initialItems: ProgressItem[] = [
-  { id: "university-registration", label: "Регистрация в университете", completed: true },
-  { id: "migration-accounting", label: "Миграционный учет", completed: true },
-  { id: "inn", label: "Получение ИНН", completed: false },
-  { id: "insurance", label: "Медицинская страховка", completed: false },
-];
+type AdaptationProgressProps = {
+  reminders?: Reminder[];
+};
 
-export function AdaptationProgress() {
-  const [items] = useState<ProgressItem[]>(initialItems);
+export function AdaptationProgress({ reminders = [] }: AdaptationProgressProps) {
+  const { user } = useAuth();
+
+  const items = useMemo<ProgressItem[]>(() => {
+    const hasCompleted = (category: ReminderCategory) =>
+      reminders.some(
+        (reminder) =>
+          reminder.category === category &&
+          reminder.status === ReminderStatus.COMPLETED
+      );
+
+    return [
+      {
+        id: "university-registration",
+        label: "Регистрация в университете",
+        completed: Boolean(user?.university?.trim()),
+      },
+      {
+        id: "migration-accounting",
+        label: "Миграционный учет",
+        completed: hasCompleted(ReminderCategory.DOCUMENTS),
+      },
+      {
+        id: "inn",
+        label: "Получение ИНН",
+        completed: reminders.some(
+          (reminder) =>
+            reminder.status === ReminderStatus.COMPLETED &&
+            /инн|inn/i.test(`${reminder.title} ${reminder.description ?? ""}`)
+        ),
+      },
+      {
+        id: "insurance",
+        label: "Медицинская страховка",
+        completed: hasCompleted(ReminderCategory.HEALTH),
+      },
+    ];
+  }, [reminders, user?.university]);
 
   return (
     <Card className="border-0 shadow-xl">
