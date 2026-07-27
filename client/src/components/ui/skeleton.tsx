@@ -90,27 +90,69 @@ export function CalendarSkeleton() {
 
 export function TestimonialCardSkeleton() {
   return (
-    <div className="h-full overflow-hidden rounded-3xl border-0 bg-white p-4 shadow-[0_18px_45px_-28px_rgba(15,23,42,0.22)] sm:p-6 lg:p-8">
-      <div className="mb-3 flex items-center gap-2 sm:mb-4">
+    <div
+      aria-hidden="true"
+      className="flex h-full flex-col overflow-hidden rounded-3xl border border-slate-200 bg-white p-4 shadow-sm sm:p-6 lg:p-8"
+    >
+      <div className="mb-3 flex items-center gap-1.5 sm:mb-4">
         {Array.from({ length: 5 }).map((_, i) => (
           <Skeleton key={i} className="h-4 w-4 rounded-full sm:h-5 sm:w-5" />
         ))}
       </div>
 
-      <div className="mb-6 space-y-3">
+      <div className="mb-4 flex-1 space-y-2.5 sm:mb-6">
         <Skeleton className="h-4 w-full" />
-        <Skeleton className="h-4 w-[92%]" />
-        <Skeleton className="h-4 w-[80%]" />
-        <Skeleton className="h-4 w-[68%]" />
+        <Skeleton className="h-4 w-[94%]" />
+        <Skeleton className="h-4 w-[82%]" />
+        <Skeleton className="hidden h-4 w-[70%] sm:block" />
       </div>
 
-      <div className="mt-auto flex items-center rounded-2xl bg-slate-50/80 px-3 py-3">
-        <Skeleton className="mr-3 h-10 w-10 rounded-full sm:mr-4 sm:h-12 sm:w-12" />
-        <div className="min-w-0 flex-1">
-          <Skeleton className="mb-2 h-4 w-32 sm:w-40" />
-          <Skeleton className="h-3.5 w-24 sm:w-32" />
+      <div className="mt-auto flex items-center rounded-2xl bg-slate-50 px-2 py-2 sm:px-3 sm:py-3">
+        <Skeleton className="mr-3 h-10 w-10 shrink-0 rounded-full sm:mr-4 sm:h-12 sm:w-12" />
+        <div className="min-w-0 flex-1 space-y-2">
+          <Skeleton className="h-4 w-32 sm:w-40" />
+          <Skeleton className="h-3 w-24 sm:w-36" />
+          <Skeleton className="h-3 w-20" />
         </div>
       </div>
+    </div>
+  );
+}
+
+/** Homepage trust stats grid (matches TrustStats layout) */
+export function TrustStatsSkeleton() {
+  return (
+    <div
+      aria-hidden="true"
+      className="grid grid-cols-2 gap-3 sm:grid-cols-4 sm:gap-4"
+    >
+      {Array.from({ length: 4 }).map((_, i) => (
+        <div
+          key={i}
+          className="rounded-xl border border-slate-200/80 bg-slate-100/80 p-3 text-center sm:rounded-2xl sm:p-4"
+        >
+          <Skeleton className="mx-auto mb-2 h-5 w-5 rounded-md sm:h-6 sm:w-6" />
+          <Skeleton className="mx-auto mb-2 h-7 w-14 sm:h-8 sm:w-16" />
+          <Skeleton className="mx-auto h-3 w-16 sm:w-20" />
+        </div>
+      ))}
+    </div>
+  );
+}
+
+/** Homepage content proof strip under hero */
+export function ContentProofSkeleton() {
+  return (
+    <div
+      aria-hidden="true"
+      className="flex flex-wrap items-center justify-center gap-3 sm:gap-5"
+    >
+      {Array.from({ length: 3 }).map((_, i) => (
+        <Skeleton
+          key={i}
+          className={`h-4 rounded-full ${i === 0 ? "w-24" : i === 1 ? "w-20 sm:w-24" : "w-28 sm:w-32"}`}
+        />
+      ))}
     </div>
   );
 }

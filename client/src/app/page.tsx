@@ -38,7 +38,7 @@ import { HeroTypewriter } from "@/components/home/HeroTypewriter";
 import { TrustStats } from "@/components/home/TrustStats";
 import { AdaptationHeroSection } from "@/components/home/AdaptationHeroSection";
 import { ReviewCard } from "@/components/home/ReviewCard";
-import { TestimonialCardSkeleton } from "@/components/ui/skeleton";
+import { TestimonialCardSkeleton, ContentProofSkeleton } from "@/components/ui/skeleton";
 import { useAdaptationCta } from "@/hooks/useAdaptationCta";
 import { ScrollReveal } from "@/components/home/ScrollReveal";
 import { StaggerReveal, StaggerItem } from "@/components/home/StaggerReveal";
@@ -294,8 +294,18 @@ export default function HomePage() {
           )}
         </div>
 
-        {/* Social proof — reviews stats when enough data */}
-        {showTrustBar && trustStats && (
+        {/* Social proof — loading / trust stats / content proof */}
+        {reviewsLoading ? (
+          <section
+            aria-busy="true"
+            aria-label={t("home.contentProof.title")}
+            className="py-5 sm:py-6 bg-white rounded-2xl sm:rounded-3xl mb-6 sm:mb-8 border border-slate-100"
+          >
+            <div className="max-w-3xl mx-auto px-4 sm:px-6">
+              <ContentProofSkeleton />
+            </div>
+          </section>
+        ) : showTrustBar && trustStats ? (
           <section
             aria-label={t("home.section.testimonials.title")}
             className="py-8 sm:py-10 bg-white rounded-2xl sm:rounded-3xl mb-6 sm:mb-8"
@@ -311,10 +321,7 @@ export default function HomePage() {
               />
             </div>
           </section>
-        )}
-
-        {/* Content proof — when social proof is not yet available */}
-        {showContentProof && (
+        ) : showContentProof ? (
           <section
             aria-label={t("home.contentProof.title")}
             className="py-5 sm:py-6 bg-white rounded-2xl sm:rounded-3xl mb-6 sm:mb-8 border border-slate-100"
@@ -325,7 +332,7 @@ export default function HomePage() {
               </p>
             </div>
           </section>
-        )}
+        ) : null}
 
         <AdaptationHeroSection />
 
@@ -621,7 +628,11 @@ export default function HomePage() {
             </div>
 
             {reviewsLoading ? (
-              <div className="grid grid-cols-1 md:grid-cols-3 gap-6">
+              <div
+                aria-busy="true"
+                aria-label={t("home.section.testimonials.title")}
+                className="grid grid-cols-1 md:grid-cols-3 gap-6"
+              >
                 {Array.from({ length: 3 }).map((_, index) => (
                   <TestimonialCardSkeleton key={index} />
                 ))}
@@ -640,17 +651,24 @@ export default function HomePage() {
                 ))}
               </div>
             ) : (
-              <div className="mx-auto max-w-lg rounded-2xl border border-dashed border-slate-300 bg-white px-6 py-10 text-center">
-                <p className="text-lg font-semibold text-slate-900">
+              <div className="mx-auto max-w-xl rounded-2xl border border-blue-100 bg-gradient-to-br from-blue-50 via-white to-indigo-50 px-6 py-10 sm:px-8 sm:py-12 text-center shadow-sm">
+                <div
+                  className="mx-auto mb-5 flex h-14 w-14 items-center justify-center rounded-2xl bg-gradient-to-br from-blue-500 to-purple-600 text-white shadow-lg shadow-blue-500/25"
+                  aria-hidden
+                >
+                  <Star className="h-7 w-7 fill-current" />
+                </div>
+                <p className="text-xl sm:text-2xl font-bold text-slate-900 leading-snug">
                   {t("home.section.testimonials.empty")}
                 </p>
-                <p className="mt-2 text-sm text-slate-600">
+                <p className="mt-3 text-sm sm:text-base text-slate-600 leading-relaxed">
                   {t("home.section.testimonials.emptyDescription")}
                 </p>
                 <Link
                   href="/profile"
-                  className="mt-6 inline-flex items-center justify-center rounded-xl bg-blue-600 px-6 py-3 text-sm font-semibold text-white hover:bg-blue-700 transition-colors"
+                  className="mt-8 inline-flex min-h-12 items-center justify-center rounded-xl bg-gradient-to-r from-blue-600 to-purple-600 px-8 py-3.5 text-base font-semibold text-white shadow-lg shadow-blue-500/25 transition-all hover:from-blue-700 hover:to-purple-700 hover:shadow-xl hover:shadow-blue-500/30 focus-visible:outline-none focus-visible:ring-2 focus-visible:ring-blue-500 focus-visible:ring-offset-2"
                 >
+                  <MessageSquare className="mr-2 h-5 w-5" aria-hidden />
                   {t("home.section.testimonials.emptyCta")}
                 </Link>
               </div>
