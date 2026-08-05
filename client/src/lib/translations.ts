@@ -506,7 +506,7 @@ const translations: Record<Language, Record<string, string>> = {
     "home.benefits.messengers": "Интеграция с мессенджерами",
     "home.benefits.messengers.desc": "Получайте уведомления в Telegram, WhatsApp и других приложениях",
     "home.benefits.verified": "Проверенные материалы",
-    "home.benefits.verified.desc": "Гайды проверены экспертами и обновляются по мере изменения правил",
+    "home.benefits.verified.desc": "Материалы создаются на основе официальных источников и проходят внутреннюю проверку перед публикацией. По мере развития платформы к проверке будут привлекаться преподаватели и специалисты российских университетов.",
     "home.features.verified.cta": "Кто это проверяет",
     
     "home.section.testimonials.title": "Что говорят наши студенты",
