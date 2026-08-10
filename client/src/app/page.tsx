@@ -38,12 +38,18 @@ import { HeroTypewriter } from "@/components/home/HeroTypewriter";
 import { TrustStats } from "@/components/home/TrustStats";
 import { AdaptationHeroSection } from "@/components/home/AdaptationHeroSection";
 import { ReviewCard } from "@/components/home/ReviewCard";
-import { TestimonialCardSkeleton, ContentProofSkeleton } from "@/components/ui/skeleton";
+import {
+  TestimonialCardSkeleton,
+  ContentProofSkeleton,
+} from "@/components/ui/skeleton";
 import { useAdaptationCta } from "@/hooks/useAdaptationCta";
 import { ScrollReveal } from "@/components/home/ScrollReveal";
 import { StaggerReveal, StaggerItem } from "@/components/home/StaggerReveal";
 import { motion } from "framer-motion";
-import { TOTAL_GUIDES_COUNT, SUPPORTED_LANGUAGES_COUNT } from "@/constants/content-stats";
+import {
+  TOTAL_GUIDES_COUNT,
+  SUPPORTED_LANGUAGES_COUNT,
+} from "@/constants/content-stats";
 import { PREMIUM_CHECKOUT_PATH } from "@/constants/routes";
 
 const PREMIUM_FEATURES_VISIBLE = 6;
@@ -74,7 +80,8 @@ function HowItWorksStepHeader({
 
 export default function HomePage() {
   const { t } = useTranslation();
-  const { href: adaptationCtaHref, label: adaptationCtaLabel } = useAdaptationCta();
+  const { href: adaptationCtaHref, label: adaptationCtaLabel } =
+    useAdaptationCta();
   const [showScrollIndicator, setShowScrollIndicator] = useState(true);
   const [scrollIndicatorSlow, setScrollIndicatorSlow] = useState(false);
   const [showScrollTopButton, setShowScrollTopButton] = useState(false);
@@ -141,8 +148,14 @@ export default function HomePage() {
 
   const contentProofItems = useMemo(
     () => [
-      t("home.contentProof.guides").replace("{count}", String(TOTAL_GUIDES_COUNT)),
-      t("home.contentProof.languages").replace("{count}", String(SUPPORTED_LANGUAGES_COUNT)),
+      t("home.contentProof.guides").replace(
+        "{count}",
+        String(TOTAL_GUIDES_COUNT),
+      ),
+      t("home.contentProof.languages").replace(
+        "{count}",
+        String(SUPPORTED_LANGUAGES_COUNT),
+      ),
       t("home.contentProof.ai"),
     ],
     [t],
@@ -155,7 +168,10 @@ export default function HomePage() {
         title: t("home.features.navigator"),
         description: t("home.features.navigator.desc"),
         gradient: "from-blue-500 to-blue-600",
-        stats: t("home.section.features.stats").replace("{count}", String(TOTAL_GUIDES_COUNT)),
+        stats: t("home.section.features.stats").replace(
+          "{count}",
+          String(TOTAL_GUIDES_COUNT),
+        ),
         href: "/education-guide",
       },
       {
@@ -276,14 +292,16 @@ export default function HomePage() {
 
         {/* Hero */}
         <div className="relative overflow-hidden bg-gradient-to-br from-blue-600 via-purple-600 to-indigo-700 pt-10 sm:pt-14 md:pt-20 pb-16 sm:pb-20 md:pb-24 rounded-2xl sm:rounded-3xl mt-4 sm:mt-6 mb-6 sm:mb-8">
-          <div className="absolute inset-0 bg-black/10" aria-hidden />
           <div
-            className="absolute inset-0"
+            className="absolute inset-0 scale-105 blur-[3px]"
             aria-hidden
             style={{
-              backgroundImage: `url("data:image/svg+xml,%3Csvg width='60' height='60' viewBox='0 0 60 60' xmlns='http://www.w3.org/2000/svg'%3E%3Cg fill='none' fill-rule='evenodd'%3E%3Cg fill='%23ffffff' fill-opacity='0.05'%3E%3Ccircle cx='30' cy='30' r='4'/%3E%3C/g%3E%3C/g%3E%3C/svg%3E")`,
+              backgroundImage: 'url("/image-banner/image-Home-page.png")',
+              backgroundSize: "cover",
+              backgroundPosition: "center",
             }}
           />
+          <div className="absolute inset-0 bg-black/35" aria-hidden />
 
           <div className="relative max-w-4xl mx-auto px-4 sm:px-6 lg:px-8 text-center">
             <h1 className="text-3xl sm:text-4xl md:text-5xl lg:text-6xl font-bold tracking-tight text-white mb-4 sm:mb-6">
@@ -314,7 +332,10 @@ export default function HomePage() {
           </div>
 
           {showScrollIndicator && (
-            <div className="absolute bottom-5 sm:bottom-7 left-1/2 -translate-x-1/2 pointer-events-none" aria-hidden>
+            <div
+              className="absolute bottom-5 sm:bottom-7 left-1/2 -translate-x-1/2 pointer-events-none"
+              aria-hidden
+            >
               <div
                 className={`${scrollIndicatorSlow ? "hero-scroll-gentle" : "motion-safe:animate-bounce"} transition-transform duration-1000 ease-out`}
               >
@@ -413,8 +434,12 @@ export default function HomePage() {
                             {t("nav.aiHelper")} — {t("aiHelper.mode.study")}
                           </p>
                           <div className="mt-1.5 flex flex-wrap gap-1">
-                            <span className="text-xs px-2 py-0.5 rounded-md bg-blue-500 text-white">{t("aiHelper.mode.study")}</span>
-                            <span className="text-xs px-2 py-0.5 rounded-md bg-slate-100 text-slate-600">{t("aiHelper.mode.life")}</span>
+                            <span className="text-xs px-2 py-0.5 rounded-md bg-blue-500 text-white">
+                              {t("aiHelper.mode.study")}
+                            </span>
+                            <span className="text-xs px-2 py-0.5 rounded-md bg-slate-100 text-slate-600">
+                              {t("aiHelper.mode.life")}
+                            </span>
                           </div>
                         </div>
                         <div className="ml-auto max-w-[85%] rounded-lg bg-blue-500 text-white text-xs p-2">
@@ -445,17 +470,34 @@ export default function HomePage() {
                       </div>
                       <div className="p-3 space-y-2">
                         <div className="rounded-lg bg-white border border-slate-200 px-2 py-1.5">
-                          <p className="text-xs text-slate-400">{t("educationGuide.search.placeholder")}</p>
+                          <p className="text-xs text-slate-400">
+                            {t("educationGuide.search.placeholder")}
+                          </p>
                         </div>
                         <div className="flex flex-wrap gap-1.5">
-                          <span className="text-xs px-2 py-1 rounded-md bg-blue-500 text-white">{t("educationGuide.categories.all")}</span>
-                          <span className="text-xs px-2 py-1 rounded-md bg-white border border-slate-200 text-slate-600">{t("educationGuide.categories.exams")}</span>
-                          <span className="text-xs px-2 py-1 rounded-md bg-white border border-slate-200 text-slate-600">{t("educationGuide.categories.documents")}</span>
+                          <span className="text-xs px-2 py-1 rounded-md bg-blue-500 text-white">
+                            {t("educationGuide.categories.all")}
+                          </span>
+                          <span className="text-xs px-2 py-1 rounded-md bg-white border border-slate-200 text-slate-600">
+                            {t("educationGuide.categories.exams")}
+                          </span>
+                          <span className="text-xs px-2 py-1 rounded-md bg-white border border-slate-200 text-slate-600">
+                            {t("educationGuide.categories.documents")}
+                          </span>
                         </div>
                         <div className="space-y-1.5">
-                          {[t("educationGuide.header.subtitle"), t("studentSlang.title"), t("educationGuide.categories.documents")].map((label) => (
-                            <div key={label} className="rounded-md bg-white border border-slate-200 p-2">
-                              <p className="text-xs font-medium text-slate-800 line-clamp-1">{label}</p>
+                          {[
+                            t("educationGuide.header.subtitle"),
+                            t("studentSlang.title"),
+                            t("educationGuide.categories.documents"),
+                          ].map((label) => (
+                            <div
+                              key={label}
+                              className="rounded-md bg-white border border-slate-200 p-2"
+                            >
+                              <p className="text-xs font-medium text-slate-800 line-clamp-1">
+                                {label}
+                              </p>
                             </div>
                           ))}
                         </div>
@@ -481,19 +523,33 @@ export default function HomePage() {
                       </div>
                       <div className="p-3 space-y-2">
                         <div className="rounded-lg bg-gradient-to-r from-indigo-600 to-purple-600 text-white p-2">
-                          <p className="text-xs font-semibold">{t("home.features.community")}</p>
+                          <p className="text-xs font-semibold">
+                            {t("home.features.community")}
+                          </p>
                           <div className="mt-1.5 flex flex-wrap gap-1.5">
-                            <span className="text-xs px-2 py-0.5 rounded bg-white/20">{t("home.mock.community.tab.questions")}</span>
-                            <span className="text-xs px-2 py-0.5 rounded bg-white/20">{t("home.mock.community.tab.answers")}</span>
-                            <span className="text-xs px-2 py-0.5 rounded bg-white/20">{t("home.mock.community.tab.members")}</span>
+                            <span className="text-xs px-2 py-0.5 rounded bg-white/20">
+                              {t("home.mock.community.tab.questions")}
+                            </span>
+                            <span className="text-xs px-2 py-0.5 rounded bg-white/20">
+                              {t("home.mock.community.tab.answers")}
+                            </span>
+                            <span className="text-xs px-2 py-0.5 rounded bg-white/20">
+                              {t("home.mock.community.tab.members")}
+                            </span>
                           </div>
                         </div>
                         <div className="rounded-lg bg-white border border-slate-200 px-2 py-1.5">
-                          <p className="text-xs text-slate-400">{t("aiHelper.input.placeholder")}</p>
+                          <p className="text-xs text-slate-400">
+                            {t("aiHelper.input.placeholder")}
+                          </p>
                         </div>
                         <div className="rounded-lg bg-white border border-slate-200 p-2">
-                          <p className="text-xs font-medium text-slate-900">{t("aiHelper.quickQuestions.life.4")}</p>
-                          <p className="text-xs text-slate-500 mt-1">{t("home.mock.community.meta")}</p>
+                          <p className="text-xs font-medium text-slate-900">
+                            {t("aiHelper.quickQuestions.life.4")}
+                          </p>
+                          <p className="text-xs text-slate-500 mt-1">
+                            {t("home.mock.community.meta")}
+                          </p>
                         </div>
                       </div>
                     </div>
@@ -544,7 +600,8 @@ export default function HomePage() {
                             </p>
                           )}
                           <span className="inline-flex items-center gap-1 text-sm font-semibold text-blue-600 mt-4 group-hover:gap-2 transition-all">
-                            {(feature as { ctaLabel?: string }).ctaLabel ?? t("common.learnMore")}
+                            {(feature as { ctaLabel?: string }).ctaLabel ??
+                              t("common.learnMore")}
                             <ArrowRight className="h-4 w-4" aria-hidden />
                           </span>
                         </CardContent>
@@ -578,7 +635,9 @@ export default function HomePage() {
                 <Card
                   key={plan.name}
                   className={`relative flex flex-col bg-white ${
-                    plan.popular ? "ring-2 ring-blue-500 shadow-xl" : "border border-slate-200 shadow-sm"
+                    plan.popular
+                      ? "ring-2 ring-blue-500 shadow-xl"
+                      : "border border-slate-200 shadow-sm"
                   }`}
                 >
                   {plan.popular && (
@@ -596,16 +655,25 @@ export default function HomePage() {
                       ) : (
                         <Zap className="h-8 w-8 text-blue-600 mr-2" />
                       )}
-                      <CardTitle className="text-2xl font-bold">{plan.name}</CardTitle>
+                      <CardTitle className="text-2xl font-bold">
+                        {plan.name}
+                      </CardTitle>
                     </div>
-                    <div className="text-3xl font-bold text-slate-900 mb-1">{plan.price}</div>
-                    <CardDescription className="text-base">{plan.description}</CardDescription>
+                    <div className="text-3xl font-bold text-slate-900 mb-1">
+                      {plan.price}
+                    </div>
+                    <CardDescription className="text-base">
+                      {plan.description}
+                    </CardDescription>
                   </CardHeader>
                   <CardContent className="p-6 flex flex-col flex-grow">
                     {(() => {
                       const isPremium = plan.popular;
                       const hiddenCount = isPremium
-                        ? Math.max(0, plan.features.length - PREMIUM_FEATURES_VISIBLE)
+                        ? Math.max(
+                            0,
+                            plan.features.length - PREMIUM_FEATURES_VISIBLE,
+                          )
                         : 0;
                       const visibleFeatures =
                         isPremium && !premiumFeaturesExpanded
@@ -616,23 +684,33 @@ export default function HomePage() {
                         <>
                           <ul className="space-y-3 mb-4 flex-grow">
                             {visibleFeatures.map((feature) => (
-                              <li key={feature} className="flex items-start gap-3">
+                              <li
+                                key={feature}
+                                className="flex items-start gap-3"
+                              >
                                 <div className="w-5 h-5 rounded-full bg-green-100 flex items-center justify-center shrink-0 mt-0.5">
                                   <div className="w-2 h-2 rounded-full bg-green-500" />
                                 </div>
-                                <span className="text-sm sm:text-base text-slate-700">{feature}</span>
+                                <span className="text-sm sm:text-base text-slate-700">
+                                  {feature}
+                                </span>
                               </li>
                             ))}
                           </ul>
                           {isPremium && hiddenCount > 0 && (
                             <button
                               type="button"
-                              onClick={() => setPremiumFeaturesExpanded((prev) => !prev)}
+                              onClick={() =>
+                                setPremiumFeaturesExpanded((prev) => !prev)
+                              }
                               className="mb-6 text-sm font-semibold text-blue-600 hover:text-blue-700 focus-visible:outline-none focus-visible:ring-2 focus-visible:ring-blue-500 focus-visible:ring-offset-2 rounded-md"
                             >
                               {premiumFeaturesExpanded
                                 ? t("home.pricing.hideExtraFeatures")
-                                : t("home.pricing.showAllFeatures").replace("{count}", String(hiddenCount))}
+                                : t("home.pricing.showAllFeatures").replace(
+                                    "{count}",
+                                    String(hiddenCount),
+                                  )}
                             </button>
                           )}
                         </>
@@ -733,19 +811,27 @@ export default function HomePage() {
 
                 <ul className="grid grid-cols-1 sm:grid-cols-2 gap-x-6 gap-y-2 text-sm sm:text-base text-slate-800 mb-6">
                   <li className="flex gap-2">
-                    <span className="text-blue-600 shrink-0" aria-hidden>•</span>
+                    <span className="text-blue-600 shrink-0" aria-hidden>
+                      •
+                    </span>
                     <span>{t("home.section.about.purpose.bullet1")}</span>
                   </li>
                   <li className="flex gap-2">
-                    <span className="text-blue-600 shrink-0" aria-hidden>•</span>
+                    <span className="text-blue-600 shrink-0" aria-hidden>
+                      •
+                    </span>
                     <span>{t("home.section.about.purpose.bullet2")}</span>
                   </li>
                   <li className="flex gap-2">
-                    <span className="text-blue-600 shrink-0" aria-hidden>•</span>
+                    <span className="text-blue-600 shrink-0" aria-hidden>
+                      •
+                    </span>
                     <span>{t("home.section.about.purpose.bullet3")}</span>
                   </li>
                   <li className="flex gap-2">
-                    <span className="text-blue-600 shrink-0" aria-hidden>•</span>
+                    <span className="text-blue-600 shrink-0" aria-hidden>
+                      •
+                    </span>
                     <span>{t("home.section.about.purpose.bullet4")}</span>
                   </li>
                 </ul>

@@ -3,15 +3,14 @@
 import { Layout } from "@/components/layout/layout";
 import { GuideCard } from "@/components/ui/guide-card";
 import { Button } from "@/components/ui/button";
-import { Card, CardContent } from "@/components/ui/card";
 import {
   Search,
   Filter,
   Home,
-  Building,
   Bus,
-  Shield,
   Phone,
+  HeartPulse,
+  FileText,
 } from "lucide-react";
 import { useState, useMemo, useEffect, useCallback } from "react";
 import { Guide, GuideCategory, Language, Difficulty } from "@/types";
@@ -1281,11 +1280,10 @@ const lifeGuides: Guide[] = [
 ];
 
 const categoriesConfig = [
-  { id: "all", icon: Home },
-  { id: "documents", icon: Shield },
-  { id: "housing", icon: Building },
+  { id: "documents", icon: FileText },
+  { id: "housing", icon: Home },
   { id: "transport", icon: Bus },
-  { id: "health", icon: Shield },
+  { id: "health", icon: HeartPulse },
   { id: "services", icon: Phone },
 ];
 
@@ -1300,7 +1298,6 @@ export function LifeGuideContent() {
   const { t } = useTranslation();
   const [searchQuery, setSearchQuery] = useState("");
   const [selectedCategory, setSelectedCategory] = useState("all");
-  const [isInitialLoading, setIsInitialLoading] = useState(true);
   const [guidesVisibleCount, setGuidesVisibleCount] = useState(12);
 
   const { isRead, markAsRead } = useGuideProgress("life", lifeGuides.length);
@@ -1312,12 +1309,6 @@ export function LifeGuideContent() {
     ...category,
     name: t(`lifeGuide.categories.${category.id}`),
   }));
-
-  // Показать контент сразу (без искусственной задержки — улучшает Performance)
-  useEffect(() => {
-    const id = requestAnimationFrame(() => setIsInitialLoading(false));
-    return () => cancelAnimationFrame(id);
-  }, []);
 
   useEffect(() => {
     setGuidesVisibleCount(12);
@@ -1399,197 +1390,146 @@ export function LifeGuideContent() {
     return filtered;
   }, [searchQuery, selectedCategory]);
 
-  // Skeleton при начальной загрузке
-  if (isInitialLoading) {
-    return (
-      <Layout>
-        <div className="space-y-6 sm:space-y-8">
-          {/* Header Skeleton */}
-          <div className="bg-white rounded-2xl sm:rounded-3xl p-4 sm:p-6">
-            <div className="flex flex-col sm:flex-row sm:items-center space-y-3 sm:space-y-0 sm:space-x-3">
-              <div className="w-12 h-12 bg-gray-200 rounded-lg animate-pulse"></div>
-              <div className="flex-1">
-                <div className="h-6 w-48 bg-gray-200 rounded animate-pulse mb-2"></div>
-                <div className="h-4 w-96 bg-gray-200 rounded animate-pulse"></div>
-              </div>
-            </div>
-          </div>
-
-          {/* Emergency Contacts Skeleton */}
-          <div className="bg-red-50 border border-red-200 rounded-lg p-6">
-            <div className="h-6 w-48 bg-gray-200 rounded animate-pulse mb-4"></div>
-            <div className="grid grid-cols-1 md:grid-cols-2 lg:grid-cols-4 gap-4">
-              {[1, 2, 3, 4].map((i) => (
-                <div
-                  key={i}
-                  className="bg-white rounded-2xl sm:rounded-3xl p-4 border border-red-200"
-                >
-                  <div className="h-5 w-32 bg-gray-200 rounded animate-pulse mb-2"></div>
-                  <div className="h-8 w-24 bg-gray-200 rounded animate-pulse mb-2"></div>
-                  <div className="h-4 w-40 bg-gray-200 rounded animate-pulse"></div>
-                </div>
-              ))}
-            </div>
-          </div>
-
-          {/* Search Skeleton */}
-          <div className="bg-white rounded-2xl sm:rounded-3xl p-4 sm:p-6">
-            <div className="flex flex-col sm:flex-row gap-4">
-              <div className="h-10 flex-1 bg-gray-200 rounded animate-pulse"></div>
-              <div className="h-10 w-32 bg-gray-200 rounded animate-pulse"></div>
-            </div>
-          </div>
-
-          {/* Categories Skeleton */}
-          <div className="bg-white rounded-2xl sm:rounded-3xl p-4 sm:p-6">
-            <div className="h-6 w-40 bg-gray-200 rounded animate-pulse mb-4"></div>
-            <div className="grid grid-cols-2 sm:grid-cols-3 lg:grid-cols-6 gap-3 sm:gap-4">
-              {[1, 2, 3, 4, 5, 6].map((i) => (
-                <div
-                  key={i}
-                  className="h-20 bg-gray-200 rounded animate-pulse"
-                ></div>
-              ))}
-            </div>
-          </div>
-
-          {/* Guides Grid Skeleton */}
-          <div>
-            <div className="h-6 w-40 bg-gray-200 rounded animate-pulse mb-4"></div>
-            <div className="grid grid-cols-1 sm:grid-cols-2 lg:grid-cols-3 gap-4 sm:gap-6">
-              {[1, 2, 3, 4, 5, 6].map((i) => (
-                <div
-                  key={i}
-                  className="bg-white rounded-2xl sm:rounded-3xl p-6 h-[280px]"
-                >
-                  <div className="flex items-start space-x-4">
-                    <div className="w-12 h-12 bg-gray-200 rounded-lg animate-pulse"></div>
-                    <div className="flex-1">
-                      <div className="h-6 w-3/4 bg-gray-200 rounded animate-pulse mb-3"></div>
-                      <div className="h-4 w-full bg-gray-200 rounded animate-pulse mb-2"></div>
-                      <div className="h-4 w-5/6 bg-gray-200 rounded animate-pulse mb-4"></div>
-                      <div className="flex items-center space-x-2">
-                        <div className="h-6 w-20 bg-gray-200 rounded-full animate-pulse"></div>
-                        <div className="h-6 w-16 bg-gray-200 rounded-full animate-pulse"></div>
-                      </div>
-                    </div>
-                  </div>
-                </div>
-              ))}
-            </div>
-          </div>
-        </div>
-      </Layout>
-    );
-  }
-
   return (
     <Layout>
       <div className="space-y-6 sm:space-y-8">
-        {/* Header */}
-        <div className="bg-white rounded-2xl sm:rounded-3xl p-4 sm:p-6">
-          <div className="flex flex-col sm:flex-row sm:items-center space-y-3 sm:space-y-0 sm:space-x-3">
-            <div className="rounded-lg bg-green-50 p-3 w-fit">
-              <Home className="h-6 w-6 text-green-600" />
-            </div>
-            <div>
-              <h1 className="text-xl sm:text-2xl font-bold text-gray-900">
+        {/* Hero — same shell as homepage */}
+        <section className="relative overflow-hidden rounded-2xl sm:rounded-3xl mt-4 sm:mt-6 mb-6 sm:mb-8 min-h-[340px] sm:min-h-[420px] bg-gradient-to-br from-blue-600 via-purple-600 to-indigo-700">
+          <div
+            className="absolute inset-0 scale-105 blur-[3px]"
+            aria-hidden
+            style={{
+              backgroundImage: 'url("/image-banner/image-life-guide.png")',
+              backgroundSize: "cover",
+              backgroundPosition: "center right",
+              backgroundRepeat: "no-repeat",
+            }}
+          />
+          <div className="absolute inset-0 bg-black/40" aria-hidden />
+          <div className="absolute inset-0 bg-gradient-to-r from-black/50 via-black/25 to-transparent" aria-hidden />
+
+          <div className="relative z-10 flex h-full min-h-[340px] sm:min-h-[420px] items-center px-5 sm:px-8 lg:px-10 py-10 sm:py-14">
+            <div className="w-full max-w-xl">
+              <div className="mb-4 inline-flex items-center gap-2 rounded-full bg-white/90 px-3 py-1.5 shadow-sm">
+                <Home className="h-3.5 w-3.5 text-emerald-600" aria-hidden />
+                <span className="text-xs sm:text-sm font-medium text-emerald-700">
+                  {t("lifeGuide.header.title")}
+                </span>
+              </div>
+
+              <h1 className="text-3xl sm:text-4xl md:text-5xl font-bold tracking-tight text-white mb-3 sm:mb-4">
                 {t("lifeGuide.header.title")}
               </h1>
-              <p className="text-sm sm:text-base text-gray-600">
+              <p className="text-base sm:text-lg text-white/90 mb-7 sm:mb-8 leading-relaxed max-w-md">
                 {t("lifeGuide.header.subtitle")}
               </p>
+
+              <div className="grid grid-cols-2 sm:grid-cols-3 gap-2.5 sm:gap-3">
+                {categories.map((category) => {
+                  const Icon = category.icon;
+                  const isActive = selectedCategory === category.id;
+                  return (
+                    <button
+                      key={category.id}
+                      type="button"
+                      onClick={() => {
+                        setSelectedCategory((prev) =>
+                          prev === category.id ? "all" : category.id,
+                        );
+                        document
+                          .getElementById("life-guide-guides")
+                          ?.scrollIntoView({ behavior: "smooth", block: "start" });
+                      }}
+                      className={`flex items-center gap-2.5 rounded-xl px-3.5 py-3 text-left text-sm font-semibold transition-all border ${
+                        isActive
+                          ? "bg-white text-indigo-700 border-white shadow-lg"
+                          : "bg-white/15 text-white border-white/30 hover:bg-white/25"
+                      }`}
+                    >
+                      <Icon
+                        className={`h-4 w-4 flex-shrink-0 ${
+                          isActive ? "text-indigo-600" : "text-white"
+                        }`}
+                      />
+                      <span className="truncate">{category.name}</span>
+                    </button>
+                  );
+                })}
+              </div>
             </div>
           </div>
-        </div>
+        </section>
 
-        {/* Emergency Contacts */}
-        <div className="bg-red-50 border border-red-200 rounded-lg p-6">
-          <h2 className="text-lg font-semibold text-red-900 mb-4">
-            {t("lifeGuide.emergencyContacts.title")}
-          </h2>
-          <div className="grid grid-cols-1 md:grid-cols-2 lg:grid-cols-4 gap-4">
-            {emergencyContacts.map((contact) => (
-              <Card key={contact.id} className="border-red-200 h-full">
-                <CardContent className="p-4 h-full flex flex-col">
-                  <h3 className="font-medium text-red-900 flex-shrink-0 mb-auto">
+        {/* Emergency */}
+        <section className="rounded-2xl sm:rounded-3xl border border-red-200 bg-red-50 p-4 sm:p-6">
+          <div className="flex flex-col gap-4 sm:flex-row sm:items-center sm:justify-between">
+            <div className="flex items-center gap-2.5 min-w-0">
+              <div className="flex h-10 w-10 flex-shrink-0 items-center justify-center rounded-xl bg-red-100 text-red-700">
+                <Phone className="h-5 w-5" aria-hidden />
+              </div>
+              <h2 className="text-base sm:text-lg font-semibold text-red-900">
+                {t("lifeGuide.emergencyContacts.title")}
+              </h2>
+            </div>
+            <div className="grid grid-cols-2 sm:flex sm:flex-wrap gap-2 sm:gap-3">
+              {emergencyContacts.map((contact) => (
+                <a
+                  key={contact.id}
+                  href={`tel:${contact.number}`}
+                  className="flex items-center justify-between gap-3 rounded-xl bg-white px-3 py-2.5 border border-red-100 shadow-sm hover:border-red-300 hover:shadow transition-all"
+                >
+                  <span className="text-xs sm:text-sm text-red-900/80 truncate">
                     {t(`lifeGuide.emergencyContacts.${contact.id}.title`)}
-                  </h3>
-                  <p className="text-2xl font-bold text-red-600 flex-shrink-0">
+                  </span>
+                  <span className="text-base sm:text-lg font-bold tabular-nums text-red-600">
                     {contact.number}
-                  </p>
-                  <p className="text-sm text-red-700">
-                    {t(`lifeGuide.emergencyContacts.${contact.id}.description`)}
-                  </p>
-                </CardContent>
-              </Card>
-            ))}
+                  </span>
+                </a>
+              ))}
+            </div>
           </div>
-        </div>
+        </section>
 
-        {/* Search and Filters */}
-        <div className="bg-white rounded-2xl sm:rounded-3xl p-4 sm:p-6 transition-all duration-300">
-          <div className="flex flex-col sm:flex-row gap-4">
+        {/* Search */}
+        <section
+          id="life-guide-search"
+          className="rounded-2xl sm:rounded-3xl bg-white border border-slate-100 p-4 sm:p-6 shadow-sm"
+        >
+          <div className="flex flex-col sm:flex-row gap-3">
             <div className="flex-1 relative">
-              <Search className="absolute left-3 top-1/2 transform -translate-y-1/2 h-4 w-4 text-gray-400 transition-colors duration-300" />
+              <Search className="absolute left-3.5 top-1/2 -translate-y-1/2 h-4 w-4 text-slate-400" />
               <input
+                id="life-guide-search-input"
                 type="text"
                 placeholder={t("lifeGuide.search.placeholder")}
                 value={searchQuery}
                 onChange={(e) => setSearchQuery(e.target.value)}
-                className="w-full pl-10 pr-4 py-2 border border-gray-300 rounded-md focus:ring-2 focus:ring-green-500 focus:border-transparent transition-all duration-300 hover:border-gray-400"
+                className="w-full h-11 pl-10 pr-4 rounded-xl border border-slate-200 bg-white text-slate-900 placeholder:text-slate-400 focus:ring-2 focus:ring-blue-500 focus:border-transparent outline-none transition-all"
               />
             </div>
-            <Button
-              variant="outline"
-              className="flex items-center space-x-2 w-full sm:w-auto transition-all duration-300 hover:bg-gray-50 hover:shadow-md"
-              onClick={() => {
-                setSearchQuery("");
-                setSelectedCategory("all");
-              }}
-            >
-              <Filter className="h-4 w-4 transition-all duration-300" />
-              <span>{t("lifeGuide.search.reset")}</span>
-            </Button>
+            {(searchQuery || selectedCategory !== "all") && (
+              <Button
+                variant="outline"
+                className="h-11 rounded-xl flex items-center gap-2"
+                onClick={() => {
+                  setSearchQuery("");
+                  setSelectedCategory("all");
+                }}
+              >
+                <Filter className="h-4 w-4" />
+                <span>{t("lifeGuide.search.reset")}</span>
+              </Button>
+            )}
           </div>
-        </div>
+        </section>
 
-        {/* Categories */}
-        <div className="bg-white rounded-2xl sm:rounded-3xl p-4 sm:p-6">
-          <h2 className="text-base sm:text-lg font-semibold text-gray-900 mb-4 sm:mb-5">
-            {t("lifeGuide.categories.title")}
-          </h2>
-          <div className="grid grid-cols-2 sm:grid-cols-3 lg:grid-cols-6 gap-3 sm:gap-4">
-            {categories.map((category) => {
-              const Icon = category.icon;
-              const isActive = selectedCategory === category.id;
-              return (
-                <Button
-                  key={category.id}
-                  variant={isActive ? "default" : "outline"}
-                  className={`flex flex-col items-center space-y-2 h-auto p-3 sm:p-4 text-sm sm:text-base transition-all duration-300 ease-out ${
-                    isActive
-                      ? "bg-green-600 text-white hover:bg-green-700 shadow-lg"
-                      : "hover:bg-gray-50 hover:shadow-md"
-                  }`}
-                  onClick={() => setSelectedCategory(category.id)}
-                >
-                  <Icon
-                    className={`h-5 w-5 sm:h-6 sm:w-6 transition-all duration-300 ${
-                      isActive ? "text-white" : "text-gray-600"
-                    }`}
-                  />
-                  <span className="font-medium">{category.name}</span>
-                </Button>
-              );
-            })}
-          </div>
-        </div>
-
-        {/* Guides Grid */}
-        <div className="bg-white rounded-2xl sm:rounded-3xl p-4 sm:p-6">
-          <div className="flex items-center justify-between mb-4 sm:mb-5">
-            <h2 className="text-base sm:text-lg font-semibold text-gray-900 transition-all duration-300">
+        {/* Guides */}
+        <section
+          id="life-guide-guides"
+          className="rounded-2xl sm:rounded-3xl bg-white border border-slate-100 p-4 sm:p-6 shadow-sm"
+        >
+          <div className="flex items-center justify-between gap-3 mb-4 sm:mb-5">
+            <h2 className="text-base sm:text-lg font-semibold text-slate-900">
               {filteredGuides.length === 0
                 ? t("lifeGuide.guidesNotFound")
                 : t("lifeGuide.guidesFound").replace(
@@ -1601,7 +1541,7 @@ export function LifeGuideContent() {
               <Button
                 variant="outline"
                 size="sm"
-                className="transition-all duration-300 hover:bg-gray-50"
+                className="rounded-xl"
                 onClick={() => {
                   setSearchQuery("");
                   setSelectedCategory("all");
@@ -1611,14 +1551,12 @@ export function LifeGuideContent() {
               </Button>
             )}
           </div>
+
           {filteredGuides.length > 0 ? (
             <>
-              <div className="grid grid-cols-1 sm:grid-cols-2 lg:grid-cols-3 gap-4 sm:gap-6 transition-all duration-500 ease-out">
+              <div className="grid grid-cols-1 sm:grid-cols-2 lg:grid-cols-3 gap-4 sm:gap-6">
                 {filteredGuides.slice(0, guidesVisibleCount).map((guide) => (
-                  <div
-                    key={`guide-${guide.id}`}
-                    className="h-[280px]"
-                  >
+                  <div key={`guide-${guide.id}`} className="h-[280px]">
                     <GuideCard
                       guide={guide}
                       isRead={isRead(guide.id)}
@@ -1633,7 +1571,7 @@ export function LifeGuideContent() {
                     variant="outline"
                     size="lg"
                     onClick={() => setGuidesVisibleCount((n) => n + 12)}
-                    className="min-w-[200px]"
+                    className="min-w-[200px] rounded-xl"
                   >
                     {t("lifeGuide.showMore")}
                   </Button>
@@ -1641,17 +1579,17 @@ export function LifeGuideContent() {
               )}
             </>
           ) : (
-            <div className="text-center py-12 animate-fade-in">
-              <Home className="h-12 w-12 text-gray-400 mx-auto mb-4 transition-all duration-300" />
-              <h3 className="text-lg font-medium text-gray-900 mb-2">
+            <div className="text-center py-12">
+              <Home className="h-12 w-12 text-slate-300 mx-auto mb-4" />
+              <h3 className="text-lg font-medium text-slate-900 mb-2">
                 {t("lifeGuide.guides.empty.title")}
               </h3>
-              <p className="text-gray-600">
+              <p className="text-slate-600">
                 {t("lifeGuide.guides.empty.description")}
               </p>
             </div>
           )}
-        </div>
+        </section>
       </div>
     </Layout>
   );

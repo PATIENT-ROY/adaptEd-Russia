@@ -12,12 +12,12 @@ import {
   Filter,
   BookOpen,
   GraduationCap,
-  Calendar,
   FileText,
   Clock,
   Languages,
   AlertTriangle,
   ArrowRight,
+  Building2,
 } from "lucide-react";
 import { useState, useMemo, useEffect, useCallback } from "react";
 import Link from "next/link";
@@ -1193,7 +1193,7 @@ const educationGuides: Guide[] = [
     updatedAt: "2026-03-07",
   },
   {
-        id: "expulsion-payment",
+    id: "expulsion-payment",
     title: "Неоплата обучения",
     category: GuideCategory.EDUCATION,
     content: `# 🟡 Неоплата обучения
@@ -1364,11 +1364,10 @@ type Category = {
 };
 
 const categoriesConfig: Omit<Category, "name">[] = [
-  { id: "all", icon: BookOpen },
   { id: "exams", icon: GraduationCap },
-  { id: "papers", icon: FileText },
+  { id: "papers", icon: BookOpen },
   { id: "documents", icon: FileText },
-  { id: "structure", icon: Calendar },
+  { id: "structure", icon: Building2 },
   { id: "expulsion-risks", icon: AlertTriangle },
 ];
 
@@ -1386,6 +1385,14 @@ const articleGuides = educationGuides.filter(
 
 const ENABLED_CATEGORY_IDS = new Set([
   "all",
+  "exams",
+  "papers",
+  "documents",
+  "structure",
+  "expulsion-risks",
+]);
+
+const HERO_CATEGORY_IDS = new Set([
   "exams",
   "papers",
   "documents",
@@ -1418,6 +1425,9 @@ export function EducationGuideContent() {
       ...category,
       name: t(`educationGuide.categories.${category.id}`),
     }));
+  const heroCategories = categories.filter((category) =>
+    HERO_CATEGORY_IDS.has(category.id),
+  );
   const toolCards: ToolCard[] = [
     {
       id: "schedule",
@@ -1551,15 +1561,7 @@ export function EducationGuideContent() {
       <Layout>
         <div className="space-y-6 sm:space-y-8">
           {/* Header Skeleton */}
-          <div className="bg-white rounded-2xl sm:rounded-3xl p-4 sm:p-6">
-            <div className="flex flex-col sm:flex-row sm:items-center space-y-3 sm:space-y-0 sm:space-x-3">
-              <div className="w-12 h-12 bg-gray-200 rounded-lg animate-pulse"></div>
-              <div className="flex-1">
-                <div className="h-6 w-48 bg-gray-200 rounded animate-pulse mb-2"></div>
-                <div className="h-4 w-96 bg-gray-200 rounded animate-pulse"></div>
-              </div>
-            </div>
-          </div>
+          <div className="rounded-2xl sm:rounded-3xl mt-4 sm:mt-6 min-h-[340px] sm:min-h-[420px] bg-gray-200 animate-pulse" />
 
           {/* Search Skeleton */}
           <div className="bg-white rounded-2xl sm:rounded-3xl p-4 sm:p-6">
@@ -1602,24 +1604,83 @@ export function EducationGuideContent() {
   return (
     <Layout>
       <div className="space-y-6 sm:space-y-8">
-        {/* Header */}
-        <div className="bg-white rounded-2xl sm:rounded-3xl p-4 sm:p-6">
-          <div className="flex flex-col sm:flex-row sm:items-center space-y-3 sm:space-y-0 sm:space-x-3">
-            <div className="rounded-lg bg-blue-50 p-3 w-fit">
-              <BookOpen className="h-6 w-6 text-blue-600" />
-            </div>
-            <div>
-              <h1 className="text-xl sm:text-2xl font-bold text-gray-900">
+        {/* Hero — same shell as homepage / life-guide */}
+        <section className="relative overflow-hidden rounded-2xl sm:rounded-3xl mt-4 sm:mt-6 mb-6 sm:mb-8 min-h-[340px] sm:min-h-[420px] bg-gradient-to-br from-blue-600 via-purple-600 to-indigo-700">
+          <div
+            className="absolute inset-0 scale-105 blur-[3px]"
+            aria-hidden
+            style={{
+              backgroundImage: 'url("/image-banner/image-education-guide.png")',
+              backgroundSize: "cover",
+              backgroundPosition: "center",
+              backgroundRepeat: "no-repeat",
+            }}
+          />
+          <div className="absolute inset-0 bg-black/40" aria-hidden />
+          <div
+            className="absolute inset-0 bg-gradient-to-r from-black/55 via-black/30 to-transparent"
+            aria-hidden
+          />
+
+          <div className="relative z-10 flex h-full min-h-[340px] sm:min-h-[420px] items-center px-5 sm:px-8 lg:px-10 py-10 sm:py-14">
+            <div className="w-full max-w-xl">
+              <div className="mb-4 inline-flex items-center gap-2 rounded-full bg-white/90 px-3 py-1.5 shadow-sm">
+                <GraduationCap
+                  className="h-3.5 w-3.5 text-indigo-600"
+                  aria-hidden
+                />
+                <span className="text-xs sm:text-sm font-medium text-indigo-700">
+                  {t("educationGuide.header.title")}
+                </span>
+              </div>
+
+              <h1 className="text-3xl sm:text-4xl md:text-5xl font-bold tracking-tight text-white mb-3 sm:mb-4">
                 {t("educationGuide.header.title")}
               </h1>
-              <p className="text-sm sm:text-base text-gray-600">
+              <p className="text-base sm:text-lg text-white/90 mb-7 sm:mb-8 leading-relaxed max-w-md">
                 {t("educationGuide.header.subtitle")}
               </p>
+
+              <div className="grid grid-cols-2 sm:grid-cols-3 gap-2.5 sm:gap-3">
+                {heroCategories.map((category) => {
+                  const Icon = category.icon;
+                  const isActive = safeSelectedCategory === category.id;
+                  return (
+                    <button
+                      key={category.id}
+                      type="button"
+                      onClick={() => {
+                        setSelectedCategory((prev) =>
+                          prev === category.id ? "all" : category.id,
+                        );
+                        document
+                          .getElementById("education-guide-guides")
+                          ?.scrollIntoView({
+                            behavior: "smooth",
+                            block: "start",
+                          });
+                      }}
+                      className={`flex items-center gap-2.5 rounded-xl px-3.5 py-3 text-left text-sm font-semibold transition-all border ${
+                        isActive
+                          ? "bg-white text-indigo-700 border-white shadow-lg"
+                          : "bg-white/15 text-white border-white/30 hover:bg-white/25"
+                      }`}
+                    >
+                      <Icon
+                        className={`h-4 w-4 flex-shrink-0 ${
+                          isActive ? "text-indigo-600" : "text-white"
+                        }`}
+                      />
+                      <span className="truncate">{category.name}</span>
+                    </button>
+                  );
+                })}
+              </div>
             </div>
           </div>
-        </div>
+        </section>
 
-        {/* Search and Filters */}
+        {/* Tools */}
         <div className="bg-white rounded-2xl sm:rounded-3xl p-4 sm:p-6 border border-blue-100">
           <div className="flex flex-col gap-2 sm:flex-row sm:items-end sm:justify-between mb-4">
             <div>
@@ -1768,54 +1829,27 @@ export function EducationGuideContent() {
                 className="w-full pl-10 pr-4 py-2 border border-gray-300 rounded-md focus:ring-2 focus:ring-blue-500 focus:border-transparent transition-all duration-300 hover:border-gray-400"
               />
             </div>
-            <Button
-              variant="outline"
-              className="flex items-center space-x-2 w-full sm:w-auto transition-all duration-300 hover:bg-gray-50 hover:shadow-md"
-              onClick={() => {
-                setSearchQuery("");
-                setSelectedCategory("all");
-              }}
-            >
-              <Filter className="h-4 w-4 transition-all duration-300" />
-              <span>{t("educationGuide.search.reset")}</span>
-            </Button>
+            {(searchQuery || safeSelectedCategory !== "all") && (
+              <Button
+                variant="outline"
+                className="flex items-center space-x-2 w-full sm:w-auto transition-all duration-300 hover:bg-gray-50 hover:shadow-md"
+                onClick={() => {
+                  setSearchQuery("");
+                  setSelectedCategory("all");
+                }}
+              >
+                <Filter className="h-4 w-4 transition-all duration-300" />
+                <span>{t("educationGuide.search.reset")}</span>
+              </Button>
+            )}
           </div>
         </div>
 
-        {/* Categories */}
-        <div className="bg-white rounded-2xl sm:rounded-3xl p-4 sm:p-6">
-          <h2 className="text-base sm:text-lg font-semibold text-gray-900 mb-4 sm:mb-5">
-            {t("educationGuide.categories.title")}
-          </h2>
-          <div className="grid grid-cols-2 sm:grid-cols-4 gap-3 sm:gap-4">
-            {categories.map((category) => {
-              const Icon = category.icon;
-              const isActive = safeSelectedCategory === category.id;
-
-              return (
-                <Button
-                  key={category.id}
-                  variant={isActive ? "default" : "outline"}
-                  className={`flex flex-col items-center space-y-2 h-auto p-3 sm:p-4 text-sm sm:text-base transition-all duration-300 ease-out ${
-                    isActive
-                      ? "bg-blue-600 text-white hover:bg-blue-700 shadow-lg"
-                      : "hover:bg-gray-50 hover:shadow-md"
-                  }`}
-                  onClick={() => setSelectedCategory(category.id)}
-                >
-                  <Icon
-                    className={`h-5 w-5 sm:h-6 sm:w-6 transition-all duration-300 ${
-                      isActive ? "text-white" : "text-gray-600"
-                    }`}
-                  />
-                  <span className="font-medium">{category.name}</span>
-                </Button>
-              );
-            })}
-          </div>
-        </div>
-
-        <div className="bg-white rounded-2xl sm:rounded-3xl p-4 sm:p-6">
+        {/* Guides */}
+        <div
+          id="education-guide-guides"
+          className="bg-white rounded-2xl sm:rounded-3xl p-4 sm:p-6"
+        >
           <div className="flex items-center justify-between mb-4 sm:mb-5">
             <h2 className="text-base sm:text-lg font-semibold text-gray-900 transition-all duration-300">
               {filteredGuides.length === 0
