@@ -78,16 +78,7 @@ export function LanguageMarquee() {
       aria-label={t("home.languageMarquee.aria")}
       className="below-fold my-6 sm:my-8 lg:my-10 px-3 sm:px-4 lg:px-8"
     >
-      <div className="relative mx-auto max-w-7xl overflow-hidden rounded-[28px] sm:rounded-[32px] border border-blue-100/80 bg-[linear-gradient(135deg,rgba(59,130,246,0.07),rgba(99,102,241,0.08)_45%,rgba(139,92,246,0.07))] px-1 py-6 sm:py-8">
-        <div
-          aria-hidden
-          className="pointer-events-none absolute -left-10 top-0 h-40 w-40 rounded-full bg-blue-400/15 blur-3xl"
-        />
-        <div
-          aria-hidden
-          className="pointer-events-none absolute -right-8 bottom-0 h-44 w-44 rounded-full bg-violet-400/15 blur-3xl"
-        />
-
+      <div className="relative mx-auto max-w-7xl overflow-hidden rounded-[28px] sm:rounded-[32px] bg-white/90 px-1 py-6 sm:py-8">
         <p className="sr-only">{t("home.languageMarquee.aria")}</p>
 
         <div className="language-marquee relative">
