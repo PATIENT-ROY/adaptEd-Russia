@@ -1642,26 +1642,23 @@ export function EducationGuideContent() {
   return (
     <Layout>
       <div className="space-y-6 sm:space-y-8">
-        {/* Hero — full-bleed viewport L/R */}
-        <section className="relative left-1/2 right-1/2 -ml-[50vw] -mr-[50vw] w-screen overflow-hidden mb-6 sm:mb-8 min-h-[340px] sm:min-h-[420px] bg-gradient-to-br from-blue-600 via-purple-600 to-indigo-700">
+        {/* Hero — compact height; crop biased so student peeks in on the right */}
+        <section className="relative left-1/2 right-1/2 -ml-[50vw] -mr-[50vw] w-screen overflow-hidden mb-6 sm:mb-8 min-h-[340px] sm:min-h-[420px] lg:min-h-[460px] bg-gradient-to-br from-blue-600 via-purple-600 to-indigo-700">
           <div
-            className="absolute inset-0"
+            className="absolute inset-0 bg-cover bg-no-repeat bg-[center_top] lg:bg-[72%_58%]"
             aria-hidden
             style={{
               backgroundImage:
-                'url("/image-banner/image-education-guide.png?v=2")',
-              backgroundSize: "cover",
-              backgroundPosition: "center top",
-              backgroundRepeat: "no-repeat",
+                'url("/image-banner/image-education-guide.png?v=5")',
             }}
           />
-          <div className="absolute inset-0 bg-black/40" aria-hidden />
+          <div className="absolute inset-0 bg-black/40 lg:bg-black/32" aria-hidden />
           <div
-            className="absolute inset-0 bg-gradient-to-r from-black/55 via-black/30 to-transparent"
+            className="absolute inset-0 bg-gradient-to-r from-black/55 via-black/30 to-transparent lg:from-black/50 lg:via-black/22 lg:to-black/5"
             aria-hidden
           />
 
-          <div className="relative z-10 mx-auto flex h-full min-h-[340px] sm:min-h-[420px] max-w-7xl items-center px-4 sm:px-6 lg:px-8 py-10 sm:py-14">
+          <div className="relative z-10 mx-auto flex h-full min-h-[340px] sm:min-h-[420px] lg:min-h-[460px] max-w-7xl items-center px-4 sm:px-6 lg:px-8 py-10 sm:py-14">
             <div className="w-full max-w-xl">
               <div className="mb-4 inline-flex items-center gap-2 rounded-full bg-white/90 px-3 py-1.5 shadow-sm">
                 <GraduationCap
