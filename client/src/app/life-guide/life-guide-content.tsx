@@ -2,6 +2,7 @@
 
 import { Layout } from "@/components/layout/layout";
 import { GuideCard } from "@/components/ui/guide-card";
+import { GuideDetailModal } from "@/components/ui/guide-detail-modal";
 import { Button } from "@/components/ui/button";
 import {
   Search,
@@ -11,11 +12,70 @@ import {
   Phone,
   HeartPulse,
   FileText,
+  Plane,
+  ChevronRight,
 } from "lucide-react";
 import { useState, useMemo, useEffect, useCallback } from "react";
+import { useRouter } from "next/navigation";
 import { Guide, GuideCategory, Language, Difficulty } from "@/types";
 import { useTranslation } from "@/hooks/useTranslation";
 import { useGuideProgress } from "@/hooks/useGuideProgress";
+
+type ArrivalStep = {
+  id: string;
+  labelKey: string;
+  guideId?: string;
+  categoryId?: string;
+  href?: string;
+};
+
+type ArrivalPhase = {
+  id: string;
+  titleKey: string;
+  steps: ArrivalStep[];
+};
+
+/** Чеклист для новичков — шаги ведут в гайды / категории Быта */
+const arrivalPhases: ArrivalPhase[] = [
+  {
+    id: "first24h",
+    titleKey: "lifeGuide.arrival.phases.first24h",
+    steps: [
+      { id: "migration-card", labelKey: "lifeGuide.arrival.steps.migrationCard", guideId: "7" },
+      { id: "contact-uni", labelKey: "lifeGuide.arrival.steps.contactUniversity", guideId: "7" },
+      { id: "housing", labelKey: "lifeGuide.arrival.steps.housing", guideId: "1" },
+    ],
+  },
+  {
+    id: "first3days",
+    titleKey: "lifeGuide.arrival.phases.first3days",
+    steps: [
+      { id: "migration-reg", labelKey: "lifeGuide.arrival.steps.migrationReg", guideId: "7" },
+      { id: "insurance", labelKey: "lifeGuide.arrival.steps.insurance", guideId: "mandatory-expenses" },
+      { id: "medical-docs", labelKey: "lifeGuide.arrival.steps.medicalDocs", guideId: "mandatory-expenses" },
+    ],
+  },
+  {
+    id: "firstWeek",
+    titleKey: "lifeGuide.arrival.phases.firstWeek",
+    steps: [
+      { id: "dorm", labelKey: "lifeGuide.arrival.steps.dorm", guideId: "1" },
+      { id: "sim", labelKey: "lifeGuide.arrival.steps.sim", categoryId: "services" },
+      { id: "bank", labelKey: "lifeGuide.arrival.steps.bank", categoryId: "services" },
+      { id: "transport", labelKey: "lifeGuide.arrival.steps.transport", guideId: "5" },
+    ],
+  },
+  {
+    id: "firstMonth",
+    titleKey: "lifeGuide.arrival.phases.firstMonth",
+    steps: [
+      { id: "docs", labelKey: "lifeGuide.arrival.steps.documents", categoryId: "documents" },
+      { id: "university", labelKey: "lifeGuide.arrival.steps.university", href: "/education-guide" },
+      { id: "daily", labelKey: "lifeGuide.arrival.steps.dailyLife", categoryId: "housing" },
+      { id: "social", labelKey: "lifeGuide.arrival.steps.social", categoryId: "all" },
+    ],
+  },
+];
 
 // Моковые данные бытовых гайдов
 const lifeGuides: Guide[] = [
@@ -959,15 +1019,299 @@ const lifeGuides: Guide[] = [
   },
   {
     id: "7",
-    title: "Миграционный учёт и регистрация (скоро)",
+    title: "Миграционный учёт и регистрация",
     category: GuideCategory.LIFE,
-    content: "Что проверяют при контроле миграционной карты...",
+    content: `# Что такое миграционный учёт?
+
+Это **обязательная** процедура регистрации иностранных граждан по месту пребывания в России. Все иностранцы, въезжающие в РФ, должны встать на учёт в установленные сроки.
+
+Принимающая сторона (вуз / общежитие / арендодатель) подаёт уведомление о прибытии в МВД. Без учёта вы рискуете штрафом и проблемами с визой/статусом.
+
+# Сроки постановки на учёт
+
+## Стандартный срок
+
+**7 рабочих дней** с момента:
+• Въезда в Россию (прибытия в место пребывания)
+• Смены адреса проживания в РФ
+• Получения новой визы / изменения статуса (когда требуется переучёт)
+
+## Особые сроки для граждан
+
+• **Беларусь** — 90 дней
+• **Казахстан, Армения, Кыргызстан** (ЕАЭС) — 30 дней
+• **Таджикистан, Узбекистан** — 15 дней
+
+Срок зависит от гражданства и основания въезда. **Уточняйте в международном отделе вуза** — ориентируйтесь на их инструкцию + [Госуслуги](https://www.gosuslugi.ru).
+
+## Ответственность за нарушение
+
+Просрочка учёта — административное правонарушение и может повлечь:
+• Штраф (часто **от 2 000 до 7 000 ₽**, в Москве/МО обычно выше)
+• Возможное **выдворение** и запрет на въезд
+• Проблемы с продлением визы и обучением
+
+# Что делать после приезда
+
+## 1. Сразу свяжитесь с вузом
+
+Обратитесь в **международный / миграционный отдел** вашего учебного заведения. Не идите в МВД «вслепую» — вуз подскажет ваш сценарий (общежитие / аренда / виза / безвиз).
+
+## 2. Документы для постановки на учёт
+
+Обычно нужны (список уточняйте в вузе):
+• Копия главной страницы паспорта
+• Копия действующей визы (и предыдущих — если просят)
+• Копия миграционной карты
+• Отрывная часть уведомления о прибытии (если уже была)
+• Справка из общежития **или** копия договора аренды с арендодателем
+• Квитанция об уплате **госпошлины** за постановку на учёт по месту пребывания — **500 ₽** (с 01.09.2025)
+
+## 3. Как оформляют учёт
+
+**Общежитие вуза / партнёрское общежитие**
+• Часто оформляет администрация общежития или миграционный отдел вуза
+
+**Аренда квартиры**
+• Учёт делает **арендодатель** (принимающая сторона), часто на основании ходатайства/справки вуза
+• Вместе с арендодателем подаёте документы в МВД / МФЦ / через Госуслуги (как скажет вуз)
+
+## Алгоритм действий
+
+1. Получите инструкцию и при необходимости ходатайство в **международном отделе вуза**
+2. Соберите паспорт, визу, миграционную карту, документы на жильё
+3. Оплатите госпошлину (500 ₽), если требуется
+4. Подайте уведомление в срок (вуз / арендодатель / МВД)
+5. Сохраните **отрывную часть** уведомления — носите с копией паспорта
+
+# Важно
+
+• Учёт обязателен даже при коротком пребывании
+• При переезде в другой город или на другой адрес — нужен **переучёт** (сроки зависят от статуса; часто сжатые — не тяните)
+• Граждане ЕАЭС — смотрите удлинённые сроки выше, но не пропускайте дедлайн
+• Госпошлина за постановку на учёт по месту пребывания: **500 ₽**
+• Правила и суммы меняются — сверяйтесь с вузом и официальными источниками
+
+❗ **Сразу после прилёта — международный отдел. Это первый шаг.**
+
+# Если уже риск для учёбы
+
+Про отчисление из-за миграции — гайд «Нарушение миграционных правил» в разделе **Учёба**. Здесь только как правильно оформить учёт.
+
+# Учебные справки — не здесь
+
+Справки об обучении, выписки, зачётка, академ — раздел **Учёба → Документы**. В «Быт» — миграция, виза, РВПО, общежитие, паспорт, ИНН/СНИЛС.`,
     language: Language.RU,
-    tags: ["миграция", "карта", "контроль"],
-    difficulty: Difficulty.ADVANCED,
-    isPublished: false,
+    tags: [
+      "миграция",
+      "регистрация",
+      "документы",
+      "карта",
+      "МВД",
+      "учёт",
+      "виза",
+    ],
+    difficulty: Difficulty.BEGINNER,
+    isPublished: true,
     createdAt: "2024-01-07",
-    updatedAt: "2026-03-07",
+    updatedAt: "2026-08-11",
+  },
+  {
+    id: "rvpo",
+    title: "РВПО — разрешение на временное проживание по обучению",
+    category: GuideCategory.LIFE,
+    content: `# Что такое РВПО?
+
+**РВПО** — разрешение на временное проживание **по обучению**. Это статус для иностранных студентов, который даёт право временно проживать в России в связи с учёбой (не путать с обычным **РВП**).
+
+# Зачем нужен РВПО
+
+• Легальное проживание на период обучения
+• Упрощение ряда процедур по сравнению с «чистым» визовым пребыванием (зависит от вашей ситуации)
+• Основание для дальнейших шагов (в т.ч. пути к РВП/ВНЖ — если появятся основания)
+
+# Чем РВПО отличается от РВП
+
+• **РВПО** — привязан к **учёбе** в российском вузе
+• **РВП** — общее разрешение на временное проживание (другие основания: квота, брак, и т.д.)
+• Права, сроки и документы **разные** — не подменяйте одно другим
+
+Подробнее про РВП — гайд «РВП — разрешение на временное проживание».
+
+# Как получить (общий порядок)
+
+Точный пакет и сроки зависят от вуза и региона. Типичный путь:
+
+1. Уточните в **международном отделе**, выдаёт ли ваш вуз/регион РВПО и подходит ли ваш статус
+2. Подготовьте паспорт, миграционные документы, договор/справку об обучении, фото, медсправки (по списку вуза)
+3. Подайте заявление через вуз / МВД / Госуслуги — как скажет отдел
+4. Дождитесь решения и получите отметку/документ
+5. После выдачи — проверьте **регистрацию по месту жительства/пребывания** и сроки визы
+
+# На что обратить внимание
+
+• РВПО связан с учёбой: отчисление / академический отпуск могут повлиять на статус
+• Сроки подачи и список анализов меняются — берите **актуальный чек-лист вуза**
+• Храните копии всех решений и отметок
+
+❗ **Не начинайте оформление без консультации международного отдела — они знают практику именно вашего вуза.**`,
+    language: Language.RU,
+    tags: ["РВПО", "миграция", "документы", "виза", "регистрация", "учёба"],
+    difficulty: Difficulty.INTERMEDIATE,
+    isPublished: true,
+    createdAt: "2026-08-11",
+    updatedAt: "2026-08-11",
+  },
+  {
+    id: "rvp",
+    title: "РВП — разрешение на временное проживание",
+    category: GuideCategory.LIFE,
+    content: `# Что такое РВП?
+
+**РВП** — разрешение на временное проживание в Российской Федерации. Даёт право временно жить в РФ (обычно до 3 лет) на определённом основании.
+
+# Чем РВП отличается от РВПО
+
+• **РВПО** — специально для обучения
+• **РВП** — общий временный статус (квота, брак, иные основания по закону)
+• Для студента часто сначала актуален учебный статус / РВПО; РВП — если есть отдельное основание
+
+# Какие преимущества даёт РВП
+
+• Право временно проживать в РФ на законном основании
+• Возможность работать без отдельного патента **в субъекте**, где выдано РВП (правила уточняйте)
+• Основание для дальнейшей подачи на **ВНЖ** (при соблюдении условий и сроков)
+
+# Общий порядок получения
+
+1. Определите основание (квота / без квоты — брак, и т.д.)
+2. Соберите документы по списку МВД вашего региона
+3. Пройдите медкомиссию и дактилоскопию (если требуется)
+4. Подайте заявление в МВД / через Госуслуги
+5. После получения — встаньте на учёт по месту жительства и соблюдайте сроки
+
+# Важно для студентов
+
+• Учёба сама по себе не всегда = автоматическое РВП
+• Не бросайте миграционный учёт и визу, пока статус не оформлен
+• Сверяйте шаги с международным отделом и официальными источниками
+
+Подробнее про постоянный статус — гайд «ВНЖ — вид на жительство».
+
+❗ **Сроки, квоты и список документов меняются. Ориентир — МВД региона + Госуслуги + консультация вуза.**`,
+    language: Language.RU,
+    tags: ["РВП", "миграция", "документы", "регистрация", "ВНЖ"],
+    difficulty: Difficulty.INTERMEDIATE,
+    isPublished: true,
+    createdAt: "2026-08-11",
+    updatedAt: "2026-08-11",
+  },
+  {
+    id: "vnzh",
+    title: "ВНЖ — вид на жительство",
+    category: GuideCategory.LIFE,
+    content: `# Что такое ВНЖ?
+
+**Вид на жительство (ВНЖ)** — документ, который даёт иностранному гражданину право **постоянно проживать** на территории Российской Федерации. Главное преимущество современного ВНЖ — он выдаётся **бессрочно** (при соблюдении условий его действия).
+
+# Права обладателя ВНЖ
+
+Получив ВНЖ, вы имеете право:
+• Постоянно жить в России без временных ограничений по сроку «как у визы»
+• Легально трудиться в любом регионе РФ без патента / разрешения на работу (в общем порядке)
+• Оформить полис **ОМС** и получать помощь в государственных учреждениях
+• Зарегистрироваться как индивидуальный предприниматель (ИП)
+• При соблюдении условий — подать на **гражданство РФ**
+
+# Основные основания для получения ВНЖ
+
+• Общий порядок: наличие **РВП** и проживание по нему не менее установленного срока (часто ориентир — от 8 месяцев; уточняйте актуальную норму)
+• Брак с гражданином РФ (при соблюдении срока брака) или общий ребёнок
+• Выпускники аккредитованных российских вузов (в т.ч. с отличием — по отдельным основаниям)
+• Граждане Беларуси, Казахстана, Кыргызстана и иные категории по международным соглашениям / упрощённым основаниям
+• Близкие родственники — граждане РФ (родители, дети и др. — по закону)
+• Высококвалифицированные специалисты и члены их семей
+
+# Что сделать перед подачей
+
+1. Проверьте, есть ли у вас подходящее основание
+2. Закройте просрочки по учёту, визе, штрафам
+3. Соберите документы и медсправки по списку МВД
+4. Подайте заявление и отслеживайте статус
+5. После получения ВНЖ — оформите регистрацию по месту жительства
+
+# Важно
+
+• ВНЖ — не гражданство: обязанности (учёт, уведомления) остаются
+• Основания и сроки меняются — не копируйте чужие чек-листы «из 2020»
+• Студентам сначала обычно важнее виза / РВПО / РВП, а ВНЖ — следующий этап
+
+❗ **Перед подачей проконсультируйтесь в МВД / у миграционного юриста и уточните список в вашем регионе.**`,
+    language: Language.RU,
+    tags: ["ВНЖ", "миграция", "документы", "РВП", "ОМС"],
+    difficulty: Difficulty.ADVANCED,
+    isPublished: true,
+    createdAt: "2026-08-11",
+    updatedAt: "2026-08-11",
+  },
+  {
+    id: "mandatory-expenses",
+    title: "Обязательные расходы иностранного студента",
+    category: GuideCategory.LIFE,
+    content: `# Обязательные расходы
+
+Ниже — типичные обязательные и почти обязательные платежи для иностранного студента. Суммы — ориентиры на 2025–2026; в вашем городе/вузе могут отличаться.
+
+# Медицинская страховка (ДМС)
+
+• **Стоимость:** часто от **15 000 ₽/год** (зависит от покрытия и компании)
+• Полис обычно **обязателен** для пребывания / въезда / продления визы
+• Рекомендуется выбирать страховку, покрывающую:
+  • Экстренную помощь
+  • Лечение и осмотры в доступных клиниках вашего города / при вузе
+  • Госпитализацию (и COVID-19 — если требуют)
+
+Без действующей страховки вуз или МВД могут отказать в продлении документов.
+
+# Госпошлина за учебную визу
+
+• **Продление учебной визы:** ориентир **около 6 000 ₽** (уточняйте актуальный размер пошлины)
+• Платите только по реквизитам, которые дал вуз / консульский сбор — не путайте с другими платежами
+
+# Медосмотр для иностранцев
+
+• **Стоимость:** ориентир **около 5 900 ₽** (зависит от клиники и пакета)
+• **Срок действия:** обычно **12 месяцев**
+• **Где пройти:** аккредитованные клиники из списка, который даёт вуз или МВД
+
+# Госпошлина за миграционный учёт
+
+• Постановка на учёт по месту пребывания: **500 ₽** (с 01.09.2025)
+• Подробнее — гайд «Миграционный учёт и регистрация»
+
+# Как планировать бюджет
+
+1. Сразу после зачисления спросите в международном отделе **полный список платежей на год**
+2. Заложите ДМС + медосмотр + визовые пошлины + учёт
+3. Храните все квитанции (сканы в облаке)
+4. Не оплачивайте «помощникам» в переходах — только официальные реквизиты
+
+❗ **Цифры меняются. Перед оплатой сверяйте сумму с вузом и официальной квитанцией.**`,
+    language: Language.RU,
+    tags: [
+      "расходы",
+      "платежи",
+      "страховка",
+      "ДМС",
+      "виза",
+      "госпошлина",
+      "документы",
+      "медицина",
+    ],
+    difficulty: Difficulty.BEGINNER,
+    isPublished: true,
+    createdAt: "2026-08-11",
+    updatedAt: "2026-08-11",
   },
   {
     id: "8",
@@ -1296,14 +1640,42 @@ const emergencyContacts = [
 
 export function LifeGuideContent() {
   const { t } = useTranslation();
+  const router = useRouter();
   const [searchQuery, setSearchQuery] = useState("");
   const [selectedCategory, setSelectedCategory] = useState("all");
   const [guidesVisibleCount, setGuidesVisibleCount] = useState(12);
+  const [activeGuide, setActiveGuide] = useState<Guide | null>(null);
 
   const { isRead, markAsRead } = useGuideProgress("life", lifeGuides.length);
   const handleMarkRead = useCallback((guideId: string) => {
     markAsRead(guideId);
   }, [markAsRead]);
+
+  const openArrivalStep = useCallback(
+    (step: ArrivalStep) => {
+      if (step.href) {
+        router.push(step.href);
+        return;
+      }
+      if (step.guideId) {
+        const guide = lifeGuides.find(
+          (g) => g.id === step.guideId && g.isPublished,
+        );
+        if (guide) {
+          setActiveGuide(guide);
+          return;
+        }
+      }
+      if (step.categoryId) {
+        setSelectedCategory(step.categoryId === "all" ? "all" : step.categoryId);
+        setSearchQuery("");
+        document
+          .getElementById("life-guide-guides")
+          ?.scrollIntoView({ behavior: "smooth", block: "start" });
+      }
+    },
+    [router],
+  );
 
   const categories = categoriesConfig.map((category) => ({
     ...category,
@@ -1336,7 +1708,23 @@ export function LifeGuideContent() {
         switch (selectedCategory) {
           case "documents":
             return guide.tags.some((tag) =>
-              ["ИНН", "СНИЛС", "документы", "паспорт", "потеря", "замена", "миграция", "регистрация"].includes(tag)
+              [
+                "ИНН",
+                "СНИЛС",
+                "документы",
+                "паспорт",
+                "потеря",
+                "замена",
+                "миграция",
+                "регистрация",
+                "РВП",
+                "РВПО",
+                "ВНЖ",
+                "виза",
+                "учёт",
+                "расходы",
+                "госпошлина",
+              ].includes(tag)
             );
           case "housing":
             return guide.tags.some((tag) =>
@@ -1379,7 +1767,7 @@ export function LifeGuideContent() {
             );
           case "services":
             return guide.tags.some((tag) =>
-              ["банк", "карта", "платежи"].includes(tag)
+              ["банк", "карта", "платежи", "расходы", "госпошлина"].includes(tag)
             );
           default:
             return true;
@@ -1393,22 +1781,22 @@ export function LifeGuideContent() {
   return (
     <Layout>
       <div className="space-y-6 sm:space-y-8">
-        {/* Hero — same shell as homepage */}
-        <section className="relative overflow-hidden rounded-2xl sm:rounded-3xl mt-4 sm:mt-6 mb-6 sm:mb-8 min-h-[340px] sm:min-h-[420px] bg-gradient-to-br from-blue-600 via-purple-600 to-indigo-700">
+        {/* Hero — full-bleed viewport L/R */}
+        <section className="relative left-1/2 right-1/2 -ml-[50vw] -mr-[50vw] w-screen overflow-hidden mb-6 sm:mb-8 min-h-[340px] sm:min-h-[420px] bg-gradient-to-br from-blue-600 via-purple-600 to-indigo-700">
           <div
-            className="absolute inset-0 scale-105 blur-[3px]"
+            className="absolute inset-0"
             aria-hidden
             style={{
               backgroundImage: 'url("/image-banner/image-life-guide.png")',
               backgroundSize: "cover",
-              backgroundPosition: "center right",
+              backgroundPosition: "center top",
               backgroundRepeat: "no-repeat",
             }}
           />
           <div className="absolute inset-0 bg-black/40" aria-hidden />
           <div className="absolute inset-0 bg-gradient-to-r from-black/50 via-black/25 to-transparent" aria-hidden />
 
-          <div className="relative z-10 flex h-full min-h-[340px] sm:min-h-[420px] items-center px-5 sm:px-8 lg:px-10 py-10 sm:py-14">
+          <div className="relative z-10 mx-auto flex h-full min-h-[340px] sm:min-h-[420px] max-w-7xl items-center px-4 sm:px-6 lg:px-8 py-10 sm:py-14">
             <div className="w-full max-w-xl">
               <div className="mb-4 inline-flex items-center gap-2 rounded-full bg-white/90 px-3 py-1.5 shadow-sm">
                 <Home className="h-3.5 w-3.5 text-emerald-600" aria-hidden />
@@ -1420,9 +1808,22 @@ export function LifeGuideContent() {
               <h1 className="text-3xl sm:text-4xl md:text-5xl font-bold tracking-tight text-white mb-3 sm:mb-4">
                 {t("lifeGuide.header.title")}
               </h1>
-              <p className="text-base sm:text-lg text-white/90 mb-7 sm:mb-8 leading-relaxed max-w-md">
+              <p className="text-base sm:text-lg text-white/90 mb-5 sm:mb-6 leading-relaxed max-w-md">
                 {t("lifeGuide.header.subtitle")}
               </p>
+
+              <button
+                type="button"
+                onClick={() =>
+                  document
+                    .getElementById("life-guide-arrival")
+                    ?.scrollIntoView({ behavior: "smooth", block: "start" })
+                }
+                className="mb-7 sm:mb-8 inline-flex items-center gap-2 rounded-xl border border-white/35 bg-white/15 px-4 py-2.5 text-sm font-semibold text-white hover:bg-white/25 transition-all"
+              >
+                <Plane className="h-4 w-4" aria-hidden />
+                {t("lifeGuide.arrival.cta")}
+              </button>
 
               <div className="grid grid-cols-2 sm:grid-cols-3 gap-2.5 sm:gap-3">
                 {categories.map((category) => {
@@ -1457,6 +1858,55 @@ export function LifeGuideContent() {
                 })}
               </div>
             </div>
+          </div>
+        </section>
+
+        {/* Arrival checklist — «Я только приехал» */}
+        <section
+          id="life-guide-arrival"
+          className="rounded-2xl sm:rounded-3xl bg-white border border-slate-100 p-4 sm:p-6 shadow-sm"
+        >
+          <div className="mb-5 sm:mb-6">
+            <p className="text-xs sm:text-sm font-semibold uppercase tracking-wide text-emerald-700 mb-1.5">
+              {t("lifeGuide.header.title")}
+            </p>
+            <h2 className="text-xl sm:text-2xl font-bold text-slate-900">
+              {t("lifeGuide.arrival.title")}
+            </h2>
+            <p className="mt-1.5 text-sm sm:text-base text-slate-600 max-w-2xl">
+              {t("lifeGuide.arrival.subtitle")}
+            </p>
+          </div>
+
+          <div className="space-y-5 sm:space-y-6">
+            {arrivalPhases.map((phase, phaseIndex) => (
+              <div key={phase.id}>
+                <div className="flex items-baseline gap-2.5 mb-2.5">
+                  <span className="text-xs font-bold tabular-nums text-emerald-600">
+                    {String(phaseIndex + 1).padStart(2, "0")}
+                  </span>
+                  <h3 className="text-sm sm:text-base font-semibold text-slate-900">
+                    {t(phase.titleKey)}
+                  </h3>
+                </div>
+                <div className="grid grid-cols-1 sm:grid-cols-2 lg:grid-cols-4 gap-2">
+                  {phase.steps.map((step) => (
+                    <button
+                      key={step.id}
+                      type="button"
+                      onClick={() => openArrivalStep(step)}
+                      className="group flex items-center justify-between gap-2 rounded-xl border border-slate-200 bg-slate-50/80 px-3.5 py-3 text-left text-sm font-medium text-slate-800 hover:border-emerald-300 hover:bg-emerald-50 transition-all"
+                    >
+                      <span>{t(step.labelKey)}</span>
+                      <ChevronRight
+                        className="h-4 w-4 flex-shrink-0 text-slate-400 group-hover:text-emerald-600"
+                        aria-hidden
+                      />
+                    </button>
+                  ))}
+                </div>
+              </div>
+            ))}
           </div>
         </section>
 
@@ -1590,6 +2040,15 @@ export function LifeGuideContent() {
             </div>
           )}
         </section>
+
+        <GuideDetailModal
+          guide={activeGuide}
+          isOpen={!!activeGuide}
+          onClose={() => {
+            if (activeGuide) handleMarkRead(activeGuide.id);
+            setActiveGuide(null);
+          }}
+        />
       </div>
     </Layout>
   );

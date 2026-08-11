@@ -729,3 +729,102 @@ nextjs-portal:not(:has(> *)) {
     content-visibility: auto;
     contain-intrinsic-size: auto 600px;
 }
+
+/* Language marquee — AdaptEd soft ticker */
+@keyframes language-marquee-scroll {
+    from { transform: translate3d(0, 0, 0); }
+    to { transform: translate3d(-50%, 0, 0); }
+}
+@keyframes language-marquee-scroll-reverse {
+    from { transform: translate3d(-50%, 0, 0); }
+    to { transform: translate3d(0, 0, 0); }
+}
+.language-marquee__row {
+    overflow: hidden;
+    mask-image: linear-gradient(90deg, transparent, #000 6%, #000 94%, transparent);
+}
+.language-marquee__track {
+    display: flex;
+    width: max-content;
+    align-items: center;
+    gap: 0.75rem;
+    padding-inline: 0.5rem;
+    animation: language-marquee-scroll 48s linear infinite;
+    will-change: transform;
+}
+.language-marquee__track--reverse {
+    animation-name: language-marquee-scroll-reverse;
+    animation-duration: 56s;
+}
+.language-marquee__pill {
+    display: inline-flex;
+    align-items: center;
+    gap: 0.55rem;
+    white-space: nowrap;
+    border-radius: 9999px;
+    border: 1px solid rgba(99, 102, 241, 0.18);
+    background: rgba(255, 255, 255, 0.78);
+    box-shadow: 0 1px 2px rgba(15, 23, 42, 0.04);
+    padding: 0.55rem 1rem 0.55rem 0.75rem;
+    backdrop-filter: blur(8px);
+}
+.language-marquee__pill--brand {
+    border-color: rgba(79, 70, 229, 0.35);
+    background: linear-gradient(135deg, rgba(59, 130, 246, 0.14), rgba(139, 92, 246, 0.16));
+}
+.language-marquee__pill--life {
+    border-color: rgba(16, 185, 129, 0.28);
+    background: rgba(236, 253, 245, 0.9);
+}
+.language-marquee__pill--study {
+    border-color: rgba(59, 130, 246, 0.28);
+    background: rgba(239, 246, 255, 0.95);
+}
+.language-marquee__lang {
+    display: inline-flex;
+    align-items: center;
+    justify-content: center;
+    min-width: 1.85rem;
+    height: 1.85rem;
+    padding: 0 0.4rem;
+    border-radius: 9999px;
+    font-size: 0.65rem;
+    font-weight: 700;
+    letter-spacing: 0.04em;
+    text-transform: uppercase;
+    color: #4338ca;
+    background: rgba(99, 102, 241, 0.12);
+}
+.language-marquee__pill--brand .language-marquee__lang {
+    color: #fff;
+    background: linear-gradient(135deg, #3b82f6, #6366f1);
+}
+.language-marquee__pill--life .language-marquee__lang {
+    color: #047857;
+    background: rgba(16, 185, 129, 0.16);
+}
+.language-marquee__pill--study .language-marquee__lang {
+    color: #1d4ed8;
+    background: rgba(59, 130, 246, 0.16);
+}
+.language-marquee__text {
+    font-size: clamp(0.9rem, 1.8vw, 1.05rem);
+    font-weight: 600;
+    letter-spacing: -0.015em;
+    color: #0f172a;
+}
+@media (prefers-reduced-motion: reduce) {
+    .language-marquee__track,
+    .language-marquee__track--reverse {
+        animation: none;
+        transform: none;
+        flex-wrap: wrap;
+        width: 100%;
+        justify-content: center;
+        row-gap: 0.65rem;
+    }
+    .language-marquee__row {
+        overflow: visible;
+        mask-image: none;
+    }
+}

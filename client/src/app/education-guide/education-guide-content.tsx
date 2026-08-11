@@ -21,12 +21,7 @@ import {
 } from "lucide-react";
 import { useState, useMemo, useEffect, useCallback } from "react";
 import Link from "next/link";
-import {
-  Guide,
-  GuideCategory,
-  Language,
-  Difficulty,
-} from "@/types";
+import { Guide, GuideCategory, Language, Difficulty } from "@/types";
 import { useTranslation } from "@/hooks/useTranslation";
 import { useGuideProgress } from "@/hooks/useGuideProgress";
 
@@ -970,42 +965,73 @@ const educationGuides: Guide[] = [
 
 ❗ **ПОМНИТЕ: Академический отпуск - это серьёзное решение. Рассмотрите все варианты и проконсультируйтесь с деканатом перед принятием решения. Если можете решить проблему без академа - лучше сделать это!**`,
     language: Language.RU,
-    tags: ["академ", "отпуск", "оформление", "документы", "деканат"],
+    tags: ["академ", "отпуск", "оформление", "учебные документы", "деканат", "справка"],
     difficulty: Difficulty.ADVANCED,
     isPublished: true,
     createdAt: "2024-01-03",
-    updatedAt: "2026-03-07",
+    updatedAt: "2026-08-11",
   },
 
   {
-    id: "doc-life-hub",
-    title: "Документы для студента: где искать",
+    id: "edu-academic-docs",
+    title: "Учебные справки и документы вуза",
     category: GuideCategory.EDUCATION,
-    content: `# Документы — в разделе «Быт»
+    content: `# Учебные документы — только про учёбу
 
-ИНН, СНИЛС, замена паспорта и регистрация по месту пребывания — **не учебные**, а бытовые темы. Мы держим их в одном месте, чтобы инструкции не расходились.
+В этом разделе **Учёба → Документы** — бумаги, которые выдаёт **вуз / деканат** для обучения.  
+Миграция, виза, РВПО, общежитие, ИНН — в разделе **Быт**.
 
-## Где читать
+# Какие справки обычно нужны
 
-Откройте раздел **Быт** на платформе:
+• **Справка об обучении** — подтверждает, что вы студент (банк, стипендия, посольство — если просят именно вузовскую)
+• **Выписка / академическая справка** — пройденные дисциплины и оценки
+• **Справка-вызов** — для сессии при заочной/очно-заочной форме (если актуально)
+• **Студенческий билет** и **зачётная книжка** (или электронный аналог) — основной учебный ID
+• **Справка для академического отпуска** — пакет в деканат (см. гайд «Академический отпуск»)
+• **Характеристика / направление** — по запросу кафедры или для практики
 
-• **Получение ИНН и СНИЛС** — пошагово для иностранных студентов
-• **Что делать при потере паспорта** — сроки, консульство, полиция
-• **Как зарегистрироваться в общежитии** — § про регистрацию по месту пребывания
+# Где брать
 
-## Зачем это студенту
+1. **Деканат** факультета — справки об обучении, академ, выписки
+2. **Учебный отдел / офис регистратора** — если в вузе справки централизованы
+3. **Личный кабинет студента** — часть справок заказывается онлайн (зависит от вуза)
+4. **Кафедра** — документы по практике, курсовым, направлениям
 
-• **ИНН** — часто нужен для работы, стипендии, договоров
-• **СНИЛС** — для Госуслуг, работы, некоторых медуслуг
-• **Регистрация** — обязательна для легального пребывания; сроки зависят от вашего статуса — уточняйте в вузе и на [Госуслугах](https://gosuslugi.ru)
+# Как заказать без боли
 
-❗ Актуальные сроки и штрафы меняются — всегда сверяйтесь с международным отделом вашего вуза.`,
+1. Уточните форму: бумажная / электронная / на бланке с печатью
+2. Назовите цель (банк, практика, перевод) — от этого зависит тип справки
+3. Узнайте срок изготовления (часто 1–5 рабочих дней)
+4. Проверьте ФИО, курс, форму обучения, печати до ухода из окна
+5. Сохраните скан — вуз не всегда выдаёт дубликат сразу
+
+# Связанные гайды в «Учёбе»
+
+• Академический отпуск: когда и как
+• Что делать при незачёте
+• Структура вуза: кафедры, деканаты, ректорат
+
+# Что искать в «Быт» (не здесь)
+
+• Миграционный учёт, виза, РВПО / РВП / ВНЖ
+• Общежитие и регистрация по месту пребывания
+• ИНН, СНИЛС, потеря паспорта
+• ДМС и обязательные расходы
+
+❗ Список справок и сроки зависят от вуза — ориентир всегда деканат / личный кабинет.`,
     language: Language.RU,
-    tags: ["документы", "ИНН", "СНИЛС", "паспорт", "миграция"],
+    tags: [
+      "учебные документы",
+      "справка",
+      "зачётка",
+      "студенческий",
+      "выписка",
+      "деканат",
+    ],
     difficulty: Difficulty.BEGINNER,
     isPublished: true,
-    createdAt: "2026-03-07",
-    updatedAt: "2026-03-07",
+    createdAt: "2026-08-11",
+    updatedAt: "2026-08-11",
   },
   {
     id: "expulsion-academic",
@@ -1072,7 +1098,16 @@ const educationGuides: Guide[] = [
 
 ❗ **ВАЖНО: У вас есть 30 дней на исправление ситуации после получения уведомления!**`,
     language: Language.RU,
-    tags: ["отчисление", "риски", "академ", "неуспеваемость", "пересдача", "сессия", "долги", "хвосты"],
+    tags: [
+      "отчисление",
+      "риски",
+      "академ",
+      "неуспеваемость",
+      "пересдача",
+      "сессия",
+      "долги",
+      "хвосты",
+    ],
     difficulty: Difficulty.ADVANCED,
     isPublished: true,
     createdAt: "2024-01-20",
@@ -1152,45 +1187,38 @@ const educationGuides: Guide[] = [
     category: GuideCategory.EDUCATION,
     content: `# 🔴 Нарушение миграционных правил
 
+Этот гайд — только про **риск отчисления**. Пошаговые инструкции (сроки, документы, РВПО/РВП, расходы) — в разделе **Быт**, без дублей.
+
 ## ❌ Причина
 
-**Типичные основания для проблем:**
-• Просрочена **регистрация по месту пребывания** или миграционный учёт
-• Истекла виза / превышен срок безвизового пребывания
-• Нет действующего **ДМС** или медстраховки (если требуется вашим статусом)
-• Несоответствие цели визы (учёба) фактическому статусу
+• Просрочен миграционный учёт / регистрация
+• Истекла виза или превышен срок безвизового пребывания
+• Нет действующего ДМС (если требуется)
+• Статус не соответствует цели «учёба»
 
-## ⚠️ Чем грозит
+## ⚠️ Чем грозит для учёбы
 
-**Последствия:**
-• Штрафы и блокировка повторного въезда
-• Отчисление из вуза (часто автоматически при серьёзных нарушениях)
-• Депортация и запрет на въезд
+• Отчисление при серьёзном нарушении статуса
+• Штрафы, выдворение, запрет на въезд
+• Невозможность продлить визу и продолжить обучение
 
-## ✅ Как избежать
+## 🎯 Что делать срочно
 
-**Профилактика:**
-• Сразу после прилёта — **международный отдел вуза**: они подскажут ваш сценарий (виза / безвиз / ЕАЭС)
-• Оформите регистрацию в срок — **срок зависит от статуса**, не ориентируйтесь на «7 дней для всех»
-• Продлевайте визу или меняйте статус **заранее**, не в последний день
-• Храните копии паспорта, регистрации, договора с вузом, полиса ДМС
+1. Идите в **международный отдел вуза** — первый шаг
+2. Не игнорируйте письма вуза и уведомления
+3. Дальше читайте в **Быт** (полные инструкции):
+• **Миграционный учёт и регистрация**
+• **Обязательные расходы** (ДМС, виза, медосмотр)
+• **РВПО / РВП / ВНЖ** — если вопрос про статус
+• **Что делать при потере паспорта**
 
-## 🎯 Что делать прямо сейчас
-
-**Если срок регистрации или визы подходит к концу:**
-
-**1.** Идите в **международный отдел** — это первый шаг, не МВД вслепую
-**2.** Соберите паспорт, миграционные документы, договор об обучении, адрес проживания
-**3.** При потере документов — гайд «Что делать при потере паспорта» в разделе **Быт**
-**4.** Не игнорируйте уведомления вуза и письма с Госуслуг
-
-❗ **Правила зависят от гражданства и типа въезда. Универсальных «7 дней» больше нет — только инструкция вашего вуза + актуальные правила на gosuslugi.ru.**`,
+❗ Здесь нет чек-листов и сроков специально — один источник правды в «Быт», чтобы цифры не расходились.`,
     language: Language.RU,
-    tags: ["отчисление", "риски", "миграция", "регистрация", "виза", "МВД", "документы"],
+    tags: ["отчисление", "риски", "миграция", "виза"],
     difficulty: Difficulty.ADVANCED,
     isPublished: true,
     createdAt: "2024-01-20",
-    updatedAt: "2026-03-07",
+    updatedAt: "2026-08-11",
   },
   {
     id: "expulsion-payment",
@@ -1348,14 +1376,21 @@ const educationGuides: Guide[] = [
 
 ❗ **КРИТИЧЕСКИ ВАЖНО: Серьёзные дисциплинарные нарушения могут привести к немедленному отчислению! Будьте честны и сотрудничайте с администрацией!**`,
     language: Language.RU,
-    tags: ["отчисление", "риски", "дисциплина", "списывание", "конфликты", "комиссия", "восстановление"],
+    tags: [
+      "отчисление",
+      "риски",
+      "дисциплина",
+      "списывание",
+      "конфликты",
+      "комиссия",
+      "восстановление",
+    ],
     difficulty: Difficulty.ADVANCED,
     isPublished: true,
     createdAt: "2024-01-20",
     updatedAt: "2026-03-07",
   },
 ];
-
 
 type Category = {
   id: string;
@@ -1380,7 +1415,7 @@ type ToolCard = {
 };
 
 const articleGuides = educationGuides.filter(
-  (guide) => guide.id !== "slang-dictionary"
+  (guide) => guide.id !== "slang-dictionary",
 );
 
 const ENABLED_CATEGORY_IDS = new Set([
@@ -1409,14 +1444,17 @@ export function EducationGuideContent() {
   const [isLoading, setIsLoading] = useState(false);
   const [isInitialLoading, setIsInitialLoading] = useState(true);
 
-  const {
-    isRead,
-    markAsRead,
-  } = useGuideProgress("education", articleGuides.length);
+  const { isRead, markAsRead } = useGuideProgress(
+    "education",
+    articleGuides.length,
+  );
 
-  const handleMarkRead = useCallback((guideId: string) => {
-    markAsRead(guideId);
-  }, [markAsRead]);
+  const handleMarkRead = useCallback(
+    (guideId: string) => {
+      markAsRead(guideId);
+    },
+    [markAsRead],
+  );
   const [guidesVisibleCount, setGuidesVisibleCount] = useState(12);
 
   const categories: Category[] = categoriesConfig
@@ -1496,8 +1534,8 @@ export function EducationGuideContent() {
           guide.title.toLowerCase().includes(searchQuery.toLowerCase()) ||
           guide.content.toLowerCase().includes(searchQuery.toLowerCase()) ||
           guide.tags.some((tag) =>
-            tag.toLowerCase().includes(searchQuery.toLowerCase())
-          )
+            tag.toLowerCase().includes(searchQuery.toLowerCase()),
+          ),
       );
     }
 
@@ -1507,30 +1545,30 @@ export function EducationGuideContent() {
         switch (safeSelectedCategory) {
           case "exams":
             return guide.tags.some((tag) =>
-              ["сессия", "экзамены", "незачёт", "пересдача"].includes(tag)
+              ["сессия", "экзамены", "незачёт", "пересдача"].includes(tag),
             );
           case "papers":
             return guide.tags.some((tag) =>
               ["курсовая", "написание", "исследование", "оформление"].includes(
-                tag
-              )
+                tag,
+              ),
             );
           case "documents":
+            // Только учебные документы вуза — миграция/виза/РВПО живут в «Быт»
             return guide.tags.some((tag) =>
               [
-                "ИНН",
-                "СНИЛС",
-                "документы",
-                "паспорт",
-                "потеря",
-                "замена",
-                "миграция",
-                "карта",
-              ].includes(tag)
+                "учебные документы",
+                "справка",
+                "зачётка",
+                "студенческий",
+                "выписка",
+                "справка-вызов",
+                "академ",
+              ].includes(tag),
             );
           case "structure":
             return guide.tags.some((tag) =>
-              ["структура", "кафедра", "деканат", "ГОСТ"].includes(tag)
+              ["структура", "кафедра", "деканат", "ГОСТ"].includes(tag),
             );
           case "expulsion-risks":
             return guide.tags.some((tag) =>
@@ -1544,7 +1582,7 @@ export function EducationGuideContent() {
                 "хвосты",
                 "пересдача",
                 "восстановление",
-              ].includes(tag)
+              ].includes(tag),
             );
           default:
             return true;
@@ -1561,7 +1599,7 @@ export function EducationGuideContent() {
       <Layout>
         <div className="space-y-6 sm:space-y-8">
           {/* Header Skeleton */}
-          <div className="rounded-2xl sm:rounded-3xl mt-4 sm:mt-6 min-h-[340px] sm:min-h-[420px] bg-gray-200 animate-pulse" />
+          <div className="relative left-1/2 right-1/2 -ml-[50vw] -mr-[50vw] w-screen min-h-[340px] sm:min-h-[420px] bg-gray-200 animate-pulse" />
 
           {/* Search Skeleton */}
           <div className="bg-white rounded-2xl sm:rounded-3xl p-4 sm:p-6">
@@ -1604,15 +1642,16 @@ export function EducationGuideContent() {
   return (
     <Layout>
       <div className="space-y-6 sm:space-y-8">
-        {/* Hero — same shell as homepage / life-guide */}
-        <section className="relative overflow-hidden rounded-2xl sm:rounded-3xl mt-4 sm:mt-6 mb-6 sm:mb-8 min-h-[340px] sm:min-h-[420px] bg-gradient-to-br from-blue-600 via-purple-600 to-indigo-700">
+        {/* Hero — full-bleed viewport L/R */}
+        <section className="relative left-1/2 right-1/2 -ml-[50vw] -mr-[50vw] w-screen overflow-hidden mb-6 sm:mb-8 min-h-[340px] sm:min-h-[420px] bg-gradient-to-br from-blue-600 via-purple-600 to-indigo-700">
           <div
-            className="absolute inset-0 scale-105 blur-[3px]"
+            className="absolute inset-0"
             aria-hidden
             style={{
-              backgroundImage: 'url("/image-banner/image-education-guide.png")',
+              backgroundImage:
+                'url("/image-banner/image-education-guide.png?v=2")',
               backgroundSize: "cover",
-              backgroundPosition: "center",
+              backgroundPosition: "center top",
               backgroundRepeat: "no-repeat",
             }}
           />
@@ -1622,7 +1661,7 @@ export function EducationGuideContent() {
             aria-hidden
           />
 
-          <div className="relative z-10 flex h-full min-h-[340px] sm:min-h-[420px] items-center px-5 sm:px-8 lg:px-10 py-10 sm:py-14">
+          <div className="relative z-10 mx-auto flex h-full min-h-[340px] sm:min-h-[420px] max-w-7xl items-center px-4 sm:px-6 lg:px-8 py-10 sm:py-14">
             <div className="w-full max-w-xl">
               <div className="mb-4 inline-flex items-center gap-2 rounded-full bg-white/90 px-3 py-1.5 shadow-sm">
                 <GraduationCap
@@ -1877,10 +1916,7 @@ export function EducationGuideContent() {
             <>
               <div className="grid grid-cols-1 sm:grid-cols-2 lg:grid-cols-3 gap-4 sm:gap-6 transition-all duration-500 ease-out">
                 {filteredGuides.slice(0, guidesVisibleCount).map((guide) => (
-                  <div
-                    key={`guide-${guide.id}`}
-                    className="h-[280px]"
-                  >
+                  <div key={`guide-${guide.id}`} className="h-[280px]">
                     <GuideCard
                       guide={guide}
                       isRead={isRead(guide.id)}

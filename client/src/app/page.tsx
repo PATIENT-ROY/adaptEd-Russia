@@ -37,6 +37,7 @@ import { PublicReview, TrustStats as TrustStatsType } from "@/types";
 import { HeroTypewriter } from "@/components/home/HeroTypewriter";
 import { TrustStats } from "@/components/home/TrustStats";
 import { AdaptationHeroSection } from "@/components/home/AdaptationHeroSection";
+import { LanguageMarquee } from "@/components/home/LanguageMarquee";
 import { ReviewCard } from "@/components/home/ReviewCard";
 import {
   TestimonialCardSkeleton,
@@ -397,6 +398,9 @@ export default function HomePage() {
         ) : null}
 
         <AdaptationHeroSection />
+
+        {/* Multilingual ticker — mid-page break like edurussia marquees */}
+        <LanguageMarquee />
 
         {/* How it works */}
         <section
