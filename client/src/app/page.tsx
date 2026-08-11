@@ -165,6 +165,7 @@ export default function HomePage() {
   const features = useMemo(
     () => [
       {
+        id: "navigator",
         icon: BookOpen,
         title: t("home.features.navigator"),
         description: t("home.features.navigator.desc"),
@@ -176,6 +177,7 @@ export default function HomePage() {
         href: "/education-guide",
       },
       {
+        id: "reminders",
         icon: Sparkles,
         title: t("home.features.reminders"),
         description: t("home.features.reminders.desc"),
@@ -184,6 +186,7 @@ export default function HomePage() {
         href: "/reminders",
       },
       {
+        id: "ai",
         icon: MessageSquare,
         title: t("home.features.ai"),
         description: t("home.features.ai.desc"),
@@ -192,6 +195,7 @@ export default function HomePage() {
         href: "/ai-helper",
       },
       {
+        id: "docscan",
         icon: ScanLine,
         title: t("home.features.docscan"),
         description: t("home.features.docscan.desc"),
@@ -200,6 +204,7 @@ export default function HomePage() {
         href: "/docscan",
       },
       {
+        id: "community",
         icon: Users,
         title: t("home.features.community"),
         description: t("home.features.community.desc"),
@@ -208,6 +213,7 @@ export default function HomePage() {
         href: "/community/questions",
       },
       {
+        id: "verified",
         icon: Shield,
         title: t("home.benefits.verified"),
         description: t("home.benefits.verified.desc"),
@@ -223,6 +229,7 @@ export default function HomePage() {
   const pricingPlans = useMemo(
     () => [
       {
+        id: "freemium",
         name: t("home.pricing.freemium"),
         price: t("home.pricing.freemium.price"),
         description: t("home.pricing.freemium.description"),
@@ -239,6 +246,7 @@ export default function HomePage() {
         buttonHref: adaptationCtaHref,
       },
       {
+        id: "premium",
         name: t("home.pricing.premium"),
         price: t("home.pricing.premium.price"),
         description: t("home.pricing.premium.description"),
@@ -583,7 +591,7 @@ export default function HomePage() {
               {features.map((feature) => {
                 const Icon = feature.icon;
                 return (
-                  <StaggerItem key={feature.title}>
+                  <StaggerItem key={feature.id}>
                     <Link href={feature.href} className="group block h-full">
                       <Card className="border border-slate-200 shadow-sm h-full bg-white transition-all duration-200 hover:shadow-md hover:border-blue-200">
                         <CardContent className="p-5 sm:p-6 flex flex-col h-full">
@@ -604,8 +612,7 @@ export default function HomePage() {
                             </p>
                           )}
                           <span className="inline-flex items-center gap-1 text-sm font-semibold text-blue-600 mt-4 group-hover:gap-2 transition-all">
-                            {(feature as { ctaLabel?: string }).ctaLabel ??
-                              t("common.learnMore")}
+                            {feature.ctaLabel ?? t("common.learnMore")}
                             <ArrowRight className="h-4 w-4" aria-hidden />
                           </span>
                         </CardContent>
@@ -637,7 +644,7 @@ export default function HomePage() {
             <div className="grid grid-cols-1 md:grid-cols-2 gap-6 lg:gap-8">
               {pricingPlans.map((plan) => (
                 <Card
-                  key={plan.name}
+                  key={plan.id}
                   className={`relative flex flex-col bg-white ${
                     plan.popular
                       ? "ring-2 ring-blue-500 shadow-xl"
