@@ -92,7 +92,7 @@ export function Navigation({
           </div>
 
           {/* Desktop Navigation */}
-          <div className="hidden lg:flex lg:items-center lg:space-x-4">
+          <div className="hidden lg:flex lg:items-center lg:gap-0.5 xl:gap-1">
             {/* Основная навигация для всех */}
             {navigationItemsConfig.map((item) => {
               const Icon = item.icon;
@@ -103,7 +103,7 @@ export function Navigation({
                   key={item.href}
                   href={item.href}
                   className={cn(
-                    "modern-nav-item flex items-center space-x-2 rounded-xl px-4 py-2 text-sm font-medium transition-all duration-200",
+                    "modern-nav-item flex items-center gap-1.5 rounded-xl px-2.5 xl:px-3 py-2 text-sm font-medium transition-all duration-200 whitespace-nowrap",
                     isActive
                       ? "bg-blue-50 text-blue-700 shadow-sm"
                       : "text-slate-600 hover:bg-slate-50"
@@ -115,11 +115,11 @@ export function Navigation({
                 >
                   <Icon
                     className={cn(
-                      "h-4 w-4 transition-colors duration-200",
+                      "h-4 w-4 shrink-0 transition-colors duration-200",
                       isActive ? "text-blue-600" : "text-slate-500"
                     )}
                   />
-                  <span>{t(item.labelKey)}</span>
+                  <span className="whitespace-nowrap">{t(item.labelKey)}</span>
                   {isActive && (
                     <div
                       style={{
@@ -148,7 +148,7 @@ export function Navigation({
                     key={item.href}
                     href={item.href}
                     className={cn(
-                      "modern-nav-item flex items-center space-x-2 rounded-xl px-4 py-2 text-sm font-medium transition-all duration-200",
+                      "modern-nav-item flex items-center gap-1.5 rounded-xl px-2.5 xl:px-3 py-2 text-sm font-medium transition-all duration-200 whitespace-nowrap",
                       isActive
                         ? "bg-blue-50 text-blue-700 shadow-sm"
                         : "text-slate-600 hover:bg-slate-50"
@@ -160,11 +160,11 @@ export function Navigation({
                   >
                     <Icon
                       className={cn(
-                        "h-4 w-4 transition-colors duration-200",
+                        "h-4 w-4 shrink-0 transition-colors duration-200",
                         isActive ? "text-blue-600" : "text-slate-500"
                       )}
                     />
-                    <span>{t(item.labelKey)}</span>
+                    <span className="whitespace-nowrap">{t(item.labelKey)}</span>
                     {isActive && (
                       <div
                         style={{
