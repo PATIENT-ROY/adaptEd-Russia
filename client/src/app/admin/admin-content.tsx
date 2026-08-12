@@ -10,9 +10,6 @@ import {
   Bell,
   Shield,
   Activity,
-  Edit,
-  Eye,
-  ScanLine,
   Award,
   Star,
 } from "lucide-react";
@@ -80,24 +77,52 @@ export function AdminContent() {
       color: "from-purple-500 to-purple-600",
     },
     {
-      title: t("admin.dashboard.stats.docscan"),
-      value: loading ? "…" : String(dashboard?.stats.docscan.value ?? 0),
-      change: dashboard?.stats.docscan.change ?? "0%",
+      title: t("admin.dashboard.stats.guideReads"),
+      value: loading ? "…" : String(dashboard?.stats.guideReads.value ?? 0),
+      change: dashboard?.stats.guideReads.change ?? "0%",
       period: t("admin.dashboard.stats.perWeek"),
-      icon: ScanLine,
+      icon: BookOpen,
       color: "from-indigo-500 to-indigo-600",
     },
   ];
 
   const recentUsers = dashboard?.recentUsers ?? [];
   const recentGuides = dashboard?.recentGuides ?? [];
+  const ops = dashboard?.ops;
+
+  const opsItems = [
+    {
+      label: t("admin.dashboard.ops.openTickets"),
+      value: loading ? "…" : String(ops?.openTickets ?? 0),
+      href: "/admin/support",
+      tone: (ops?.openTickets ?? 0) > 0 ? "amber" : "green",
+    },
+    {
+      label: t("admin.dashboard.ops.pendingReviews"),
+      value: loading ? "…" : String(ops?.pendingReviews ?? 0),
+      href: "/admin/reviews",
+      tone: (ops?.pendingReviews ?? 0) > 0 ? "amber" : "green",
+    },
+    {
+      label: t("admin.dashboard.ops.guideReadsWeek"),
+      value: loading ? "…" : String(ops?.guideReadsWeek ?? 0),
+      href: "/admin/docscan/analytics",
+      tone: "green",
+    },
+    {
+      label: t("admin.dashboard.ops.aiMessagesWeek"),
+      value: loading ? "…" : String(ops?.aiMessagesWeek ?? 0),
+      href: "/admin/ai-analytics",
+      tone: "green",
+    },
+  ];
 
   const adminActions = [
     { title: t("admin.dashboard.actions.users"), description: t("admin.dashboard.actions.usersDesc"), icon: Users, href: "/admin/users", color: "from-blue-500 to-blue-600" },
     { title: t("admin.dashboard.actions.guides"), description: t("admin.dashboard.actions.guidesDesc"), icon: BookOpen, href: "/admin/guides", color: "from-green-500 to-green-600" },
     { title: t("admin.dashboard.actions.support"), description: t("admin.dashboard.actions.supportDesc"), icon: Bell, href: "/admin/support", color: "from-red-500 to-red-600" },
     { title: t("admin.dashboard.actions.ai"), description: t("admin.dashboard.actions.aiDesc"), icon: Activity, href: "/admin/ai-analytics", color: "from-purple-500 to-purple-600" },
-    { title: t("admin.dashboard.actions.docscan"), description: t("admin.dashboard.actions.docscanDesc"), icon: ScanLine, href: "/admin/docscan/analytics", color: "from-indigo-500 to-indigo-600" },
+    { title: t("admin.dashboard.actions.docscan"), description: t("admin.dashboard.actions.docscanDesc"), icon: BookOpen, href: "/admin/docscan/analytics", color: "from-indigo-500 to-indigo-600" },
     { title: t("admin.dashboard.actions.community"), description: t("admin.dashboard.actions.communityDesc"), icon: Users, href: "/community/questions", color: "from-pink-500 to-rose-600" },
     { title: t("admin.dashboard.actions.reviews"), description: t("admin.dashboard.actions.reviewsDesc"), icon: Star, href: "/admin/reviews", color: "from-yellow-500 to-orange-500" },
     { title: t("admin.dashboard.actions.achievements"), description: t("admin.dashboard.actions.achievementsDesc"), icon: Award, href: "/admin/achievements", color: "from-amber-500 to-orange-500" },
@@ -136,8 +161,23 @@ export function AdminContent() {
                 <p className="text-sm sm:text-base text-gray-600">{t("admin.dashboard.subtitle")}</p>
               </div>
             </div>
-            <div className="flex items-center space-x-2">
-              <span className="text-sm text-gray-500">{t("admin.dashboard.adminLabel")}</span>
+            <div className="flex flex-wrap items-center gap-2">
+              <Link href="/dashboard">
+                <Button variant="outline" size="sm">
+                  {t("nav.home")}
+                </Button>
+              </Link>
+              <Link href="/achievements">
+                <Button variant="outline" size="sm">
+                  {t("nav.achievements")}
+                </Button>
+              </Link>
+              <Link href="/profile">
+                <Button variant="outline" size="sm">
+                  {t("nav.profile")}
+                </Button>
+              </Link>
+              <span className="text-sm text-gray-500 ml-1">{t("admin.dashboard.adminLabel")}</span>
               <span className="font-medium text-gray-900">{user?.name}</span>
             </div>
           </div>
@@ -215,9 +255,6 @@ export function AdminContent() {
                       <span className={`px-2 py-1 rounded-full text-xs font-medium ${u.status === "active" ? "bg-green-100 text-green-700" : "bg-yellow-100 text-yellow-700"}`}>
                         {u.status === "active" ? t("admin.dashboard.userActive") : t("admin.dashboard.userPending")}
                       </span>
-                      <Button variant="outline" size="sm" aria-label={t("admin.common.view")}>
-                        <Eye className="h-4 w-4" />
-                      </Button>
                     </div>
                   </div>
                 ))
@@ -260,9 +297,6 @@ export function AdminContent() {
                       <span className={`px-2 py-1 rounded-full text-xs font-medium ${guide.status === "published" ? "bg-green-100 text-green-700" : "bg-yellow-100 text-yellow-700"}`}>
                         {guide.status === "published" ? t("admin.dashboard.guidePublished") : t("admin.dashboard.guideDraft")}
                       </span>
-                      <Button variant="outline" size="sm" aria-label={t("admin.common.edit")}>
-                        <Edit className="h-4 w-4" />
-                      </Button>
                     </div>
                   </div>
                 ))
@@ -281,19 +315,29 @@ export function AdminContent() {
           <CardHeader>
             <CardTitle className="flex items-center space-x-2">
               <Activity className="h-5 w-5" />
-              <span>{t("admin.dashboard.systemStatusTitle")}</span>
+              <span>{t("admin.dashboard.opsTitle")}</span>
             </CardTitle>
           </CardHeader>
           <CardContent>
             <div className="grid grid-cols-1 sm:grid-cols-2 lg:grid-cols-4 gap-4">
-              {[t("admin.dashboard.statusServer"), t("admin.dashboard.statusDatabase"), t("admin.dashboard.statusAI"), t("admin.dashboard.statusNotifications")].map((label) => (
-                <div key={label} className="flex items-center space-x-3 p-3 rounded-lg bg-green-50">
-                  <div className="w-3 h-3 bg-green-500 rounded-full" />
-                  <div>
-                    <p className="font-medium text-gray-900">{label}</p>
-                    <p className="text-sm text-gray-600">{t("admin.dashboard.statusOperational")}</p>
+              {opsItems.map((item) => (
+                <Link key={item.label} href={item.href} className="block">
+                  <div
+                    className={`flex items-center space-x-3 p-3 rounded-lg ${
+                      item.tone === "amber" ? "bg-amber-50" : "bg-green-50"
+                    }`}
+                  >
+                    <div
+                      className={`w-3 h-3 rounded-full ${
+                        item.tone === "amber" ? "bg-amber-500" : "bg-green-500"
+                      }`}
+                    />
+                    <div>
+                      <p className="font-medium text-gray-900">{item.label}</p>
+                      <p className="text-sm text-gray-600">{item.value}</p>
+                    </div>
                   </div>
-                </div>
+                </Link>
               ))}
             </div>
           </CardContent>

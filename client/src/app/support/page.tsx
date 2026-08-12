@@ -446,6 +446,15 @@ export default function SupportPage() {
                         >
                           {t("support.form.privacyConsent")}{" "}
                           <a
+                            href="/personal-data-consent"
+                            className="text-blue-600 hover:text-blue-700 underline font-medium"
+                            target="_blank"
+                            rel="noopener noreferrer"
+                          >
+                            {t("support.form.consentDoc")}
+                          </a>{" "}
+                          {t("support.form.privacyConsentAnd")}{" "}
+                          <a
                             href="/privacy-policy"
                             className="text-blue-600 hover:text-blue-700 underline font-medium"
                             target="_blank"

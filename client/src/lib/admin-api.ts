@@ -21,7 +21,13 @@ export type AdminDashboardData = {
     users: { value: number; change: string };
     guides: { value: number; change: string };
     ai: { value: number; change: string };
-    docscan: { value: number; change: string };
+    guideReads: { value: number; change: string };
+  };
+  ops: {
+    openTickets: number;
+    pendingReviews: number;
+    guideReadsWeek: number;
+    aiMessagesWeek: number;
   };
   recentUsers: Array<{
     id: string;
@@ -93,17 +99,15 @@ export function fetchAdminAiAnalytics() {
 
 export function fetchAdminDocscanAnalytics() {
   return adminFetch<{
-    totalScans: number;
-    activeUsers: number;
-    successOcr: number | null;
-    ocrErrors: number | null;
+    totalReads: number;
+    activeReaders: number;
   }>('/analytics/docscan');
 }
 
 export function fetchAdminAchievementsAnalytics() {
   return adminFetch<{
     totalAchievements: number;
-    avgProgress: number;
+    engagedShare: number;
     activeUsers: number;
     newUsersMonth: number;
   }>('/analytics/achievements');

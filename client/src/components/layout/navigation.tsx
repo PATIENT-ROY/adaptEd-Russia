@@ -19,6 +19,7 @@ import {
   X,
   Shield,
   ScanLine,
+  Trophy,
 } from "lucide-react";
 import { useState } from "react";
 import type { Language } from "@/types";
@@ -39,6 +40,7 @@ const navigationItemsConfig = [
 const authenticatedNavigationItemsConfig = [
   { href: "/ai-helper", labelKey: "nav.aiHelper", icon: MessageSquare },
   { href: "/docscan", labelKey: "nav.docscan", icon: ScanLine },
+  { href: "/achievements", labelKey: "nav.achievements", icon: Trophy },
 ];
 
 export function Navigation({

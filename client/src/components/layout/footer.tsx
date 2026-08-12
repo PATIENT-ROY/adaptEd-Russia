@@ -211,14 +211,22 @@ export function Footer() {
               <span className="hidden sm:inline">{t("footer.inRussia")}</span>
             </div>
 
-            <div className="flex items-center space-x-3 sm:space-x-4 text-xs sm:text-sm">
+            <div className="flex items-center flex-wrap justify-center sm:justify-end gap-x-3 sm:gap-x-4 gap-y-1 text-xs sm:text-sm">
               <Link
                 href="/privacy-policy"
-                className="text-slate-400 hover:text-blue-400 transition-colors duration-300 flex items-center"
+                className="text-slate-400 hover:text-blue-400 transition-colors duration-300"
                 target="_blank"
                 rel="noopener noreferrer"
               >
                 {t("footer.privacy")}
+              </Link>
+              <Link
+                href="/personal-data-consent"
+                className="text-slate-400 hover:text-blue-400 transition-colors duration-300"
+                target="_blank"
+                rel="noopener noreferrer"
+              >
+                {t("footer.personalDataConsent")}
               </Link>
               <div
                 className="flex items-center space-x-1 sm:space-x-2 text-slate-400"

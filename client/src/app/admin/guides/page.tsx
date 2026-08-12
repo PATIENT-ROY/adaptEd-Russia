@@ -10,11 +10,7 @@ import {
   BookOpen,
   Search,
   Eye,
-  Edit,
-  Trash2,
   Shield,
-  Plus,
-  Download,
   FileText,
   Tag,
   Globe,
@@ -35,6 +31,10 @@ const statusColors: Record<string, string> = {
   archived: "bg-gray-100 text-gray-700",
 };
 
+function guidePublicHref(guide: AdminGuideRow) {
+  return guide.category === "life" ? "/life-guide" : "/education-guide";
+}
+
 export default function AdminGuidesPage() {
   return (
     <ProtectedRoute>
@@ -53,13 +53,6 @@ function AdminGuidesContent() {
   const [searchTerm, setSearchTerm] = useState("");
   const [statusFilter, setStatusFilter] = useState("all");
   const [categoryFilter, setCategoryFilter] = useState("all");
-  const [selectedGuides, setSelectedGuides] = useState<string[]>([]);
-  const [isCreateOpen, setIsCreateOpen] = useState(false);
-  const [newGuide, setNewGuide] = useState({
-    title: "",
-    category: "education",
-    status: "draft",
-  });
 
   useEffect(() => {
     if (!isAdmin) return;
@@ -119,30 +112,9 @@ function AdminGuidesContent() {
     return matchesSearch && matchesStatus && matchesCategory;
   });
 
-  const handleDeleteGuide = (guideId: string) => {
-    setGuides(guides.filter((guide) => guide.id !== guideId));
-  };
-
-  const handleSelectAll = () => {
-    if (selectedGuides.length === filteredGuides.length) {
-      setSelectedGuides([]);
-    } else {
-      setSelectedGuides(filteredGuides.map((guide) => guide.id));
-    }
-  };
-
-  const handleSelectGuide = (guideId: string) => {
-    setSelectedGuides((prev) =>
-      prev.includes(guideId)
-        ? prev.filter((id) => id !== guideId)
-        : [...prev, guideId]
-    );
-  };
-
   return (
     <Layout>
       <div className="space-y-6 sm:space-y-8">
-        {/* Header */}
         <div className="bg-white rounded-2xl sm:rounded-3xl p-4 sm:p-6 shadow-sm">
           <div className="flex flex-col sm:flex-row sm:items-center justify-between space-y-4 sm:space-y-0">
             <div className="flex items-center space-x-3">
@@ -164,23 +136,9 @@ function AdminGuidesContent() {
                 </p>
               </div>
             </div>
-            <div className="flex items-center space-x-2">
-              <Button variant="outline" className="flex items-center space-x-2">
-                <Download className="h-4 w-4" />
-                <span>{t("admin.guides.export")}</span>
-              </Button>
-              <Button
-                className="flex items-center space-x-2"
-                onClick={() => setIsCreateOpen(true)}
-              >
-                <Plus className="h-4 w-4" />
-                <span>{t("admin.guides.create")}</span>
-              </Button>
-            </div>
           </div>
         </div>
 
-        {/* Filters */}
         <Card>
           <CardContent className="p-4 sm:p-6">
             <div className="flex flex-col sm:flex-row gap-4">
@@ -195,54 +153,38 @@ function AdminGuidesContent() {
                 />
               </div>
               <div className="relative w-full sm:w-48">
-              <select
-                value={statusFilter}
-                onChange={(e) => setStatusFilter(e.target.value)}
+                <select
+                  value={statusFilter}
+                  onChange={(e) => setStatusFilter(e.target.value)}
                   className="w-full appearance-none px-3 py-2 pr-9 border border-slate-300 rounded-lg focus:ring-2 focus:ring-green-500 focus:border-green-500"
-              >
-                <option value="all">{t("admin.guides.filters.status.all")}</option>
-                <option value="published">{t("admin.guides.filters.status.published")}</option>
-                <option value="draft">{t("admin.guides.filters.status.draft")}</option>
-                <option value="archived">{t("admin.guides.filters.status.archived")}</option>
-              </select>
+                >
+                  <option value="all">{t("admin.guides.filters.status.all")}</option>
+                  <option value="published">{t("admin.guides.filters.status.published")}</option>
+                  <option value="draft">{t("admin.guides.filters.status.draft")}</option>
+                  <option value="archived">{t("admin.guides.filters.status.archived")}</option>
+                </select>
                 <ChevronDown className="h-4 w-4 text-gray-400 pointer-events-none absolute right-3 top-1/2 -translate-y-1/2" />
               </div>
               <div className="relative w-full sm:w-48">
-              <select
-                value={categoryFilter}
-                onChange={(e) => setCategoryFilter(e.target.value)}
+                <select
+                  value={categoryFilter}
+                  onChange={(e) => setCategoryFilter(e.target.value)}
                   className="w-full appearance-none px-3 py-2 pr-9 border border-slate-300 rounded-lg focus:ring-2 focus:ring-green-500 focus:border-green-500"
-              >
-                <option value="all">{t("admin.guides.filters.category.all")}</option>
-                <option value="education">{t("admin.guides.filters.category.education")}</option>
-                <option value="life">{t("admin.guides.filters.category.life")}</option>
-              </select>
+                >
+                  <option value="all">{t("admin.guides.filters.category.all")}</option>
+                  <option value="education">{t("admin.guides.filters.category.education")}</option>
+                  <option value="life">{t("admin.guides.filters.category.life")}</option>
+                </select>
                 <ChevronDown className="h-4 w-4 text-gray-400 pointer-events-none absolute right-3 top-1/2 -translate-y-1/2" />
               </div>
             </div>
           </CardContent>
         </Card>
 
-        {/* Guides Table */}
         <Card>
           <CardHeader>
-            <CardTitle className="flex items-center justify-between">
-              <span>{t("admin.guides.table.title")} ({filteredGuides.length})</span>
-              {selectedGuides.length > 0 && (
-                <div className="flex items-center space-x-2">
-                  <span className="text-sm text-gray-600">
-                    {t("admin.guides.table.selected")} {selectedGuides.length}
-                  </span>
-                  <Button variant="outline" size="sm">
-                    <CheckCircle className="h-4 w-4 mr-2" />
-                    {t("admin.guides.table.publish")}
-                  </Button>
-                  <Button variant="outline" size="sm">
-                    <Clock className="h-4 w-4 mr-2" />
-                    {t("admin.guides.table.toDraft")}
-                  </Button>
-                </div>
-              )}
+            <CardTitle>
+              {t("admin.guides.table.title")} ({guidesLoading ? "…" : filteredGuides.length})
             </CardTitle>
           </CardHeader>
           <CardContent>
@@ -250,17 +192,6 @@ function AdminGuidesContent() {
               <table className="w-full">
                 <thead>
                   <tr className="border-b border-gray-200">
-                    <th className="text-left py-3 px-4">
-                      <input
-                        type="checkbox"
-                        checked={
-                          selectedGuides.length === filteredGuides.length &&
-                          filteredGuides.length > 0
-                        }
-                        onChange={handleSelectAll}
-                        className="rounded border-gray-300"
-                      />
-                    </th>
                     <th className="text-left py-3 px-4 font-medium text-gray-900">
                       {t("admin.guides.table.guide")}
                     </th>
@@ -284,14 +215,6 @@ function AdminGuidesContent() {
                       key={guide.id}
                       className="border-b border-gray-100 hover:bg-gray-50"
                     >
-                      <td className="py-3 px-4">
-                        <input
-                          type="checkbox"
-                          checked={selectedGuides.includes(guide.id)}
-                          onChange={() => handleSelectGuide(guide.id)}
-                          className="rounded border-gray-300"
-                        />
-                      </td>
                       <td className="py-3 px-4">
                         <div className="flex items-start space-x-3">
                           <div className="w-10 h-10 rounded-lg bg-gradient-to-br from-green-500 to-green-600 flex items-center justify-center text-white">
@@ -324,6 +247,13 @@ function AdminGuidesContent() {
                         </div>
                       </td>
                       <td className="py-3 px-4">
+                        <span className="text-sm font-medium text-gray-900 capitalize">
+                          {guide.category === "life"
+                            ? t("admin.guides.filters.category.life")
+                            : t("admin.guides.filters.category.education")}
+                        </span>
+                      </td>
+                      <td className="py-3 px-4">
                         <span
                           className={`inline-flex items-center px-3 py-1 rounded-full text-xs font-semibold ${
                             statusColors[guide.status]
@@ -350,7 +280,7 @@ function AdminGuidesContent() {
                         </div>
                       </td>
                       <td className="py-3 px-4">
-                        <div className="flex items-center space-x-2">
+                        <Link href={guidePublicHref(guide)}>
                           <Button
                             variant="outline"
                             size="sm"
@@ -358,23 +288,7 @@ function AdminGuidesContent() {
                           >
                             <Eye className="h-4 w-4" />
                           </Button>
-                          <Button
-                            variant="outline"
-                            size="sm"
-                            aria-label={t("admin.common.edit")}
-                          >
-                            <Edit className="h-4 w-4" />
-                          </Button>
-                          <Button
-                            variant="outline"
-                            size="sm"
-                            onClick={() => handleDeleteGuide(guide.id)}
-                            className="text-red-600 hover:text-red-700"
-                            aria-label={t("admin.common.delete")}
-                          >
-                            <Trash2 className="h-4 w-4" />
-                          </Button>
-                        </div>
+                        </Link>
                       </td>
                     </tr>
                   ))}
@@ -384,7 +298,6 @@ function AdminGuidesContent() {
           </CardContent>
         </Card>
 
-        {/* Statistics */}
         <div className="grid grid-cols-1 sm:grid-cols-2 lg:grid-cols-4 gap-4 sm:gap-6">
           <Card>
             <CardContent className="p-4 sm:p-6">
@@ -455,122 +368,6 @@ function AdminGuidesContent() {
           </Card>
         </div>
       </div>
-      {isCreateOpen && (
-        <div className="fixed inset-0 z-50 flex items-center justify-center bg-black/40 backdrop-blur-sm p-4">
-          <Card className="w-full max-w-xl">
-            <CardHeader>
-              <CardTitle className="flex items-center space-x-2">
-                <Plus className="h-5 w-5" />
-                <span>{t("admin.guides.modal.title")}</span>
-              </CardTitle>
-            </CardHeader>
-            <CardContent>
-              <form
-                className="space-y-4"
-                onSubmit={(event) => {
-                  event.preventDefault();
-                  setGuides([
-                    {
-                      id: Date.now().toString(),
-                      title: newGuide.title || "Новый гайд",
-                      category: newGuide.category as "education" | "life",
-                      content: "Новый гайд...",
-                      language: "ru",
-                      tags: [],
-                      status: newGuide.status as "published" | "draft" | "archived",
-                      views: 0,
-                      createdAt: new Date().toISOString().split("T")[0],
-                      updatedAt: new Date().toISOString().split("T")[0],
-                      author: user?.name || "Администратор",
-                    },
-                    ...guides,
-                  ]);
-                  setIsCreateOpen(false);
-                  setNewGuide({ title: "", category: "education", status: "draft" });
-                }}
-              >
-                <div className="space-y-2">
-                  <label htmlFor="new-guide-name" className="text-sm font-medium text-gray-700">
-                    {t("admin.guides.modal.name")}
-                  </label>
-                  <Input
-                    id="new-guide-name"
-                    value={newGuide.title}
-                    onChange={(e) =>
-                      setNewGuide((prev) => ({
-                        ...prev,
-                        title: e.target.value,
-                      }))
-                    }
-                    placeholder={t("admin.guides.modal.namePlaceholder")}
-                    required
-                  />
-                </div>
-                <div className="grid grid-cols-1 sm:grid-cols-2 gap-3">
-                  <div className="space-y-1">
-                    <label htmlFor="new-guide-category" className="text-sm font-medium text-gray-700">
-                      {t("admin.guides.modal.category")}
-                    </label>
-                    <div className="relative">
-                      <select
-                        id="new-guide-category"
-                        value={newGuide.category}
-                        onChange={(e) =>
-                          setNewGuide((prev) => ({
-                            ...prev,
-                            category: e.target.value,
-                          }))
-                        }
-                        className="w-full appearance-none px-3 py-2 pr-9 border border-slate-300 rounded-lg focus:ring-2 focus:ring-green-500 focus:border-green-500"
-                      >
-                        <option value="education">{t("admin.guides.filters.category.education")}</option>
-                        <option value="life">{t("admin.guides.filters.category.life")}</option>
-                      </select>
-                      <ChevronDown className="h-4 w-4 text-gray-400 pointer-events-none absolute right-3 top-1/2 -translate-y-1/2" />
-                    </div>
-                  </div>
-                  <div className="space-y-1">
-                    <label htmlFor="new-guide-status" className="text-sm font-medium text-gray-700">
-                      {t("admin.guides.modal.status")}
-                    </label>
-                    <div className="relative">
-                      <select
-                        id="new-guide-status"
-                        value={newGuide.status}
-                        onChange={(e) =>
-                          setNewGuide((prev) => ({
-                            ...prev,
-                            status: e.target.value,
-                          }))
-                        }
-                        className="w-full appearance-none px-3 py-2 pr-9 border border-slate-300 rounded-lg focus:ring-2 focus:ring-green-500 focus:border-green-500"
-                      >
-                        <option value="draft">{t("admin.guides.statuses.draft")}</option>
-                        <option value="published">{t("admin.guides.statuses.published")}</option>
-                        <option value="archived">{t("admin.guides.statuses.archived")}</option>
-                      </select>
-                      <ChevronDown className="h-4 w-4 text-gray-400 pointer-events-none absolute right-3 top-1/2 -translate-y-1/2" />
-                    </div>
-                  </div>
-                </div>
-                <div className="flex items-center justify-end space-x-2">
-                  <Button
-                    type="button"
-                    variant="outline"
-                    onClick={() => setIsCreateOpen(false)}
-                  >
-                    {t("admin.common.cancel")}
-                  </Button>
-                  <Button type="submit" className="flex items-center space-x-2">
-                    <Plus className="h-4 w-4" />
-                    <span>{t("admin.common.create")}</span>
-                  </Button>
-                </div>
-              </form>
-            </CardContent>
-          </Card>
-        </div>
-      )}
     </Layout>
   );
 }

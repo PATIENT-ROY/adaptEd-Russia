@@ -463,6 +463,9 @@ const ACHIEVEMENTS: AchievementDefinition[] = [
   },
 ];
 
+/** Catalog size for admin analytics — keep in sync with ACHIEVEMENTS above */
+export const ACHIEVEMENT_CATALOG_SIZE = ACHIEVEMENTS.length;
+
 const router = Router();
 
 // Схема валидации для обновления профиля
@@ -698,6 +701,22 @@ router.get('/profile/overview', authMiddleware, async (req: Request, res: Respon
     ];
 
     const quickActions: ProfileQuickAction[] = [
+      {
+        id: 'dashboard',
+        title: 'Дашборд',
+        description: 'Обзор прогресса и быстрые действия',
+        icon: 'Home',
+        color: 'from-slate-500 to-slate-700',
+        href: '/dashboard',
+      },
+      {
+        id: 'achievements',
+        title: 'Достижения',
+        description: 'Уровни, XP и награды',
+        icon: 'Trophy',
+        color: 'from-amber-500 to-orange-500',
+        href: '/achievements',
+      },
       {
         id: 'education-guide',
         title: 'Образовательный навигатор',

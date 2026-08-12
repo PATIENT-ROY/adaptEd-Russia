@@ -59,7 +59,7 @@ function AchievementsContent() {
 
   const kpis = [
     { label: t("admin.achievements.kpi.total"), value: loading ? "…" : String(analytics?.totalAchievements ?? 0), icon: Trophy },
-    { label: t("admin.achievements.kpi.avgProgress"), value: loading ? "…" : `${analytics?.avgProgress ?? 0}%`, icon: TrendingUp },
+    { label: t("admin.achievements.kpi.avgProgress"), value: loading ? "…" : `${analytics?.engagedShare ?? 0}%`, icon: TrendingUp },
     { label: t("admin.achievements.kpi.activeUsers"), value: loading ? "…" : String(analytics?.activeUsers ?? 0), icon: Users },
     { label: t("admin.achievements.kpi.newMonth"), value: loading ? "…" : `+${analytics?.newUsersMonth ?? 0}`, icon: Sparkles },
   ];

@@ -116,6 +116,7 @@ export default function RegisterPage() {
   const [isLoading, setIsLoading] = useState(false);
   const [step, setStep] = useState<"details" | "security">("details");
   const [isTransitioning, setIsTransitioning] = useState(false);
+  const [privacyConsent, setPrivacyConsent] = useState(false);
   const stepTimeoutRef = useRef<NodeJS.Timeout | null>(null);
 
   const { register } = useAuth();
@@ -135,6 +136,11 @@ export default function RegisterPage() {
     e.preventDefault();
     setDetailsError("");
     setSubmitFeedback(null);
+
+    if (!privacyConsent) {
+      setDetailsError(t("register.error.privacyRequired"));
+      return;
+    }
 
     const isValidEmail = /^[^\s@]+@[^\s@]+\.[^\s@]+$/.test(
       formData.email.trim()
@@ -380,9 +386,43 @@ export default function RegisterPage() {
                     </motion.div>
                   )}
 
+                  <div className="flex items-start gap-3 p-3 rounded-lg bg-blue-50 border border-blue-200">
+                    <input
+                      type="checkbox"
+                      id="register-privacy-consent"
+                      checked={privacyConsent}
+                      onChange={(e) => setPrivacyConsent(e.target.checked)}
+                      className="mt-0.5 h-4 w-4 text-blue-600 border-gray-300 rounded focus:ring-blue-500"
+                    />
+                    <label
+                      htmlFor="register-privacy-consent"
+                      className="text-sm text-blue-900 cursor-pointer leading-relaxed"
+                    >
+                      {t("register.privacyConsent")}{" "}
+                      <Link
+                        href="/personal-data-consent"
+                        target="_blank"
+                        rel="noopener noreferrer"
+                        className="text-blue-600 underline font-medium hover:text-blue-700"
+                      >
+                        {t("register.consentLink")}
+                      </Link>{" "}
+                      {t("register.privacyConsentAnd")}{" "}
+                      <Link
+                        href="/privacy-policy"
+                        target="_blank"
+                        rel="noopener noreferrer"
+                        className="text-blue-600 underline font-medium hover:text-blue-700"
+                      >
+                        {t("register.privacyPolicyLink")}
+                      </Link>
+                    </label>
+                  </div>
+
                   <Button
                     type="submit"
-                    className="w-full h-12 bg-gradient-to-r from-green-500 to-emerald-600 hover:from-green-600 hover:to-emerald-700 text-white shadow-lg"
+                    disabled={!privacyConsent}
+                    className="w-full h-12 bg-gradient-to-r from-green-500 to-emerald-600 hover:from-green-600 hover:to-emerald-700 text-white shadow-lg disabled:opacity-60"
                   >
                     {t("register.next")}
                   </Button>

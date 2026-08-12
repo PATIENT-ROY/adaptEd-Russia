@@ -8,19 +8,14 @@ import { Input } from "@/components/ui/input";
 import {
   Users,
   Search,
-  Eye,
-  Edit,
-  Trash2,
   Shield,
-  UserCheck,
-  UserX,
-  Calendar,
   Plus,
-  Download,
   ChevronDown,
   ArrowLeft,
   Copy,
   CheckCircle2,
+  MessageSquare,
+  BookOpen,
 } from "lucide-react";
 import Link from "next/link";
 import { useAuth } from "@/contexts/AuthContext";
@@ -59,9 +54,7 @@ function AdminUsersContent() {
   const [users, setUsers] = useState<AdminUserRow[]>([]);
   const [usersLoading, setUsersLoading] = useState(true);
   const [searchTerm, setSearchTerm] = useState("");
-  const [statusFilter, setStatusFilter] = useState("all");
   const [roleFilter, setRoleFilter] = useState("all");
-  const [selectedUsers, setSelectedUsers] = useState<string[]>([]);
   const [isAddUserOpen, setIsAddUserOpen] = useState(false);
   const [newUser, setNewUser] = useState({
     name: "",
@@ -84,13 +77,11 @@ function AdminUsersContent() {
         user.email.toLowerCase().includes(searchTerm.toLowerCase()) ||
         user.country.toLowerCase().includes(searchTerm.toLowerCase());
 
-      const matchesStatus =
-        statusFilter === "all" || user.status === statusFilter;
       const matchesRole = roleFilter === "all" || user.role === roleFilter;
 
-      return matchesSearch && matchesStatus && matchesRole;
+      return matchesSearch && matchesRole;
     });
-  }, [users, searchTerm, statusFilter, roleFilter]);
+  }, [users, searchTerm, roleFilter]);
 
   useEffect(() => {
     if (!isAdmin) return;
@@ -133,26 +124,6 @@ function AdminUsersContent() {
       </Layout>
     );
   }
-
-  const handleDeleteUser = (userId: string) => {
-    setUsers(users.filter((user) => user.id !== userId));
-  };
-
-  const handleSelectAll = () => {
-    if (selectedUsers.length === filteredUsers.length) {
-      setSelectedUsers([]);
-    } else {
-      setSelectedUsers(filteredUsers.map((user) => user.id));
-    }
-  };
-
-  const handleSelectUser = (userId: string) => {
-    setSelectedUsers((prev) =>
-      prev.includes(userId)
-        ? prev.filter((id) => id !== userId)
-        : [...prev, userId]
-    );
-  };
 
   const resetNewUserForm = () => {
     setNewUser({
@@ -291,10 +262,6 @@ function AdminUsersContent() {
               </div>
             </div>
             <div className="flex items-center space-x-2">
-              <Button variant="outline" className="flex items-center space-x-2">
-                <Download className="h-4 w-4" />
-                <span>{t("admin.users.export")}</span>
-              </Button>
               <Button
                 className="flex items-center space-x-2"
                 onClick={() => setIsAddUserOpen(true)}
@@ -322,19 +289,6 @@ function AdminUsersContent() {
               </div>
               <div className="relative w-full sm:w-48">
               <select
-                value={statusFilter}
-                onChange={(e) => setStatusFilter(e.target.value)}
-                  className="w-full appearance-none px-3 py-2 pr-9 border border-slate-300 rounded-lg focus:ring-2 focus:ring-blue-500 focus:border-blue-500"
-              >
-                <option value="all">{t("admin.users.filters.status.all")}</option>
-                <option value="active">{t("admin.users.filters.status.active")}</option>
-                <option value="pending">{t("admin.users.filters.status.pending")}</option>
-                <option value="blocked">{t("admin.users.filters.status.blocked")}</option>
-              </select>
-                <ChevronDown className="h-4 w-4 text-gray-400 pointer-events-none absolute right-3 top-1/2 -translate-y-1/2" />
-              </div>
-              <div className="relative w-full sm:w-48">
-              <select
                 value={roleFilter}
                 onChange={(e) => setRoleFilter(e.target.value)}
                   className="w-full appearance-none px-3 py-2 pr-9 border border-slate-300 rounded-lg focus:ring-2 focus:ring-blue-500 focus:border-blue-500"
@@ -353,23 +307,8 @@ function AdminUsersContent() {
         {/* Users Table */}
         <Card>
           <CardHeader>
-            <CardTitle className="flex items-center justify-between">
-              <span>{t("admin.users.table.title")} ({filteredUsers.length})</span>
-              {selectedUsers.length > 0 && (
-                <div className="flex items-center space-x-2">
-                  <span className="text-sm text-gray-600">
-                    {t("admin.users.table.selected")} {selectedUsers.length}
-                  </span>
-                  <Button variant="outline" size="sm">
-                    <UserCheck className="h-4 w-4 mr-2" />
-                    {t("admin.users.table.activate")}
-                  </Button>
-                  <Button variant="outline" size="sm">
-                    <UserX className="h-4 w-4 mr-2" />
-                    {t("admin.users.table.block")}
-                  </Button>
-                </div>
-              )}
+            <CardTitle>
+              {t("admin.users.table.title")} ({usersLoading ? "…" : filteredUsers.length})
             </CardTitle>
           </CardHeader>
           <CardContent>
@@ -377,17 +316,6 @@ function AdminUsersContent() {
               <table className="w-full">
                 <thead>
                   <tr className="border-b border-gray-200">
-                    <th className="text-left py-3 px-4">
-                      <input
-                        type="checkbox"
-                        checked={
-                          selectedUsers.length === filteredUsers.length &&
-                          filteredUsers.length > 0
-                        }
-                        onChange={handleSelectAll}
-                        className="rounded border-gray-300"
-                      />
-                    </th>
                     <th className="text-left py-3 px-4 font-medium text-gray-900">
                       {t("admin.users.table.user")}
                     </th>
@@ -400,9 +328,6 @@ function AdminUsersContent() {
                     <th className="text-left py-3 px-4 font-medium text-gray-900">
                       {t("admin.users.table.activity")}
                     </th>
-                    <th className="text-left py-3 px-4 font-medium text-gray-900">
-                      {t("admin.users.table.actions")}
-                    </th>
                   </tr>
                 </thead>
                 <tbody>
@@ -411,14 +336,6 @@ function AdminUsersContent() {
                       key={u.id}
                       className="border-b border-gray-100 hover:bg-gray-50"
                     >
-                      <td className="py-3 px-4">
-                        <input
-                          type="checkbox"
-                          checked={selectedUsers.includes(u.id)}
-                          onChange={() => handleSelectUser(u.id)}
-                          className="rounded border-gray-300"
-                        />
-                      </td>
                       <td className="py-3 px-4">
                         <div className="flex items-center space-x-3">
                           <div className="w-10 h-10 rounded-full bg-gradient-to-br from-blue-500 to-blue-600 flex items-center justify-center text-white font-bold">
@@ -476,33 +393,6 @@ function AdminUsersContent() {
                           </p>
                         </div>
                       </td>
-                      <td className="py-3 px-4">
-                        <div className="flex items-center space-x-2">
-                          <Button
-                            variant="outline"
-                            size="sm"
-                            aria-label={t("admin.common.view")}
-                          >
-                            <Eye className="h-4 w-4" />
-                          </Button>
-                          <Button
-                            variant="outline"
-                            size="sm"
-                            aria-label={t("admin.common.edit")}
-                          >
-                            <Edit className="h-4 w-4" />
-                          </Button>
-                          <Button
-                            variant="outline"
-                            size="sm"
-                            onClick={() => handleDeleteUser(u.id)}
-                            className="text-red-600 hover:text-red-700"
-                            aria-label={t("admin.common.delete")}
-                          >
-                            <Trash2 className="h-4 w-4" />
-                          </Button>
-                        </div>
-                      </td>
                     </tr>
                   ))}
                 </tbody>
@@ -516,47 +406,27 @@ function AdminUsersContent() {
           <Card>
             <CardContent className="p-4 sm:p-6">
               <div className="flex items-center space-x-3">
+                <div className="w-10 h-10 rounded-xl bg-gradient-to-br from-blue-500 to-blue-600 flex items-center justify-center">
+                  <Users className="h-5 w-5 text-white" />
+                </div>
+                <div>
+                  <p className="text-sm font-medium text-gray-600">{t("admin.users.stats.total")}</p>
+                  <p className="text-xl font-bold text-gray-900">{users.length}</p>
+                </div>
+              </div>
+            </CardContent>
+          </Card>
+
+          <Card>
+            <CardContent className="p-4 sm:p-6">
+              <div className="flex items-center space-x-3">
                 <div className="w-10 h-10 rounded-xl bg-gradient-to-br from-green-500 to-green-600 flex items-center justify-center">
-                  <UserCheck className="h-5 w-5 text-white" />
+                  <BookOpen className="h-5 w-5 text-white" />
                 </div>
                 <div>
-                  <p className="text-sm font-medium text-gray-600">{t("admin.users.stats.active")}</p>
+                  <p className="text-sm font-medium text-gray-600">{t("admin.users.stats.withGuides")}</p>
                   <p className="text-xl font-bold text-gray-900">
-                    {users.filter((u) => u.status === "active").length}
-                  </p>
-                </div>
-              </div>
-            </CardContent>
-          </Card>
-
-          <Card>
-            <CardContent className="p-4 sm:p-6">
-              <div className="flex items-center space-x-3">
-                <div className="w-10 h-10 rounded-xl bg-gradient-to-br from-yellow-500 to-yellow-600 flex items-center justify-center">
-                  <Calendar className="h-5 w-5 text-white" />
-                </div>
-                <div>
-                  <p className="text-sm font-medium text-gray-600">{t("admin.users.stats.pending")}</p>
-                  <p className="text-xl font-bold text-gray-900">
-                    {users.filter((u) => u.status === "pending").length}
-                  </p>
-                </div>
-              </div>
-            </CardContent>
-          </Card>
-
-          <Card>
-            <CardContent className="p-4 sm:p-6">
-              <div className="flex items-center space-x-3">
-                <div className="w-10 h-10 rounded-xl bg-gradient-to-br from-red-500 to-red-600 flex items-center justify-center">
-                  <UserX className="h-5 w-5 text-white" />
-                </div>
-                <div>
-                  <p className="text-sm font-medium text-gray-600">
-                    {t("admin.users.stats.blocked")}
-                  </p>
-                  <p className="text-xl font-bold text-gray-900">
-                    {users.filter((u) => u.status === "blocked").length}
+                    {users.filter((u) => u.guidesRead > 0).length}
                   </p>
                 </div>
               </div>
@@ -567,6 +437,22 @@ function AdminUsersContent() {
             <CardContent className="p-4 sm:p-6">
               <div className="flex items-center space-x-3">
                 <div className="w-10 h-10 rounded-xl bg-gradient-to-br from-purple-500 to-purple-600 flex items-center justify-center">
+                  <MessageSquare className="h-5 w-5 text-white" />
+                </div>
+                <div>
+                  <p className="text-sm font-medium text-gray-600">{t("admin.users.stats.withAi")}</p>
+                  <p className="text-xl font-bold text-gray-900">
+                    {users.filter((u) => u.aiQuestions > 0).length}
+                  </p>
+                </div>
+              </div>
+            </CardContent>
+          </Card>
+
+          <Card>
+            <CardContent className="p-4 sm:p-6">
+              <div className="flex items-center space-x-3">
+                <div className="w-10 h-10 rounded-xl bg-gradient-to-br from-amber-500 to-amber-600 flex items-center justify-center">
                   <Shield className="h-5 w-5 text-white" />
                 </div>
                 <div>

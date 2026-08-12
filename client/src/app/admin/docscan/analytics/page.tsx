@@ -6,8 +6,7 @@ import { Card, CardContent, CardHeader, CardTitle } from "@/components/ui/card";
 import {
   Activity,
   ArrowLeft,
-  FileText,
-  ScanLine,
+  BookOpen,
   TrendingUp,
   Users,
   AlertTriangle,
@@ -46,7 +45,7 @@ function DocscanAnalyticsContent() {
         const data = await fetchAdminDocscanAnalytics();
         if (!cancelled) setAnalytics(data);
       } catch (error) {
-        console.error("Failed to load docscan analytics:", error);
+        console.error("Failed to load guide-read analytics:", error);
       } finally {
         if (!cancelled) setLoading(false);
       }
@@ -57,10 +56,16 @@ function DocscanAnalyticsContent() {
   }, [isAdmin]);
 
   const kpis = [
-    { label: t("admin.docscan.kpi.totalScans"), value: loading ? "…" : String(analytics?.totalScans ?? 0), icon: ScanLine },
-    { label: t("admin.docscan.kpi.successOcr"), value: loading ? "…" : analytics?.successOcr != null ? `${analytics.successOcr}%` : "—", icon: FileText },
-    { label: t("admin.docscan.kpi.activeUsers"), value: loading ? "…" : String(analytics?.activeUsers ?? 0), icon: Users },
-    { label: t("admin.docscan.kpi.ocrErrors"), value: loading ? "…" : analytics?.ocrErrors != null ? `${analytics.ocrErrors}%` : "—", icon: AlertTriangle },
+    {
+      label: t("admin.docscan.kpi.totalScans"),
+      value: loading ? "…" : String(analytics?.totalReads ?? 0),
+      icon: BookOpen,
+    },
+    {
+      label: t("admin.docscan.kpi.activeUsers"),
+      value: loading ? "…" : String(analytics?.activeReaders ?? 0),
+      icon: Users,
+    },
   ];
 
   if (!isAdmin) {
@@ -99,7 +104,7 @@ function DocscanAnalyticsContent() {
                 <ArrowLeft className="h-5 w-5" />
               </Link>
               <div className="rounded-lg bg-indigo-50 p-3">
-                <ScanLine className="h-6 w-6 text-indigo-600" />
+                <BookOpen className="h-6 w-6 text-indigo-600" />
               </div>
               <div>
                 <h1 className="text-xl sm:text-2xl font-bold text-gray-900">
@@ -113,8 +118,7 @@ function DocscanAnalyticsContent() {
           </div>
         </div>
 
-        {/* KPI */}
-        <div className="grid grid-cols-1 sm:grid-cols-2 lg:grid-cols-4 gap-4 sm:gap-6">
+        <div className="grid grid-cols-1 sm:grid-cols-2 gap-4 sm:gap-6">
           {kpis.map((item) => {
             const Icon = item.icon;
             return (
@@ -139,7 +143,6 @@ function DocscanAnalyticsContent() {
           })}
         </div>
 
-        {/* Trends + Funnel */}
         <div className="grid grid-cols-1 lg:grid-cols-3 gap-4 sm:gap-6">
           <Card className={`lg:col-span-2 ${cardClass}`}>
             <CardHeader>

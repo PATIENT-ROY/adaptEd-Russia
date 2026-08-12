@@ -6,6 +6,7 @@ import { Card, CardContent, CardHeader, CardTitle } from "@/components/ui/card";
 import { Button } from "@/components/ui/button";
 import { useTranslation } from "@/hooks/useTranslation";
 import { PREMIUM_CHECKOUT_PATH } from "@/constants/routes";
+import { ProtectedRoute } from "@/components/auth/ProtectedRoute";
 import {
   User,
   Mail,
@@ -41,6 +42,8 @@ import {
   Star,
   X,
   Sparkles,
+  Home,
+  Trophy,
 } from "lucide-react";
 import Link from "next/link";
 import Image from "next/image";
@@ -143,6 +146,8 @@ const iconMap = {
   ScanLine,
   HelpCircle,
   Award,
+  Trophy,
+  Home,
   GraduationCap,
   Crown,
   Sparkles,
@@ -339,6 +344,22 @@ export default function ProfilePage() {
 
   const fallbackQuickActions = useMemo<ProfileQuickAction[]>(
     () => [
+      {
+        id: "dashboard",
+        title: t("profile.quickAction.dashboard.title"),
+        description: t("profile.quickAction.dashboard.desc"),
+        icon: "Home",
+        color: "from-slate-500 to-slate-700",
+        href: "/dashboard",
+      },
+      {
+        id: "achievements",
+        title: t("profile.quickAction.achievements.title"),
+        description: t("profile.quickAction.achievements.desc"),
+        icon: "Trophy",
+        color: "from-amber-500 to-orange-500",
+        href: "/achievements",
+      },
       {
         id: "education-guide",
         title: t("profile.quickAction.educationGuide.title"),
@@ -541,56 +562,15 @@ export default function ProfilePage() {
     };
   }, [user, profileOverview]);
 
-  if (!user || !mergedUser) {
+  if (!mergedUser) {
     return (
-      <Layout>
-        <div className="min-h-screen bg-gradient-to-br from-slate-50 via-blue-50 to-indigo-50 rounded-2xl sm:rounded-3xl overflow-hidden">
-          <div className="relative overflow-hidden bg-gradient-to-br from-blue-600 via-purple-600 to-indigo-700 py-8 sm:py-12 md:py-16 rounded-2xl sm:rounded-3xl mb-6 sm:mb-8">
-            <div className="relative max-w-7xl mx-auto px-3 sm:px-4 lg:px-6">
-              <div className="flex flex-col lg:flex-row items-center space-y-4 sm:space-y-6 lg:space-y-0 lg:space-x-8">
-                <div className="w-20 h-20 sm:w-24 sm:h-24 md:w-28 md:h-28 lg:w-32 lg:h-32 rounded-full bg-gray-300 animate-pulse" />
-                <div className="flex-1 text-center lg:text-left">
-                  <div className="h-8 w-64 bg-gray-300 rounded animate-pulse mx-auto lg:mx-0 mb-3" />
-                  <div className="h-5 w-96 bg-gray-300 rounded animate-pulse mx-auto lg:mx-0" />
-                </div>
-              </div>
-            </div>
+      <ProtectedRoute>
+        <Layout>
+          <div className="min-h-[40vh] flex items-center justify-center">
+            <div className="animate-spin rounded-full h-10 w-10 border-2 border-blue-600 border-t-transparent" />
           </div>
-          <div className="max-w-7xl mx-auto px-3 sm:px-4 lg:px-6 py-8">
-            <div className="grid grid-cols-1 lg:grid-cols-3 gap-6 sm:gap-8">
-              <div className="lg:col-span-2 space-y-6">
-                {[1, 2, 3].map((i) => (
-                  <div
-                    key={i}
-                    className="bg-white rounded-2xl sm:rounded-3xl p-6"
-                  >
-                    <div className="h-6 w-48 bg-gray-200 rounded animate-pulse mb-4" />
-                    <div className="space-y-3">
-                      <div className="h-4 w-full bg-gray-200 rounded animate-pulse" />
-                      <div className="h-4 w-5/6 bg-gray-200 rounded animate-pulse" />
-                      <div className="h-4 w-4/6 bg-gray-200 rounded animate-pulse" />
-                    </div>
-                  </div>
-                ))}
-              </div>
-              <div className="space-y-6">
-                {[1, 2].map((i) => (
-                  <div
-                    key={i}
-                    className="bg-white rounded-2xl sm:rounded-3xl p-6"
-                  >
-                    <div className="h-6 w-32 bg-gray-200 rounded animate-pulse mb-4" />
-                    <div className="space-y-3">
-                      <div className="h-10 w-full bg-gray-200 rounded animate-pulse" />
-                      <div className="h-10 w-full bg-gray-200 rounded animate-pulse" />
-                    </div>
-                  </div>
-                ))}
-              </div>
-            </div>
-          </div>
-        </div>
-      </Layout>
+        </Layout>
+      </ProtectedRoute>
     );
   }
 
@@ -631,6 +611,7 @@ export default function ProfilePage() {
   const billingHistoryData = profileOverview?.billingHistory ?? [];
 
   return (
+    <ProtectedRoute>
     <Layout>
       <div className="min-h-screen bg-gradient-to-br from-slate-50 via-blue-50 to-indigo-50 rounded-2xl sm:rounded-3xl overflow-hidden">
         {/* Hero Section */}
@@ -1359,5 +1340,6 @@ export default function ProfilePage() {
         )}
       </div>
     </Layout>
+    </ProtectedRoute>
   );
 }

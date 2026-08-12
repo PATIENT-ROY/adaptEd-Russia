@@ -33,7 +33,8 @@ export function ReviewModal({
   const { t } = useTranslation();
   const [text, setText] = useState("");
   const [rating, setRating] = useState(0);
-  const [allowPublication, setAllowPublication] = useState(true);
+  const [allowPublication, setAllowPublication] = useState(false);
+  const [privacyConsent, setPrivacyConsent] = useState(false);
   const [ratingTouched, setRatingTouched] = useState(false);
 
   const tt = (key: string, fallback: string): string => {
@@ -45,7 +46,8 @@ export function ReviewModal({
     if (review) {
       setText(review.text);
       setRating(review.rating);
-      setAllowPublication(review.allowPublication ?? true);
+      setAllowPublication(review.allowPublication ?? false);
+      setPrivacyConsent(true);
     }
   }, [review]);
 
@@ -55,7 +57,8 @@ export function ReviewModal({
     if (!isOpen) {
       setText("");
       setRating(0);
-      setAllowPublication(true);
+      setAllowPublication(false);
+      setPrivacyConsent(false);
       setRatingTouched(false);
     } else {
       setTimeout(() => textareaRef.current?.focus(), 100);
@@ -65,11 +68,11 @@ export function ReviewModal({
   const textTrimmed = text.trim();
   const textValid = textTrimmed.length >= TEXT_MIN && textTrimmed.length <= TEXT_MAX;
   const ratingValid = rating >= 1 && rating <= 5;
-  const canSubmit = ratingValid && textValid;
+  const canSubmit = ratingValid && textValid && privacyConsent;
 
   const handleSubmit = async () => {
     setRatingTouched(true);
-    if (!ratingValid || !textValid) return;
+    if (!ratingValid || !textValid || !privacyConsent) return;
     await onSave({ text: textTrimmed, rating, allowPublication });
   };
 
@@ -152,6 +155,26 @@ export function ReviewModal({
                 "Ваше имя и страна могут быть показаны на сайте",
               )}
             </span>
+          </label>
+        </div>
+        <div className="mb-4 flex items-start gap-2">
+          <input
+            id="review-privacy-consent"
+            type="checkbox"
+            checked={privacyConsent}
+            onChange={(e) => setPrivacyConsent(e.target.checked)}
+            className="h-4 w-4 mt-0.5 text-blue-600 border-gray-300 rounded"
+          />
+          <label htmlFor="review-privacy-consent" className="text-sm text-gray-700">
+            {tt("review.privacyConsent", "Я согласен(на) с")}{" "}
+            <a
+              href="/personal-data-consent"
+              target="_blank"
+              rel="noopener noreferrer"
+              className="text-blue-600 underline"
+            >
+              {tt("review.consentLink", "согласием на обработку персональных данных")}
+            </a>
           </label>
         </div>
         {error && <div className="text-sm text-red-600 mb-2">{error}</div>}

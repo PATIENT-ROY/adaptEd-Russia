@@ -2,6 +2,7 @@ import { Router, Request, Response } from 'express';
 import { authMiddleware } from '../lib/auth';
 import { prisma } from '../lib/database';
 import { ApiResponse } from '../types/index.js';
+import { ACHIEVEMENT_CATALOG_SIZE } from './user';
 
 const router = Router();
 
@@ -46,6 +47,8 @@ router.get('/dashboard', async (_req, res) => {
       guideReadsTotal,
       guideReadsLastWeek,
       guideReadsPrevWeek,
+      openTickets,
+      pendingReviews,
       recentUsers,
       recentGuides,
     ] = await Promise.all([
@@ -67,6 +70,10 @@ router.get('/dashboard', async (_req, res) => {
       prisma.guideRead.count({
         where: { readAt: { gte: fourteenDaysAgo, lt: sevenDaysAgo } },
       }),
+      prisma.supportTicket.count({
+        where: { status: { in: ['OPEN', 'IN_PROGRESS'] } },
+      }),
+      prisma.review.count({ where: { status: 'PENDING' } }),
       prisma.user.findMany({
         orderBy: { registeredAt: 'desc' },
         take: 5,
@@ -109,17 +116,23 @@ router.get('/dashboard', async (_req, res) => {
             value: totalAiMessages,
             change: pctChange(aiMessagesLastWeek, aiMessagesPrevWeek),
           },
-          docscan: {
+          guideReads: {
             value: guideReadsTotal,
             change: pctChange(guideReadsLastWeek, guideReadsPrevWeek),
           },
+        },
+        ops: {
+          openTickets,
+          pendingReviews,
+          guideReadsWeek: guideReadsLastWeek,
+          aiMessagesWeek: aiMessagesLastWeek,
         },
         recentUsers: recentUsers.map((u) => ({
           id: u.id,
           name: u.name,
           email: u.email,
           country: u.country,
-          status: u.role === 'ADMIN' ? 'active' : 'active',
+          status: 'active',
           joinDate: u.registeredAt.toISOString().slice(0, 10),
         })),
         recentGuides: recentGuides.map((g) => ({
@@ -253,7 +266,7 @@ router.get('/analytics/ai', async (_req, res) => {
   }
 });
 
-// GET /api/admin/analytics/docscan — proxy via guide reads until dedicated tracking exists
+// GET /api/admin/analytics/docscan — guide-read engagement (no DocScan model yet)
 router.get('/analytics/docscan', async (_req, res) => {
   try {
     const [totalReads, uniqueUsers] = await Promise.all([
@@ -264,14 +277,12 @@ router.get('/analytics/docscan', async (_req, res) => {
     res.json({
       success: true,
       data: {
-        totalScans: totalReads,
-        activeUsers: uniqueUsers.length,
-        successOcr: null,
-        ocrErrors: null,
+        totalReads,
+        activeReaders: uniqueUsers.length,
       },
     } as ApiResponse);
   } catch (error) {
-    console.error('Admin docscan analytics error:', error);
+    console.error('Admin guide-read analytics error:', error);
     res.status(500).json({ success: false, error: 'Внутренняя ошибка сервера' } as ApiResponse);
   }
 });
@@ -282,7 +293,7 @@ router.get('/analytics/achievements', async (_req, res) => {
     const thirtyDaysAgo = new Date();
     thirtyDaysAgo.setDate(thirtyDaysAgo.getDate() - 30);
 
-    const [totalUsers, activeUsers, guideReaders, aiUsers] = await Promise.all([
+    const [totalUsers, newUsersMonth, guideReaders, aiUsers] = await Promise.all([
       prisma.user.count(),
       prisma.user.count({ where: { registeredAt: { gte: thirtyDaysAgo } } }),
       prisma.guideRead.groupBy({ by: ['userId'] }),
@@ -297,16 +308,17 @@ router.get('/analytics/achievements', async (_req, res) => {
       ...aiUsers.map((a) => a.userId),
     ]).size;
 
-    const avgProgress =
+    // % of users with guide/AI activity (not unlock progress — no unlock table yet)
+    const engagedShare =
       totalUsers > 0 ? Math.round((engagedUsers / totalUsers) * 100) : 0;
 
     res.json({
       success: true,
       data: {
-        totalAchievements: 64,
-        avgProgress,
+        totalAchievements: ACHIEVEMENT_CATALOG_SIZE,
+        engagedShare,
         activeUsers: engagedUsers,
-        newUsersMonth: activeUsers,
+        newUsersMonth,
       },
     } as ApiResponse);
   } catch (error) {
