@@ -68,21 +68,18 @@ function FadeIn({
   className,
   delay = 0,
   enabled,
-  as = "div",
 }: {
   children: ReactNode;
   className?: string;
   delay?: number;
   enabled: boolean;
-  as?: "div" | "li";
 }) {
-  const ref = useRef<HTMLElement | null>(null);
+  const ref = useRef<HTMLDivElement>(null);
   const inView = useInView(ref, { once: true, amount: 0.35 });
   const show = !enabled || inView;
-  const Comp = as === "li" ? motion.li : motion.div;
 
   return (
-    <Comp
+    <motion.div
       ref={ref}
       className={className}
       initial={false}
@@ -92,7 +89,7 @@ function FadeIn({
       transition={{ duration: 0.5, ease, delay: show ? delay : 0 }}
     >
       {children}
-    </Comp>
+    </motion.div>
   );
 }
 
@@ -140,26 +137,26 @@ export function AdaptationHeroSection() {
               </p>
             </FadeIn>
 
-            <ul className="flex flex-col gap-2.5 sm:gap-3 m-0 p-0">
+            <ul className="flex flex-col gap-2.5 sm:gap-3 m-0 p-0 list-none">
               {ITEMS.map((item, index) => {
                 const Icon = item.icon;
                 return (
-                  <FadeIn
-                    key={item.key}
-                    as="li"
-                    enabled={enabled}
-                    delay={0.06 + index * 0.07}
-                    className="flex items-center gap-3 sm:gap-3.5 rounded-full border border-slate-200/90 bg-white px-3.5 py-3 sm:px-4 sm:py-3.5 shadow-[0_6px_24px_rgba(15,23,42,0.05)] list-none"
-                  >
-                    <span
-                      className={`flex h-10 w-10 sm:h-11 sm:w-11 shrink-0 items-center justify-center rounded-full ${item.tone}`}
+                  <li key={item.key}>
+                    <FadeIn
+                      enabled={enabled}
+                      delay={0.06 + index * 0.07}
+                      className="flex items-center gap-3 sm:gap-3.5 rounded-full border border-slate-200/90 bg-white px-3.5 py-3 sm:px-4 sm:py-3.5 shadow-[0_6px_24px_rgba(15,23,42,0.05)]"
                     >
-                      <Icon className="h-5 w-5" aria-hidden />
-                    </span>
-                    <span className="flex-1 text-sm sm:text-base font-semibold text-slate-900">
-                      {t(item.key)}
-                    </span>
-                  </FadeIn>
+                      <span
+                        className={`flex h-10 w-10 sm:h-11 sm:w-11 shrink-0 items-center justify-center rounded-full ${item.tone}`}
+                      >
+                        <Icon className="h-5 w-5" aria-hidden />
+                      </span>
+                      <span className="flex-1 text-sm sm:text-base font-semibold text-slate-900">
+                        {t(item.key)}
+                      </span>
+                    </FadeIn>
+                  </li>
                 );
               })}
             </ul>
