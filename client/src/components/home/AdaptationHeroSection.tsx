@@ -112,14 +112,14 @@ export function AdaptationHeroSection() {
       <div className="relative mx-auto max-w-7xl">
         <div className="grid w-full grid-cols-1 items-center gap-8 lg:grid-cols-[minmax(0,1.05fr)_minmax(0,0.95fr)] lg:gap-12 xl:gap-16">
           <FadeIn enabled={enabled}>
-            <div className="overflow-hidden rounded-[28px] sm:rounded-[32px] border border-slate-100 bg-slate-50 shadow-sm">
+            <div className="overflow-hidden rounded-[28px] sm:rounded-[32px] border border-slate-100 bg-[#f4f1fa] shadow-sm">
               <Image
-                src="/images/illustration/image.png"
+                src="/images/illustration/adaptation-hero.png"
                 alt={t("home.section.adaptation.title")}
-                width={1095}
-                height={1049}
+                width={1536}
+                height={1024}
                 sizes="(max-width: 1024px) 92vw, 48vw"
-                className="h-[260px] sm:h-[340px] lg:h-[460px] xl:h-[500px] w-full object-cover object-center"
+                className="w-full h-auto object-contain object-center"
               />
             </div>
           </FadeIn>

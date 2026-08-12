@@ -753,7 +753,7 @@ export default function HomePage() {
           className="below-fold relative overflow-hidden py-12 sm:py-16 rounded-2xl sm:rounded-3xl my-6 sm:my-8 bg-cover bg-center bg-no-repeat"
           style={{
             backgroundImage:
-              "linear-gradient(to bottom right, rgba(45, 91, 255, 0.82), rgba(112, 52, 255, 0.82)), url(/images/illustration/universitet.png)",
+              "linear-gradient(to bottom right, rgba(45, 91, 255, 0.82), rgba(112, 52, 255, 0.82)), url(/images/illustration/adaptation-cta.png)",
           }}
         >
           <ScrollReveal className="relative z-10 max-w-2xl mx-auto px-4 sm:px-6 text-center">
