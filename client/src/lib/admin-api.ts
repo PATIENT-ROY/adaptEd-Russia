@@ -16,12 +16,14 @@ async function adminFetch<T>(path: string): Promise<T> {
   return body.data as T;
 }
 
+type StatMetric = { value: number; change: string };
+
 export type AdminDashboardData = {
   stats: {
-    users: { value: number; change: string };
-    guides: { value: number; change: string };
-    ai: { value: number; change: string };
-    guideReads: { value: number; change: string };
+    users: StatMetric;
+    guides: StatMetric;
+    ai: StatMetric;
+    guideReads: StatMetric;
   };
   ops: {
     openTickets: number;
@@ -46,6 +48,32 @@ export type AdminDashboardData = {
     createdAt: string;
   }>;
 };
+
+const emptyMetric = (): StatMetric => ({ value: 0, change: '0%' });
+
+function normalizeDashboard(raw: any): AdminDashboardData {
+  const stats = raw?.stats ?? {};
+  const guideReads = stats.guideReads ?? stats.docscan ?? emptyMetric();
+  return {
+    stats: {
+      users: stats.users ?? emptyMetric(),
+      guides: stats.guides ?? emptyMetric(),
+      ai: stats.ai ?? emptyMetric(),
+      guideReads: {
+        value: Number(guideReads?.value ?? 0),
+        change: String(guideReads?.change ?? '0%'),
+      },
+    },
+    ops: {
+      openTickets: Number(raw?.ops?.openTickets ?? 0),
+      pendingReviews: Number(raw?.ops?.pendingReviews ?? 0),
+      guideReadsWeek: Number(raw?.ops?.guideReadsWeek ?? 0),
+      aiMessagesWeek: Number(raw?.ops?.aiMessagesWeek ?? 0),
+    },
+    recentUsers: Array.isArray(raw?.recentUsers) ? raw.recentUsers : [],
+    recentGuides: Array.isArray(raw?.recentGuides) ? raw.recentGuides : [],
+  };
+}
 
 export type AdminUserRow = {
   id: string;
@@ -75,8 +103,9 @@ export type AdminGuideRow = {
   author: string;
 };
 
-export function fetchAdminDashboard() {
-  return adminFetch<AdminDashboardData>('/dashboard');
+export async function fetchAdminDashboard() {
+  const raw = await adminFetch<any>('/dashboard');
+  return normalizeDashboard(raw);
 }
 
 export function fetchAdminUsers() {
@@ -97,18 +126,20 @@ export function fetchAdminAiAnalytics() {
   }>('/analytics/ai');
 }
 
-export function fetchAdminDocscanAnalytics() {
-  return adminFetch<{
-    totalReads: number;
-    activeReaders: number;
-  }>('/analytics/docscan');
+export async function fetchAdminDocscanAnalytics() {
+  const raw = await adminFetch<any>('/analytics/docscan');
+  return {
+    totalReads: Number(raw?.totalReads ?? raw?.totalScans ?? 0),
+    activeReaders: Number(raw?.activeReaders ?? raw?.activeUsers ?? 0),
+  };
 }
 
-export function fetchAdminAchievementsAnalytics() {
-  return adminFetch<{
-    totalAchievements: number;
-    engagedShare: number;
-    activeUsers: number;
-    newUsersMonth: number;
-  }>('/analytics/achievements');
+export async function fetchAdminAchievementsAnalytics() {
+  const raw = await adminFetch<any>('/analytics/achievements');
+  return {
+    totalAchievements: Number(raw?.totalAchievements ?? 0),
+    engagedShare: Number(raw?.engagedShare ?? raw?.avgProgress ?? 0),
+    activeUsers: Number(raw?.activeUsers ?? 0),
+    newUsersMonth: Number(raw?.newUsersMonth ?? 0),
+  };
 }

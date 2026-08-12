@@ -51,35 +51,36 @@ export function AdminContent() {
     };
   }, [isAdmin]);
 
+  const stats = dashboard?.stats;
   const adminStats = [
     {
       title: t("admin.dashboard.stats.users"),
-      value: loading ? "…" : String(dashboard?.stats.users.value ?? 0),
-      change: dashboard?.stats.users.change ?? "0%",
+      value: loading ? "…" : String(stats?.users?.value ?? 0),
+      change: stats?.users?.change ?? "0%",
       period: t("admin.dashboard.stats.perMonth"),
       icon: Users,
       color: "from-blue-500 to-blue-600",
     },
     {
       title: t("admin.dashboard.stats.guides"),
-      value: loading ? "…" : String(dashboard?.stats.guides.value ?? 0),
-      change: dashboard?.stats.guides.change ?? "0%",
+      value: loading ? "…" : String(stats?.guides?.value ?? 0),
+      change: stats?.guides?.change ?? "0%",
       period: t("admin.dashboard.stats.updated"),
       icon: BookOpen,
       color: "from-green-500 to-green-600",
     },
     {
       title: t("admin.dashboard.stats.ai"),
-      value: loading ? "…" : String(dashboard?.stats.ai.value ?? 0),
-      change: dashboard?.stats.ai.change ?? "0%",
+      value: loading ? "…" : String(stats?.ai?.value ?? 0),
+      change: stats?.ai?.change ?? "0%",
       period: t("admin.dashboard.stats.perWeek"),
       icon: MessageSquare,
       color: "from-purple-500 to-purple-600",
     },
     {
       title: t("admin.dashboard.stats.guideReads"),
-      value: loading ? "…" : String(dashboard?.stats.guideReads.value ?? 0),
-      change: dashboard?.stats.guideReads.change ?? "0%",
+      value: loading ? "…" : String(stats?.guideReads?.value ?? 0),
+      change: stats?.guideReads?.change ?? "0%",
       period: t("admin.dashboard.stats.perWeek"),
       icon: BookOpen,
       color: "from-indigo-500 to-indigo-600",
