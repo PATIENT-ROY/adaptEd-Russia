@@ -668,7 +668,7 @@ export default function ProfilePage() {
               {/* User Info */}
               <div className="text-center lg:text-left text-white flex-1">
                 <h1 className="text-xl sm:text-3xl md:text-4xl lg:text-5xl font-bold mb-1 sm:mb-2">
-                  {user.name}
+                  {extendedUser.name}
                 </h1>
                 <p className="text-xs sm:text-base md:text-lg lg:text-xl text-white/80 mb-2 sm:mb-4">
                   {extendedUser.university || t("profile.hero.universityMissing")}
@@ -1108,7 +1108,7 @@ export default function ProfilePage() {
                       <div>
                         <p className="text-sm text-slate-500">{t("profile.personalInfo.email")}</p>
                         <p className="font-medium text-slate-900">
-                          {user.email}
+                          {extendedUser.email}
                         </p>
                       </div>
                     </div>

@@ -51,27 +51,44 @@ export type AdminDashboardData = {
 
 const emptyMetric = (): StatMetric => ({ value: 0, change: '0%' });
 
-function normalizeDashboard(raw: any): AdminDashboardData {
-  const stats = raw?.stats ?? {};
+type UnknownRecord = Record<string, unknown>;
+
+function asRecord(value: unknown): UnknownRecord {
+  return value !== null && typeof value === 'object' ? (value as UnknownRecord) : {};
+}
+
+function asMetric(value: unknown): StatMetric {
+  const metric = asRecord(value);
+  return {
+    value: Number(metric.value ?? 0),
+    change: String(metric.change ?? '0%'),
+  };
+}
+
+function normalizeDashboard(raw: unknown): AdminDashboardData {
+  const data = asRecord(raw);
+  const stats = asRecord(data.stats);
+  const ops = asRecord(data.ops);
   const guideReads = stats.guideReads ?? stats.docscan ?? emptyMetric();
   return {
     stats: {
-      users: stats.users ?? emptyMetric(),
-      guides: stats.guides ?? emptyMetric(),
-      ai: stats.ai ?? emptyMetric(),
-      guideReads: {
-        value: Number(guideReads?.value ?? 0),
-        change: String(guideReads?.change ?? '0%'),
-      },
+      users: asMetric(stats.users),
+      guides: asMetric(stats.guides),
+      ai: asMetric(stats.ai),
+      guideReads: asMetric(guideReads),
     },
     ops: {
-      openTickets: Number(raw?.ops?.openTickets ?? 0),
-      pendingReviews: Number(raw?.ops?.pendingReviews ?? 0),
-      guideReadsWeek: Number(raw?.ops?.guideReadsWeek ?? 0),
-      aiMessagesWeek: Number(raw?.ops?.aiMessagesWeek ?? 0),
+      openTickets: Number(ops.openTickets ?? 0),
+      pendingReviews: Number(ops.pendingReviews ?? 0),
+      guideReadsWeek: Number(ops.guideReadsWeek ?? 0),
+      aiMessagesWeek: Number(ops.aiMessagesWeek ?? 0),
     },
-    recentUsers: Array.isArray(raw?.recentUsers) ? raw.recentUsers : [],
-    recentGuides: Array.isArray(raw?.recentGuides) ? raw.recentGuides : [],
+    recentUsers: Array.isArray(data.recentUsers)
+      ? (data.recentUsers as AdminDashboardData['recentUsers'])
+      : [],
+    recentGuides: Array.isArray(data.recentGuides)
+      ? (data.recentGuides as AdminDashboardData['recentGuides'])
+      : [],
   };
 }
 
@@ -104,7 +121,7 @@ export type AdminGuideRow = {
 };
 
 export async function fetchAdminDashboard() {
-  const raw = await adminFetch<any>('/dashboard');
+  const raw = await adminFetch<unknown>('/dashboard');
   return normalizeDashboard(raw);
 }
 
@@ -127,19 +144,19 @@ export function fetchAdminAiAnalytics() {
 }
 
 export async function fetchAdminDocscanAnalytics() {
-  const raw = await adminFetch<any>('/analytics/docscan');
+  const raw = asRecord(await adminFetch<unknown>('/analytics/docscan'));
   return {
-    totalReads: Number(raw?.totalReads ?? raw?.totalScans ?? 0),
-    activeReaders: Number(raw?.activeReaders ?? raw?.activeUsers ?? 0),
+    totalReads: Number(raw.totalReads ?? raw.totalScans ?? 0),
+    activeReaders: Number(raw.activeReaders ?? raw.activeUsers ?? 0),
   };
 }
 
 export async function fetchAdminAchievementsAnalytics() {
-  const raw = await adminFetch<any>('/analytics/achievements');
+  const raw = asRecord(await adminFetch<unknown>('/analytics/achievements'));
   return {
-    totalAchievements: Number(raw?.totalAchievements ?? 0),
-    engagedShare: Number(raw?.engagedShare ?? raw?.avgProgress ?? 0),
-    activeUsers: Number(raw?.activeUsers ?? 0),
-    newUsersMonth: Number(raw?.newUsersMonth ?? 0),
+    totalAchievements: Number(raw.totalAchievements ?? 0),
+    engagedShare: Number(raw.engagedShare ?? raw.avgProgress ?? 0),
+    activeUsers: Number(raw.activeUsers ?? 0),
+    newUsersMonth: Number(raw.newUsersMonth ?? 0),
   };
 }
