@@ -23,6 +23,10 @@ export function HtmlLang() {
     if (html.lang !== langCode) {
       html.lang = langCode;
     }
+    // Keep layout LTR for all languages (including AR), like before
+    if (html.getAttribute("dir") !== "ltr") {
+      html.setAttribute("dir", "ltr");
+    }
   }, [currentLanguage]);
 
   return null;

@@ -13,6 +13,7 @@ import {
 } from "lucide-react";
 import { motion, useInView, useReducedMotion } from "framer-motion";
 import { useTranslation } from "@/hooks/useTranslation";
+import { useAdaptationCta } from "@/hooks/useAdaptationCta";
 
 const ITEMS: {
   key: string;
@@ -95,6 +96,8 @@ function FadeIn({
 
 export function AdaptationHeroSection() {
   const { t } = useTranslation();
+  const { href: adaptationCtaHref, label: adaptationCtaLabel } =
+    useAdaptationCta();
   const reduceMotion = useReducedMotion();
   const [ready, setReady] = useState(false);
 
@@ -163,11 +166,11 @@ export function AdaptationHeroSection() {
 
             <FadeIn enabled={enabled} className="mt-6 sm:mt-8" delay={0.38}>
               <Link
-                href="/life-guide"
+                href={adaptationCtaHref}
                 className="inline-flex min-h-12 w-full sm:w-auto items-center justify-center gap-2 rounded-full bg-gradient-to-r from-blue-600 to-indigo-600 px-8 py-3 text-base font-semibold text-white shadow-lg shadow-blue-500/20 transition-all duration-200 hover:from-blue-700 hover:to-indigo-700 focus-visible:outline-none focus-visible:ring-2 focus-visible:ring-indigo-500 focus-visible:ring-offset-2"
               >
                 <Rocket className="h-5 w-5" aria-hidden />
-                {t("home.section.adaptation.cta")}
+                {adaptationCtaLabel}
               </Link>
             </FadeIn>
           </div>

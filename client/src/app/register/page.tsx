@@ -119,9 +119,15 @@ export default function RegisterPage() {
   const [privacyConsent, setPrivacyConsent] = useState(false);
   const stepTimeoutRef = useRef<NodeJS.Timeout | null>(null);
 
-  const { register } = useAuth();
+  const { register, user, isLoading: isAuthLoading } = useAuth();
   const router = useRouter();
   const { t } = useTranslation();
+
+  useEffect(() => {
+    if (!isAuthLoading && user) {
+      router.replace("/dashboard");
+    }
+  }, [user, isAuthLoading, router]);
 
   const handleChange = (
     e: React.ChangeEvent<HTMLInputElement | HTMLSelectElement>
@@ -621,11 +627,12 @@ export default function RegisterPage() {
             <AnimatePresence>
               {isTransitioning && (
                 <motion.div
-                  className="absolute inset-0 flex items-center justify-center bg-white/70 backdrop-blur-[2px]"
+                  className="absolute inset-0 flex items-center justify-center bg-white/70 backdrop-blur-[2px] pointer-events-none"
                   initial={{ opacity: 0 }}
                   animate={{ opacity: 1 }}
-                  exit={{ opacity: 0 }}
+                  exit={{ opacity: 0, pointerEvents: "none" }}
                   transition={{ duration: 0.2 }}
+                  aria-hidden="true"
                 >
                   <motion.div
                     className="flex items-center space-x-2 text-emerald-600"

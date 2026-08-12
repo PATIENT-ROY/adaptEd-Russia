@@ -179,6 +179,12 @@ export function AuthProvider({ children }: { children: React.ReactNode }) {
       try {
         const payload: UpdateProfileRequest = {};
 
+        if (userData.name !== undefined) {
+          const trimmedName = userData.name.trim();
+          if (trimmedName) {
+            payload.name = trimmedName;
+          }
+        }
         if (userData.university !== undefined) {
           payload.university = userData.university || undefined;
         }

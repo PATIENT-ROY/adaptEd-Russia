@@ -470,6 +470,7 @@ const router = Router();
 
 // Схема валидации для обновления профиля
 const updateProfileSchema = z.object({
+  name: z.string().trim().min(1, 'Имя обязательно').max(100).optional(),
   university: z.string().optional(),
   faculty: z.string().optional(),
   year: z.string().optional(),

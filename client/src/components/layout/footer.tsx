@@ -24,7 +24,7 @@ export function Footer() {
 
   const footerLinks = {
     platform: [
-      { href: "/dashboard", labelKey: "nav.home" },
+      { href: user ? "/dashboard" : "/", labelKey: "nav.home" },
       { href: "/education-guide", labelKey: "nav.education" },
       { href: "/life-guide", labelKey: "nav.life" },
       { href: "/reminders", labelKey: "nav.reminders" },

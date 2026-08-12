@@ -17,6 +17,7 @@ const translations: Record<Language, Record<string, string>> = {
   [Language.RU]: {
     // Навигация
     "nav.home": "Главная",
+    "a11y.skipToContent": "Перейти к основному контенту",
     "nav.education": "Учёба",
     "nav.life": "Быт",
     "nav.support": "Поддержка",
@@ -689,7 +690,7 @@ const translations: Record<Language, Record<string, string>> = {
     "userProgress.levelLabel": "Уровень {level}",
     "userProgress.achievements": "Достижения",
     "userProgress.xpLabel": "Опыт (XP)",
-    "userProgress.xpToNext": "До {level}: {xp} XP",
+    "userProgress.xpToNext": "Ещё {xp} XP до «{level}»",
     "userProgress.adaptationProgress": "Прогресс адаптации",
     "userProgress.stats.guides": "Гайдов",
     "userProgress.stats.aiQuestions": "Вопросов AI",
@@ -1170,7 +1171,7 @@ const translations: Record<Language, Record<string, string>> = {
 
     // Login
     "login.welcome": "Добро пожаловать!",
-    "login.subtitle": "Войдите в свой аккаунт — начнём с подтверждения email",
+    "login.subtitle": "Войдите в свой аккаунт — укажите email и пароль",
     "login.subtitlePassword": "Введите пароль, чтобы завершить вход",
     "login.email": "Email",
     "login.emailPlaceholder": "your@email.com",
@@ -1309,6 +1310,7 @@ const translations: Record<Language, Record<string, string>> = {
   [Language.EN]: {
     // Navigation
     "nav.home": "Home",
+    "a11y.skipToContent": "Skip to main content",
     "nav.education": "Education",
     "nav.life": "Daily Life",
     "nav.support": "Support",
@@ -2462,7 +2464,7 @@ const translations: Record<Language, Record<string, string>> = {
 
     // Login
     "login.welcome": "Welcome!",
-    "login.subtitle": "Sign in to your account — let's start by confirming your email",
+    "login.subtitle": "Sign in to your account — enter your email and password",
     "login.subtitlePassword": "Enter your password to complete sign-in",
     "login.email": "Email",
     "login.emailPlaceholder": "your@email.com",
@@ -2601,6 +2603,7 @@ const translations: Record<Language, Record<string, string>> = {
   [Language.FR]: {
     // Navigation
     "nav.home": "Accueil",
+    "a11y.skipToContent": "Aller au contenu principal",
     "nav.education": "Éducation",
     "nav.life": "Vie quotidienne",
     "nav.support": "Support",
@@ -3684,7 +3687,7 @@ const translations: Record<Language, Record<string, string>> = {
 
     // Login
     "login.welcome": "Bienvenue !",
-    "login.subtitle": "Connectez-vous à votre compte — commençons par confirmer votre email",
+    "login.subtitle": "Connectez-vous à votre compte — saisissez votre email et votre mot de passe",
     "login.subtitlePassword": "Entrez votre mot de passe pour terminer la connexion",
     "login.email": "Email",
     "login.emailPlaceholder": "votre@email.com",
@@ -3828,6 +3831,7 @@ const translations: Record<Language, Record<string, string>> = {
   [Language.AR]: {
     // Navigation
     "nav.home": "الرئيسية",
+    "a11y.skipToContent": "الانتقال إلى المحتوى الرئيسي",
     "nav.education": "التعليم",
     "nav.life": "الحياة اليومية",
     "nav.support": "الدعم",
@@ -4391,6 +4395,10 @@ const translations: Record<Language, Record<string, string>> = {
     "home.section.about.purpose.bullet3": "التعامل مع المستندات بثقة",
     "home.section.about.purpose.bullet4": "الحصول على المساعدة بلغتهم",
     "home.section.about.purpose.support": "اليوم أطور المشروع مع خريجين ومرشدين وخبراء في التعليم الدولي.",
+    "home.section.about.p1": "أنا نفسي درست في روسيا كطالب أجنبي ومررت بالمسار كاملًا — من أول وصول حتى التخرج.",
+    "home.section.about.p2": "أعرف كيف يكون الأمر: مستندات غير واضحة، مواعيد نهائية، ضغط وكثير من الأسئلة بلا إجابات مفهومة.",
+    "home.section.about.p3": "لذلك أنشأت AdaptEd Russia — حتى يكون الأمر أسهل للآخرين.",
+    "home.section.about.p4": "AdaptEd Russia — التكيف بلا توتر.",
     "home.section.about.closing": "AdaptEd Russia — تكيّف بلا ضغط",
     "home.section.about.badge.alumni": "خريجو جامعات روسيا",
     
@@ -4976,7 +4984,7 @@ const translations: Record<Language, Record<string, string>> = {
 
     // Login
     "login.welcome": "!مرحباً",
-    "login.subtitle": "سجّل الدخول إلى حسابك — لنبدأ بتأكيد بريدك الإلكتروني",
+    "login.subtitle": "سجّل الدخول إلى حسابك — أدخل بريدك الإلكتروني وكلمة المرور",
     "login.subtitlePassword": "أدخل كلمة المرور لإكمال تسجيل الدخول",
     "login.email": "البريد الإلكتروني",
     "login.emailPlaceholder": "your@email.com",
@@ -5115,6 +5123,7 @@ const translations: Record<Language, Record<string, string>> = {
   [Language.ZH]: {
     // Navigation
     "nav.home": "首页",
+    "a11y.skipToContent": "跳到主要内容",
     "nav.education": "教育",
     "nav.life": "日常生活",
     "nav.support": "支持",
@@ -5678,6 +5687,10 @@ const translations: Record<Language, Record<string, string>> = {
     "home.section.about.purpose.bullet3": "更好地处理文件",
     "home.section.about.purpose.bullet4": "获得母语支持",
     "home.section.about.purpose.support": "如今我与毕业生、导师和国际教育专家一起推进项目。",
+    "home.section.about.p1": "我自己曾作为国际学生在俄罗斯学习，完整走过从抵达到毕业的全过程。",
+    "home.section.about.p2": "我知道那种感受：难懂的文件、截止日期、压力，以及很多找不到清楚答案的问题。",
+    "home.section.about.p3": "所以我做了 AdaptEd Russia，让其他人能更轻松一些。",
+    "home.section.about.p4": "AdaptEd Russia — 无压力的适应。",
     "home.section.about.closing": "AdaptEd Russia——无压力适应",
     "home.section.about.badge.alumni": "俄罗斯高校毕业生",
     
@@ -6263,7 +6276,7 @@ const translations: Record<Language, Record<string, string>> = {
 
     // Login
     "login.welcome": "欢迎！",
-    "login.subtitle": "登录您的账户 — 先确认您的邮箱",
+    "login.subtitle": "登录您的账户 — 请输入邮箱和密码",
     "login.subtitlePassword": "输入密码以完成登录",
     "login.email": "邮箱",
     "login.emailPlaceholder": "your@email.com",

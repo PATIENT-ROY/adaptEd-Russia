@@ -40,9 +40,15 @@ export default function LoginPage() {
   const [isTransitioning, setIsTransitioning] = useState(false);
   const stepTimeoutRef = useRef<NodeJS.Timeout | null>(null);
 
-  const { login } = useAuth();
+  const { login, user, isLoading: isAuthLoading } = useAuth();
   const { t } = useTranslation();
   const router = useRouter();
+
+  useEffect(() => {
+    if (!isAuthLoading && user) {
+      router.replace("/dashboard");
+    }
+  }, [user, isAuthLoading, router]);
 
   const handleEmailSubmit = (e: React.FormEvent) => {
     e.preventDefault();
@@ -327,11 +333,12 @@ export default function LoginPage() {
             <AnimatePresence>
               {isTransitioning && (
                 <motion.div
-                  className="absolute inset-0 flex items-center justify-center bg-white/70 backdrop-blur-[2px]"
+                  className="absolute inset-0 flex items-center justify-center bg-white/70 backdrop-blur-[2px] pointer-events-none"
                   initial={{ opacity: 0 }}
                   animate={{ opacity: 1 }}
-                  exit={{ opacity: 0 }}
+                  exit={{ opacity: 0, pointerEvents: "none" }}
                   transition={{ duration: 0.2 }}
+                  aria-hidden="true"
                 >
                   <motion.div
                     className="flex items-center space-x-2 text-blue-600"

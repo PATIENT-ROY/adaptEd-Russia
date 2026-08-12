@@ -52,6 +52,12 @@ export function Navigation({
   const { user } = useAuth();
   const { t } = useTranslation();
 
+  const navigationItems = navigationItemsConfig.map((item) =>
+    item.labelKey === "nav.home"
+      ? { ...item, href: user ? "/dashboard" : "/" }
+      : item
+  );
+
   return (
     <nav
       className="modern-nav sticky top-0 z-50"
@@ -94,7 +100,7 @@ export function Navigation({
           {/* Desktop Navigation */}
           <div className="hidden lg:flex lg:items-center lg:gap-0.5 xl:gap-1">
             {/* Основная навигация для всех */}
-            {navigationItemsConfig.map((item) => {
+            {navigationItems.map((item) => {
               const Icon = item.icon;
               const isActive = pathname === item.href;
 
@@ -185,7 +191,7 @@ export function Navigation({
           </div>
 
           {/* Right side - Language Switcher, Profile, Mobile Menu */}
-          <div className="flex items-center space-x-1 sm:space-x-2 lg:space-x-3">
+          <div className="flex items-center gap-1 sm:gap-2 lg:gap-3">
             <LanguageSwitcher
               currentLanguage={currentLanguage}
               onLanguageChange={onLanguageChange}
@@ -194,11 +200,11 @@ export function Navigation({
 
             {/* Profile Button */}
             {user ? (
-              <div className="flex items-center space-x-1 sm:space-x-2">
+              <div className="flex items-center gap-1 sm:gap-2">
                 {user.role === Role.ADMIN && (
                   <Link href="/admin">
                     <Button className="rounded-lg sm:rounded-xl bg-gradient-to-r from-red-500 to-red-600 hover:from-red-600 hover:to-red-700 text-white shadow-lg hover:shadow-xl transform hover:scale-105 transition-all duration-300 text-xs sm:text-sm h-6 sm:h-7 lg:h-8 px-2 sm:px-3 font-medium">
-                      <Shield className="mr-1 h-2 w-2 sm:h-2.5 sm:w-2.5" />
+                      <Shield className="me-1 h-2 w-2 sm:h-2.5 sm:w-2.5" />
                       <span className="hidden sm:inline">{t("nav.admin")}</span>
                     </Button>
                   </Link>
@@ -208,7 +214,7 @@ export function Navigation({
                     variant="outline"
                     className="rounded-lg sm:rounded-xl border-slate-200 hover:bg-slate-50 text-xs sm:text-sm h-6 sm:h-7 lg:h-8 px-2 sm:px-3"
                   >
-                    <User className="mr-1 h-2 w-2 sm:h-2.5 sm:w-2.5" />
+                    <User className="me-1 h-2 w-2 sm:h-2.5 sm:w-2.5" />
                     <span className="hidden sm:inline">
                       {user.name.split(" ")[0]}
                     </span>
@@ -216,7 +222,7 @@ export function Navigation({
                 </Link>
               </div>
             ) : (
-              <div className="flex items-center space-x-1 sm:space-x-2">
+              <div className="flex items-center gap-1 sm:gap-2">
                 <Link href="/login">
                   <Button
                     variant="outline"
@@ -249,7 +255,7 @@ export function Navigation({
           <div className="absolute top-full left-0 right-0 bg-white shadow-lg border-t border-slate-200 lg:hidden z-50 animate-slide-down">
             <ul className="flex flex-col space-y-2 p-4">
               {/* Основная навигация для всех */}
-              {navigationItemsConfig.map((item, index) => {
+              {navigationItems.map((item, index) => {
                 const Icon = item.icon;
                 const isActive = pathname === item.href;
 
@@ -269,7 +275,7 @@ export function Navigation({
                           : "text-slate-600 hover:bg-slate-100 hover:text-slate-900"
                       )}
                     >
-                      <div className="flex items-center space-x-3">
+                      <div className="flex items-center gap-3">
                         <Icon
                           className={cn(
                             "h-5 w-5",
@@ -309,7 +315,7 @@ export function Navigation({
                             : "text-slate-600 hover:bg-slate-100 hover:text-slate-900"
                         )}
                       >
-                        <div className="flex items-center space-x-3">
+                        <div className="flex items-center gap-3">
                           <Icon
                             className={cn(
                               "h-5 w-5",
@@ -342,7 +348,7 @@ export function Navigation({
                     onClick={() => setIsMobileMenuOpen(false)}
                     className="block w-full text-left p-3 rounded-lg bg-gradient-to-r from-red-500 to-red-600 text-white hover:from-red-600 hover:to-red-700 transition-all duration-300 hover:translate-x-2"
                   >
-                    <div className="flex items-center space-x-3">
+                    <div className="flex items-center gap-3">
                       <Shield className="h-5 w-5" />
                       <span>{t("nav.admin")}</span>
                     </div>
