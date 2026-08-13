@@ -63,7 +63,7 @@ function getGuidePreview(content: string, maxLen = PREVIEW_MAX_LEN): string {
       return true;
     });
 
-  let text = (proseParts.length > 0 ? proseParts : content.split("\n").map(cleanLine))
+  const text = (proseParts.length > 0 ? proseParts : content.split("\n").map(cleanLine))
     .filter(Boolean)
     .join(" ")
     .replace(/\s+/g, " ")
