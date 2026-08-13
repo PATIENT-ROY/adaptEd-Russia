@@ -48,9 +48,11 @@ import { ScrollReveal } from "@/components/home/ScrollReveal";
 import { StaggerReveal, StaggerItem } from "@/components/home/StaggerReveal";
 import { motion } from "framer-motion";
 import {
+  EDUCATION_GUIDES_COUNT,
   TOTAL_GUIDES_COUNT,
   SUPPORTED_LANGUAGES_COUNT,
 } from "@/constants/content-stats";
+import { formatCountedLabel } from "@/lib/pluralize";
 import { PREMIUM_CHECKOUT_PATH } from "@/constants/routes";
 
 const PREMIUM_FEATURES_VISIBLE = 6;
@@ -80,7 +82,7 @@ function HowItWorksStepHeader({
 }
 
 export default function HomePage() {
-  const { t } = useTranslation();
+  const { t, currentLanguage } = useTranslation();
   const { href: adaptationCtaHref, label: adaptationCtaLabel } =
     useAdaptationCta();
   const [showScrollIndicator, setShowScrollIndicator] = useState(true);
@@ -149,9 +151,11 @@ export default function HomePage() {
 
   const contentProofItems = useMemo(
     () => [
-      t("home.contentProof.guides").replace(
-        "{count}",
-        String(TOTAL_GUIDES_COUNT),
+      formatCountedLabel(
+        TOTAL_GUIDES_COUNT,
+        currentLanguage,
+        t,
+        "home.guidesCount",
       ),
       t("home.contentProof.languages").replace(
         "{count}",
@@ -159,7 +163,7 @@ export default function HomePage() {
       ),
       t("home.contentProof.ai"),
     ],
-    [t],
+    [t, currentLanguage],
   );
 
   const features = useMemo(
@@ -170,9 +174,11 @@ export default function HomePage() {
         title: t("home.features.navigator"),
         description: t("home.features.navigator.desc"),
         gradient: "from-blue-500 to-blue-600",
-        stats: t("home.section.features.stats").replace(
-          "{count}",
-          String(TOTAL_GUIDES_COUNT),
+        stats: formatCountedLabel(
+          EDUCATION_GUIDES_COUNT,
+          currentLanguage,
+          t,
+          "home.guidesCount",
         ),
         href: "/education-guide",
       },
@@ -223,7 +229,7 @@ export default function HomePage() {
         ctaLabel: t("home.features.verified.cta"),
       },
     ],
-    [t],
+    [t, currentLanguage],
   );
 
   const pricingPlans = useMemo(

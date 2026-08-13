@@ -26,6 +26,67 @@ const categoryIcons = {
   [GuideCategory.OTHER]: BookOpen,
 };
 
+const PREVIEW_MAX_LEN = 90;
+
+/** Short card teaser: strip markdown noise, keep ~2 lines of prose. */
+function getGuidePreview(content: string, maxLen = PREVIEW_MAX_LEN): string {
+  if (!content.trim()) return "";
+
+  const emojiOrSymbol =
+    /(?:[\u2600-\u27BF]|[\u{1F300}-\u{1FAFF}]|[\uFE0F]|[\u200D])/gu;
+
+  const cleanLine = (line: string) =>
+    line
+      .replace(/^#{1,6}\s+/, "")
+      .replace(/\*\*([^*]+)\*\*/g, "$1")
+      .replace(/\*([^*]+)\*/g, "$1")
+      .replace(/^[\t ]*[-*•▪︎]\s+/, "")
+      .replace(/^[\t ]*\d+[.)]\s+/, "")
+      .replace(emojiOrSymbol, "")
+      .replace(/\s+/g, " ")
+      .trim();
+
+  // Prefer real body lines over leftover section titles ("...:", short labels).
+  const proseParts = content
+    .replace(/\r\n/g, "\n")
+    .replace(/```[\s\S]*?```/g, "\n")
+    .split("\n")
+    .map(cleanLine)
+    .filter((line) => {
+      if (line.length < 28) return false;
+      if (/[:：]$/.test(line) && line.length < 60) return false;
+      // Drop leftover section titles like "Первые действия (в течение 24 часов!)"
+      const withoutParens = line.replace(/\([^)]*\)/g, "").trim();
+      if (!/[.!?…]/.test(withoutParens) && withoutParens.length < 72) {
+        return false;
+      }
+      return true;
+    });
+
+  let text = (proseParts.length > 0 ? proseParts : content.split("\n").map(cleanLine))
+    .filter(Boolean)
+    .join(" ")
+    .replace(/\s+/g, " ")
+    .trim();
+
+  if (!text) return "";
+
+  const sentence = text.match(/^(.+?[.!?…])(?:\s|$)/);
+  if (
+    sentence &&
+    sentence[1].length >= 36 &&
+    sentence[1].length <= maxLen
+  ) {
+    return sentence[1];
+  }
+
+  if (text.length <= maxLen) return text;
+
+  const cut = text.slice(0, maxLen);
+  const lastSpace = cut.lastIndexOf(" ");
+  return `${(lastSpace > 40 ? cut.slice(0, lastSpace) : cut).trimEnd()}…`;
+}
+
 export function GuideCard({ guide, onClick, className, isRead, onRead }: GuideCardProps) {
   const router = useRouter();
   const { t } = useTranslation();
@@ -51,16 +112,8 @@ export function GuideCard({ guide, onClick, className, isRead, onRead }: GuideCa
     onRead?.(guide.id);
   };
 
-  // Обрезаем контент для превью (как на эскизе "Тут будет подсказка что в нутри...")
-  // Убираем markdown синтаксис из превью
-  const cleanContent = guide.content 
-    ? guide.content.replace(/\*\*(.*?)\*\*/g, '$1').replace(/^#+\s+/gm, '').replace(/^•\s+/gm, '')
-    : "";
-  const previewText = cleanContent
-    ? cleanContent.length > 100 
-      ? cleanContent.substring(0, 100) + "..." 
-      : cleanContent
-    : "Тут будет подсказка что в нутри...";
+  const previewText =
+    getGuidePreview(guide.content) || t("guideCard.previewFallback");
 
   const categoryLabel = guide.category === GuideCategory.EDUCATION
     ? "Образование"

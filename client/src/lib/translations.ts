@@ -290,6 +290,9 @@ const translations: Record<Language, Record<string, string>> = {
     "home.cta.feeNote": "Без оплаты • Регистрация за 1 минуту",
     "home.contentProof.title": "О платформе",
     "home.contentProof.guides": "{count} гайдов",
+    "home.guidesCount.one": "гайд",
+    "home.guidesCount.few": "гайда",
+    "home.guidesCount.many": "гайдов",
     "home.contentProof.languages": "{count} языков",
     "home.contentProof.ai": "AI-помощник",
     "home.contentProof.pricingLink": "Тарифы",
@@ -417,6 +420,7 @@ const translations: Record<Language, Record<string, string>> = {
     "educationGuide.learn.title": "Что полезно знать",
     "educationGuide.learn.subtitle": "Короткие и понятные материалы про учёбу, документы и важные правила.",
     "guideCard.open": "Открыть",
+    "guideCard.previewFallback": "Краткое описание внутри…",
 
     // Reminders
     "reminders.authChecking": "Проверка авторизации...",
@@ -521,7 +525,7 @@ const translations: Record<Language, Record<string, string>> = {
     "home.features.docscan.stats": "OCR + Перевод",
     "home.section.features.badge": "Главные возможности платформы",
     "home.section.howItWorks.title": "Как работает платформа",
-    "home.section.howItWorks.subtitle": "Три ключевых сценария: вопрос студента, ответ AI, переход к гайдам и поддержку сообщества.",
+    "home.section.howItWorks.subtitle": "Три ключевых сценария: вопрос студента, ответ AI, переход к гайдам и поддержка сообщества.",
     "home.section.howItWorks.step1.caption": "Спросите AI на своём языке",
     "home.section.howItWorks.step2.caption": "Откройте пошаговый гайд",
     "home.section.howItWorks.step3.caption": "Задайте вопрос сообществу",
@@ -1583,6 +1587,9 @@ const translations: Record<Language, Record<string, string>> = {
     "home.cta.feeNote": "No payment • Sign up in 1 minute",
     "home.contentProof.title": "About the platform",
     "home.contentProof.guides": "{count} guides",
+    "home.guidesCount.one": "guide",
+    "home.guidesCount.few": "guides",
+    "home.guidesCount.many": "guides",
     "home.contentProof.languages": "{count} languages",
     "home.contentProof.ai": "AI assistant",
     "home.contentProof.pricingLink": "Pricing",
@@ -1710,6 +1717,7 @@ const translations: Record<Language, Record<string, string>> = {
     "educationGuide.learn.title": "What is useful to know",
     "educationGuide.learn.subtitle": "Short and clear materials about studying, documents, and important rules.",
     "guideCard.open": "Open",
+    "guideCard.previewFallback": "Short preview inside…",
 
     // Reminders
     "reminders.authChecking": "Checking authentication...",
@@ -2877,6 +2885,9 @@ const translations: Record<Language, Record<string, string>> = {
     "home.cta.feeNote": "Sans paiement • Inscription en 1 minute",
     "home.contentProof.title": "À propos de la plateforme",
     "home.contentProof.guides": "{count} guides",
+    "home.guidesCount.one": "guide",
+    "home.guidesCount.few": "guides",
+    "home.guidesCount.many": "guides",
     "home.contentProof.languages": "{count} langues",
     "home.contentProof.ai": "Assistant IA",
     "home.contentProof.pricingLink": "Tarifs",
@@ -3004,6 +3015,7 @@ const translations: Record<Language, Record<string, string>> = {
     "educationGuide.learn.title": "Ce qu'il est utile de savoir",
     "educationGuide.learn.subtitle": "Des contenus courts et clairs sur les études, les documents et les règles importantes.",
     "guideCard.open": "Ouvrir",
+    "guideCard.previewFallback": "Aperçu court à l’intérieur…",
 
     // Reminders
     "reminders.authChecking": "Vérification de l’authentification...",
@@ -4104,6 +4116,9 @@ const translations: Record<Language, Record<string, string>> = {
     "home.cta.feeNote": "بدون دفع • التسجيل خلال دقيقة واحدة",
     "home.contentProof.title": "عن المنصة",
     "home.contentProof.guides": "{count} دليل",
+    "home.guidesCount.one": "دليل",
+    "home.guidesCount.few": "أدلة",
+    "home.guidesCount.many": "دليل",
     "home.contentProof.languages": "{count} لغات",
     "home.contentProof.ai": "مساعد الذكاء الاصطناعي",
     "home.contentProof.pricingLink": "الأسعار",
@@ -4231,6 +4246,7 @@ const translations: Record<Language, Record<string, string>> = {
     "educationGuide.learn.title": "ما المفيد معرفته",
     "educationGuide.learn.subtitle": "مواد قصيرة وواضحة عن الدراسة والوثائق والقواعد المهمة.",
     "guideCard.open": "فتح",
+    "guideCard.previewFallback": "معاينة قصيرة بالداخل…",
 
     // Reminders
     "reminders.authChecking": "جارٍ التحقق من تسجيل الدخول...",
@@ -5396,6 +5412,9 @@ const translations: Record<Language, Record<string, string>> = {
     "home.cta.feeNote": "无须付费 • 1 分钟内完成注册",
     "home.contentProof.title": "关于平台",
     "home.contentProof.guides": "{count} 篇指南",
+    "home.guidesCount.one": "篇指南",
+    "home.guidesCount.few": "篇指南",
+    "home.guidesCount.many": "篇指南",
     "home.contentProof.languages": "{count} 种语言",
     "home.contentProof.ai": "AI 助手",
     "home.contentProof.pricingLink": "定价",
@@ -5523,6 +5542,7 @@ const translations: Record<Language, Record<string, string>> = {
     "educationGuide.learn.title": "值得了解的内容",
     "educationGuide.learn.subtitle": "关于学习、文件和重要规则的简短清晰材料。",
     "guideCard.open": "打开",
+    "guideCard.previewFallback": "内有简短预览…",
 
     // Reminders
     "reminders.authChecking": "正在验证登录...",

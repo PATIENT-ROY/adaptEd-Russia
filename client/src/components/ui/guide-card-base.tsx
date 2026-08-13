@@ -65,7 +65,7 @@ export function GuideCardBase({
 
       <CardContent className="pt-0 px-4 sm:px-6 pb-4 sm:pb-6 flex-1 flex flex-col min-h-0 space-y-4">
         {description && (
-          <p className="text-sm text-gray-600 leading-relaxed line-clamp-3">
+          <p className="text-sm text-gray-500 leading-snug line-clamp-2">
             {description}
           </p>
         )}

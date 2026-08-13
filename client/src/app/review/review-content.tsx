@@ -19,6 +19,15 @@ import {
   LIFE_GUIDES_COUNT,
   TOTAL_GUIDES_COUNT,
 } from "@/constants/content-stats";
+import { getPluralCategory } from "@/lib/pluralize";
+import { Language } from "@/types";
+
+function ruGuideUnit(count: number): string {
+  const category = getPluralCategory(count, Language.RU);
+  if (category === "one") return "гайд";
+  if (category === "few") return "гайда";
+  return "гайдов";
+}
 
 const reviewers = [
   {
@@ -131,8 +140,9 @@ export function ReviewPageContent() {
             </CardHeader>
             <CardContent className="space-y-4">
               <p className="text-slate-700 leading-relaxed">
-                Сейчас на платформе {TOTAL_GUIDES_COUNT} гайдов:{" "}
-                {EDUCATION_GUIDES_COUNT} по учёбе и {LIFE_GUIDES_COUNT} по быту.
+                Сейчас на платформе {TOTAL_GUIDES_COUNT}{" "}
+                {ruGuideUnit(TOTAL_GUIDES_COUNT)}: {EDUCATION_GUIDES_COUNT} по
+                учёбе и {LIFE_GUIDES_COUNT} по быту.
               </p>
               <div className="grid sm:grid-cols-2 gap-3">
                 <Link
