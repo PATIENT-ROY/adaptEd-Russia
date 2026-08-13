@@ -18,6 +18,7 @@ import {
 } from "lucide-react";
 import { useState, useCallback, useEffect, useRef } from "react";
 import { useDropzone } from "react-dropzone";
+import type { FileRejection } from "react-dropzone";
 
 // eslint-disable-next-line @typescript-eslint/no-explicit-any
 let pdfjsLib: any = null;
@@ -71,14 +72,22 @@ export function DocScanContent() {
     [t]
   );
 
+  const MAX_FILE_SIZE = 20 * 1024 * 1024;
+
   const onDrop = useCallback(
     (acceptedFiles: File[]) => {
       if (acceptedFiles.length > 0) {
         const file = acceptedFiles[0];
+        if (file.size > MAX_FILE_SIZE) {
+          setSelectedFile(null);
+          setError(t("docscan.error.fileSize"));
+          return;
+        }
         if (file.type.startsWith("image/") || file.type === "application/pdf") {
           setSelectedFile(file);
           setError(null);
         } else {
+          setSelectedFile(null);
           setError(t("docscan.error.fileType"));
         }
       }
@@ -86,12 +95,27 @@ export function DocScanContent() {
     [t]
   );
 
+  const onDropRejected = useCallback(
+    (fileRejections: readonly FileRejection[]) => {
+      const code = fileRejections[0]?.errors?.[0]?.code;
+      setSelectedFile(null);
+      setError(
+        code === "file-too-large"
+          ? t("docscan.error.fileSize")
+          : t("docscan.error.fileType"),
+      );
+    },
+    [t]
+  );
+
   const { getRootProps, getInputProps, isDragActive } = useDropzone({
     onDrop,
+    onDropRejected,
     accept: {
       "image/*": [".png", ".jpg", ".jpeg", ".gif", ".webp"],
       "application/pdf": [".pdf"],
     },
+    maxSize: MAX_FILE_SIZE,
     multiple: false,
   });
 
@@ -327,8 +351,8 @@ export function DocScanContent() {
         try { await ocrWorker.terminate(); } catch { /* ignore */ }
       }
       setError(
-        err instanceof Error && err.message !== t("docscan.error.noText")
-          ? err.message
+        err instanceof Error && err.message === t("docscan.error.noText")
+          ? t("docscan.error.noText")
           : t("docscan.error.ocr"),
       );
     } finally {
