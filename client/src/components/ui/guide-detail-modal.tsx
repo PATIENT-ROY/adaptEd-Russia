@@ -79,6 +79,12 @@ function formatMarkdown(text: string): string {
   }
   
   html = processedLines.join('\n');
+
+  // Long consultant.ru etc. URLs — wrap on mobile instead of blowing out the modal
+  html = html.replace(
+    /(https?:\/\/[^\s<]+)/g,
+    '<a href="$1" target="_blank" rel="noopener noreferrer" class="break-all text-blue-600 underline underline-offset-2">$1</a>',
+  );
   
   return html;
 }
@@ -89,16 +95,29 @@ function extractQuickPoints(content: string): string[] {
     .map((line) => line.trim())
     .filter(Boolean);
 
+  const isUrlHeavy = (line: string) =>
+    /https?:\/\//i.test(line) || /www\./i.test(line);
+
   const bulletPoints = lines
     .filter((line) => line.startsWith("• "))
     .map((line) => line.replace(/^•\s*/, ""))
-    .filter((line) => line.length > 8);
+    .filter((line) => line.length > 8 && !isUrlHeavy(line));
 
   if (bulletPoints.length > 0) {
     return bulletPoints.slice(0, 5);
   }
 
+  const numbered = lines
+    .filter((line) => /^\d+[.)]\s+/.test(line))
+    .map((line) => line.replace(/^\d+[.)]\s+/, ""))
+    .filter((line) => line.length > 8 && !isUrlHeavy(line));
+
+  if (numbered.length > 0) {
+    return numbered.slice(0, 5);
+  }
+
   const plainText = content
+    .replace(/https?:\/\/\S+/gi, "")
     .replace(/[#*_`]/g, "")
     .replace(/\n+/g, " ")
     .replace(/\s+/g, " ")
@@ -209,7 +228,7 @@ export function GuideDetailModal({
             Актуальность: материалы пересмотрены в 2026 году. Нормы, пошлины и сроки могут отличаться по региону и вузу, проверяйте официальные источники (вуз, Госуслуги, МВД, ФНС, СФР).
           </div>
 
-          <div className="rounded-xl border border-slate-200 bg-slate-50 px-4 py-3">
+          <div className="rounded-xl border border-slate-200 bg-slate-50 px-4 py-3 overflow-hidden min-w-0">
             <Button
               type="button"
               variant="ghost"
@@ -221,30 +240,35 @@ export function GuideDetailModal({
                   <span className="text-sm font-semibold text-slate-900">
                     Кратко и понятно
                   </span>
-                  <ChevronUp className="h-4 w-4" />
+                  <ChevronUp className="h-4 w-4 flex-shrink-0" />
                 </>
               ) : (
                 <>
                   <span className="text-sm font-semibold text-slate-900">
                     Показать краткое summary
                   </span>
-                  <ChevronDown className="h-4 w-4" />
+                  <ChevronDown className="h-4 w-4 flex-shrink-0" />
                 </>
               )}
             </Button>
             {showQuickSummary && (
-              <ul className="list-disc ml-5 space-y-1.5 text-sm text-slate-800">
+              <ul className="list-disc ml-5 space-y-1.5 text-sm text-slate-800 min-w-0">
                 {quickPoints.map((point, index) => (
-                  <li key={`${guide.id}-quick-${index}`}>{point}</li>
+                  <li
+                    key={`${guide.id}-quick-${index}`}
+                    className="break-words [overflow-wrap:anywhere]"
+                  >
+                    {point}
+                  </li>
                 ))}
               </ul>
             )}
           </div>
 
           {/* Content */}
-          <div className="prose max-w-none prose-sm sm:prose-base">
+          <div className="prose max-w-none prose-sm sm:prose-base overflow-x-hidden">
             <div
-              className="text-[15px] sm:text-base text-gray-700 leading-7 whitespace-pre-line"
+              className="text-[15px] sm:text-base text-gray-700 leading-7 whitespace-pre-line break-words [overflow-wrap:anywhere]"
               dangerouslySetInnerHTML={{
                 __html: formatMarkdown(guide.content)
               }}

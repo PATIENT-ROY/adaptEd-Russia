@@ -42,8 +42,8 @@ const arrivalPhases: ArrivalPhase[] = [
     id: "first24h",
     titleKey: "lifeGuide.arrival.phases.first24h",
     steps: [
-      { id: "migration-card", labelKey: "lifeGuide.arrival.steps.migrationCard", guideId: "7" },
-      { id: "contact-uni", labelKey: "lifeGuide.arrival.steps.contactUniversity", guideId: "7" },
+      { id: "migration-card", labelKey: "lifeGuide.arrival.steps.migrationCard", guideId: "migration-card" },
+      { id: "contact-uni", labelKey: "lifeGuide.arrival.steps.contactUniversity", guideId: "contact-university" },
       { id: "housing", labelKey: "lifeGuide.arrival.steps.housing", guideId: "1" },
     ],
   },
@@ -52,8 +52,8 @@ const arrivalPhases: ArrivalPhase[] = [
     titleKey: "lifeGuide.arrival.phases.first3days",
     steps: [
       { id: "migration-reg", labelKey: "lifeGuide.arrival.steps.migrationReg", guideId: "7" },
-      { id: "insurance", labelKey: "lifeGuide.arrival.steps.insurance", guideId: "mandatory-expenses" },
-      { id: "medical-docs", labelKey: "lifeGuide.arrival.steps.medicalDocs", guideId: "mandatory-expenses" },
+      { id: "insurance", labelKey: "lifeGuide.arrival.steps.insurance", guideId: "insurance-dms" },
+      { id: "medical-docs", labelKey: "lifeGuide.arrival.steps.medicalDocs", guideId: "medical-checkup" },
     ],
   },
   {
@@ -330,7 +330,7 @@ export function LifeGuideContent() {
         {/* Arrival checklist — «Я только приехал» */}
         <section
           id="life-guide-arrival"
-          className="rounded-2xl sm:rounded-3xl bg-white border border-slate-100 p-4 sm:p-6 shadow-sm"
+          className="scroll-mt-20 rounded-2xl sm:rounded-3xl bg-white border border-slate-100 p-4 sm:p-6 shadow-sm"
         >
           <div className="mb-5 sm:mb-6">
             <p className="text-xs sm:text-sm font-semibold uppercase tracking-wide text-emerald-700 mb-1.5">
@@ -361,9 +361,11 @@ export function LifeGuideContent() {
                       key={step.id}
                       type="button"
                       onClick={() => openArrivalStep(step)}
-                      className="group flex items-center justify-between gap-2 rounded-xl border border-slate-200 bg-slate-50/80 px-3.5 py-3 text-left text-sm font-medium text-slate-800 hover:border-emerald-300 hover:bg-emerald-50 transition-all"
+                      className="group flex min-w-0 items-center justify-between gap-2 rounded-xl border border-slate-200 bg-slate-50/80 px-3.5 py-3 text-left text-sm font-medium text-slate-800 hover:border-emerald-300 hover:bg-emerald-50 transition-all"
                     >
-                      <span>{t(step.labelKey)}</span>
+                      <span className="min-w-0 flex-1 break-words leading-snug">
+                        {t(step.labelKey)}
+                      </span>
                       <ChevronRight
                         className="h-4 w-4 flex-shrink-0 text-slate-400 group-hover:text-emerald-600"
                         aria-hidden
@@ -392,12 +394,12 @@ export function LifeGuideContent() {
                 <a
                   key={contact.id}
                   href={`tel:${contact.number}`}
-                  className="flex items-center justify-between gap-3 rounded-xl bg-white px-3 py-2.5 border border-red-100 shadow-sm hover:border-red-300 hover:shadow transition-all"
+                  className="flex min-w-0 items-center justify-between gap-2 rounded-xl bg-white px-3 py-2.5 border border-red-100 shadow-sm hover:border-red-300 hover:shadow transition-all"
                 >
-                  <span className="text-xs sm:text-sm text-red-900/80 truncate">
+                  <span className="min-w-0 flex-1 text-xs sm:text-sm text-red-900/80 leading-snug break-words">
                     {t(`lifeGuide.emergencyContacts.${contact.id}.title`)}
                   </span>
-                  <span className="text-base sm:text-lg font-bold tabular-nums text-red-600">
+                  <span className="flex-shrink-0 text-base sm:text-lg font-bold tabular-nums text-red-600">
                     {contact.number}
                   </span>
                 </a>
@@ -409,7 +411,7 @@ export function LifeGuideContent() {
         {/* Search */}
         <section
           id="life-guide-search"
-          className="rounded-2xl sm:rounded-3xl bg-white border border-slate-100 p-4 sm:p-6 shadow-sm"
+          className="scroll-mt-20 rounded-2xl sm:rounded-3xl bg-white border border-slate-100 p-4 sm:p-6 shadow-sm"
         >
           <div className="flex flex-col sm:flex-row gap-3">
             <div className="flex-1 relative">
@@ -442,7 +444,7 @@ export function LifeGuideContent() {
         {/* Guides */}
         <section
           id="life-guide-guides"
-          className="rounded-2xl sm:rounded-3xl bg-white border border-slate-100 p-4 sm:p-6 shadow-sm"
+          className="scroll-mt-20 rounded-2xl sm:rounded-3xl bg-white border border-slate-100 p-4 sm:p-6 shadow-sm"
         >
           <div className="flex items-center justify-between gap-3 mb-4 sm:mb-5">
             <h2 className="text-base sm:text-lg font-semibold text-slate-900">
@@ -472,13 +474,12 @@ export function LifeGuideContent() {
             <>
               <div className="grid grid-cols-1 sm:grid-cols-2 lg:grid-cols-3 gap-4 sm:gap-6">
                 {filteredGuides.slice(0, guidesVisibleCount).map((guide) => (
-                  <div key={`guide-${guide.id}`} className="h-[280px]">
-                    <GuideCard
-                      guide={guide}
-                      isRead={isRead(guide.id)}
-                      onRead={handleMarkRead}
-                    />
-                  </div>
+                  <GuideCard
+                    key={`guide-${guide.id}`}
+                    guide={guide}
+                    isRead={isRead(guide.id)}
+                    onRead={handleMarkRead}
+                  />
                 ))}
               </div>
               {filteredGuides.length > guidesVisibleCount && (

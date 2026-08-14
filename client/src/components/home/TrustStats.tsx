@@ -4,6 +4,7 @@ import { useEffect, useRef, useState } from "react";
 import { TrustStats as TrustStatsType } from "@/types";
 import { Users, GraduationCap, Globe, Star } from "lucide-react";
 import { CountUp } from "@/components/ui/count-up";
+import { useReducedMotion } from "framer-motion";
 
 interface TrustStatsProps {
   stats: TrustStatsType;
@@ -26,8 +27,11 @@ export function TrustStats({
   const isDark = variant === "dark";
   const sectionRef = useRef<HTMLDivElement | null>(null);
   const [hasEnteredView, setHasEnteredView] = useState(false);
+  const shouldReduceMotion = useReducedMotion();
 
   useEffect(() => {
+    if (shouldReduceMotion) return;
+
     const node = sectionRef.current;
 
     if (!node || hasEnteredView) return;
@@ -47,7 +51,7 @@ export function TrustStats({
     observer.observe(node);
 
     return () => observer.disconnect();
-  }, [hasEnteredView]);
+  }, [hasEnteredView, shouldReduceMotion]);
 
   const items = [
     {
@@ -98,7 +102,7 @@ export function TrustStats({
               end={end}
               duration={1200}
               decimals={decimals}
-              start={hasEnteredView}
+              start={hasEnteredView || Boolean(shouldReduceMotion)}
               delay={index * 100}
             />
           </div>

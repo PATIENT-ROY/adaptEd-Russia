@@ -76,7 +76,6 @@ export function EducationGuideContent() {
   const [selectedTool, setSelectedTool] = useState<"schedule" | null>(null);
   const [showSchedule, setShowSchedule] = useState(false);
   const [isLoading, setIsLoading] = useState(false);
-  const [isInitialLoading, setIsInitialLoading] = useState(true);
 
   const { isRead, markAsRead } = useGuideProgress(
     "education",
@@ -126,12 +125,6 @@ export function EducationGuideContent() {
     ? selectedCategory
     : "all";
 
-  // Показать контент сразу (без искусственной задержки — улучшает Performance)
-  useEffect(() => {
-    const id = requestAnimationFrame(() => setIsInitialLoading(false));
-    return () => cancelAnimationFrame(id);
-  }, []);
-
   // Сброс пагинации при смене фильтров (улучшает Performance — меньше DOM при первой отрисовке)
   useEffect(() => {
     setGuidesVisibleCount(12);
@@ -179,13 +172,19 @@ export function EducationGuideContent() {
         switch (safeSelectedCategory) {
           case "exams":
             return guide.tags.some((tag) =>
-              ["сессия", "экзамены", "незачёт", "пересдача"].includes(tag),
+              ["сессия", "экзамены", "незачёт", "зачёт", "пересдача"].includes(
+                tag,
+              ),
             );
           case "papers":
             return guide.tags.some((tag) =>
-              ["курсовая", "написание", "исследование", "оформление"].includes(
-                tag,
-              ),
+              [
+                "курсовая",
+                "написание",
+                "исследование",
+                "научная работа",
+                "ГОСТ",
+              ].includes(tag),
             );
           case "documents":
             // Только учебные документы вуза — миграция/виза/РВПО живут в «Быт»
@@ -197,25 +196,27 @@ export function EducationGuideContent() {
                 "студенческий",
                 "выписка",
                 "справка-вызов",
-                "академ",
+                "академический отпуск",
               ].includes(tag),
             );
           case "structure":
             return guide.tags.some((tag) =>
-              ["структура", "кафедра", "деканат", "ГОСТ"].includes(tag),
+              ["структура", "кафедра", "ректорат", "для новичков"].includes(
+                tag,
+              ),
             );
           case "expulsion-risks":
             return guide.tags.some((tag) =>
               [
                 "отчисление",
                 "риски",
-                "академ",
                 "неуспеваемость",
                 "посещаемость",
                 "долги",
                 "хвосты",
-                "пересдача",
                 "восстановление",
+                "дисциплина",
+                "пропуски",
               ].includes(tag),
             );
           default:
@@ -226,52 +227,6 @@ export function EducationGuideContent() {
 
     return filtered;
   }, [searchQuery, safeSelectedCategory]);
-
-  // Skeleton при начальной загрузке
-  if (isInitialLoading) {
-    return (
-      <Layout>
-        <div className="space-y-6 sm:space-y-8">
-          {/* Header Skeleton */}
-          <div className="relative left-1/2 right-1/2 -ml-[50vw] -mr-[50vw] w-screen min-h-[340px] sm:min-h-[420px] bg-gray-200 animate-pulse" />
-
-          {/* Search Skeleton */}
-          <div className="bg-white rounded-2xl sm:rounded-3xl p-4 sm:p-6">
-            <div className="flex flex-col sm:flex-row gap-4">
-              <div className="h-10 flex-1 bg-gray-200 rounded animate-pulse"></div>
-              <div className="h-10 w-32 bg-gray-200 rounded animate-pulse"></div>
-            </div>
-          </div>
-
-          {/* Guides Grid Skeleton */}
-          <div>
-            <div className="h-6 w-40 bg-gray-200 rounded animate-pulse mb-4"></div>
-            <div className="grid grid-cols-1 sm:grid-cols-2 lg:grid-cols-3 gap-4 sm:gap-6">
-              {[1, 2, 3, 4, 5, 6].map((i) => (
-                <div
-                  key={i}
-                  className="bg-white rounded-2xl sm:rounded-3xl p-6 h-[280px]"
-                >
-                  <div className="flex items-start space-x-4">
-                    <div className="w-12 h-12 bg-gray-200 rounded-lg animate-pulse"></div>
-                    <div className="flex-1">
-                      <div className="h-6 w-3/4 bg-gray-200 rounded animate-pulse mb-3"></div>
-                      <div className="h-4 w-full bg-gray-200 rounded animate-pulse mb-2"></div>
-                      <div className="h-4 w-5/6 bg-gray-200 rounded animate-pulse mb-4"></div>
-                      <div className="flex items-center space-x-2">
-                        <div className="h-6 w-20 bg-gray-200 rounded-full animate-pulse"></div>
-                        <div className="h-6 w-16 bg-gray-200 rounded-full animate-pulse"></div>
-                      </div>
-                    </div>
-                  </div>
-                </div>
-              ))}
-            </div>
-          </div>
-        </div>
-      </Layout>
-    );
-  }
 
   return (
     <Layout>
@@ -330,7 +285,7 @@ export function EducationGuideContent() {
                             block: "start",
                           });
                       }}
-                      className={`flex items-center gap-2.5 rounded-xl px-3.5 py-3 text-left text-sm font-semibold transition-all border ${
+                      className={`flex min-w-0 items-center gap-2 rounded-xl px-3 py-3 text-left text-sm font-semibold transition-all border ${
                         isActive
                           ? "bg-white text-indigo-700 border-white shadow-lg"
                           : "bg-white/15 text-white border-white/30 hover:bg-white/25"
@@ -341,7 +296,9 @@ export function EducationGuideContent() {
                           isActive ? "text-indigo-600" : "text-white"
                         }`}
                       />
-                      <span className="truncate">{category.name}</span>
+                      <span className="min-w-0 flex-1 leading-snug break-words">
+                        {category.name}
+                      </span>
                     </button>
                   );
                 })}
@@ -518,7 +475,7 @@ export function EducationGuideContent() {
         {/* Guides */}
         <div
           id="education-guide-guides"
-          className="bg-white rounded-2xl sm:rounded-3xl p-4 sm:p-6"
+          className="scroll-mt-20 bg-white rounded-2xl sm:rounded-3xl p-4 sm:p-6"
         >
           <div className="flex items-center justify-between mb-4 sm:mb-5">
             <h2 className="text-base sm:text-lg font-semibold text-gray-900 transition-all duration-300">
@@ -547,13 +504,12 @@ export function EducationGuideContent() {
             <>
               <div className="grid grid-cols-1 sm:grid-cols-2 lg:grid-cols-3 gap-4 sm:gap-6 transition-all duration-500 ease-out">
                 {filteredGuides.slice(0, guidesVisibleCount).map((guide) => (
-                  <div key={`guide-${guide.id}`} className="h-[280px]">
-                    <GuideCard
-                      guide={guide}
-                      isRead={isRead(guide.id)}
-                      onRead={handleMarkRead}
-                    />
-                  </div>
+                  <GuideCard
+                    key={`guide-${guide.id}`}
+                    guide={guide}
+                    isRead={isRead(guide.id)}
+                    onRead={handleMarkRead}
+                  />
                 ))}
               </div>
               {filteredGuides.length > guidesVisibleCount && (

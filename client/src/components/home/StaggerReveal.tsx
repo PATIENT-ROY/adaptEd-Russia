@@ -3,7 +3,6 @@
 import { motion, useReducedMotion } from "framer-motion";
 import type { ReactNode } from "react";
 import {
-  fadeUpReducedVariants,
   staggerContainerVariants,
   staggerItemVariants,
   viewportOnce,
@@ -18,17 +17,7 @@ export function StaggerReveal({ children, className }: StaggerRevealProps) {
   const shouldReduceMotion = useReducedMotion();
 
   if (shouldReduceMotion) {
-    return (
-      <motion.div
-        initial="hidden"
-        whileInView="visible"
-        viewport={viewportOnce}
-        variants={fadeUpReducedVariants}
-        className={className}
-      >
-        {children}
-      </motion.div>
-    );
+    return <div className={className}>{children}</div>;
   }
 
   return (

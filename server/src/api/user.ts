@@ -231,6 +231,7 @@ const getLastActivityDate = (dates: Date[], fallback: Date): Date => {
 };
 
 const ACHIEVEMENTS: AchievementDefinition[] = [
+  // —— Начало пути ——
   {
     id: '1',
     name: 'Первые шаги',
@@ -274,17 +275,18 @@ const ACHIEVEMENTS: AchievementDefinition[] = [
   {
     id: '4a',
     name: 'Сканер',
-    description: 'Отсканировали первый документ',
+    description: 'Отсканировали первый документ в DocScan',
     category: 'GETTING_STARTED',
     icon: '📄',
     xpReward: 15,
     requirement: 'scan_1_document',
     rarity: 'common',
   },
+  // —— Учёба ——
   {
     id: '5',
     name: 'Книжный червь',
-    description: 'Прочитали 10 гайдов по учёбе',
+    description: 'Прочитали 10 образовательных гайдов',
     category: 'EDUCATION',
     icon: '📚',
     xpReward: 50,
@@ -294,17 +296,17 @@ const ACHIEVEMENTS: AchievementDefinition[] = [
   {
     id: '6',
     name: 'Отличник',
-    description: 'Изучили все гайды про сессию',
+    description: 'Прочитали гайды про экзамен, сессию и незачёт',
     category: 'EDUCATION',
     icon: '🎓',
     xpReward: 75,
-    requirement: 'read_all_exam_guides',
+    requirement: 'read_exam_guides',
     rarity: 'rare',
   },
   {
     id: '7',
     name: 'Исследователь',
-    description: 'Прочитали гайд про курсовую работу',
+    description: 'Прочитали гайд «Как писать курсовую работу»',
     category: 'EDUCATION',
     icon: '📝',
     xpReward: 20,
@@ -313,24 +315,25 @@ const ACHIEVEMENTS: AchievementDefinition[] = [
   },
   {
     id: '8',
-    name: 'Стипендиат',
-    description: 'Изучили раздел стипендий',
+    name: 'Знаток вуза',
+    description: 'Прочитали гайд про структуру вуза',
     category: 'EDUCATION',
-    icon: '💰',
-    xpReward: 30,
-    requirement: 'explore_scholarships',
+    icon: '🏛️',
+    xpReward: 20,
+    requirement: 'read_structure_guide',
     rarity: 'common',
   },
   {
     id: '8a',
     name: 'Документалист',
-    description: 'Отсканировали 10 документов',
+    description: 'Отсканировали 10 документов в DocScan',
     category: 'EDUCATION',
     icon: '📑',
     xpReward: 50,
     requirement: 'scan_10_documents',
     rarity: 'rare',
   },
+  // —— Быт ——
   {
     id: '9',
     name: 'Житель',
@@ -344,33 +347,34 @@ const ACHIEVEMENTS: AchievementDefinition[] = [
   {
     id: '10',
     name: 'Здоровяк',
-    description: 'Изучили все медицинские гайды',
+    description: 'Прочитали гайды про врача, страховку и медосмотр',
     category: 'LIFE',
     icon: '🏥',
     xpReward: 60,
-    requirement: 'read_all_health_guides',
+    requirement: 'read_health_guides',
     rarity: 'rare',
   },
   {
     id: '11',
     name: 'Документовед',
-    description: 'Изучили все гайды про документы',
+    description: 'Прочитали гайды про миграционную карту, учёт и паспорт',
     category: 'LIFE',
     icon: '📄',
     xpReward: 50,
-    requirement: 'read_all_document_guides',
+    requirement: 'read_document_guides',
     rarity: 'rare',
   },
   {
     id: '12',
     name: 'Путешественник',
-    description: 'Прочитали гайд про транспорт',
+    description: 'Прочитали гайд «Транспорт в России»',
     category: 'LIFE',
     icon: '🚇',
     xpReward: 25,
     requirement: 'read_transport_guide',
     rarity: 'common',
   },
+  // —— Активность ——
   {
     id: '13',
     name: 'Неделька',
@@ -411,14 +415,15 @@ const ACHIEVEMENTS: AchievementDefinition[] = [
     requirement: 'complete_50_reminders',
     rarity: 'epic',
   },
+  // —— Эксперт ——
   {
     id: '17',
     name: 'Мудрец',
-    description: 'Прочитали 50 гайдов',
+    description: 'Прочитали 25 гайдов',
     category: 'EXPERT',
     icon: '🦉',
     xpReward: 200,
-    requirement: 'read_50_guides',
+    requirement: 'read_25_guides',
     rarity: 'epic',
   },
   {
@@ -1196,8 +1201,19 @@ router.get('/achievements', authMiddleware, async (req: Request, res: Response) 
     const streak = calculateStreak(activityDates);
 
     const guidesCompletedCount = guideReads.length;
-    const educationGuidesRead = guideReads.filter(r => r.guideType === 'education').length;
-    const lifeGuidesRead = guideReads.filter(r => r.guideType === 'life').length;
+    const educationGuidesRead = guideReads.filter((r) => r.guideType === 'education').length;
+    const lifeGuidesRead = guideReads.filter((r) => r.guideType === 'life').length;
+
+    const hasReadGuide = (guideType: string, guideId: string) =>
+      guideReads.some((r) => r.guideType === guideType && r.guideId === guideId);
+
+    const countGuideSet = (guideType: string, guideIds: string[]) =>
+      guideIds.filter((id) => hasReadGuide(guideType, id)).length;
+
+    // Real published guide IDs from client catalog
+    const EXAM_GUIDE_IDS = ['0', '1', '5']; // экзамен/зачёт, сессия, незачёт
+    const HEALTH_GUIDE_IDS = ['4', 'insurance-dms', 'medical-checkup'];
+    const DOCUMENT_GUIDE_IDS = ['migration-card', '7', '3']; // карта, учёт, паспорт
 
     const xpFromGuides = guidesCompletedCount * 20;
     const xpFromAI = aiQuestionsCount * 5;
@@ -1251,20 +1267,25 @@ router.get('/achievements', authMiddleware, async (req: Request, res: Response) 
       create_1_reminder: () => thresholdProgress(remindersCreatedCount, 1),
       scan_1_document: () => thresholdProgress(docScanCount, 1),
       read_10_education_guides: () => thresholdProgress(educationGuidesRead, 10),
-      read_all_exam_guides: () => thresholdProgress(educationGuidesRead, 16),
-      read_coursework_guide: () => thresholdProgress(educationGuidesRead, 5),
-      explore_scholarships: () =>
-        booleanProgress(grantApplicationsCount > 0, grantApplicationsCount, 1),
+      read_exam_guides: () =>
+        thresholdProgress(countGuideSet('education', EXAM_GUIDE_IDS), EXAM_GUIDE_IDS.length),
+      read_coursework_guide: () =>
+        booleanProgress(hasReadGuide('education', '4'), hasReadGuide('education', '4') ? 1 : 0),
+      read_structure_guide: () =>
+        booleanProgress(hasReadGuide('education', '3'), hasReadGuide('education', '3') ? 1 : 0),
       scan_10_documents: () => thresholdProgress(docScanCount, 10),
       read_5_life_guides: () => thresholdProgress(lifeGuidesRead, 5),
-      read_all_health_guides: () => thresholdProgress(lifeGuidesRead, 15),
-      read_all_document_guides: () => thresholdProgress(educationGuidesRead, 10),
-      read_transport_guide: () => thresholdProgress(lifeGuidesRead, 2),
+      read_health_guides: () =>
+        thresholdProgress(countGuideSet('life', HEALTH_GUIDE_IDS), HEALTH_GUIDE_IDS.length),
+      read_document_guides: () =>
+        thresholdProgress(countGuideSet('life', DOCUMENT_GUIDE_IDS), DOCUMENT_GUIDE_IDS.length),
+      read_transport_guide: () =>
+        booleanProgress(hasReadGuide('life', '5'), hasReadGuide('life', '5') ? 1 : 0),
       streak_7_days: () => thresholdProgress(streak, 7),
       streak_30_days: () => thresholdProgress(streak, 30),
       complete_20_reminders: () => thresholdProgress(remindersCompletedCount, 20),
       complete_50_reminders: () => thresholdProgress(remindersCompletedCount, 50),
-      read_50_guides: () => thresholdProgress(guidesCompletedCount, 50),
+      read_25_guides: () => thresholdProgress(guidesCompletedCount, 25),
       ask_50_ai_questions: () => thresholdProgress(aiQuestionsCount, 50),
       scan_50_documents: () => thresholdProgress(docScanCount, 50),
       reach_local_level: () => {

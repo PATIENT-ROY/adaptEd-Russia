@@ -28,50 +28,45 @@ const categoryIcons = {
 
 const PREVIEW_MAX_LEN = 90;
 
-/** Short card teaser: strip markdown noise, keep ~2 lines of prose. */
+/**
+ * First real paragraph only (skip headings + list rows).
+ * Deterministic on server/client — no emoji unicode ranges.
+ */
 function getGuidePreview(content: string, maxLen = PREVIEW_MAX_LEN): string {
   if (!content.trim()) return "";
 
-  const emojiOrSymbol =
-    /(?:[\u2600-\u27BF]|[\u{1F300}-\u{1FAFF}]|[\uFE0F]|[\u200D])/gu;
+  const isListOrHeading = (line: string) =>
+    /^#{1,6}\s/.test(line) ||
+    /^([-*•▪]|\d+[.)])\s/.test(line) ||
+    /^\*\*[^*]+\*\*:?\s*$/.test(line);
 
-  const cleanLine = (line: string) =>
+  const cleanInline = (line: string) =>
     line
-      .replace(/^#{1,6}\s+/, "")
       .replace(/\*\*([^*]+)\*\*/g, "$1")
       .replace(/\*([^*]+)\*/g, "$1")
-      .replace(/^[\t ]*[-*•▪︎]\s+/, "")
-      .replace(/^[\t ]*\d+[.)]\s+/, "")
-      .replace(emojiOrSymbol, "")
       .replace(/\s+/g, " ")
       .trim();
 
-  // Prefer real body lines over leftover section titles ("...:", short labels).
-  const proseParts = content
+  const paragraph = content
     .replace(/\r\n/g, "\n")
     .replace(/```[\s\S]*?```/g, "\n")
-    .split("\n")
-    .map(cleanLine)
-    .filter((line) => {
-      if (line.length < 28) return false;
-      if (/[:：]$/.test(line) && line.length < 60) return false;
-      // Drop leftover section titles like "Первые действия (в течение 24 часов!)"
-      const withoutParens = line.replace(/\([^)]*\)/g, "").trim();
-      if (!/[.!?…]/.test(withoutParens) && withoutParens.length < 72) {
-        return false;
-      }
-      return true;
-    });
+    .split(/\n\s*\n/)
+    .map((block) =>
+      block
+        .split("\n")
+        .map((l) => l.trim())
+        .filter((l) => l && !isListOrHeading(l))
+        .map(cleanInline)
+        .filter(Boolean)
+        .join(" ")
+        .replace(/\s+/g, " ")
+        .trim(),
+    )
+    .find((p) => p.length >= 28);
 
-  const text = (proseParts.length > 0 ? proseParts : content.split("\n").map(cleanLine))
-    .filter(Boolean)
-    .join(" ")
-    .replace(/\s+/g, " ")
-    .trim();
+  if (!paragraph) return "";
 
-  if (!text) return "";
-
-  const sentence = text.match(/^(.+?[.!?…])(?:\s|$)/);
+  const sentence = paragraph.match(/^(.+?[.!?…])(?:\s|$)/);
   if (
     sentence &&
     sentence[1].length >= 36 &&
@@ -80,9 +75,9 @@ function getGuidePreview(content: string, maxLen = PREVIEW_MAX_LEN): string {
     return sentence[1];
   }
 
-  if (text.length <= maxLen) return text;
+  if (paragraph.length <= maxLen) return paragraph;
 
-  const cut = text.slice(0, maxLen);
+  const cut = paragraph.slice(0, maxLen);
   const lastSpace = cut.lastIndexOf(" ");
   return `${(lastSpace > 40 ? cut.slice(0, lastSpace) : cut).trimEnd()}…`;
 }

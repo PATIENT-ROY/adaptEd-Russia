@@ -1,6 +1,7 @@
 "use client";
 
 import { useEffect, useMemo, useRef, useState } from "react";
+import { useReducedMotion } from "framer-motion";
 
 interface CountUpProps {
   end: number;
@@ -22,33 +23,50 @@ export function CountUp({
   const [value, setValue] = useState(0);
   const frameRef = useRef<number | null>(null);
   const timeoutRef = useRef<number | null>(null);
-  const hasAnimatedRef = useRef(false);
+  const animatedEndRef = useRef<number | null>(null);
+  const shouldReduceMotion = useReducedMotion();
+  const safeEnd = Number.isFinite(end) ? Math.max(0, end) : 0;
+  const safeDuration = Number.isFinite(duration) ? Math.max(0, duration) : 0;
+  const safeDelay = Number.isFinite(delay) ? Math.max(0, delay) : 0;
 
   useEffect(() => {
-    if (!start || hasAnimatedRef.current) return;
+    if (shouldReduceMotion) {
+      setValue(safeEnd);
+      animatedEndRef.current = safeEnd;
+      return;
+    }
+
+    if (!start || animatedEndRef.current === safeEnd) return;
+
+    setValue(0);
 
     const animate = () => {
       const startTime = performance.now();
-      hasAnimatedRef.current = true;
+      animatedEndRef.current = safeEnd;
+
+      if (safeDuration === 0) {
+        setValue(safeEnd);
+        return;
+      }
 
       const step = (now: number) => {
-        const progress = Math.min((now - startTime) / duration, 1);
+        const progress = Math.min((now - startTime) / safeDuration, 1);
         const easedProgress = easeOutCubic(progress);
-        const nextValue = Math.min(end, end * easedProgress);
+        const nextValue = safeEnd * easedProgress;
 
         setValue(nextValue);
 
         if (progress < 1) {
           frameRef.current = window.requestAnimationFrame(step);
         } else {
-          setValue(end);
+          setValue(safeEnd);
         }
       };
 
       frameRef.current = window.requestAnimationFrame(step);
     };
 
-    timeoutRef.current = window.setTimeout(animate, delay);
+    timeoutRef.current = window.setTimeout(animate, safeDelay);
 
     return () => {
       if (frameRef.current !== null) {
@@ -58,7 +76,7 @@ export function CountUp({
         window.clearTimeout(timeoutRef.current);
       }
     };
-  }, [delay, duration, end, start]);
+  }, [safeDelay, safeDuration, safeEnd, shouldReduceMotion, start]);
 
   const formattedValue = useMemo(() => {
     const rounded =
