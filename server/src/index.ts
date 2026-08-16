@@ -25,7 +25,8 @@ import adminRoutes from './api/admin.js';
 dotenv.config();
 
 const app = express();
-const PORT = process.env.PORT || 56548;
+const PORT = Number(process.env.APP_PORT || process.env.PORT || 56548);
+const HOST = process.env.APP_IP || '0.0.0.0';
 
 // Middleware безопасности
 app.use(helmet());
