@@ -269,10 +269,10 @@ app.use((err: any, req: express.Request, res: express.Response, next: express.Ne
 });
 
 // Запуск сервера
-app.listen(PORT, () => {
-  console.log(`🚀 Сервер запущен на порту ${PORT}`);
-  console.log(`📊 Health check: http://localhost:${PORT}/health`);
-  console.log(`🔗 API Base URL: http://localhost:${PORT}/api`);
+app.listen(PORT, HOST, () => {
+  console.log(`🚀 Сервер запущен на ${HOST}:${PORT}`);
+  console.log(`📊 Health check: http://${HOST}:${PORT}/health`);
+  console.log(`🔗 API Base URL: http://${HOST}:${PORT}/api`);
 });
 
 export default app; 
