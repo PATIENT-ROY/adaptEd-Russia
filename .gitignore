@@ -5,6 +5,8 @@ server/node_modules/
 dist/
 .env
 .env.local
+server/prisma/migrate-sqlite-to-postgres/generated-sqlite/
+server/prisma/migrate-sqlite-to-postgres/generated-postgres/
 .DS_Store
 .gitignore.save
 *.bak
