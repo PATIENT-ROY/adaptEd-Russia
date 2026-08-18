@@ -20,16 +20,24 @@ import { useReminders } from "@/hooks/useReminders";
 import { useTranslation } from "@/hooks/useTranslation";
 import { useState, useEffect, useMemo, useCallback, useRef } from "react";
 import type { Reminder, UserProgress, DailyQuest } from "@/types";
-import { Language } from "@/types";
+import { Language, UserLevel } from "@/types";
 import { UserProgressComponent } from "@/components/ui/user-progress";
 import { DailyQuestsComponent } from "@/components/ui/daily-quests";
 import { AdaptationProgress } from "@/components/ui/adaptation-progress";
-import { fetchDashboardOverview } from "@/lib/api";
+import { fetchAchievementsOverview, fetchDashboardOverview } from "@/lib/api";
 
 const dashboardCardClass = "border-0 shadow-xl";
 const dashboardCardStyle = {
   background: "linear-gradient(135deg, rgba(255, 255, 255, 0.9) 0%, rgba(255, 255, 255, 0.7) 100%)",
   backdropFilter: "blur(10px)",
+};
+
+const getLevelForXP = (xp: number): UserProgress["level"] => {
+  if (xp >= 1001) return UserLevel.LOCAL;
+  if (xp >= 601) return UserLevel.EXPERT;
+  if (xp >= 301) return UserLevel.EXPERIENCED;
+  if (xp >= 101) return UserLevel.ADAPTING;
+  return UserLevel.NEWBIE;
 };
 
 export default function DashboardPage() {
@@ -106,8 +114,15 @@ export default function DashboardPage() {
     setDashboardError(null);
 
     try {
-      const data = await fetchDashboardOverview();
-      setUserProgress(data.userProgress);
+      const [data, achievements] = await Promise.all([
+        fetchDashboardOverview(),
+        fetchAchievementsOverview(),
+      ]);
+      setUserProgress({
+        ...data.userProgress,
+        xp: achievements.totalXP,
+        level: getLevelForXP(achievements.totalXP),
+      });
       setDailyQuests(data.dailyQuests);
     } catch (error) {
       console.error("Failed to load dashboard overview:", error);

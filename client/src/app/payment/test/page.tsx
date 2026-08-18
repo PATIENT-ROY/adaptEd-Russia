@@ -290,7 +290,7 @@ function PaymentTestContent() {
           {/* Header */}
           <div className="text-center mb-8">
             <div className="flex items-center justify-center mb-4">
-              <TestTube className="h-8 w-8 text-blue-600 mr-3" />
+              <CreditCard className="h-8 w-8 text-blue-600 mr-3" />
               <h1 className="text-3xl sm:text-4xl font-bold text-slate-900">
                 {t("payment.test.title")}
               </h1>
@@ -301,24 +301,26 @@ function PaymentTestContent() {
           </div>
 
           {/* Test Info Toggle */}
-          <div className="text-center mb-6">
-            <Button
-              variant="outline"
-              onClick={() => setShowTestInfo(!showTestInfo)}
-              className="flex items-center"
-              disabled={!testData || isLoadingData}
-            >
-              <Info className="h-4 w-4 mr-2" />
-              {isLoadingData
-                ? t("payment.test.loading")
-                : showTestInfo
-                ? t("payment.test.hideTestData")
-                : t("payment.test.showTestData")}
-            </Button>
-          </div>
+          {process.env.NODE_ENV !== "production" && (
+            <div className="text-center mb-6">
+              <Button
+                variant="outline"
+                onClick={() => setShowTestInfo(!showTestInfo)}
+                className="flex items-center"
+                disabled={!testData || isLoadingData}
+              >
+                <Info className="h-4 w-4 mr-2" />
+                {isLoadingData
+                  ? t("payment.test.loading")
+                  : showTestInfo
+                  ? t("payment.test.hideTestData")
+                  : t("payment.test.showTestData")}
+              </Button>
+            </div>
+          )}
 
           {/* Test Data */}
-          {showTestInfo && testData && (
+          {process.env.NODE_ENV !== "production" && showTestInfo && testData && (
             <Card className="mb-8">
               <CardHeader>
                 <CardTitle className="flex items-center">
