@@ -116,6 +116,9 @@ Prisma.NullTypes = {
  */
 
 exports.Prisma.TransactionIsolationLevel = makeStrictEnum({
+  ReadUncommitted: 'ReadUncommitted',
+  ReadCommitted: 'ReadCommitted',
+  RepeatableRead: 'RepeatableRead',
   Serializable: 'Serializable'
 });
 
@@ -133,7 +136,10 @@ exports.Prisma.UserScalarFieldEnum = {
   year: 'year',
   plan: 'plan',
   phone: 'phone',
-  gender: 'gender'
+  gender: 'gender',
+  emailNotifications: 'emailNotifications',
+  timezone: 'timezone',
+  tokenVersion: 'tokenVersion'
 };
 
 exports.Prisma.PasswordSetupTokenScalarFieldEnum = {
@@ -362,6 +368,11 @@ exports.Prisma.ReviewScalarFieldEnum = {
 exports.Prisma.SortOrder = {
   asc: 'asc',
   desc: 'desc'
+};
+
+exports.Prisma.QueryMode = {
+  default: 'default',
+  insensitive: 'insensitive'
 };
 
 exports.Prisma.NullsOrder = {

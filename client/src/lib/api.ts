@@ -20,7 +20,8 @@ import {
   TestData,
   ProfileOverview,
   DashboardOverview,
-  AchievementsOverview
+  AchievementsOverview,
+  AccountSettings,
 } from '@/types';
 
 export const API_BASE_URL =
@@ -283,6 +284,30 @@ class ApiClient {
   async getProfileOverview(): Promise<ProfileOverview> {
     const response = await this.requestWithRetry<ProfileOverview>('/user/profile/overview');
     return this.ensureData(response, 'Не удалось загрузить данные профиля');
+  }
+
+  async getAccountSettings(): Promise<AccountSettings> {
+    const response = await this.request<AccountSettings>('/user/settings');
+    return this.ensureData(response, 'Не удалось загрузить настройки');
+  }
+
+  async updateAccountSettings(data: AccountSettings): Promise<AccountSettings> {
+    const response = await this.request<AccountSettings>('/user/settings', {
+      method: 'PUT',
+      body: JSON.stringify(data),
+    });
+    return this.ensureData(response, 'Не удалось сохранить настройки');
+  }
+
+  async changePassword(currentPassword: string, newPassword: string): Promise<void> {
+    await this.request('/auth/change-password', {
+      method: 'POST',
+      body: JSON.stringify({ currentPassword, newPassword }),
+    });
+  }
+
+  async logoutAll(): Promise<void> {
+    await this.request('/auth/logout-all', { method: 'POST' });
   }
 
   async getDashboardOverview(): Promise<DashboardOverview> {
