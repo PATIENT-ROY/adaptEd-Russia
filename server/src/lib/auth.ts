@@ -21,6 +21,7 @@ export interface JWTPayload {
   userId: string;
   email: string;
   role: string;
+  tokenVersion: number;
 }
 
 export async function hashPassword(password: string): Promise<string> {
@@ -46,6 +47,7 @@ export function verifyToken(token: string): JWTPayload | null {
       userId: String(payload.userId),
       email: String(payload.email),
       role: String(payload.role),
+      tokenVersion: Number(payload.tokenVersion || 0),
     };
   } catch (error) {
     return null;
@@ -70,6 +72,7 @@ export async function authenticateUser(email: string, password: string) {
       phone: true,
       gender: true,
       registeredAt: true,
+      tokenVersion: true,
     },
   });
 
@@ -108,7 +111,7 @@ export async function getUserById(userId: string) {
 }
 
 // Middleware для проверки аутентификации
-export function authMiddleware(req: Request, res: Response, next: NextFunction) {
+export async function authMiddleware(req: Request, res: Response, next: NextFunction) {
   const authHeader = req.headers.authorization;
   
   if (!authHeader || !authHeader.startsWith('Bearer ')) {
@@ -122,7 +125,20 @@ export function authMiddleware(req: Request, res: Response, next: NextFunction) 
     return res.status(401).json({ error: 'Недействительный токен' });
   }
 
-  // Добавляем информацию о пользователе в request
-  (req as any).user = payload;
-  next();
-} 
+  try {
+    const user = await prisma.user.findUnique({
+      where: { id: payload.userId },
+      select: { tokenVersion: true },
+    });
+
+    if (!user || user.tokenVersion !== payload.tokenVersion) {
+      return res.status(401).json({ error: 'Сеанс завершён. Войдите снова.' });
+    }
+
+    (req as any).user = payload;
+    next();
+  } catch (error) {
+    console.error('Session validation error:', error);
+    return res.status(500).json({ error: 'Не удалось проверить сеанс' });
+  }
+}

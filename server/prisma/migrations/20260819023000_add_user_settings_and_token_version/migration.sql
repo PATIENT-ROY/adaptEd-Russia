@@ -1,0 +1,4 @@
+ALTER TABLE "users"
+ADD COLUMN "emailNotifications" BOOLEAN NOT NULL DEFAULT true,
+ADD COLUMN "timezone" TEXT NOT NULL DEFAULT 'Europe/Moscow',
+ADD COLUMN "tokenVersion" INTEGER NOT NULL DEFAULT 0;

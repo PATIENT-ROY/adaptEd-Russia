@@ -7,7 +7,7 @@ generator client {
 }
 
 datasource db {
-  provider = "sqlite"
+  provider = "postgresql"
   url      = env("DATABASE_URL")
 }
 
@@ -33,12 +33,15 @@ model User {
   registeredAt DateTime @default(now())
 
   // Дополнительная информация
-  university String?
-  faculty    String?
-  year       String?
-  plan       String  @default("FREEMIUM")
-  phone      String?
-  gender     String?
+  university         String?
+  faculty            String?
+  year               String?
+  plan               String  @default("FREEMIUM")
+  phone              String?
+  gender             String?
+  emailNotifications Boolean @default(true)
+  timezone           String  @default("Europe/Moscow")
+  tokenVersion       Int     @default(0)
 
   // Связи
   reminders             Reminder[]

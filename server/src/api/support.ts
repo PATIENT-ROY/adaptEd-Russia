@@ -1,6 +1,6 @@
 import { Router, Request } from "express";
 import { z } from "zod";
-import { authMiddleware, JWTPayload } from "../lib/auth";
+import { authMiddleware, JWTPayload, verifyToken } from "../lib/auth";
 import { prisma } from "../lib/database";
 
 // Extend Express Request to include user property
@@ -27,9 +27,14 @@ router.post("/contact", async (req: AuthenticatedRequest, res) => {
     if (authHeader && authHeader.startsWith("Bearer ")) {
       const token = authHeader.split(" ")[1];
       try {
-        const jwt = await import("jsonwebtoken");
-        const decoded = jwt.default.verify(token, process.env.JWT_SECRET || "your-secret-key") as { userId: string; email: string; role: string };
-        req.user = decoded;
+        const decoded = verifyToken(token);
+        if (decoded) {
+          const user = await prisma.user.findUnique({
+            where: { id: decoded.userId },
+            select: { tokenVersion: true },
+          });
+          if (user?.tokenVersion === decoded.tokenVersion) req.user = decoded;
+        }
       } catch {
         // Токен невалидный - продолжаем без авторизации
       }

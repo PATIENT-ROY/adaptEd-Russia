@@ -67,6 +67,7 @@ import {
   Language,
 } from "@/types";
 import { useReview } from "@/hooks/useReview";
+import { ProfileAccountSettings } from "@/components/ui/profile-account-settings";
 
 const ProfileEditForm = dynamic(
   () => import("@/components/ui/profile-edit-form").then((m) => m.ProfileEditForm),
@@ -257,34 +258,11 @@ function SettingsPanel({
       </CardHeader>
       <div
         className={`relative z-10 overflow-hidden transition-all duration-300 ${
-          isOpen ? "max-h-96 opacity-100" : "max-h-0 opacity-0"
+          isOpen ? "max-h-[1600px] opacity-100" : "max-h-0 opacity-0"
         }`}
       >
         <CardContent className="space-y-3 pb-6">
-          <Button
-            variant="outline"
-            disabled
-            title={t("profile.settings.comingSoon")}
-            className="w-full justify-start h-12 opacity-60 cursor-not-allowed"
-          >
-            <Bell className="mr-3 h-5 w-5" />
-            {t("profile.settings.notifications")}
-            <span className="ml-auto text-xs text-slate-400">
-              {t("profile.settings.comingSoon")}
-            </span>
-          </Button>
-          <Button
-            variant="outline"
-            disabled
-            title={t("profile.settings.comingSoon")}
-            className="w-full justify-start h-12 opacity-60 cursor-not-allowed"
-          >
-            <Shield className="mr-3 h-5 w-5" />
-            {t("profile.settings.security")}
-            <span className="ml-auto text-xs text-slate-400">
-              {t("profile.settings.comingSoon")}
-            </span>
-          </Button>
+          <ProfileAccountSettings onLogout={onLogout} t={t} />
           <Button
             variant="outline"
             disabled

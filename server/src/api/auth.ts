@@ -1,7 +1,7 @@
 import { Router, Request, Response } from 'express';
 import { z } from 'zod';
 import { prisma } from '../lib/database';
-import { hashPassword, generateToken, authenticateUser, authMiddleware } from '../lib/auth';
+import { hashPassword, comparePasswords, generateToken, authenticateUser, authMiddleware } from '../lib/auth';
 import { sendInviteEmail } from '../lib/email';
 import { RegisterRequest, LoginRequest, AuthResponse, ApiResponse } from '../types/index.js';
 import crypto from 'crypto';
@@ -38,6 +38,16 @@ const adminInviteSchema = z.object({
 const setPasswordSchema = z.object({
   token: z.string().min(16, 'Недействительный токен'),
   password: z
+    .string()
+    .min(8, 'Пароль минимум 8 символов')
+    .regex(/[A-Z]/, 'Минимум одна заглавная буква')
+    .regex(/[a-z]/, 'Минимум одна строчная буква')
+    .regex(/[0-9]/, 'Минимум одна цифра'),
+});
+
+const changePasswordSchema = z.object({
+  currentPassword: z.string().min(1, 'Введите текущий пароль'),
+  newPassword: z
     .string()
     .min(8, 'Пароль минимум 8 символов')
     .regex(/[A-Z]/, 'Минимум одна заглавная буква')
@@ -94,18 +104,21 @@ router.post('/register', async (req: Request, res: Response) => {
         phone: true,
         gender: true,
         registeredAt: true,
+        tokenVersion: true,
       },
     });
 
     // Генерируем JWT токен
+    const { tokenVersion, ...publicUser } = user;
     const token = generateToken({
       userId: user.id,
       email: user.email,
       role: user.role,
+      tokenVersion,
     });
 
     const response: AuthResponse = {
-      user: user as any,
+      user: publicUser as any,
       token,
       message: 'Пользователь успешно зарегистрирован',
     };
@@ -288,7 +301,7 @@ router.post('/set-password', async (req: Request, res: Response) => {
     await prisma.$transaction([
       prisma.user.update({
         where: { id: setupToken.userId },
-        data: { password: hashedPassword },
+        data: { password: hashedPassword, tokenVersion: { increment: 1 } },
       }),
       prisma.passwordSetupToken.update({
         where: { id: setupToken.id },
@@ -332,14 +345,16 @@ router.post('/login', async (req: Request, res: Response) => {
     }
 
     // Генерируем JWT токен
+    const { tokenVersion, ...publicUser } = user;
     const token = generateToken({
       userId: user.id,
       email: user.email,
       role: user.role,
+      tokenVersion,
     });
 
     const response: AuthResponse = {
-      user: user as any,
+      user: publicUser as any,
       token,
       message: 'Успешный вход в систему',
     };
@@ -367,28 +382,63 @@ router.post('/login', async (req: Request, res: Response) => {
   }
 });
 
-// Проверка токена
-router.get('/verify', async (req: Request, res: Response) => {
+router.post('/change-password', authMiddleware, async (req: Request, res: Response) => {
   try {
-    const authHeader = req.headers.authorization;
-    
-    if (!authHeader || !authHeader.startsWith('Bearer ')) {
-      return res.status(401).json({
-        success: false,
-        error: 'Токен доступа не предоставлен'
-      } as ApiResponse);
+    const authUser = (req as any).user;
+    const validatedData = changePasswordSchema.parse(req.body);
+    const user = await prisma.user.findUnique({
+      where: { id: authUser.userId },
+      select: { password: true },
+    });
+
+    if (!user || !(await comparePasswords(validatedData.currentPassword, user.password))) {
+      return res.status(400).json({ success: false, error: 'Текущий пароль указан неверно' } as ApiResponse);
     }
 
-    const token = authHeader.substring(7);
-    const { verifyToken } = await import('../lib/auth.js');
-    const payload = verifyToken(token);
+    if (await comparePasswords(validatedData.newPassword, user.password)) {
+      return res.status(400).json({ success: false, error: 'Новый пароль должен отличаться от текущего' } as ApiResponse);
+    }
 
-    if (!payload) {
-      return res.status(401).json({
+    await prisma.user.update({
+      where: { id: authUser.userId },
+      data: {
+        password: await hashPassword(validatedData.newPassword),
+        tokenVersion: { increment: 1 },
+      },
+    });
+
+    return res.json({ success: true, message: 'Пароль изменён. Войдите заново на всех устройствах.' } as ApiResponse);
+  } catch (error) {
+    if (error instanceof z.ZodError) {
+      return res.status(400).json({
         success: false,
-        error: 'Недействительный токен'
+        error: error.errors[0]?.message || 'Ошибка валидации',
+        details: error.errors,
       } as ApiResponse);
     }
+    console.error('Change password error:', error);
+    return res.status(500).json({ success: false, error: 'Внутренняя ошибка сервера' } as ApiResponse);
+  }
+});
+
+router.post('/logout-all', authMiddleware, async (req: Request, res: Response) => {
+  try {
+    const authUser = (req as any).user;
+    await prisma.user.update({
+      where: { id: authUser.userId },
+      data: { tokenVersion: { increment: 1 } },
+    });
+    return res.json({ success: true, message: 'Все сеансы завершены' } as ApiResponse);
+  } catch (error) {
+    console.error('Logout all error:', error);
+    return res.status(500).json({ success: false, error: 'Внутренняя ошибка сервера' } as ApiResponse);
+  }
+});
+
+// Проверка токена
+router.get('/verify', authMiddleware, async (req: Request, res: Response) => {
+  try {
+    const payload = (req as any).user;
 
     // Получаем актуальные данные пользователя
     const { getUserById } = await import('../lib/auth.js');

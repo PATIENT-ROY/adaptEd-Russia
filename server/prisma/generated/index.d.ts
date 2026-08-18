@@ -2847,8 +2847,18 @@ export namespace Prisma {
 
   export type AggregateUser = {
     _count: UserCountAggregateOutputType | null
+    _avg: UserAvgAggregateOutputType | null
+    _sum: UserSumAggregateOutputType | null
     _min: UserMinAggregateOutputType | null
     _max: UserMaxAggregateOutputType | null
+  }
+
+  export type UserAvgAggregateOutputType = {
+    tokenVersion: number | null
+  }
+
+  export type UserSumAggregateOutputType = {
+    tokenVersion: number | null
   }
 
   export type UserMinAggregateOutputType = {
@@ -2866,6 +2876,9 @@ export namespace Prisma {
     plan: string | null
     phone: string | null
     gender: string | null
+    emailNotifications: boolean | null
+    timezone: string | null
+    tokenVersion: number | null
   }
 
   export type UserMaxAggregateOutputType = {
@@ -2883,6 +2896,9 @@ export namespace Prisma {
     plan: string | null
     phone: string | null
     gender: string | null
+    emailNotifications: boolean | null
+    timezone: string | null
+    tokenVersion: number | null
   }
 
   export type UserCountAggregateOutputType = {
@@ -2900,9 +2916,20 @@ export namespace Prisma {
     plan: number
     phone: number
     gender: number
+    emailNotifications: number
+    timezone: number
+    tokenVersion: number
     _all: number
   }
 
+
+  export type UserAvgAggregateInputType = {
+    tokenVersion?: true
+  }
+
+  export type UserSumAggregateInputType = {
+    tokenVersion?: true
+  }
 
   export type UserMinAggregateInputType = {
     id?: true
@@ -2919,6 +2946,9 @@ export namespace Prisma {
     plan?: true
     phone?: true
     gender?: true
+    emailNotifications?: true
+    timezone?: true
+    tokenVersion?: true
   }
 
   export type UserMaxAggregateInputType = {
@@ -2936,6 +2966,9 @@ export namespace Prisma {
     plan?: true
     phone?: true
     gender?: true
+    emailNotifications?: true
+    timezone?: true
+    tokenVersion?: true
   }
 
   export type UserCountAggregateInputType = {
@@ -2953,6 +2986,9 @@ export namespace Prisma {
     plan?: true
     phone?: true
     gender?: true
+    emailNotifications?: true
+    timezone?: true
+    tokenVersion?: true
     _all?: true
   }
 
@@ -2994,6 +3030,18 @@ export namespace Prisma {
     /**
      * {@link https://www.prisma.io/docs/concepts/components/prisma-client/aggregations Aggregation Docs}
      * 
+     * Select which fields to average
+    **/
+    _avg?: UserAvgAggregateInputType
+    /**
+     * {@link https://www.prisma.io/docs/concepts/components/prisma-client/aggregations Aggregation Docs}
+     * 
+     * Select which fields to sum
+    **/
+    _sum?: UserSumAggregateInputType
+    /**
+     * {@link https://www.prisma.io/docs/concepts/components/prisma-client/aggregations Aggregation Docs}
+     * 
      * Select which fields to find the minimum value
     **/
     _min?: UserMinAggregateInputType
@@ -3024,6 +3072,8 @@ export namespace Prisma {
     take?: number
     skip?: number
     _count?: UserCountAggregateInputType | true
+    _avg?: UserAvgAggregateInputType
+    _sum?: UserSumAggregateInputType
     _min?: UserMinAggregateInputType
     _max?: UserMaxAggregateInputType
   }
@@ -3043,7 +3093,12 @@ export namespace Prisma {
     plan: string
     phone: string | null
     gender: string | null
+    emailNotifications: boolean
+    timezone: string
+    tokenVersion: number
     _count: UserCountAggregateOutputType | null
+    _avg: UserAvgAggregateOutputType | null
+    _sum: UserSumAggregateOutputType | null
     _min: UserMinAggregateOutputType | null
     _max: UserMaxAggregateOutputType | null
   }
@@ -3077,6 +3132,9 @@ export namespace Prisma {
     plan?: boolean
     phone?: boolean
     gender?: boolean
+    emailNotifications?: boolean
+    timezone?: boolean
+    tokenVersion?: boolean
     reminders?: boolean | User$remindersArgs<ExtArgs>
     notes?: boolean | User$notesArgs<ExtArgs>
     chatMessages?: boolean | User$chatMessagesArgs<ExtArgs>
@@ -3109,6 +3167,9 @@ export namespace Prisma {
     plan?: boolean
     phone?: boolean
     gender?: boolean
+    emailNotifications?: boolean
+    timezone?: boolean
+    tokenVersion?: boolean
   }, ExtArgs["result"]["user"]>
 
   export type UserSelectScalar = {
@@ -3126,6 +3187,9 @@ export namespace Prisma {
     plan?: boolean
     phone?: boolean
     gender?: boolean
+    emailNotifications?: boolean
+    timezone?: boolean
+    tokenVersion?: boolean
   }
 
   export type UserInclude<ExtArgs extends $Extensions.InternalArgs = $Extensions.DefaultArgs> = {
@@ -3180,6 +3244,9 @@ export namespace Prisma {
       plan: string
       phone: string | null
       gender: string | null
+      emailNotifications: boolean
+      timezone: string
+      tokenVersion: number
     }, ExtArgs["result"]["user"]>
     composites: {}
   }
@@ -3601,6 +3668,9 @@ export namespace Prisma {
     readonly plan: FieldRef<"User", 'String'>
     readonly phone: FieldRef<"User", 'String'>
     readonly gender: FieldRef<"User", 'String'>
+    readonly emailNotifications: FieldRef<"User", 'Boolean'>
+    readonly timezone: FieldRef<"User", 'String'>
+    readonly tokenVersion: FieldRef<"User", 'Int'>
   }
     
 
@@ -3806,6 +3876,7 @@ export namespace Prisma {
      * The data used to create many Users.
      */
     data: UserCreateManyInput | UserCreateManyInput[]
+    skipDuplicates?: boolean
   }
 
   /**
@@ -3820,6 +3891,7 @@ export namespace Prisma {
      * The data used to create many Users.
      */
     data: UserCreateManyInput | UserCreateManyInput[]
+    skipDuplicates?: boolean
   }
 
   /**
@@ -5020,6 +5092,7 @@ export namespace Prisma {
      * The data used to create many PasswordSetupTokens.
      */
     data: PasswordSetupTokenCreateManyInput | PasswordSetupTokenCreateManyInput[]
+    skipDuplicates?: boolean
   }
 
   /**
@@ -5034,6 +5107,7 @@ export namespace Prisma {
      * The data used to create many PasswordSetupTokens.
      */
     data: PasswordSetupTokenCreateManyInput | PasswordSetupTokenCreateManyInput[]
+    skipDuplicates?: boolean
     /**
      * Choose, which related nodes to fetch as well
      */
@@ -5987,6 +6061,7 @@ export namespace Prisma {
      * The data used to create many Profiles.
      */
     data: ProfileCreateManyInput | ProfileCreateManyInput[]
+    skipDuplicates?: boolean
   }
 
   /**
@@ -6001,6 +6076,7 @@ export namespace Prisma {
      * The data used to create many Profiles.
      */
     data: ProfileCreateManyInput | ProfileCreateManyInput[]
+    skipDuplicates?: boolean
     /**
      * Choose, which related nodes to fetch as well
      */
@@ -6960,6 +7036,7 @@ export namespace Prisma {
      * The data used to create many Notes.
      */
     data: NoteCreateManyInput | NoteCreateManyInput[]
+    skipDuplicates?: boolean
   }
 
   /**
@@ -6974,6 +7051,7 @@ export namespace Prisma {
      * The data used to create many Notes.
      */
     data: NoteCreateManyInput | NoteCreateManyInput[]
+    skipDuplicates?: boolean
     /**
      * Choose, which related nodes to fetch as well
      */
@@ -8001,6 +8079,7 @@ export namespace Prisma {
      * The data used to create many Reminders.
      */
     data: ReminderCreateManyInput | ReminderCreateManyInput[]
+    skipDuplicates?: boolean
   }
 
   /**
@@ -8015,6 +8094,7 @@ export namespace Prisma {
      * The data used to create many Reminders.
      */
     data: ReminderCreateManyInput | ReminderCreateManyInput[]
+    skipDuplicates?: boolean
     /**
      * Choose, which related nodes to fetch as well
      */
@@ -9046,6 +9126,7 @@ export namespace Prisma {
      * The data used to create many Guides.
      */
     data: GuideCreateManyInput | GuideCreateManyInput[]
+    skipDuplicates?: boolean
   }
 
   /**
@@ -9060,6 +9141,7 @@ export namespace Prisma {
      * The data used to create many Guides.
      */
     data: GuideCreateManyInput | GuideCreateManyInput[]
+    skipDuplicates?: boolean
   }
 
   /**
@@ -9957,6 +10039,7 @@ export namespace Prisma {
      * The data used to create many ChatMessages.
      */
     data: ChatMessageCreateManyInput | ChatMessageCreateManyInput[]
+    skipDuplicates?: boolean
   }
 
   /**
@@ -9971,6 +10054,7 @@ export namespace Prisma {
      * The data used to create many ChatMessages.
      */
     data: ChatMessageCreateManyInput | ChatMessageCreateManyInput[]
+    skipDuplicates?: boolean
     /**
      * Choose, which related nodes to fetch as well
      */
@@ -10966,6 +11050,7 @@ export namespace Prisma {
      * The data used to create many SupportTickets.
      */
     data: SupportTicketCreateManyInput | SupportTicketCreateManyInput[]
+    skipDuplicates?: boolean
   }
 
   /**
@@ -10980,6 +11065,7 @@ export namespace Prisma {
      * The data used to create many SupportTickets.
      */
     data: SupportTicketCreateManyInput | SupportTicketCreateManyInput[]
+    skipDuplicates?: boolean
     /**
      * Choose, which related nodes to fetch as well
      */
@@ -11950,6 +12036,7 @@ export namespace Prisma {
      * The data used to create many SupportResponses.
      */
     data: SupportResponseCreateManyInput | SupportResponseCreateManyInput[]
+    skipDuplicates?: boolean
   }
 
   /**
@@ -11964,6 +12051,7 @@ export namespace Prisma {
      * The data used to create many SupportResponses.
      */
     data: SupportResponseCreateManyInput | SupportResponseCreateManyInput[]
+    skipDuplicates?: boolean
     /**
      * Choose, which related nodes to fetch as well
      */
@@ -12931,6 +13019,7 @@ export namespace Prisma {
      * The data used to create many Admins.
      */
     data: AdminCreateManyInput | AdminCreateManyInput[]
+    skipDuplicates?: boolean
   }
 
   /**
@@ -12945,6 +13034,7 @@ export namespace Prisma {
      * The data used to create many Admins.
      */
     data: AdminCreateManyInput | AdminCreateManyInput[]
+    skipDuplicates?: boolean
   }
 
   /**
@@ -13959,6 +14049,7 @@ export namespace Prisma {
      * The data used to create many SubscriptionPlans.
      */
     data: SubscriptionPlanCreateManyInput | SubscriptionPlanCreateManyInput[]
+    skipDuplicates?: boolean
   }
 
   /**
@@ -13973,6 +14064,7 @@ export namespace Prisma {
      * The data used to create many SubscriptionPlans.
      */
     data: SubscriptionPlanCreateManyInput | SubscriptionPlanCreateManyInput[]
+    skipDuplicates?: boolean
   }
 
   /**
@@ -15018,6 +15110,7 @@ export namespace Prisma {
      * The data used to create many Payments.
      */
     data: PaymentCreateManyInput | PaymentCreateManyInput[]
+    skipDuplicates?: boolean
   }
 
   /**
@@ -15032,6 +15125,7 @@ export namespace Prisma {
      * The data used to create many Payments.
      */
     data: PaymentCreateManyInput | PaymentCreateManyInput[]
+    skipDuplicates?: boolean
     /**
      * Choose, which related nodes to fetch as well
      */
@@ -16056,6 +16150,7 @@ export namespace Prisma {
      * The data used to create many Subscriptions.
      */
     data: SubscriptionCreateManyInput | SubscriptionCreateManyInput[]
+    skipDuplicates?: boolean
   }
 
   /**
@@ -16070,6 +16165,7 @@ export namespace Prisma {
      * The data used to create many Subscriptions.
      */
     data: SubscriptionCreateManyInput | SubscriptionCreateManyInput[]
+    skipDuplicates?: boolean
     /**
      * Choose, which related nodes to fetch as well
      */
@@ -17188,6 +17284,7 @@ export namespace Prisma {
      * The data used to create many Grants.
      */
     data: GrantCreateManyInput | GrantCreateManyInput[]
+    skipDuplicates?: boolean
   }
 
   /**
@@ -17202,6 +17299,7 @@ export namespace Prisma {
      * The data used to create many Grants.
      */
     data: GrantCreateManyInput | GrantCreateManyInput[]
+    skipDuplicates?: boolean
   }
 
   /**
@@ -18189,6 +18287,7 @@ export namespace Prisma {
      * The data used to create many UserGrantApplications.
      */
     data: UserGrantApplicationCreateManyInput | UserGrantApplicationCreateManyInput[]
+    skipDuplicates?: boolean
   }
 
   /**
@@ -18203,6 +18302,7 @@ export namespace Prisma {
      * The data used to create many UserGrantApplications.
      */
     data: UserGrantApplicationCreateManyInput | UserGrantApplicationCreateManyInput[]
+    skipDuplicates?: boolean
     /**
      * Choose, which related nodes to fetch as well
      */
@@ -19154,6 +19254,7 @@ export namespace Prisma {
      * The data used to create many Questions.
      */
     data: QuestionCreateManyInput | QuestionCreateManyInput[]
+    skipDuplicates?: boolean
   }
 
   /**
@@ -19168,6 +19269,7 @@ export namespace Prisma {
      * The data used to create many Questions.
      */
     data: QuestionCreateManyInput | QuestionCreateManyInput[]
+    skipDuplicates?: boolean
     /**
      * Choose, which related nodes to fetch as well
      */
@@ -20143,6 +20245,7 @@ export namespace Prisma {
      * The data used to create many Answers.
      */
     data: AnswerCreateManyInput | AnswerCreateManyInput[]
+    skipDuplicates?: boolean
   }
 
   /**
@@ -20157,6 +20260,7 @@ export namespace Prisma {
      * The data used to create many Answers.
      */
     data: AnswerCreateManyInput | AnswerCreateManyInput[]
+    skipDuplicates?: boolean
     /**
      * Choose, which related nodes to fetch as well
      */
@@ -21068,6 +21172,7 @@ export namespace Prisma {
      * The data used to create many QuestionLikes.
      */
     data: QuestionLikeCreateManyInput | QuestionLikeCreateManyInput[]
+    skipDuplicates?: boolean
   }
 
   /**
@@ -21082,6 +21187,7 @@ export namespace Prisma {
      * The data used to create many QuestionLikes.
      */
     data: QuestionLikeCreateManyInput | QuestionLikeCreateManyInput[]
+    skipDuplicates?: boolean
     /**
      * Choose, which related nodes to fetch as well
      */
@@ -21999,6 +22105,7 @@ export namespace Prisma {
      * The data used to create many GuideReads.
      */
     data: GuideReadCreateManyInput | GuideReadCreateManyInput[]
+    skipDuplicates?: boolean
   }
 
   /**
@@ -22013,6 +22120,7 @@ export namespace Prisma {
      * The data used to create many GuideReads.
      */
     data: GuideReadCreateManyInput | GuideReadCreateManyInput[]
+    skipDuplicates?: boolean
     /**
      * Choose, which related nodes to fetch as well
      */
@@ -23012,6 +23120,7 @@ export namespace Prisma {
      * The data used to create many Reviews.
      */
     data: ReviewCreateManyInput | ReviewCreateManyInput[]
+    skipDuplicates?: boolean
   }
 
   /**
@@ -23026,6 +23135,7 @@ export namespace Prisma {
      * The data used to create many Reviews.
      */
     data: ReviewCreateManyInput | ReviewCreateManyInput[]
+    skipDuplicates?: boolean
     /**
      * Choose, which related nodes to fetch as well
      */
@@ -23142,6 +23252,9 @@ export namespace Prisma {
    */
 
   export const TransactionIsolationLevel: {
+    ReadUncommitted: 'ReadUncommitted',
+    ReadCommitted: 'ReadCommitted',
+    RepeatableRead: 'RepeatableRead',
     Serializable: 'Serializable'
   };
 
@@ -23162,7 +23275,10 @@ export namespace Prisma {
     year: 'year',
     plan: 'plan',
     phone: 'phone',
-    gender: 'gender'
+    gender: 'gender',
+    emailNotifications: 'emailNotifications',
+    timezone: 'timezone',
+    tokenVersion: 'tokenVersion'
   };
 
   export type UserScalarFieldEnum = (typeof UserScalarFieldEnum)[keyof typeof UserScalarFieldEnum]
@@ -23456,6 +23572,14 @@ export namespace Prisma {
   export type SortOrder = (typeof SortOrder)[keyof typeof SortOrder]
 
 
+  export const QueryMode: {
+    default: 'default',
+    insensitive: 'insensitive'
+  };
+
+  export type QueryMode = (typeof QueryMode)[keyof typeof QueryMode]
+
+
   export const NullsOrder: {
     first: 'first',
     last: 'last'
@@ -23477,9 +23601,23 @@ export namespace Prisma {
 
 
   /**
+   * Reference to a field of type 'String[]'
+   */
+  export type ListStringFieldRefInput<$PrismaModel> = FieldRefInputType<$PrismaModel, 'String[]'>
+    
+
+
+  /**
    * Reference to a field of type 'DateTime'
    */
   export type DateTimeFieldRefInput<$PrismaModel> = FieldRefInputType<$PrismaModel, 'DateTime'>
+    
+
+
+  /**
+   * Reference to a field of type 'DateTime[]'
+   */
+  export type ListDateTimeFieldRefInput<$PrismaModel> = FieldRefInputType<$PrismaModel, 'DateTime[]'>
     
 
 
@@ -23498,9 +23636,23 @@ export namespace Prisma {
 
 
   /**
+   * Reference to a field of type 'Int[]'
+   */
+  export type ListIntFieldRefInput<$PrismaModel> = FieldRefInputType<$PrismaModel, 'Int[]'>
+    
+
+
+  /**
    * Reference to a field of type 'Float'
    */
   export type FloatFieldRefInput<$PrismaModel> = FieldRefInputType<$PrismaModel, 'Float'>
+    
+
+
+  /**
+   * Reference to a field of type 'Float[]'
+   */
+  export type ListFloatFieldRefInput<$PrismaModel> = FieldRefInputType<$PrismaModel, 'Float[]'>
     
   /**
    * Deep Input Types
@@ -23525,6 +23677,9 @@ export namespace Prisma {
     plan?: StringFilter<"User"> | string
     phone?: StringNullableFilter<"User"> | string | null
     gender?: StringNullableFilter<"User"> | string | null
+    emailNotifications?: BoolFilter<"User"> | boolean
+    timezone?: StringFilter<"User"> | string
+    tokenVersion?: IntFilter<"User"> | number
     reminders?: ReminderListRelationFilter
     notes?: NoteListRelationFilter
     chatMessages?: ChatMessageListRelationFilter
@@ -23556,6 +23711,9 @@ export namespace Prisma {
     plan?: SortOrder
     phone?: SortOrderInput | SortOrder
     gender?: SortOrderInput | SortOrder
+    emailNotifications?: SortOrder
+    timezone?: SortOrder
+    tokenVersion?: SortOrder
     reminders?: ReminderOrderByRelationAggregateInput
     notes?: NoteOrderByRelationAggregateInput
     chatMessages?: ChatMessageOrderByRelationAggregateInput
@@ -23590,6 +23748,9 @@ export namespace Prisma {
     plan?: StringFilter<"User"> | string
     phone?: StringNullableFilter<"User"> | string | null
     gender?: StringNullableFilter<"User"> | string | null
+    emailNotifications?: BoolFilter<"User"> | boolean
+    timezone?: StringFilter<"User"> | string
+    tokenVersion?: IntFilter<"User"> | number
     reminders?: ReminderListRelationFilter
     notes?: NoteListRelationFilter
     chatMessages?: ChatMessageListRelationFilter
@@ -23621,9 +23782,14 @@ export namespace Prisma {
     plan?: SortOrder
     phone?: SortOrderInput | SortOrder
     gender?: SortOrderInput | SortOrder
+    emailNotifications?: SortOrder
+    timezone?: SortOrder
+    tokenVersion?: SortOrder
     _count?: UserCountOrderByAggregateInput
+    _avg?: UserAvgOrderByAggregateInput
     _max?: UserMaxOrderByAggregateInput
     _min?: UserMinOrderByAggregateInput
+    _sum?: UserSumOrderByAggregateInput
   }
 
   export type UserScalarWhereWithAggregatesInput = {
@@ -23644,6 +23810,9 @@ export namespace Prisma {
     plan?: StringWithAggregatesFilter<"User"> | string
     phone?: StringNullableWithAggregatesFilter<"User"> | string | null
     gender?: StringNullableWithAggregatesFilter<"User"> | string | null
+    emailNotifications?: BoolWithAggregatesFilter<"User"> | boolean
+    timezone?: StringWithAggregatesFilter<"User"> | string
+    tokenVersion?: IntWithAggregatesFilter<"User"> | number
   }
 
   export type PasswordSetupTokenWhereInput = {
@@ -25106,6 +25275,9 @@ export namespace Prisma {
     plan?: string
     phone?: string | null
     gender?: string | null
+    emailNotifications?: boolean
+    timezone?: string
+    tokenVersion?: number
     reminders?: ReminderCreateNestedManyWithoutUserInput
     notes?: NoteCreateNestedManyWithoutUserInput
     chatMessages?: ChatMessageCreateNestedManyWithoutUserInput
@@ -25137,6 +25309,9 @@ export namespace Prisma {
     plan?: string
     phone?: string | null
     gender?: string | null
+    emailNotifications?: boolean
+    timezone?: string
+    tokenVersion?: number
     reminders?: ReminderUncheckedCreateNestedManyWithoutUserInput
     notes?: NoteUncheckedCreateNestedManyWithoutUserInput
     chatMessages?: ChatMessageUncheckedCreateNestedManyWithoutUserInput
@@ -25168,6 +25343,9 @@ export namespace Prisma {
     plan?: StringFieldUpdateOperationsInput | string
     phone?: NullableStringFieldUpdateOperationsInput | string | null
     gender?: NullableStringFieldUpdateOperationsInput | string | null
+    emailNotifications?: BoolFieldUpdateOperationsInput | boolean
+    timezone?: StringFieldUpdateOperationsInput | string
+    tokenVersion?: IntFieldUpdateOperationsInput | number
     reminders?: ReminderUpdateManyWithoutUserNestedInput
     notes?: NoteUpdateManyWithoutUserNestedInput
     chatMessages?: ChatMessageUpdateManyWithoutUserNestedInput
@@ -25199,6 +25377,9 @@ export namespace Prisma {
     plan?: StringFieldUpdateOperationsInput | string
     phone?: NullableStringFieldUpdateOperationsInput | string | null
     gender?: NullableStringFieldUpdateOperationsInput | string | null
+    emailNotifications?: BoolFieldUpdateOperationsInput | boolean
+    timezone?: StringFieldUpdateOperationsInput | string
+    tokenVersion?: IntFieldUpdateOperationsInput | number
     reminders?: ReminderUncheckedUpdateManyWithoutUserNestedInput
     notes?: NoteUncheckedUpdateManyWithoutUserNestedInput
     chatMessages?: ChatMessageUncheckedUpdateManyWithoutUserNestedInput
@@ -25230,6 +25411,9 @@ export namespace Prisma {
     plan?: string
     phone?: string | null
     gender?: string | null
+    emailNotifications?: boolean
+    timezone?: string
+    tokenVersion?: number
   }
 
   export type UserUpdateManyMutationInput = {
@@ -25247,6 +25431,9 @@ export namespace Prisma {
     plan?: StringFieldUpdateOperationsInput | string
     phone?: NullableStringFieldUpdateOperationsInput | string | null
     gender?: NullableStringFieldUpdateOperationsInput | string | null
+    emailNotifications?: BoolFieldUpdateOperationsInput | boolean
+    timezone?: StringFieldUpdateOperationsInput | string
+    tokenVersion?: IntFieldUpdateOperationsInput | number
   }
 
   export type UserUncheckedUpdateManyInput = {
@@ -25264,6 +25451,9 @@ export namespace Prisma {
     plan?: StringFieldUpdateOperationsInput | string
     phone?: NullableStringFieldUpdateOperationsInput | string | null
     gender?: NullableStringFieldUpdateOperationsInput | string | null
+    emailNotifications?: BoolFieldUpdateOperationsInput | boolean
+    timezone?: StringFieldUpdateOperationsInput | string
+    tokenVersion?: IntFieldUpdateOperationsInput | number
   }
 
   export type PasswordSetupTokenCreateInput = {
@@ -26839,8 +27029,8 @@ export namespace Prisma {
 
   export type StringFilter<$PrismaModel = never> = {
     equals?: string | StringFieldRefInput<$PrismaModel>
-    in?: string[]
-    notIn?: string[]
+    in?: string[] | ListStringFieldRefInput<$PrismaModel>
+    notIn?: string[] | ListStringFieldRefInput<$PrismaModel>
     lt?: string | StringFieldRefInput<$PrismaModel>
     lte?: string | StringFieldRefInput<$PrismaModel>
     gt?: string | StringFieldRefInput<$PrismaModel>
@@ -26848,13 +27038,14 @@ export namespace Prisma {
     contains?: string | StringFieldRefInput<$PrismaModel>
     startsWith?: string | StringFieldRefInput<$PrismaModel>
     endsWith?: string | StringFieldRefInput<$PrismaModel>
+    mode?: QueryMode
     not?: NestedStringFilter<$PrismaModel> | string
   }
 
   export type DateTimeFilter<$PrismaModel = never> = {
     equals?: Date | string | DateTimeFieldRefInput<$PrismaModel>
-    in?: Date[] | string[]
-    notIn?: Date[] | string[]
+    in?: Date[] | string[] | ListDateTimeFieldRefInput<$PrismaModel>
+    notIn?: Date[] | string[] | ListDateTimeFieldRefInput<$PrismaModel>
     lt?: Date | string | DateTimeFieldRefInput<$PrismaModel>
     lte?: Date | string | DateTimeFieldRefInput<$PrismaModel>
     gt?: Date | string | DateTimeFieldRefInput<$PrismaModel>
@@ -26864,8 +27055,8 @@ export namespace Prisma {
 
   export type StringNullableFilter<$PrismaModel = never> = {
     equals?: string | StringFieldRefInput<$PrismaModel> | null
-    in?: string[] | null
-    notIn?: string[] | null
+    in?: string[] | ListStringFieldRefInput<$PrismaModel> | null
+    notIn?: string[] | ListStringFieldRefInput<$PrismaModel> | null
     lt?: string | StringFieldRefInput<$PrismaModel>
     lte?: string | StringFieldRefInput<$PrismaModel>
     gt?: string | StringFieldRefInput<$PrismaModel>
@@ -26873,7 +27064,24 @@ export namespace Prisma {
     contains?: string | StringFieldRefInput<$PrismaModel>
     startsWith?: string | StringFieldRefInput<$PrismaModel>
     endsWith?: string | StringFieldRefInput<$PrismaModel>
+    mode?: QueryMode
     not?: NestedStringNullableFilter<$PrismaModel> | string | null
+  }
+
+  export type BoolFilter<$PrismaModel = never> = {
+    equals?: boolean | BooleanFieldRefInput<$PrismaModel>
+    not?: NestedBoolFilter<$PrismaModel> | boolean
+  }
+
+  export type IntFilter<$PrismaModel = never> = {
+    equals?: number | IntFieldRefInput<$PrismaModel>
+    in?: number[] | ListIntFieldRefInput<$PrismaModel>
+    notIn?: number[] | ListIntFieldRefInput<$PrismaModel>
+    lt?: number | IntFieldRefInput<$PrismaModel>
+    lte?: number | IntFieldRefInput<$PrismaModel>
+    gt?: number | IntFieldRefInput<$PrismaModel>
+    gte?: number | IntFieldRefInput<$PrismaModel>
+    not?: NestedIntFilter<$PrismaModel> | number
   }
 
   export type ReminderListRelationFilter = {
@@ -27031,6 +27239,13 @@ export namespace Prisma {
     plan?: SortOrder
     phone?: SortOrder
     gender?: SortOrder
+    emailNotifications?: SortOrder
+    timezone?: SortOrder
+    tokenVersion?: SortOrder
+  }
+
+  export type UserAvgOrderByAggregateInput = {
+    tokenVersion?: SortOrder
   }
 
   export type UserMaxOrderByAggregateInput = {
@@ -27048,6 +27263,9 @@ export namespace Prisma {
     plan?: SortOrder
     phone?: SortOrder
     gender?: SortOrder
+    emailNotifications?: SortOrder
+    timezone?: SortOrder
+    tokenVersion?: SortOrder
   }
 
   export type UserMinOrderByAggregateInput = {
@@ -27065,12 +27283,19 @@ export namespace Prisma {
     plan?: SortOrder
     phone?: SortOrder
     gender?: SortOrder
+    emailNotifications?: SortOrder
+    timezone?: SortOrder
+    tokenVersion?: SortOrder
+  }
+
+  export type UserSumOrderByAggregateInput = {
+    tokenVersion?: SortOrder
   }
 
   export type StringWithAggregatesFilter<$PrismaModel = never> = {
     equals?: string | StringFieldRefInput<$PrismaModel>
-    in?: string[]
-    notIn?: string[]
+    in?: string[] | ListStringFieldRefInput<$PrismaModel>
+    notIn?: string[] | ListStringFieldRefInput<$PrismaModel>
     lt?: string | StringFieldRefInput<$PrismaModel>
     lte?: string | StringFieldRefInput<$PrismaModel>
     gt?: string | StringFieldRefInput<$PrismaModel>
@@ -27078,6 +27303,7 @@ export namespace Prisma {
     contains?: string | StringFieldRefInput<$PrismaModel>
     startsWith?: string | StringFieldRefInput<$PrismaModel>
     endsWith?: string | StringFieldRefInput<$PrismaModel>
+    mode?: QueryMode
     not?: NestedStringWithAggregatesFilter<$PrismaModel> | string
     _count?: NestedIntFilter<$PrismaModel>
     _min?: NestedStringFilter<$PrismaModel>
@@ -27086,8 +27312,8 @@ export namespace Prisma {
 
   export type DateTimeWithAggregatesFilter<$PrismaModel = never> = {
     equals?: Date | string | DateTimeFieldRefInput<$PrismaModel>
-    in?: Date[] | string[]
-    notIn?: Date[] | string[]
+    in?: Date[] | string[] | ListDateTimeFieldRefInput<$PrismaModel>
+    notIn?: Date[] | string[] | ListDateTimeFieldRefInput<$PrismaModel>
     lt?: Date | string | DateTimeFieldRefInput<$PrismaModel>
     lte?: Date | string | DateTimeFieldRefInput<$PrismaModel>
     gt?: Date | string | DateTimeFieldRefInput<$PrismaModel>
@@ -27100,8 +27326,8 @@ export namespace Prisma {
 
   export type StringNullableWithAggregatesFilter<$PrismaModel = never> = {
     equals?: string | StringFieldRefInput<$PrismaModel> | null
-    in?: string[] | null
-    notIn?: string[] | null
+    in?: string[] | ListStringFieldRefInput<$PrismaModel> | null
+    notIn?: string[] | ListStringFieldRefInput<$PrismaModel> | null
     lt?: string | StringFieldRefInput<$PrismaModel>
     lte?: string | StringFieldRefInput<$PrismaModel>
     gt?: string | StringFieldRefInput<$PrismaModel>
@@ -27109,16 +27335,41 @@ export namespace Prisma {
     contains?: string | StringFieldRefInput<$PrismaModel>
     startsWith?: string | StringFieldRefInput<$PrismaModel>
     endsWith?: string | StringFieldRefInput<$PrismaModel>
+    mode?: QueryMode
     not?: NestedStringNullableWithAggregatesFilter<$PrismaModel> | string | null
     _count?: NestedIntNullableFilter<$PrismaModel>
     _min?: NestedStringNullableFilter<$PrismaModel>
     _max?: NestedStringNullableFilter<$PrismaModel>
   }
 
+  export type BoolWithAggregatesFilter<$PrismaModel = never> = {
+    equals?: boolean | BooleanFieldRefInput<$PrismaModel>
+    not?: NestedBoolWithAggregatesFilter<$PrismaModel> | boolean
+    _count?: NestedIntFilter<$PrismaModel>
+    _min?: NestedBoolFilter<$PrismaModel>
+    _max?: NestedBoolFilter<$PrismaModel>
+  }
+
+  export type IntWithAggregatesFilter<$PrismaModel = never> = {
+    equals?: number | IntFieldRefInput<$PrismaModel>
+    in?: number[] | ListIntFieldRefInput<$PrismaModel>
+    notIn?: number[] | ListIntFieldRefInput<$PrismaModel>
+    lt?: number | IntFieldRefInput<$PrismaModel>
+    lte?: number | IntFieldRefInput<$PrismaModel>
+    gt?: number | IntFieldRefInput<$PrismaModel>
+    gte?: number | IntFieldRefInput<$PrismaModel>
+    not?: NestedIntWithAggregatesFilter<$PrismaModel> | number
+    _count?: NestedIntFilter<$PrismaModel>
+    _avg?: NestedFloatFilter<$PrismaModel>
+    _sum?: NestedIntFilter<$PrismaModel>
+    _min?: NestedIntFilter<$PrismaModel>
+    _max?: NestedIntFilter<$PrismaModel>
+  }
+
   export type DateTimeNullableFilter<$PrismaModel = never> = {
     equals?: Date | string | DateTimeFieldRefInput<$PrismaModel> | null
-    in?: Date[] | string[] | null
-    notIn?: Date[] | string[] | null
+    in?: Date[] | string[] | ListDateTimeFieldRefInput<$PrismaModel> | null
+    notIn?: Date[] | string[] | ListDateTimeFieldRefInput<$PrismaModel> | null
     lt?: Date | string | DateTimeFieldRefInput<$PrismaModel>
     lte?: Date | string | DateTimeFieldRefInput<$PrismaModel>
     gt?: Date | string | DateTimeFieldRefInput<$PrismaModel>
@@ -27160,8 +27411,8 @@ export namespace Prisma {
 
   export type DateTimeNullableWithAggregatesFilter<$PrismaModel = never> = {
     equals?: Date | string | DateTimeFieldRefInput<$PrismaModel> | null
-    in?: Date[] | string[] | null
-    notIn?: Date[] | string[] | null
+    in?: Date[] | string[] | ListDateTimeFieldRefInput<$PrismaModel> | null
+    notIn?: Date[] | string[] | ListDateTimeFieldRefInput<$PrismaModel> | null
     lt?: Date | string | DateTimeFieldRefInput<$PrismaModel>
     lte?: Date | string | DateTimeFieldRefInput<$PrismaModel>
     gt?: Date | string | DateTimeFieldRefInput<$PrismaModel>
@@ -27288,22 +27539,6 @@ export namespace Prisma {
     updatedAt?: SortOrder
   }
 
-  export type BoolFilter<$PrismaModel = never> = {
-    equals?: boolean | BooleanFieldRefInput<$PrismaModel>
-    not?: NestedBoolFilter<$PrismaModel> | boolean
-  }
-
-  export type IntFilter<$PrismaModel = never> = {
-    equals?: number | IntFieldRefInput<$PrismaModel>
-    in?: number[]
-    notIn?: number[]
-    lt?: number | IntFieldRefInput<$PrismaModel>
-    lte?: number | IntFieldRefInput<$PrismaModel>
-    gt?: number | IntFieldRefInput<$PrismaModel>
-    gte?: number | IntFieldRefInput<$PrismaModel>
-    not?: NestedIntFilter<$PrismaModel> | number
-  }
-
   export type GuideCountOrderByAggregateInput = {
     id?: SortOrder
     title?: SortOrder
@@ -27360,30 +27595,6 @@ export namespace Prisma {
   export type GuideSumOrderByAggregateInput = {
     views?: SortOrder
     likes?: SortOrder
-  }
-
-  export type BoolWithAggregatesFilter<$PrismaModel = never> = {
-    equals?: boolean | BooleanFieldRefInput<$PrismaModel>
-    not?: NestedBoolWithAggregatesFilter<$PrismaModel> | boolean
-    _count?: NestedIntFilter<$PrismaModel>
-    _min?: NestedBoolFilter<$PrismaModel>
-    _max?: NestedBoolFilter<$PrismaModel>
-  }
-
-  export type IntWithAggregatesFilter<$PrismaModel = never> = {
-    equals?: number | IntFieldRefInput<$PrismaModel>
-    in?: number[]
-    notIn?: number[]
-    lt?: number | IntFieldRefInput<$PrismaModel>
-    lte?: number | IntFieldRefInput<$PrismaModel>
-    gt?: number | IntFieldRefInput<$PrismaModel>
-    gte?: number | IntFieldRefInput<$PrismaModel>
-    not?: NestedIntWithAggregatesFilter<$PrismaModel> | number
-    _count?: NestedIntFilter<$PrismaModel>
-    _avg?: NestedFloatFilter<$PrismaModel>
-    _sum?: NestedIntFilter<$PrismaModel>
-    _min?: NestedIntFilter<$PrismaModel>
-    _max?: NestedIntFilter<$PrismaModel>
   }
 
   export type ChatMessageCountOrderByAggregateInput = {
@@ -27539,8 +27750,8 @@ export namespace Prisma {
 
   export type FloatFilter<$PrismaModel = never> = {
     equals?: number | FloatFieldRefInput<$PrismaModel>
-    in?: number[]
-    notIn?: number[]
+    in?: number[] | ListFloatFieldRefInput<$PrismaModel>
+    notIn?: number[] | ListFloatFieldRefInput<$PrismaModel>
     lt?: number | FloatFieldRefInput<$PrismaModel>
     lte?: number | FloatFieldRefInput<$PrismaModel>
     gt?: number | FloatFieldRefInput<$PrismaModel>
@@ -27594,8 +27805,8 @@ export namespace Prisma {
 
   export type FloatWithAggregatesFilter<$PrismaModel = never> = {
     equals?: number | FloatFieldRefInput<$PrismaModel>
-    in?: number[]
-    notIn?: number[]
+    in?: number[] | ListFloatFieldRefInput<$PrismaModel>
+    notIn?: number[] | ListFloatFieldRefInput<$PrismaModel>
     lt?: number | FloatFieldRefInput<$PrismaModel>
     lte?: number | FloatFieldRefInput<$PrismaModel>
     gt?: number | FloatFieldRefInput<$PrismaModel>
@@ -28190,6 +28401,18 @@ export namespace Prisma {
     set?: string | null
   }
 
+  export type BoolFieldUpdateOperationsInput = {
+    set?: boolean
+  }
+
+  export type IntFieldUpdateOperationsInput = {
+    set?: number
+    increment?: number
+    decrement?: number
+    multiply?: number
+    divide?: number
+  }
+
   export type ReminderUpdateManyWithoutUserNestedInput = {
     create?: XOR<ReminderCreateWithoutUserInput, ReminderUncheckedCreateWithoutUserInput> | ReminderCreateWithoutUserInput[] | ReminderUncheckedCreateWithoutUserInput[]
     connectOrCreate?: ReminderCreateOrConnectWithoutUserInput | ReminderCreateOrConnectWithoutUserInput[]
@@ -28690,18 +28913,6 @@ export namespace Prisma {
     delete?: NoteWhereInput | boolean
     connect?: NoteWhereUniqueInput
     update?: XOR<XOR<NoteUpdateToOneWithWhereWithoutRemindersInput, NoteUpdateWithoutRemindersInput>, NoteUncheckedUpdateWithoutRemindersInput>
-  }
-
-  export type BoolFieldUpdateOperationsInput = {
-    set?: boolean
-  }
-
-  export type IntFieldUpdateOperationsInput = {
-    set?: number
-    increment?: number
-    decrement?: number
-    multiply?: number
-    divide?: number
   }
 
   export type UserCreateNestedOneWithoutChatMessagesInput = {
@@ -29252,8 +29463,8 @@ export namespace Prisma {
 
   export type NestedStringFilter<$PrismaModel = never> = {
     equals?: string | StringFieldRefInput<$PrismaModel>
-    in?: string[]
-    notIn?: string[]
+    in?: string[] | ListStringFieldRefInput<$PrismaModel>
+    notIn?: string[] | ListStringFieldRefInput<$PrismaModel>
     lt?: string | StringFieldRefInput<$PrismaModel>
     lte?: string | StringFieldRefInput<$PrismaModel>
     gt?: string | StringFieldRefInput<$PrismaModel>
@@ -29266,8 +29477,8 @@ export namespace Prisma {
 
   export type NestedDateTimeFilter<$PrismaModel = never> = {
     equals?: Date | string | DateTimeFieldRefInput<$PrismaModel>
-    in?: Date[] | string[]
-    notIn?: Date[] | string[]
+    in?: Date[] | string[] | ListDateTimeFieldRefInput<$PrismaModel>
+    notIn?: Date[] | string[] | ListDateTimeFieldRefInput<$PrismaModel>
     lt?: Date | string | DateTimeFieldRefInput<$PrismaModel>
     lte?: Date | string | DateTimeFieldRefInput<$PrismaModel>
     gt?: Date | string | DateTimeFieldRefInput<$PrismaModel>
@@ -29277,8 +29488,8 @@ export namespace Prisma {
 
   export type NestedStringNullableFilter<$PrismaModel = never> = {
     equals?: string | StringFieldRefInput<$PrismaModel> | null
-    in?: string[] | null
-    notIn?: string[] | null
+    in?: string[] | ListStringFieldRefInput<$PrismaModel> | null
+    notIn?: string[] | ListStringFieldRefInput<$PrismaModel> | null
     lt?: string | StringFieldRefInput<$PrismaModel>
     lte?: string | StringFieldRefInput<$PrismaModel>
     gt?: string | StringFieldRefInput<$PrismaModel>
@@ -29289,10 +29500,26 @@ export namespace Prisma {
     not?: NestedStringNullableFilter<$PrismaModel> | string | null
   }
 
+  export type NestedBoolFilter<$PrismaModel = never> = {
+    equals?: boolean | BooleanFieldRefInput<$PrismaModel>
+    not?: NestedBoolFilter<$PrismaModel> | boolean
+  }
+
+  export type NestedIntFilter<$PrismaModel = never> = {
+    equals?: number | IntFieldRefInput<$PrismaModel>
+    in?: number[] | ListIntFieldRefInput<$PrismaModel>
+    notIn?: number[] | ListIntFieldRefInput<$PrismaModel>
+    lt?: number | IntFieldRefInput<$PrismaModel>
+    lte?: number | IntFieldRefInput<$PrismaModel>
+    gt?: number | IntFieldRefInput<$PrismaModel>
+    gte?: number | IntFieldRefInput<$PrismaModel>
+    not?: NestedIntFilter<$PrismaModel> | number
+  }
+
   export type NestedStringWithAggregatesFilter<$PrismaModel = never> = {
     equals?: string | StringFieldRefInput<$PrismaModel>
-    in?: string[]
-    notIn?: string[]
+    in?: string[] | ListStringFieldRefInput<$PrismaModel>
+    notIn?: string[] | ListStringFieldRefInput<$PrismaModel>
     lt?: string | StringFieldRefInput<$PrismaModel>
     lte?: string | StringFieldRefInput<$PrismaModel>
     gt?: string | StringFieldRefInput<$PrismaModel>
@@ -29306,21 +29533,10 @@ export namespace Prisma {
     _max?: NestedStringFilter<$PrismaModel>
   }
 
-  export type NestedIntFilter<$PrismaModel = never> = {
-    equals?: number | IntFieldRefInput<$PrismaModel>
-    in?: number[]
-    notIn?: number[]
-    lt?: number | IntFieldRefInput<$PrismaModel>
-    lte?: number | IntFieldRefInput<$PrismaModel>
-    gt?: number | IntFieldRefInput<$PrismaModel>
-    gte?: number | IntFieldRefInput<$PrismaModel>
-    not?: NestedIntFilter<$PrismaModel> | number
-  }
-
   export type NestedDateTimeWithAggregatesFilter<$PrismaModel = never> = {
     equals?: Date | string | DateTimeFieldRefInput<$PrismaModel>
-    in?: Date[] | string[]
-    notIn?: Date[] | string[]
+    in?: Date[] | string[] | ListDateTimeFieldRefInput<$PrismaModel>
+    notIn?: Date[] | string[] | ListDateTimeFieldRefInput<$PrismaModel>
     lt?: Date | string | DateTimeFieldRefInput<$PrismaModel>
     lte?: Date | string | DateTimeFieldRefInput<$PrismaModel>
     gt?: Date | string | DateTimeFieldRefInput<$PrismaModel>
@@ -29333,8 +29549,8 @@ export namespace Prisma {
 
   export type NestedStringNullableWithAggregatesFilter<$PrismaModel = never> = {
     equals?: string | StringFieldRefInput<$PrismaModel> | null
-    in?: string[] | null
-    notIn?: string[] | null
+    in?: string[] | ListStringFieldRefInput<$PrismaModel> | null
+    notIn?: string[] | ListStringFieldRefInput<$PrismaModel> | null
     lt?: string | StringFieldRefInput<$PrismaModel>
     lte?: string | StringFieldRefInput<$PrismaModel>
     gt?: string | StringFieldRefInput<$PrismaModel>
@@ -29350,43 +29566,13 @@ export namespace Prisma {
 
   export type NestedIntNullableFilter<$PrismaModel = never> = {
     equals?: number | IntFieldRefInput<$PrismaModel> | null
-    in?: number[] | null
-    notIn?: number[] | null
+    in?: number[] | ListIntFieldRefInput<$PrismaModel> | null
+    notIn?: number[] | ListIntFieldRefInput<$PrismaModel> | null
     lt?: number | IntFieldRefInput<$PrismaModel>
     lte?: number | IntFieldRefInput<$PrismaModel>
     gt?: number | IntFieldRefInput<$PrismaModel>
     gte?: number | IntFieldRefInput<$PrismaModel>
     not?: NestedIntNullableFilter<$PrismaModel> | number | null
-  }
-
-  export type NestedDateTimeNullableFilter<$PrismaModel = never> = {
-    equals?: Date | string | DateTimeFieldRefInput<$PrismaModel> | null
-    in?: Date[] | string[] | null
-    notIn?: Date[] | string[] | null
-    lt?: Date | string | DateTimeFieldRefInput<$PrismaModel>
-    lte?: Date | string | DateTimeFieldRefInput<$PrismaModel>
-    gt?: Date | string | DateTimeFieldRefInput<$PrismaModel>
-    gte?: Date | string | DateTimeFieldRefInput<$PrismaModel>
-    not?: NestedDateTimeNullableFilter<$PrismaModel> | Date | string | null
-  }
-
-  export type NestedDateTimeNullableWithAggregatesFilter<$PrismaModel = never> = {
-    equals?: Date | string | DateTimeFieldRefInput<$PrismaModel> | null
-    in?: Date[] | string[] | null
-    notIn?: Date[] | string[] | null
-    lt?: Date | string | DateTimeFieldRefInput<$PrismaModel>
-    lte?: Date | string | DateTimeFieldRefInput<$PrismaModel>
-    gt?: Date | string | DateTimeFieldRefInput<$PrismaModel>
-    gte?: Date | string | DateTimeFieldRefInput<$PrismaModel>
-    not?: NestedDateTimeNullableWithAggregatesFilter<$PrismaModel> | Date | string | null
-    _count?: NestedIntNullableFilter<$PrismaModel>
-    _min?: NestedDateTimeNullableFilter<$PrismaModel>
-    _max?: NestedDateTimeNullableFilter<$PrismaModel>
-  }
-
-  export type NestedBoolFilter<$PrismaModel = never> = {
-    equals?: boolean | BooleanFieldRefInput<$PrismaModel>
-    not?: NestedBoolFilter<$PrismaModel> | boolean
   }
 
   export type NestedBoolWithAggregatesFilter<$PrismaModel = never> = {
@@ -29399,8 +29585,8 @@ export namespace Prisma {
 
   export type NestedIntWithAggregatesFilter<$PrismaModel = never> = {
     equals?: number | IntFieldRefInput<$PrismaModel>
-    in?: number[]
-    notIn?: number[]
+    in?: number[] | ListIntFieldRefInput<$PrismaModel>
+    notIn?: number[] | ListIntFieldRefInput<$PrismaModel>
     lt?: number | IntFieldRefInput<$PrismaModel>
     lte?: number | IntFieldRefInput<$PrismaModel>
     gt?: number | IntFieldRefInput<$PrismaModel>
@@ -29415,8 +29601,8 @@ export namespace Prisma {
 
   export type NestedFloatFilter<$PrismaModel = never> = {
     equals?: number | FloatFieldRefInput<$PrismaModel>
-    in?: number[]
-    notIn?: number[]
+    in?: number[] | ListFloatFieldRefInput<$PrismaModel>
+    notIn?: number[] | ListFloatFieldRefInput<$PrismaModel>
     lt?: number | FloatFieldRefInput<$PrismaModel>
     lte?: number | FloatFieldRefInput<$PrismaModel>
     gt?: number | FloatFieldRefInput<$PrismaModel>
@@ -29424,10 +29610,35 @@ export namespace Prisma {
     not?: NestedFloatFilter<$PrismaModel> | number
   }
 
+  export type NestedDateTimeNullableFilter<$PrismaModel = never> = {
+    equals?: Date | string | DateTimeFieldRefInput<$PrismaModel> | null
+    in?: Date[] | string[] | ListDateTimeFieldRefInput<$PrismaModel> | null
+    notIn?: Date[] | string[] | ListDateTimeFieldRefInput<$PrismaModel> | null
+    lt?: Date | string | DateTimeFieldRefInput<$PrismaModel>
+    lte?: Date | string | DateTimeFieldRefInput<$PrismaModel>
+    gt?: Date | string | DateTimeFieldRefInput<$PrismaModel>
+    gte?: Date | string | DateTimeFieldRefInput<$PrismaModel>
+    not?: NestedDateTimeNullableFilter<$PrismaModel> | Date | string | null
+  }
+
+  export type NestedDateTimeNullableWithAggregatesFilter<$PrismaModel = never> = {
+    equals?: Date | string | DateTimeFieldRefInput<$PrismaModel> | null
+    in?: Date[] | string[] | ListDateTimeFieldRefInput<$PrismaModel> | null
+    notIn?: Date[] | string[] | ListDateTimeFieldRefInput<$PrismaModel> | null
+    lt?: Date | string | DateTimeFieldRefInput<$PrismaModel>
+    lte?: Date | string | DateTimeFieldRefInput<$PrismaModel>
+    gt?: Date | string | DateTimeFieldRefInput<$PrismaModel>
+    gte?: Date | string | DateTimeFieldRefInput<$PrismaModel>
+    not?: NestedDateTimeNullableWithAggregatesFilter<$PrismaModel> | Date | string | null
+    _count?: NestedIntNullableFilter<$PrismaModel>
+    _min?: NestedDateTimeNullableFilter<$PrismaModel>
+    _max?: NestedDateTimeNullableFilter<$PrismaModel>
+  }
+
   export type NestedFloatWithAggregatesFilter<$PrismaModel = never> = {
     equals?: number | FloatFieldRefInput<$PrismaModel>
-    in?: number[]
-    notIn?: number[]
+    in?: number[] | ListFloatFieldRefInput<$PrismaModel>
+    notIn?: number[] | ListFloatFieldRefInput<$PrismaModel>
     lt?: number | FloatFieldRefInput<$PrismaModel>
     lte?: number | FloatFieldRefInput<$PrismaModel>
     gt?: number | FloatFieldRefInput<$PrismaModel>
@@ -29475,6 +29686,7 @@ export namespace Prisma {
 
   export type ReminderCreateManyUserInputEnvelope = {
     data: ReminderCreateManyUserInput | ReminderCreateManyUserInput[]
+    skipDuplicates?: boolean
   }
 
   export type NoteCreateWithoutUserInput = {
@@ -29506,6 +29718,7 @@ export namespace Prisma {
 
   export type NoteCreateManyUserInputEnvelope = {
     data: NoteCreateManyUserInput | NoteCreateManyUserInput[]
+    skipDuplicates?: boolean
   }
 
   export type ChatMessageCreateWithoutUserInput = {
@@ -29529,6 +29742,7 @@ export namespace Prisma {
 
   export type ChatMessageCreateManyUserInputEnvelope = {
     data: ChatMessageCreateManyUserInput | ChatMessageCreateManyUserInput[]
+    skipDuplicates?: boolean
   }
 
   export type ProfileCreateWithoutUserInput = {
@@ -29591,6 +29805,7 @@ export namespace Prisma {
 
   export type SupportTicketCreateManyUserInputEnvelope = {
     data: SupportTicketCreateManyUserInput | SupportTicketCreateManyUserInput[]
+    skipDuplicates?: boolean
   }
 
   export type PaymentCreateWithoutUserInput = {
@@ -29628,6 +29843,7 @@ export namespace Prisma {
 
   export type PaymentCreateManyUserInputEnvelope = {
     data: PaymentCreateManyUserInput | PaymentCreateManyUserInput[]
+    skipDuplicates?: boolean
   }
 
   export type SubscriptionCreateWithoutUserInput = {
@@ -29661,6 +29877,7 @@ export namespace Prisma {
 
   export type SubscriptionCreateManyUserInputEnvelope = {
     data: SubscriptionCreateManyUserInput | SubscriptionCreateManyUserInput[]
+    skipDuplicates?: boolean
   }
 
   export type UserGrantApplicationCreateWithoutUserInput = {
@@ -29692,6 +29909,7 @@ export namespace Prisma {
 
   export type UserGrantApplicationCreateManyUserInputEnvelope = {
     data: UserGrantApplicationCreateManyUserInput | UserGrantApplicationCreateManyUserInput[]
+    skipDuplicates?: boolean
   }
 
   export type QuestionCreateWithoutAuthorInput = {
@@ -29723,6 +29941,7 @@ export namespace Prisma {
 
   export type QuestionCreateManyAuthorInputEnvelope = {
     data: QuestionCreateManyAuthorInput | QuestionCreateManyAuthorInput[]
+    skipDuplicates?: boolean
   }
 
   export type AnswerCreateWithoutAuthorInput = {
@@ -29748,6 +29967,7 @@ export namespace Prisma {
 
   export type AnswerCreateManyAuthorInputEnvelope = {
     data: AnswerCreateManyAuthorInput | AnswerCreateManyAuthorInput[]
+    skipDuplicates?: boolean
   }
 
   export type QuestionLikeCreateWithoutUserInput = {
@@ -29769,6 +29989,7 @@ export namespace Prisma {
 
   export type QuestionLikeCreateManyUserInputEnvelope = {
     data: QuestionLikeCreateManyUserInput | QuestionLikeCreateManyUserInput[]
+    skipDuplicates?: boolean
   }
 
   export type ReviewCreateWithoutUserInput = {
@@ -29800,6 +30021,7 @@ export namespace Prisma {
 
   export type ReviewCreateManyUserInputEnvelope = {
     data: ReviewCreateManyUserInput | ReviewCreateManyUserInput[]
+    skipDuplicates?: boolean
   }
 
   export type GuideReadCreateWithoutUserInput = {
@@ -29823,6 +30045,7 @@ export namespace Prisma {
 
   export type GuideReadCreateManyUserInputEnvelope = {
     data: GuideReadCreateManyUserInput | GuideReadCreateManyUserInput[]
+    skipDuplicates?: boolean
   }
 
   export type PasswordSetupTokenCreateWithoutUserInput = {
@@ -29848,6 +30071,7 @@ export namespace Prisma {
 
   export type PasswordSetupTokenCreateManyUserInputEnvelope = {
     data: PasswordSetupTokenCreateManyUserInput | PasswordSetupTokenCreateManyUserInput[]
+    skipDuplicates?: boolean
   }
 
   export type ReminderUpsertWithWhereUniqueWithoutUserInput = {
@@ -30285,6 +30509,9 @@ export namespace Prisma {
     plan?: string
     phone?: string | null
     gender?: string | null
+    emailNotifications?: boolean
+    timezone?: string
+    tokenVersion?: number
     reminders?: ReminderCreateNestedManyWithoutUserInput
     notes?: NoteCreateNestedManyWithoutUserInput
     chatMessages?: ChatMessageCreateNestedManyWithoutUserInput
@@ -30315,6 +30542,9 @@ export namespace Prisma {
     plan?: string
     phone?: string | null
     gender?: string | null
+    emailNotifications?: boolean
+    timezone?: string
+    tokenVersion?: number
     reminders?: ReminderUncheckedCreateNestedManyWithoutUserInput
     notes?: NoteUncheckedCreateNestedManyWithoutUserInput
     chatMessages?: ChatMessageUncheckedCreateNestedManyWithoutUserInput
@@ -30361,6 +30591,9 @@ export namespace Prisma {
     plan?: StringFieldUpdateOperationsInput | string
     phone?: NullableStringFieldUpdateOperationsInput | string | null
     gender?: NullableStringFieldUpdateOperationsInput | string | null
+    emailNotifications?: BoolFieldUpdateOperationsInput | boolean
+    timezone?: StringFieldUpdateOperationsInput | string
+    tokenVersion?: IntFieldUpdateOperationsInput | number
     reminders?: ReminderUpdateManyWithoutUserNestedInput
     notes?: NoteUpdateManyWithoutUserNestedInput
     chatMessages?: ChatMessageUpdateManyWithoutUserNestedInput
@@ -30391,6 +30624,9 @@ export namespace Prisma {
     plan?: StringFieldUpdateOperationsInput | string
     phone?: NullableStringFieldUpdateOperationsInput | string | null
     gender?: NullableStringFieldUpdateOperationsInput | string | null
+    emailNotifications?: BoolFieldUpdateOperationsInput | boolean
+    timezone?: StringFieldUpdateOperationsInput | string
+    tokenVersion?: IntFieldUpdateOperationsInput | number
     reminders?: ReminderUncheckedUpdateManyWithoutUserNestedInput
     notes?: NoteUncheckedUpdateManyWithoutUserNestedInput
     chatMessages?: ChatMessageUncheckedUpdateManyWithoutUserNestedInput
@@ -30421,6 +30657,9 @@ export namespace Prisma {
     plan?: string
     phone?: string | null
     gender?: string | null
+    emailNotifications?: boolean
+    timezone?: string
+    tokenVersion?: number
     reminders?: ReminderCreateNestedManyWithoutUserInput
     notes?: NoteCreateNestedManyWithoutUserInput
     chatMessages?: ChatMessageCreateNestedManyWithoutUserInput
@@ -30451,6 +30690,9 @@ export namespace Prisma {
     plan?: string
     phone?: string | null
     gender?: string | null
+    emailNotifications?: boolean
+    timezone?: string
+    tokenVersion?: number
     reminders?: ReminderUncheckedCreateNestedManyWithoutUserInput
     notes?: NoteUncheckedCreateNestedManyWithoutUserInput
     chatMessages?: ChatMessageUncheckedCreateNestedManyWithoutUserInput
@@ -30497,6 +30739,9 @@ export namespace Prisma {
     plan?: StringFieldUpdateOperationsInput | string
     phone?: NullableStringFieldUpdateOperationsInput | string | null
     gender?: NullableStringFieldUpdateOperationsInput | string | null
+    emailNotifications?: BoolFieldUpdateOperationsInput | boolean
+    timezone?: StringFieldUpdateOperationsInput | string
+    tokenVersion?: IntFieldUpdateOperationsInput | number
     reminders?: ReminderUpdateManyWithoutUserNestedInput
     notes?: NoteUpdateManyWithoutUserNestedInput
     chatMessages?: ChatMessageUpdateManyWithoutUserNestedInput
@@ -30527,6 +30772,9 @@ export namespace Prisma {
     plan?: StringFieldUpdateOperationsInput | string
     phone?: NullableStringFieldUpdateOperationsInput | string | null
     gender?: NullableStringFieldUpdateOperationsInput | string | null
+    emailNotifications?: BoolFieldUpdateOperationsInput | boolean
+    timezone?: StringFieldUpdateOperationsInput | string
+    tokenVersion?: IntFieldUpdateOperationsInput | number
     reminders?: ReminderUncheckedUpdateManyWithoutUserNestedInput
     notes?: NoteUncheckedUpdateManyWithoutUserNestedInput
     chatMessages?: ChatMessageUncheckedUpdateManyWithoutUserNestedInput
@@ -30557,6 +30805,9 @@ export namespace Prisma {
     plan?: string
     phone?: string | null
     gender?: string | null
+    emailNotifications?: boolean
+    timezone?: string
+    tokenVersion?: number
     reminders?: ReminderCreateNestedManyWithoutUserInput
     chatMessages?: ChatMessageCreateNestedManyWithoutUserInput
     profile?: ProfileCreateNestedOneWithoutUserInput
@@ -30587,6 +30838,9 @@ export namespace Prisma {
     plan?: string
     phone?: string | null
     gender?: string | null
+    emailNotifications?: boolean
+    timezone?: string
+    tokenVersion?: number
     reminders?: ReminderUncheckedCreateNestedManyWithoutUserInput
     chatMessages?: ChatMessageUncheckedCreateNestedManyWithoutUserInput
     profile?: ProfileUncheckedCreateNestedOneWithoutUserInput
@@ -30642,6 +30896,7 @@ export namespace Prisma {
 
   export type ReminderCreateManyNoteInputEnvelope = {
     data: ReminderCreateManyNoteInput | ReminderCreateManyNoteInput[]
+    skipDuplicates?: boolean
   }
 
   export type UserUpsertWithoutNotesInput = {
@@ -30670,6 +30925,9 @@ export namespace Prisma {
     plan?: StringFieldUpdateOperationsInput | string
     phone?: NullableStringFieldUpdateOperationsInput | string | null
     gender?: NullableStringFieldUpdateOperationsInput | string | null
+    emailNotifications?: BoolFieldUpdateOperationsInput | boolean
+    timezone?: StringFieldUpdateOperationsInput | string
+    tokenVersion?: IntFieldUpdateOperationsInput | number
     reminders?: ReminderUpdateManyWithoutUserNestedInput
     chatMessages?: ChatMessageUpdateManyWithoutUserNestedInput
     profile?: ProfileUpdateOneWithoutUserNestedInput
@@ -30700,6 +30958,9 @@ export namespace Prisma {
     plan?: StringFieldUpdateOperationsInput | string
     phone?: NullableStringFieldUpdateOperationsInput | string | null
     gender?: NullableStringFieldUpdateOperationsInput | string | null
+    emailNotifications?: BoolFieldUpdateOperationsInput | boolean
+    timezone?: StringFieldUpdateOperationsInput | string
+    tokenVersion?: IntFieldUpdateOperationsInput | number
     reminders?: ReminderUncheckedUpdateManyWithoutUserNestedInput
     chatMessages?: ChatMessageUncheckedUpdateManyWithoutUserNestedInput
     profile?: ProfileUncheckedUpdateOneWithoutUserNestedInput
@@ -30746,6 +31007,9 @@ export namespace Prisma {
     plan?: string
     phone?: string | null
     gender?: string | null
+    emailNotifications?: boolean
+    timezone?: string
+    tokenVersion?: number
     notes?: NoteCreateNestedManyWithoutUserInput
     chatMessages?: ChatMessageCreateNestedManyWithoutUserInput
     profile?: ProfileCreateNestedOneWithoutUserInput
@@ -30776,6 +31040,9 @@ export namespace Prisma {
     plan?: string
     phone?: string | null
     gender?: string | null
+    emailNotifications?: boolean
+    timezone?: string
+    tokenVersion?: number
     notes?: NoteUncheckedCreateNestedManyWithoutUserInput
     chatMessages?: ChatMessageUncheckedCreateNestedManyWithoutUserInput
     profile?: ProfileUncheckedCreateNestedOneWithoutUserInput
@@ -30849,6 +31116,9 @@ export namespace Prisma {
     plan?: StringFieldUpdateOperationsInput | string
     phone?: NullableStringFieldUpdateOperationsInput | string | null
     gender?: NullableStringFieldUpdateOperationsInput | string | null
+    emailNotifications?: BoolFieldUpdateOperationsInput | boolean
+    timezone?: StringFieldUpdateOperationsInput | string
+    tokenVersion?: IntFieldUpdateOperationsInput | number
     notes?: NoteUpdateManyWithoutUserNestedInput
     chatMessages?: ChatMessageUpdateManyWithoutUserNestedInput
     profile?: ProfileUpdateOneWithoutUserNestedInput
@@ -30879,6 +31149,9 @@ export namespace Prisma {
     plan?: StringFieldUpdateOperationsInput | string
     phone?: NullableStringFieldUpdateOperationsInput | string | null
     gender?: NullableStringFieldUpdateOperationsInput | string | null
+    emailNotifications?: BoolFieldUpdateOperationsInput | boolean
+    timezone?: StringFieldUpdateOperationsInput | string
+    tokenVersion?: IntFieldUpdateOperationsInput | number
     notes?: NoteUncheckedUpdateManyWithoutUserNestedInput
     chatMessages?: ChatMessageUncheckedUpdateManyWithoutUserNestedInput
     profile?: ProfileUncheckedUpdateOneWithoutUserNestedInput
@@ -30942,6 +31215,9 @@ export namespace Prisma {
     plan?: string
     phone?: string | null
     gender?: string | null
+    emailNotifications?: boolean
+    timezone?: string
+    tokenVersion?: number
     reminders?: ReminderCreateNestedManyWithoutUserInput
     notes?: NoteCreateNestedManyWithoutUserInput
     profile?: ProfileCreateNestedOneWithoutUserInput
@@ -30972,6 +31248,9 @@ export namespace Prisma {
     plan?: string
     phone?: string | null
     gender?: string | null
+    emailNotifications?: boolean
+    timezone?: string
+    tokenVersion?: number
     reminders?: ReminderUncheckedCreateNestedManyWithoutUserInput
     notes?: NoteUncheckedCreateNestedManyWithoutUserInput
     profile?: ProfileUncheckedCreateNestedOneWithoutUserInput
@@ -31018,6 +31297,9 @@ export namespace Prisma {
     plan?: StringFieldUpdateOperationsInput | string
     phone?: NullableStringFieldUpdateOperationsInput | string | null
     gender?: NullableStringFieldUpdateOperationsInput | string | null
+    emailNotifications?: BoolFieldUpdateOperationsInput | boolean
+    timezone?: StringFieldUpdateOperationsInput | string
+    tokenVersion?: IntFieldUpdateOperationsInput | number
     reminders?: ReminderUpdateManyWithoutUserNestedInput
     notes?: NoteUpdateManyWithoutUserNestedInput
     profile?: ProfileUpdateOneWithoutUserNestedInput
@@ -31048,6 +31330,9 @@ export namespace Prisma {
     plan?: StringFieldUpdateOperationsInput | string
     phone?: NullableStringFieldUpdateOperationsInput | string | null
     gender?: NullableStringFieldUpdateOperationsInput | string | null
+    emailNotifications?: BoolFieldUpdateOperationsInput | boolean
+    timezone?: StringFieldUpdateOperationsInput | string
+    tokenVersion?: IntFieldUpdateOperationsInput | number
     reminders?: ReminderUncheckedUpdateManyWithoutUserNestedInput
     notes?: NoteUncheckedUpdateManyWithoutUserNestedInput
     profile?: ProfileUncheckedUpdateOneWithoutUserNestedInput
@@ -31078,6 +31363,9 @@ export namespace Prisma {
     plan?: string
     phone?: string | null
     gender?: string | null
+    emailNotifications?: boolean
+    timezone?: string
+    tokenVersion?: number
     reminders?: ReminderCreateNestedManyWithoutUserInput
     notes?: NoteCreateNestedManyWithoutUserInput
     chatMessages?: ChatMessageCreateNestedManyWithoutUserInput
@@ -31108,6 +31396,9 @@ export namespace Prisma {
     plan?: string
     phone?: string | null
     gender?: string | null
+    emailNotifications?: boolean
+    timezone?: string
+    tokenVersion?: number
     reminders?: ReminderUncheckedCreateNestedManyWithoutUserInput
     notes?: NoteUncheckedCreateNestedManyWithoutUserInput
     chatMessages?: ChatMessageUncheckedCreateNestedManyWithoutUserInput
@@ -31151,6 +31442,7 @@ export namespace Prisma {
 
   export type SupportResponseCreateManyTicketInputEnvelope = {
     data: SupportResponseCreateManyTicketInput | SupportResponseCreateManyTicketInput[]
+    skipDuplicates?: boolean
   }
 
   export type UserUpsertWithoutSupportTicketsInput = {
@@ -31179,6 +31471,9 @@ export namespace Prisma {
     plan?: StringFieldUpdateOperationsInput | string
     phone?: NullableStringFieldUpdateOperationsInput | string | null
     gender?: NullableStringFieldUpdateOperationsInput | string | null
+    emailNotifications?: BoolFieldUpdateOperationsInput | boolean
+    timezone?: StringFieldUpdateOperationsInput | string
+    tokenVersion?: IntFieldUpdateOperationsInput | number
     reminders?: ReminderUpdateManyWithoutUserNestedInput
     notes?: NoteUpdateManyWithoutUserNestedInput
     chatMessages?: ChatMessageUpdateManyWithoutUserNestedInput
@@ -31209,6 +31504,9 @@ export namespace Prisma {
     plan?: StringFieldUpdateOperationsInput | string
     phone?: NullableStringFieldUpdateOperationsInput | string | null
     gender?: NullableStringFieldUpdateOperationsInput | string | null
+    emailNotifications?: BoolFieldUpdateOperationsInput | boolean
+    timezone?: StringFieldUpdateOperationsInput | string
+    tokenVersion?: IntFieldUpdateOperationsInput | number
     reminders?: ReminderUncheckedUpdateManyWithoutUserNestedInput
     notes?: NoteUncheckedUpdateManyWithoutUserNestedInput
     chatMessages?: ChatMessageUncheckedUpdateManyWithoutUserNestedInput
@@ -31407,6 +31705,7 @@ export namespace Prisma {
 
   export type SupportResponseCreateManyAdminInputEnvelope = {
     data: SupportResponseCreateManyAdminInput | SupportResponseCreateManyAdminInput[]
+    skipDuplicates?: boolean
   }
 
   export type SupportResponseUpsertWithWhereUniqueWithoutAdminInput = {
@@ -31456,6 +31755,7 @@ export namespace Prisma {
 
   export type SubscriptionCreateManyPlanInputEnvelope = {
     data: SubscriptionCreateManyPlanInput | SubscriptionCreateManyPlanInput[]
+    skipDuplicates?: boolean
   }
 
   export type SubscriptionUpsertWithWhereUniqueWithoutPlanInput = {
@@ -31489,6 +31789,9 @@ export namespace Prisma {
     plan?: string
     phone?: string | null
     gender?: string | null
+    emailNotifications?: boolean
+    timezone?: string
+    tokenVersion?: number
     reminders?: ReminderCreateNestedManyWithoutUserInput
     notes?: NoteCreateNestedManyWithoutUserInput
     chatMessages?: ChatMessageCreateNestedManyWithoutUserInput
@@ -31519,6 +31822,9 @@ export namespace Prisma {
     plan?: string
     phone?: string | null
     gender?: string | null
+    emailNotifications?: boolean
+    timezone?: string
+    tokenVersion?: number
     reminders?: ReminderUncheckedCreateNestedManyWithoutUserInput
     notes?: NoteUncheckedCreateNestedManyWithoutUserInput
     chatMessages?: ChatMessageUncheckedCreateNestedManyWithoutUserInput
@@ -31570,6 +31876,7 @@ export namespace Prisma {
 
   export type SubscriptionCreateManyPaymentInputEnvelope = {
     data: SubscriptionCreateManyPaymentInput | SubscriptionCreateManyPaymentInput[]
+    skipDuplicates?: boolean
   }
 
   export type UserUpsertWithoutPaymentsInput = {
@@ -31598,6 +31905,9 @@ export namespace Prisma {
     plan?: StringFieldUpdateOperationsInput | string
     phone?: NullableStringFieldUpdateOperationsInput | string | null
     gender?: NullableStringFieldUpdateOperationsInput | string | null
+    emailNotifications?: BoolFieldUpdateOperationsInput | boolean
+    timezone?: StringFieldUpdateOperationsInput | string
+    tokenVersion?: IntFieldUpdateOperationsInput | number
     reminders?: ReminderUpdateManyWithoutUserNestedInput
     notes?: NoteUpdateManyWithoutUserNestedInput
     chatMessages?: ChatMessageUpdateManyWithoutUserNestedInput
@@ -31628,6 +31938,9 @@ export namespace Prisma {
     plan?: StringFieldUpdateOperationsInput | string
     phone?: NullableStringFieldUpdateOperationsInput | string | null
     gender?: NullableStringFieldUpdateOperationsInput | string | null
+    emailNotifications?: BoolFieldUpdateOperationsInput | boolean
+    timezone?: StringFieldUpdateOperationsInput | string
+    tokenVersion?: IntFieldUpdateOperationsInput | number
     reminders?: ReminderUncheckedUpdateManyWithoutUserNestedInput
     notes?: NoteUncheckedUpdateManyWithoutUserNestedInput
     chatMessages?: ChatMessageUncheckedUpdateManyWithoutUserNestedInput
@@ -31674,6 +31987,9 @@ export namespace Prisma {
     plan?: string
     phone?: string | null
     gender?: string | null
+    emailNotifications?: boolean
+    timezone?: string
+    tokenVersion?: number
     reminders?: ReminderCreateNestedManyWithoutUserInput
     notes?: NoteCreateNestedManyWithoutUserInput
     chatMessages?: ChatMessageCreateNestedManyWithoutUserInput
@@ -31704,6 +32020,9 @@ export namespace Prisma {
     plan?: string
     phone?: string | null
     gender?: string | null
+    emailNotifications?: boolean
+    timezone?: string
+    tokenVersion?: number
     reminders?: ReminderUncheckedCreateNestedManyWithoutUserInput
     notes?: NoteUncheckedCreateNestedManyWithoutUserInput
     chatMessages?: ChatMessageUncheckedCreateNestedManyWithoutUserInput
@@ -31812,6 +32131,9 @@ export namespace Prisma {
     plan?: StringFieldUpdateOperationsInput | string
     phone?: NullableStringFieldUpdateOperationsInput | string | null
     gender?: NullableStringFieldUpdateOperationsInput | string | null
+    emailNotifications?: BoolFieldUpdateOperationsInput | boolean
+    timezone?: StringFieldUpdateOperationsInput | string
+    tokenVersion?: IntFieldUpdateOperationsInput | number
     reminders?: ReminderUpdateManyWithoutUserNestedInput
     notes?: NoteUpdateManyWithoutUserNestedInput
     chatMessages?: ChatMessageUpdateManyWithoutUserNestedInput
@@ -31842,6 +32164,9 @@ export namespace Prisma {
     plan?: StringFieldUpdateOperationsInput | string
     phone?: NullableStringFieldUpdateOperationsInput | string | null
     gender?: NullableStringFieldUpdateOperationsInput | string | null
+    emailNotifications?: BoolFieldUpdateOperationsInput | boolean
+    timezone?: StringFieldUpdateOperationsInput | string
+    tokenVersion?: IntFieldUpdateOperationsInput | number
     reminders?: ReminderUncheckedUpdateManyWithoutUserNestedInput
     notes?: NoteUncheckedUpdateManyWithoutUserNestedInput
     chatMessages?: ChatMessageUncheckedUpdateManyWithoutUserNestedInput
@@ -31960,6 +32285,7 @@ export namespace Prisma {
 
   export type UserGrantApplicationCreateManyGrantInputEnvelope = {
     data: UserGrantApplicationCreateManyGrantInput | UserGrantApplicationCreateManyGrantInput[]
+    skipDuplicates?: boolean
   }
 
   export type UserGrantApplicationUpsertWithWhereUniqueWithoutGrantInput = {
@@ -31993,6 +32319,9 @@ export namespace Prisma {
     plan?: string
     phone?: string | null
     gender?: string | null
+    emailNotifications?: boolean
+    timezone?: string
+    tokenVersion?: number
     reminders?: ReminderCreateNestedManyWithoutUserInput
     notes?: NoteCreateNestedManyWithoutUserInput
     chatMessages?: ChatMessageCreateNestedManyWithoutUserInput
@@ -32023,6 +32352,9 @@ export namespace Prisma {
     plan?: string
     phone?: string | null
     gender?: string | null
+    emailNotifications?: boolean
+    timezone?: string
+    tokenVersion?: number
     reminders?: ReminderUncheckedCreateNestedManyWithoutUserInput
     notes?: NoteUncheckedCreateNestedManyWithoutUserInput
     chatMessages?: ChatMessageUncheckedCreateNestedManyWithoutUserInput
@@ -32118,6 +32450,9 @@ export namespace Prisma {
     plan?: StringFieldUpdateOperationsInput | string
     phone?: NullableStringFieldUpdateOperationsInput | string | null
     gender?: NullableStringFieldUpdateOperationsInput | string | null
+    emailNotifications?: BoolFieldUpdateOperationsInput | boolean
+    timezone?: StringFieldUpdateOperationsInput | string
+    tokenVersion?: IntFieldUpdateOperationsInput | number
     reminders?: ReminderUpdateManyWithoutUserNestedInput
     notes?: NoteUpdateManyWithoutUserNestedInput
     chatMessages?: ChatMessageUpdateManyWithoutUserNestedInput
@@ -32148,6 +32483,9 @@ export namespace Prisma {
     plan?: StringFieldUpdateOperationsInput | string
     phone?: NullableStringFieldUpdateOperationsInput | string | null
     gender?: NullableStringFieldUpdateOperationsInput | string | null
+    emailNotifications?: BoolFieldUpdateOperationsInput | boolean
+    timezone?: StringFieldUpdateOperationsInput | string
+    tokenVersion?: IntFieldUpdateOperationsInput | number
     reminders?: ReminderUncheckedUpdateManyWithoutUserNestedInput
     notes?: NoteUncheckedUpdateManyWithoutUserNestedInput
     chatMessages?: ChatMessageUncheckedUpdateManyWithoutUserNestedInput
@@ -32233,6 +32571,9 @@ export namespace Prisma {
     plan?: string
     phone?: string | null
     gender?: string | null
+    emailNotifications?: boolean
+    timezone?: string
+    tokenVersion?: number
     reminders?: ReminderCreateNestedManyWithoutUserInput
     notes?: NoteCreateNestedManyWithoutUserInput
     chatMessages?: ChatMessageCreateNestedManyWithoutUserInput
@@ -32263,6 +32604,9 @@ export namespace Prisma {
     plan?: string
     phone?: string | null
     gender?: string | null
+    emailNotifications?: boolean
+    timezone?: string
+    tokenVersion?: number
     reminders?: ReminderUncheckedCreateNestedManyWithoutUserInput
     notes?: NoteUncheckedCreateNestedManyWithoutUserInput
     chatMessages?: ChatMessageUncheckedCreateNestedManyWithoutUserInput
@@ -32306,6 +32650,7 @@ export namespace Prisma {
 
   export type AnswerCreateManyQuestionInputEnvelope = {
     data: AnswerCreateManyQuestionInput | AnswerCreateManyQuestionInput[]
+    skipDuplicates?: boolean
   }
 
   export type QuestionLikeCreateWithoutQuestionInput = {
@@ -32327,6 +32672,7 @@ export namespace Prisma {
 
   export type QuestionLikeCreateManyQuestionInputEnvelope = {
     data: QuestionLikeCreateManyQuestionInput | QuestionLikeCreateManyQuestionInput[]
+    skipDuplicates?: boolean
   }
 
   export type UserUpsertWithoutQuestionsInput = {
@@ -32355,6 +32701,9 @@ export namespace Prisma {
     plan?: StringFieldUpdateOperationsInput | string
     phone?: NullableStringFieldUpdateOperationsInput | string | null
     gender?: NullableStringFieldUpdateOperationsInput | string | null
+    emailNotifications?: BoolFieldUpdateOperationsInput | boolean
+    timezone?: StringFieldUpdateOperationsInput | string
+    tokenVersion?: IntFieldUpdateOperationsInput | number
     reminders?: ReminderUpdateManyWithoutUserNestedInput
     notes?: NoteUpdateManyWithoutUserNestedInput
     chatMessages?: ChatMessageUpdateManyWithoutUserNestedInput
@@ -32385,6 +32734,9 @@ export namespace Prisma {
     plan?: StringFieldUpdateOperationsInput | string
     phone?: NullableStringFieldUpdateOperationsInput | string | null
     gender?: NullableStringFieldUpdateOperationsInput | string | null
+    emailNotifications?: BoolFieldUpdateOperationsInput | boolean
+    timezone?: StringFieldUpdateOperationsInput | string
+    tokenVersion?: IntFieldUpdateOperationsInput | number
     reminders?: ReminderUncheckedUpdateManyWithoutUserNestedInput
     notes?: NoteUncheckedUpdateManyWithoutUserNestedInput
     chatMessages?: ChatMessageUncheckedUpdateManyWithoutUserNestedInput
@@ -32474,6 +32826,9 @@ export namespace Prisma {
     plan?: string
     phone?: string | null
     gender?: string | null
+    emailNotifications?: boolean
+    timezone?: string
+    tokenVersion?: number
     reminders?: ReminderCreateNestedManyWithoutUserInput
     notes?: NoteCreateNestedManyWithoutUserInput
     chatMessages?: ChatMessageCreateNestedManyWithoutUserInput
@@ -32504,6 +32859,9 @@ export namespace Prisma {
     plan?: string
     phone?: string | null
     gender?: string | null
+    emailNotifications?: boolean
+    timezone?: string
+    tokenVersion?: number
     reminders?: ReminderUncheckedCreateNestedManyWithoutUserInput
     notes?: NoteUncheckedCreateNestedManyWithoutUserInput
     chatMessages?: ChatMessageUncheckedCreateNestedManyWithoutUserInput
@@ -32583,6 +32941,9 @@ export namespace Prisma {
     plan?: StringFieldUpdateOperationsInput | string
     phone?: NullableStringFieldUpdateOperationsInput | string | null
     gender?: NullableStringFieldUpdateOperationsInput | string | null
+    emailNotifications?: BoolFieldUpdateOperationsInput | boolean
+    timezone?: StringFieldUpdateOperationsInput | string
+    tokenVersion?: IntFieldUpdateOperationsInput | number
     reminders?: ReminderUpdateManyWithoutUserNestedInput
     notes?: NoteUpdateManyWithoutUserNestedInput
     chatMessages?: ChatMessageUpdateManyWithoutUserNestedInput
@@ -32613,6 +32974,9 @@ export namespace Prisma {
     plan?: StringFieldUpdateOperationsInput | string
     phone?: NullableStringFieldUpdateOperationsInput | string | null
     gender?: NullableStringFieldUpdateOperationsInput | string | null
+    emailNotifications?: BoolFieldUpdateOperationsInput | boolean
+    timezone?: StringFieldUpdateOperationsInput | string
+    tokenVersion?: IntFieldUpdateOperationsInput | number
     reminders?: ReminderUncheckedUpdateManyWithoutUserNestedInput
     notes?: NoteUncheckedUpdateManyWithoutUserNestedInput
     chatMessages?: ChatMessageUncheckedUpdateManyWithoutUserNestedInput
@@ -32670,6 +33034,9 @@ export namespace Prisma {
     plan?: string
     phone?: string | null
     gender?: string | null
+    emailNotifications?: boolean
+    timezone?: string
+    tokenVersion?: number
     reminders?: ReminderCreateNestedManyWithoutUserInput
     notes?: NoteCreateNestedManyWithoutUserInput
     chatMessages?: ChatMessageCreateNestedManyWithoutUserInput
@@ -32700,6 +33067,9 @@ export namespace Prisma {
     plan?: string
     phone?: string | null
     gender?: string | null
+    emailNotifications?: boolean
+    timezone?: string
+    tokenVersion?: number
     reminders?: ReminderUncheckedCreateNestedManyWithoutUserInput
     notes?: NoteUncheckedCreateNestedManyWithoutUserInput
     chatMessages?: ChatMessageUncheckedCreateNestedManyWithoutUserInput
@@ -32779,6 +33149,9 @@ export namespace Prisma {
     plan?: StringFieldUpdateOperationsInput | string
     phone?: NullableStringFieldUpdateOperationsInput | string | null
     gender?: NullableStringFieldUpdateOperationsInput | string | null
+    emailNotifications?: BoolFieldUpdateOperationsInput | boolean
+    timezone?: StringFieldUpdateOperationsInput | string
+    tokenVersion?: IntFieldUpdateOperationsInput | number
     reminders?: ReminderUpdateManyWithoutUserNestedInput
     notes?: NoteUpdateManyWithoutUserNestedInput
     chatMessages?: ChatMessageUpdateManyWithoutUserNestedInput
@@ -32809,6 +33182,9 @@ export namespace Prisma {
     plan?: StringFieldUpdateOperationsInput | string
     phone?: NullableStringFieldUpdateOperationsInput | string | null
     gender?: NullableStringFieldUpdateOperationsInput | string | null
+    emailNotifications?: BoolFieldUpdateOperationsInput | boolean
+    timezone?: StringFieldUpdateOperationsInput | string
+    tokenVersion?: IntFieldUpdateOperationsInput | number
     reminders?: ReminderUncheckedUpdateManyWithoutUserNestedInput
     notes?: NoteUncheckedUpdateManyWithoutUserNestedInput
     chatMessages?: ChatMessageUncheckedUpdateManyWithoutUserNestedInput
@@ -32839,6 +33215,9 @@ export namespace Prisma {
     plan?: string
     phone?: string | null
     gender?: string | null
+    emailNotifications?: boolean
+    timezone?: string
+    tokenVersion?: number
     reminders?: ReminderCreateNestedManyWithoutUserInput
     notes?: NoteCreateNestedManyWithoutUserInput
     chatMessages?: ChatMessageCreateNestedManyWithoutUserInput
@@ -32869,6 +33248,9 @@ export namespace Prisma {
     plan?: string
     phone?: string | null
     gender?: string | null
+    emailNotifications?: boolean
+    timezone?: string
+    tokenVersion?: number
     reminders?: ReminderUncheckedCreateNestedManyWithoutUserInput
     notes?: NoteUncheckedCreateNestedManyWithoutUserInput
     chatMessages?: ChatMessageUncheckedCreateNestedManyWithoutUserInput
@@ -32915,6 +33297,9 @@ export namespace Prisma {
     plan?: StringFieldUpdateOperationsInput | string
     phone?: NullableStringFieldUpdateOperationsInput | string | null
     gender?: NullableStringFieldUpdateOperationsInput | string | null
+    emailNotifications?: BoolFieldUpdateOperationsInput | boolean
+    timezone?: StringFieldUpdateOperationsInput | string
+    tokenVersion?: IntFieldUpdateOperationsInput | number
     reminders?: ReminderUpdateManyWithoutUserNestedInput
     notes?: NoteUpdateManyWithoutUserNestedInput
     chatMessages?: ChatMessageUpdateManyWithoutUserNestedInput
@@ -32945,6 +33330,9 @@ export namespace Prisma {
     plan?: StringFieldUpdateOperationsInput | string
     phone?: NullableStringFieldUpdateOperationsInput | string | null
     gender?: NullableStringFieldUpdateOperationsInput | string | null
+    emailNotifications?: BoolFieldUpdateOperationsInput | boolean
+    timezone?: StringFieldUpdateOperationsInput | string
+    tokenVersion?: IntFieldUpdateOperationsInput | number
     reminders?: ReminderUncheckedUpdateManyWithoutUserNestedInput
     notes?: NoteUncheckedUpdateManyWithoutUserNestedInput
     chatMessages?: ChatMessageUncheckedUpdateManyWithoutUserNestedInput
@@ -32975,6 +33363,9 @@ export namespace Prisma {
     plan?: string
     phone?: string | null
     gender?: string | null
+    emailNotifications?: boolean
+    timezone?: string
+    tokenVersion?: number
     reminders?: ReminderCreateNestedManyWithoutUserInput
     notes?: NoteCreateNestedManyWithoutUserInput
     chatMessages?: ChatMessageCreateNestedManyWithoutUserInput
@@ -33005,6 +33396,9 @@ export namespace Prisma {
     plan?: string
     phone?: string | null
     gender?: string | null
+    emailNotifications?: boolean
+    timezone?: string
+    tokenVersion?: number
     reminders?: ReminderUncheckedCreateNestedManyWithoutUserInput
     notes?: NoteUncheckedCreateNestedManyWithoutUserInput
     chatMessages?: ChatMessageUncheckedCreateNestedManyWithoutUserInput
@@ -33051,6 +33445,9 @@ export namespace Prisma {
     plan?: StringFieldUpdateOperationsInput | string
     phone?: NullableStringFieldUpdateOperationsInput | string | null
     gender?: NullableStringFieldUpdateOperationsInput | string | null
+    emailNotifications?: BoolFieldUpdateOperationsInput | boolean
+    timezone?: StringFieldUpdateOperationsInput | string
+    tokenVersion?: IntFieldUpdateOperationsInput | number
     reminders?: ReminderUpdateManyWithoutUserNestedInput
     notes?: NoteUpdateManyWithoutUserNestedInput
     chatMessages?: ChatMessageUpdateManyWithoutUserNestedInput
@@ -33081,6 +33478,9 @@ export namespace Prisma {
     plan?: StringFieldUpdateOperationsInput | string
     phone?: NullableStringFieldUpdateOperationsInput | string | null
     gender?: NullableStringFieldUpdateOperationsInput | string | null
+    emailNotifications?: BoolFieldUpdateOperationsInput | boolean
+    timezone?: StringFieldUpdateOperationsInput | string
+    tokenVersion?: IntFieldUpdateOperationsInput | number
     reminders?: ReminderUncheckedUpdateManyWithoutUserNestedInput
     notes?: NoteUncheckedUpdateManyWithoutUserNestedInput
     chatMessages?: ChatMessageUncheckedUpdateManyWithoutUserNestedInput

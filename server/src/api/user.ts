@@ -483,6 +483,54 @@ const updateProfileSchema = z.object({
   gender: z.enum(['MALE', 'FEMALE']).optional(),
 });
 
+const updateSettingsSchema = z.object({
+  emailNotifications: z.boolean(),
+  timezone: z.string().trim().min(1).max(100),
+});
+
+router.get('/settings', authMiddleware, async (req: Request, res: Response) => {
+  try {
+    const authUser = (req as any).user;
+    const settings = await prisma.user.findUnique({
+      where: { id: authUser.userId },
+      select: { emailNotifications: true, timezone: true },
+    });
+
+    if (!settings) {
+      return res.status(404).json({ success: false, error: 'Пользователь не найден' } as ApiResponse);
+    }
+
+    return res.json({ success: true, data: settings } as ApiResponse<typeof settings>);
+  } catch (error) {
+    console.error('Get user settings error:', error);
+    return res.status(500).json({ success: false, error: 'Внутренняя ошибка сервера' } as ApiResponse);
+  }
+});
+
+router.put('/settings', authMiddleware, async (req: Request, res: Response) => {
+  try {
+    const authUser = (req as any).user;
+    const validatedData = updateSettingsSchema.parse(req.body);
+    const settings = await prisma.user.update({
+      where: { id: authUser.userId },
+      data: validatedData,
+      select: { emailNotifications: true, timezone: true },
+    });
+
+    return res.json({
+      success: true,
+      data: settings,
+      message: 'Настройки сохранены',
+    } as ApiResponse<typeof settings>);
+  } catch (error) {
+    if (error instanceof z.ZodError) {
+      return res.status(400).json({ success: false, error: 'Некорректные настройки', details: error.errors } as ApiResponse);
+    }
+    console.error('Update user settings error:', error);
+    return res.status(500).json({ success: false, error: 'Внутренняя ошибка сервера' } as ApiResponse);
+  }
+});
+
 // Загрузить/обновить аватар
 router.put('/profile/avatar', authMiddleware, async (req: Request, res: Response) => {
   try {

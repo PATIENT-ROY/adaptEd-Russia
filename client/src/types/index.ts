@@ -77,6 +77,11 @@ export interface User {
   city?: string;
 }
 
+export interface AccountSettings {
+  emailNotifications: boolean;
+  timezone: string;
+}
+
 export interface Profile {
   id: string;
   userId: string;

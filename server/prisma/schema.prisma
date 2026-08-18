@@ -40,6 +40,9 @@ model User {
   plan         String   @default("FREEMIUM")
   phone        String?
   gender       String?
+  emailNotifications Boolean @default(true)
+  timezone     String  @default("Europe/Moscow")
+  tokenVersion Int     @default(0)
   
   // Связи
   reminders    Reminder[]
