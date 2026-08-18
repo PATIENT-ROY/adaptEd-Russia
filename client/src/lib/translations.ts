@@ -366,7 +366,7 @@ const translations: Record<Language, Record<string, string>> = {
     "educationGuide.categories.expulsion-risks": "Риски отчисления",
     "educationGuide.categories.translation-centers": "Центры перевода",
     "educationGuide.header.title": "Образовательный гид",
-    "educationGuide.header.subtitle": "Всё о учёбе в российских университетах",
+    "educationGuide.header.subtitle": "Всё об учёбе в российских университетах",
     "educationGuide.search.placeholder": "Поиск по гайдам...",
     "educationGuide.search.reset": "Сбросить",
     "educationGuide.grants.resetFilters": "Сбросить фильтры",
@@ -1247,8 +1247,8 @@ const translations: Record<Language, Record<string, string>> = {
     "review.consentLink": "согласием на обработку персональных данных",
 
     // Payment Test Page
-    "payment.test.title": "Тестирование платежей",
-    "payment.test.subtitle": "Тестовая среда для проверки интеграции с YooKassa. Все платежи безопасны и не списывают реальные деньги.",
+    "payment.test.title": "Оплата подписки",
+    "payment.test.subtitle": "Выберите подходящий тариф и удобный способ оплаты.",
     "payment.test.loading": "Загрузка...",
     "payment.test.hideTestData": "Скрыть тестовые данные",
     "payment.test.showTestData": "Показать тестовые данные",
@@ -2544,8 +2544,8 @@ const translations: Record<Language, Record<string, string>> = {
     "review.consentLink": "personal data processing consent",
 
     // Payment Test Page
-    "payment.test.title": "Payment Testing",
-    "payment.test.subtitle": "Test environment for verifying YooKassa integration. All payments are safe and no real money is charged.",
+    "payment.test.title": "Subscription payment",
+    "payment.test.subtitle": "Choose a suitable plan and your preferred payment method.",
     "payment.test.loading": "Loading...",
     "payment.test.hideTestData": "Hide test data",
     "payment.test.showTestData": "Show test data",
@@ -3776,8 +3776,8 @@ const translations: Record<Language, Record<string, string>> = {
     "support.form.error.privacyRequired": "Vous devez accepter le traitement des données personnelles",
 
     // Payment Test Page
-    "payment.test.title": "Test de paiement",
-    "payment.test.subtitle": "Environnement de test pour vérifier l'intégration YooKassa. Tous les paiements sont sécurisés et aucun argent réel n'est débité.",
+    "payment.test.title": "Paiement de l'abonnement",
+    "payment.test.subtitle": "Choisissez l'offre qui vous convient et votre mode de paiement préféré.",
     "payment.test.loading": "Chargement...",
     "payment.test.hideTestData": "Masquer les données de test",
     "payment.test.showTestData": "Afficher les données de test",
@@ -5072,8 +5072,8 @@ const translations: Record<Language, Record<string, string>> = {
     "review.consentLink": "الموافقة على معالجة البيانات الشخصية",
 
     // Payment Test Page
-    "payment.test.title": "اختبار الدفع",
-    "payment.test.subtitle": "بيئة اختبار للتحقق من تكامل YooKassa. جميع المدفوعات آمنة ولا يتم خصم أموال حقيقية.",
+    "payment.test.title": "دفع الاشتراك",
+    "payment.test.subtitle": "اختر الخطة المناسبة وطريقة الدفع المفضلة لديك.",
     "payment.test.loading": "جاري التحميل...",
     "payment.test.hideTestData": "إخفاء بيانات الاختبار",
     "payment.test.showTestData": "عرض بيانات الاختبار",
@@ -6368,8 +6368,8 @@ const translations: Record<Language, Record<string, string>> = {
     "review.consentLink": "个人数据处理同意书",
 
     // Payment Test Page
-    "payment.test.title": "支付测试",
-    "payment.test.subtitle": "用于验证 YooKassa 集成的测试环境。所有支付安全进行，不会扣除真实资金。",
+    "payment.test.title": "订阅付款",
+    "payment.test.subtitle": "请选择合适的套餐和付款方式。",
     "payment.test.loading": "加载中...",
     "payment.test.hideTestData": "隐藏测试数据",
     "payment.test.showTestData": "显示测试数据",
