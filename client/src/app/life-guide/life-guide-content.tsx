@@ -21,6 +21,7 @@ import { Guide } from "@/types";
 import { useTranslation } from "@/hooks/useTranslation";
 import { useGuideProgress } from "@/hooks/useGuideProgress";
 import { lifeGuides } from "@/data/life-guides";
+import { HeroBackgroundImage } from "@/components/ui/hero-background-image";
 
 type ArrivalStep = {
   id: string;
@@ -251,13 +252,10 @@ export function LifeGuideContent() {
     <Layout>
       <div className="space-y-6 sm:space-y-8">
         {/* Hero — compact; crop so the person stays a bit visible on lg+ */}
-        <section className="relative left-1/2 right-1/2 -ml-[50vw] -mr-[50vw] w-screen overflow-hidden mb-6 sm:mb-8 min-h-[340px] sm:min-h-[420px] lg:min-h-[460px] bg-gradient-to-br from-blue-600 via-purple-600 to-indigo-700">
-          <div
-            className="absolute inset-0 bg-cover bg-no-repeat bg-[center_top] lg:bg-[70%_40%]"
-            aria-hidden
-            style={{
-              backgroundImage: 'url("/image-banner/image-life-guide.png?v=2")',
-            }}
+        <section className="relative left-1/2 right-1/2 -ml-[50vw] -mr-[50vw] w-screen overflow-hidden mb-6 sm:mb-8 min-h-[340px] sm:min-h-[420px] lg:min-h-[460px] bg-slate-200">
+          <HeroBackgroundImage
+            src="/image-banner/image-life-guide.png"
+            imageClassName="object-cover object-top lg:object-[70%_40%]"
           />
           <div className="absolute inset-0 bg-black/40 lg:bg-black/32" aria-hidden />
           <div className="absolute inset-0 bg-gradient-to-r from-black/50 via-black/25 to-transparent lg:from-black/48 lg:via-black/20 lg:to-black/5" aria-hidden />

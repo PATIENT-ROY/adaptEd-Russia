@@ -587,10 +587,6 @@ export default function AiHelperPage() {
     }
   }, [sendMessage, currentMode]);
 
-  const handlePopularQuestionFill = useCallback((question: string) => {
-    setInputMessage(question);
-  }, []);
-
   const handlePopularQuestionSend = useCallback(
     async (question: string) => {
       setInputMessage(question);
@@ -734,7 +730,7 @@ export default function AiHelperPage() {
           <div className="grid grid-cols-1 xl:grid-cols-4 gap-4 sm:gap-6 lg:gap-8">
             {/* Chat Section */}
             <div className="xl:col-span-3 order-1">
-              <Card className="min-h-[400px] sm:min-h-[500px] h-[calc(100vh-300px)] sm:h-[calc(100vh-350px)] lg:h-[calc(100vh-400px)] flex flex-col relative">
+              <Card className="h-[760px] min-h-0 sm:h-[calc(100dvh-180px)] sm:min-h-[720px] sm:max-h-[900px] flex flex-col relative">
                 {/* Limit Overlay */}
                 {limitError && (
                   <LimitOverlay
@@ -781,7 +777,7 @@ export default function AiHelperPage() {
                   {/* Messages */}
                   <div
                     ref={chatContainerRef}
-                    className="flex-1 overflow-y-auto p-3 sm:p-6 space-y-3 sm:space-y-4 scroll-smooth"
+                    className="min-h-0 flex-1 overflow-y-auto p-3 sm:p-6 space-y-3 sm:space-y-4 scroll-smooth"
                   >
                     {error && (
                       <div className="flex justify-center" role="alert">
@@ -927,34 +923,27 @@ export default function AiHelperPage() {
                   </div>
 
                   {/* Input */}
-                  <div className="border-t p-3 sm:p-4 flex-shrink-0 space-y-2">
+                  <div className="border-t p-2.5 sm:p-4 flex-shrink-0 space-y-2">
                     {/* Popular questions */}
-                    <div className="rounded-xl border border-slate-200 bg-slate-50 p-3">
+                    <div className="rounded-xl border border-slate-200 bg-slate-50 p-2.5 sm:p-3">
                       <p className="text-xs sm:text-sm font-semibold text-slate-800 mb-2">
                         {t("aiHelper.popular.title")}
                       </p>
-                      <div className="space-y-2">
+                      <div className="space-y-1.5 sm:space-y-2">
                         {popularStudentQuestions.map((question) => (
-                          <div key={question} className="flex items-center gap-2">
-                            <button
-                              type="button"
-                              onClick={() => handlePopularQuestionFill(question)}
-                              disabled={loading || isAtLimit}
-                              className="flex-1 text-left px-3 py-2 text-xs sm:text-sm bg-white border border-slate-200 rounded-lg hover:border-blue-300 hover:bg-blue-50 transition-colors disabled:opacity-50"
-                            >
+                          <button
+                            key={question}
+                            type="button"
+                            onClick={() => handlePopularQuestionSend(question)}
+                            disabled={loading || isAtLimit}
+                            className="flex w-full min-w-0 items-center justify-between gap-3 rounded-lg border border-slate-200 bg-white px-3 py-2 text-left text-xs leading-snug transition-colors hover:border-blue-300 hover:bg-blue-50 disabled:opacity-50 sm:text-sm"
+                            aria-label={`${t("aiHelper.input.send")}: ${question}`}
+                          >
+                            <span className="min-w-0 flex-1">
                               {question}
-                            </button>
-                            <Button
-                              type="button"
-                              variant="outline"
-                              size="sm"
-                              onClick={() => handlePopularQuestionSend(question)}
-                              disabled={loading || isAtLimit}
-                              className="text-xs"
-                            >
-                              {t("aiHelper.input.send")}
-                            </Button>
-                          </div>
+                            </span>
+                            <Send className="h-4 w-4 shrink-0 text-slate-600" />
+                          </button>
                         ))}
                       </div>
                     </div>
@@ -981,7 +970,7 @@ export default function AiHelperPage() {
                       </div>
                     )}
 
-                    <div className="flex items-center space-x-2">
+                    <div className="flex min-w-0 items-center gap-1.5 sm:gap-2">
                       <Input
                         value={inputMessage}
                         onChange={(e) => setInputMessage(e.target.value)}
@@ -991,7 +980,7 @@ export default function AiHelperPage() {
                             ? t("aiHelper.limit.inputPlaceholder")
                             : t("aiHelper.input.placeholder")
                         }
-                        className="flex-1 text-sm sm:text-base"
+                        className="min-w-0 flex-1 text-sm sm:text-base"
                         disabled={loading || isAtLimit}
                       />
                       {isSpeechSupported ? (
@@ -1001,7 +990,7 @@ export default function AiHelperPage() {
                           size="icon"
                           onClick={toggleSpeechRecognition}
                           disabled={loading || isAtLimit}
-                          className={`h-10 w-10 rounded-full border-slate-200 transition-colors flex-shrink-0 ${
+                          className={`h-9 w-9 sm:h-10 sm:w-10 rounded-full border-slate-200 transition-colors flex-shrink-0 ${
                             isListening
                               ? "bg-red-500 border-red-500 text-white hover:bg-red-600"
                               : "text-slate-600 hover:bg-slate-100"
@@ -1021,7 +1010,7 @@ export default function AiHelperPage() {
                           variant="outline"
                           size="icon"
                           disabled
-                          className="h-10 w-10 rounded-full border-slate-200 text-slate-400 flex-shrink-0"
+                          className="h-9 w-9 sm:h-10 sm:w-10 rounded-full border-slate-200 text-slate-400 flex-shrink-0"
                           aria-label={t("aiHelper.mic.unsupported")}
                           title={t("aiHelper.mic.unsupportedBrowser")}
                         >
@@ -1031,7 +1020,7 @@ export default function AiHelperPage() {
                       <Button
                         onClick={handleSendMessage}
                         disabled={loading || !inputMessage.trim() || isAtLimit}
-                        className="bg-gradient-to-r from-blue-500 to-purple-600 hover:from-blue-600 hover:to-purple-700 flex-shrink-0"
+                        className="h-9 w-9 p-0 sm:h-10 sm:w-auto sm:px-3 bg-gradient-to-r from-blue-500 to-purple-600 hover:from-blue-600 hover:to-purple-700 flex-shrink-0"
                         size="sm"
                         aria-label={t("aiHelper.input.send")}
                       >
@@ -1047,12 +1036,14 @@ export default function AiHelperPage() {
             <div className="space-y-4 sm:space-y-6 order-2">
               {/* Usage indicator */}
               {usage && (
-                <UsageBar
-                  used={usage.used}
-                  limit={usage.limit}
-                  plan={usage.plan}
-                  t={t}
-                />
+                <div className="hidden xl:block">
+                  <UsageBar
+                    used={usage.used}
+                    limit={usage.limit}
+                    plan={usage.plan}
+                    t={t}
+                  />
+                </div>
               )}
 
               {/* Quick Questions */}

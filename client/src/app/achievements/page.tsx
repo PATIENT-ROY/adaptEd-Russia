@@ -4,6 +4,7 @@ import { Layout } from "@/components/layout/layout";
 import { ProtectedRoute } from "@/components/auth/ProtectedRoute";
 import { Card, CardContent } from "@/components/ui/card";
 import { Button } from "@/components/ui/button";
+import { BackButton } from "@/components/ui/back-button";
 import { useTranslation } from "@/hooks/useTranslation";
 import {
   AchievementCategory,
@@ -19,10 +20,8 @@ import {
   Home,
   Zap,
   Award,
-  ArrowLeft,
 } from "lucide-react";
 import { useEffect, useMemo, useRef, useState } from "react";
-import Link from "next/link";
 import { fetchAchievementsOverview } from "@/lib/api";
 
 // Защита от повторных запросов при remount
@@ -322,16 +321,7 @@ export default function AchievementsPage() {
           {/* Header */}
           <div className="bg-white rounded-2xl sm:rounded-3xl p-4 sm:p-6 shadow-sm">
             <div className="flex flex-col sm:flex-row sm:items-center space-y-3 sm:space-y-0 sm:space-x-3">
-              <Link href="/dashboard">
-                <Button
-                  variant="outline"
-                  size="sm"
-                  className="flex items-center space-x-2"
-                >
-                  <ArrowLeft className="h-4 w-4" />
-                  <span>{t("achievements.back")}</span>
-                </Button>
-              </Link>
+              <BackButton label={t("achievements.back")} />
               <div className="rounded-lg bg-yellow-50 p-3 w-fit">
                 <Trophy className="h-6 w-6 text-yellow-600" />
               </div>

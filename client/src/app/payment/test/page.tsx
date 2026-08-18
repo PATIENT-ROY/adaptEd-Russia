@@ -4,6 +4,7 @@ import { useState, useEffect, Suspense } from "react";
 import { useSearchParams, useRouter } from "next/navigation";
 import { Layout } from "@/components/layout/layout";
 import { Button } from "@/components/ui/button";
+import { BackButton } from "@/components/ui/back-button";
 import {
   Card,
   CardContent,
@@ -128,7 +129,7 @@ function PaymentTestContent() {
           }),
         ]);
 
-      setPlans(plansData);
+      setPlans(plansData.filter((plan) => plan.price > 0));
       setTestData(testDataResponse);
       setSubscription(subscriptionData);
       setPaymentHistory(historyData);
@@ -284,6 +285,8 @@ function PaymentTestContent() {
     <Layout>
       <div className="min-h-screen bg-gradient-to-br from-slate-50 via-blue-50 to-indigo-50 py-8 rounded-2xl sm:rounded-3xl mx-4 sm:mx-6 lg:mx-8 my-4 sm:my-6 lg:my-8 overflow-hidden">
         <div className="max-w-7xl mx-auto px-4 sm:px-6 lg:px-8">
+          <BackButton label={t("support.back")} className="mb-6" />
+
           {/* Header */}
           <div className="text-center mb-8">
             <div className="flex items-center justify-center mb-4">
@@ -762,7 +765,7 @@ function PaymentTestContent() {
 
       {/* Toast notification */}
       {toastMessage && (
-        <div className="fixed bottom-6 right-6 z-50 animate-in fade-in slide-in-from-bottom-4">
+        <div className="fixed right-6 top-20 z-[110] animate-in fade-in slide-in-from-top-4">
           <div
             className={`rounded-lg px-5 py-3 shadow-lg text-white text-sm font-medium ${
               toastType === "error"

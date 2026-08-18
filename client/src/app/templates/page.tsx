@@ -8,6 +8,7 @@ import { useAuth } from "@/contexts/AuthContext";
 import { useTranslation } from "@/hooks/useTranslation";
 import { apiClient } from "@/lib/api";
 import { Button } from "@/components/ui/button";
+import { BackButton } from "@/components/ui/back-button";
 import {
   Card,
   CardContent,
@@ -26,7 +27,6 @@ import {
   GraduationCap,
   FileCheck,
   Languages,
-  ArrowLeft,
   Send,
   CheckCircle,
   Copy,
@@ -419,18 +419,11 @@ export default function TemplatesPage() {
         <div className="space-y-4 sm:space-y-6">
           {/* Header */}
           <div className="bg-white rounded-2xl sm:rounded-3xl p-4 sm:p-6 shadow-sm space-y-4">
+            <BackButton
+              label={t("templates.back")}
+              onClick={selectedTemplate || generatedContent ? handleBack : undefined}
+            />
             <div className="flex flex-col sm:flex-row sm:items-center space-y-3 sm:space-y-0 sm:space-x-4">
-              {(selectedTemplate || generatedContent) && (
-                <Button
-                  variant="outline"
-                  size="sm"
-                  onClick={handleBack}
-                  className="w-fit"
-                >
-                  <ArrowLeft className="h-4 w-4 mr-2" />
-                  {t("templates.back")}
-                </Button>
-              )}
               <div className="flex-1">
                 <div className="flex items-center space-x-3">
                   <div className="rounded-lg bg-gradient-to-br from-purple-500 to-pink-500 p-3">
@@ -665,7 +658,7 @@ export default function TemplatesPage() {
 
         {/* Toast */}
         {toastMessage && (
-          <div className={`fixed bottom-6 left-1/2 -translate-x-1/2 z-50 px-6 py-3 rounded-xl shadow-2xl text-sm animate-in slide-in-from-bottom-4 duration-300 flex items-center gap-2 ${
+          <div className={`fixed left-1/2 top-20 z-[110] flex max-w-[calc(100vw-2rem)] -translate-x-1/2 animate-in items-center gap-2 rounded-xl px-6 py-3 text-sm shadow-2xl slide-in-from-top-4 duration-300 ${
             toastType === "error"
               ? "bg-red-600 text-white"
               : "bg-slate-900 text-white"

@@ -95,6 +95,7 @@ const deleteLimiter = rateLimit({
 const paymentLimiter = rateLimit({
   windowMs: 60 * 60 * 1000, // 1 час
   max: 10, // максимум 10 платежей в час
+  skip: (req) => req.method === 'GET' || req.method === 'HEAD' || req.method === 'OPTIONS',
   message: 'Слишком много платежных операций.',
   standardHeaders: true,
   legacyHeaders: false,

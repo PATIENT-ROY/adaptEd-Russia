@@ -2,7 +2,8 @@
 
 import Link from "next/link";
 import { Button } from "@/components/ui/button";
-import { Search, Home, ArrowLeft } from "lucide-react";
+import { BackButton } from "@/components/ui/back-button";
+import { Search, Home } from "lucide-react";
 
 export default function NotFound() {
   return (
@@ -26,14 +27,7 @@ export default function NotFound() {
             </Button>
           </Link>
 
-          <Button
-            variant="outline"
-            onClick={() => window.history.back()}
-            className="w-full flex items-center justify-center space-x-2"
-          >
-            <ArrowLeft className="h-4 w-4" />
-            <span>Назад</span>
-          </Button>
+          <BackButton label="Назад" className="w-full" />
         </div>
       </div>
     </div>
