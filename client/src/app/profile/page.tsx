@@ -1327,7 +1327,7 @@ export default function ProfilePage() {
 
         {/* Toast */}
         {toastMessage && (
-          <div className="fixed bottom-6 left-1/2 -translate-x-1/2 z-50 bg-slate-900 text-white px-6 py-3 rounded-xl shadow-2xl text-sm animate-in slide-in-from-bottom-4 duration-300 flex items-center gap-2">
+          <div className="fixed left-1/2 top-20 z-[110] flex max-w-[calc(100vw-2rem)] -translate-x-1/2 animate-in items-center gap-2 rounded-xl bg-slate-900 px-6 py-3 text-sm text-white shadow-2xl slide-in-from-top-4 duration-300">
             <CheckCircle className="h-4 w-4 text-green-400 flex-shrink-0" />
             {toastMessage}
             <button

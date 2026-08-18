@@ -1,17 +1,16 @@
 "use client";
 
 import { useCallback, useEffect, useRef, useState } from "react";
-import { useRouter } from "next/navigation";
 import Link from "next/link";
 import { Layout } from "@/components/layout/layout";
 import { ProtectedRoute } from "@/components/auth/ProtectedRoute";
 import { FeaturePreviewGate } from "@/components/auth/FeaturePreviewGate";
 import { Button } from "@/components/ui/button";
+import { BackButton } from "@/components/ui/back-button";
 import { QuestionCard } from "@/components/community/QuestionCard";
 import { useQuestions, type Answer } from "@/hooks/useQuestions";
 import { useAuth } from "@/contexts/AuthContext";
 import {
-  ArrowLeft,
   Plus,
   MessageCircle,
   TrendingUp,
@@ -49,7 +48,6 @@ function SkeletonCard() {
 }
 
 export default function CommunityQuestionsPage() {
-  const router = useRouter();
   const { user } = useAuth();
   const {
     questions,
@@ -268,15 +266,7 @@ export default function CommunityQuestionsPage() {
           <div className="relative overflow-hidden bg-gradient-to-r from-indigo-600 via-purple-600 to-pink-500 rounded-xl sm:rounded-2xl lg:rounded-3xl mx-2 sm:mx-4 lg:mx-8 mt-2 sm:mt-4 mb-4 sm:mb-6 lg:mb-10">
             <div className="absolute inset-0 bg-[url('data:image/svg+xml;base64,PHN2ZyB3aWR0aD0iNjAiIGhlaWdodD0iNjAiIHZpZXdCb3g9IjAgMCA2MCA2MCIgeG1sbnM9Imh0dHA6Ly93d3cudzMub3JnLzIwMDAvc3ZnIj48ZyBmaWxsPSJub25lIiBmaWxsLXJ1bGU9ImV2ZW5vZGQiPjxwYXRoIGQ9Ik0zNiAxOGMtOS45NCAwLTE4IDguMDYtMTggMThzOC4wNiAxOCAxOCAxOCAxOC04LjA2IDE4LTE4LTguMDYtMTgtMTgtMTh6bTAgMzJjLTcuNzMyIDAtMTQtNi4yNjgtMTQtMTRzNi4yNjgtMTQgMTQtMTQgMTQgNi4yNjggMTQgMTQtNi4yNjggMTQtMTQgMTR6IiBmaWxsPSIjZmZmIiBmaWxsLW9wYWNpdHk9Ii4wNSIvPjwvZz48L3N2Zz4=')] opacity-30" />
             <div className="relative max-w-7xl mx-auto px-3 sm:px-4 lg:px-6 py-4 sm:py-8 lg:py-12">
-              <Button
-                variant="ghost"
-                size="sm"
-                className="text-white/80 hover:text-white hover:bg-white/10 mb-3 sm:mb-6 -ml-1"
-                onClick={() => router.back()}
-              >
-                <ArrowLeft className="h-4 w-4 mr-1 sm:mr-2" />
-                <span className="text-sm">Назад</span>
-              </Button>
+              <BackButton label="Назад" className="mb-3 sm:mb-6" />
 
               <div className="flex flex-col sm:flex-row sm:items-end sm:justify-between gap-3 sm:gap-6">
                 <div>

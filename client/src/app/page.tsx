@@ -22,6 +22,8 @@ import {
   Rocket,
   ScanLine,
   ArrowRight,
+  CheckCircle2,
+  Quote,
 } from "lucide-react";
 import Link from "next/link";
 import Image from "next/image";
@@ -46,6 +48,7 @@ import {
 import { useAdaptationCta } from "@/hooks/useAdaptationCta";
 import { ScrollReveal } from "@/components/home/ScrollReveal";
 import { StaggerReveal, StaggerItem } from "@/components/home/StaggerReveal";
+import { HeroBackgroundImage } from "@/components/ui/hero-background-image";
 import { motion } from "framer-motion";
 import {
   EDUCATION_GUIDES_COUNT,
@@ -306,15 +309,10 @@ export default function HomePage() {
         )}
 
         {/* Hero */}
-        <div className="relative overflow-hidden bg-gradient-to-br from-blue-600 via-purple-600 to-indigo-700 pt-10 sm:pt-14 md:pt-20 pb-16 sm:pb-20 md:pb-24 rounded-2xl sm:rounded-3xl mt-4 sm:mt-6 mb-6 sm:mb-8">
-          <div
-            className="absolute inset-0 scale-105 blur-[3px]"
-            aria-hidden
-            style={{
-              backgroundImage: 'url("/image-banner/image-Home-page.png")',
-              backgroundSize: "cover",
-              backgroundPosition: "center",
-            }}
+        <div className="relative overflow-hidden bg-slate-200 pt-10 sm:pt-14 md:pt-20 pb-16 sm:pb-20 md:pb-24 rounded-2xl sm:rounded-3xl mt-4 sm:mt-6 mb-6 sm:mb-8">
+          <HeroBackgroundImage
+            src="/image-banner/image-Home-page.png"
+            imageClassName="object-cover object-center scale-105 blur-[3px]"
           />
           <div className="absolute inset-0 bg-black/35" aria-hidden />
 
@@ -581,7 +579,7 @@ export default function HomePage() {
         {/* Features — single section */}
         <section
           aria-label={t("home.section.features.title")}
-          className="below-fold py-12 sm:py-16 md:py-20 bg-slate-50 rounded-2xl sm:rounded-3xl my-6 sm:my-8"
+          className="below-fold home-features-section py-12 sm:py-16 md:py-20 bg-slate-50 rounded-2xl sm:rounded-3xl my-6 sm:my-8"
         >
           <div className="max-w-7xl mx-auto px-4 sm:px-6 lg:px-8">
             <ScrollReveal className="text-center mb-10 sm:mb-12">
@@ -593,7 +591,7 @@ export default function HomePage() {
               </p>
             </ScrollReveal>
 
-            <StaggerReveal className="grid grid-cols-1 sm:grid-cols-2 lg:grid-cols-3 gap-4 sm:gap-6">
+            <StaggerReveal className="home-features-grid grid grid-cols-1 sm:grid-cols-2 lg:grid-cols-3 gap-4 sm:gap-6">
               {features.map((feature) => {
                 const Icon = feature.icon;
                 return (
@@ -759,7 +757,7 @@ export default function HomePage() {
           className="below-fold relative overflow-hidden py-12 sm:py-16 rounded-2xl sm:rounded-3xl my-6 sm:my-8 bg-cover bg-center bg-no-repeat"
           style={{
             backgroundImage:
-              "linear-gradient(to bottom right, rgba(45, 91, 255, 0.82), rgba(112, 52, 255, 0.82)), url(/images/illustration/adaptation-cta.png)",
+              "linear-gradient(to bottom right, rgba(30, 64, 175, 0.72), rgba(109, 40, 217, 0.74)), url(/images/illustration/adaptation-cta-v2.png)",
           }}
         >
           <ScrollReveal className="relative z-10 max-w-2xl mx-auto px-4 sm:px-6 text-center">
@@ -772,9 +770,9 @@ export default function HomePage() {
             <motion.div whileHover={{ scale: 1.02 }} whileTap={{ scale: 0.98 }}>
               <Link
                 href={adaptationCtaHref}
-                className="inline-flex min-h-12 items-center justify-center rounded-xl bg-white px-8 py-3.5 text-base sm:text-lg font-semibold text-indigo-700 shadow-lg hover:bg-white/95 focus-visible:outline-none focus-visible:ring-2 focus-visible:ring-white focus-visible:ring-offset-2 focus-visible:ring-offset-indigo-600"
+                className="cta-wave-button inline-flex min-h-12 items-center justify-center rounded-xl bg-white px-8 py-3.5 text-base sm:text-lg font-semibold text-indigo-700 shadow-lg hover:bg-white/95 focus-visible:outline-none focus-visible:ring-2 focus-visible:ring-white focus-visible:ring-offset-2 focus-visible:ring-offset-indigo-600"
               >
-                {adaptationCtaLabel}
+                <span className="relative z-10">{adaptationCtaLabel}</span>
               </Link>
             </motion.div>
             <p className="mt-4 text-sm text-white/70">
@@ -787,75 +785,73 @@ export default function HomePage() {
         <section
           id="home-about"
           aria-label={t("home.section.about.title")}
-          className="below-fold scroll-mt-28 py-12 sm:py-16 md:py-20 bg-white rounded-2xl sm:rounded-3xl my-6 sm:my-8"
+          className="below-fold scroll-mt-28 bg-white py-12 sm:py-16 md:py-20 rounded-2xl sm:rounded-3xl my-6 sm:my-8"
         >
-          <div className="mx-auto max-w-3xl px-4 sm:px-6 lg:px-8">
-            <Card className="border border-slate-200 shadow-sm bg-white">
-              <CardContent className="p-6 sm:p-8">
-                <h2 className="text-2xl sm:text-3xl font-bold text-slate-900 mb-6">
-                  {t("home.section.about.heading")}
-                </h2>
+          <div className="mx-auto max-w-5xl px-4 sm:px-6 lg:px-8">
+            <div className="mb-8 sm:mb-10">
+              <div className="mb-4 h-1 w-12 rounded-full bg-blue-600" />
+              <h2 className="text-3xl font-bold tracking-tight text-slate-950 sm:text-4xl">
+                {t("home.section.about.heading")}
+              </h2>
+            </div>
 
-                <div className="rounded-xl border border-slate-100 bg-slate-50 p-4 sm:p-5 mb-6">
-                  <div className="flex items-start gap-4">
-                    <div className="w-16 h-16 shrink-0 rounded-full overflow-hidden border-2 border-slate-200 bg-white">
-                      <Image
-                        src="/founder-avatar.png"
-                        alt={t("home.about.avatarAlt")}
-                        width={128}
-                        height={128}
-                        className="w-full h-full object-cover object-top"
-                      />
-                    </div>
-                    <div>
-                      <p className="text-lg font-semibold text-slate-900">
-                        {t("home.section.about.author.title")}
-                      </p>
-                      <p className="text-sm text-slate-600">
-                        {t("home.section.about.author.subtitle")}
-                      </p>
-                      <ul className="mt-2 space-y-1 text-sm text-slate-700">
-                        <li>{t("home.section.about.author.fact1")}</li>
-                        <li>{t("home.section.about.author.fact2")}</li>
-                      </ul>
+            <Card className="border border-slate-200 bg-white shadow-[0_18px_50px_-32px_rgba(15,23,42,0.35)]">
+              <CardContent className="p-6 sm:p-8 lg:p-10">
+                <div className="flex flex-col gap-6 border-b border-slate-200 pb-8 sm:flex-row sm:items-center">
+                  <div className="h-20 w-20 shrink-0 overflow-hidden rounded-full bg-slate-100 ring-4 ring-blue-50 sm:h-24 sm:w-24">
+                    <Image
+                      src="/founder-avatar.png"
+                      alt={t("home.about.avatarAlt")}
+                      width={160}
+                      height={160}
+                      className="h-full w-full object-cover object-top"
+                    />
+                  </div>
+                  <div className="min-w-0 flex-1">
+                    <p className="text-xl font-bold text-slate-950 sm:text-2xl">
+                      {t("home.section.about.author.title")}
+                    </p>
+                    <p className="mt-1 text-sm font-medium text-blue-600 sm:text-base">
+                      {t("home.section.about.author.subtitle")}
+                    </p>
+                    <div className="mt-3 flex flex-col gap-1 text-sm text-slate-500 sm:flex-row sm:gap-5">
+                      <span>{t("home.section.about.author.fact1")}</span>
+                      <span className="hidden text-slate-300 sm:inline">•</span>
+                      <span>{t("home.section.about.author.fact2")}</span>
                     </div>
                   </div>
                 </div>
 
-                <p className="text-base sm:text-lg text-slate-800 leading-relaxed mb-6">
-                  {t("home.section.about.summary")}
-                </p>
+                <div className="py-8 sm:py-10">
+                  <div className="flex items-start gap-4">
+                    <Quote className="mt-1 h-7 w-7 shrink-0 text-blue-500" aria-hidden />
+                    <p className="text-base leading-relaxed text-slate-700 sm:text-xl">
+                    {t("home.section.about.summary")}
+                    </p>
+                  </div>
+                </div>
 
-                <ul className="grid grid-cols-1 sm:grid-cols-2 gap-x-6 gap-y-2 text-sm sm:text-base text-slate-800 mb-6">
-                  <li className="flex gap-2">
-                    <span className="text-blue-600 shrink-0" aria-hidden>
-                      •
-                    </span>
-                    <span>{t("home.section.about.purpose.bullet1")}</span>
-                  </li>
-                  <li className="flex gap-2">
-                    <span className="text-blue-600 shrink-0" aria-hidden>
-                      •
-                    </span>
-                    <span>{t("home.section.about.purpose.bullet2")}</span>
-                  </li>
-                  <li className="flex gap-2">
-                    <span className="text-blue-600 shrink-0" aria-hidden>
-                      •
-                    </span>
-                    <span>{t("home.section.about.purpose.bullet3")}</span>
-                  </li>
-                  <li className="flex gap-2">
-                    <span className="text-blue-600 shrink-0" aria-hidden>
-                      •
-                    </span>
-                    <span>{t("home.section.about.purpose.bullet4")}</span>
-                  </li>
+                <ul className="grid grid-cols-1 gap-x-8 gap-y-4 sm:grid-cols-2">
+                  {["bullet1", "bullet2", "bullet3", "bullet4"].map(
+                    (bullet) => (
+                      <li
+                        key={bullet}
+                        className="flex items-start gap-3 text-sm leading-relaxed text-slate-700 sm:text-base"
+                      >
+                        <span className="mt-0.5 flex h-6 w-6 shrink-0 items-center justify-center rounded-full bg-blue-50 text-blue-600">
+                          <CheckCircle2 className="h-3.5 w-3.5" aria-hidden />
+                        </span>
+                        <span>{t(`home.section.about.purpose.${bullet}`)}</span>
+                      </li>
+                    ),
+                  )}
                 </ul>
 
-                <p className="text-lg sm:text-xl font-semibold italic text-slate-900">
-                  {t("home.section.about.closing")}
-                </p>
+                <div className="mt-8 rounded-xl bg-blue-50 px-5 py-4 sm:px-6">
+                  <p className="text-base font-semibold italic text-blue-950 sm:text-lg">
+                    {t("home.section.about.closing")}
+                  </p>
+                </div>
               </CardContent>
             </Card>
           </div>

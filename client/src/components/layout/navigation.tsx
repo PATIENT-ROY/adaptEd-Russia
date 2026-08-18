@@ -34,10 +34,10 @@ const navigationItemsConfig = [
   { href: "/dashboard", labelKey: "nav.home", icon: Home },
   { href: "/education-guide", labelKey: "nav.education", icon: BookOpen },
   { href: "/life-guide", labelKey: "nav.life", icon: HomeIcon },
-  { href: "/reminders", labelKey: "nav.reminders", icon: Bell },
 ];
 
 const authenticatedNavigationItemsConfig = [
+  { href: "/reminders", labelKey: "nav.reminders", icon: Bell },
   { href: "/ai-helper", labelKey: "nav.aiHelper", icon: MessageSquare },
   { href: "/docscan", labelKey: "nav.docscan", icon: ScanLine },
   { href: "/achievements", labelKey: "nav.achievements", icon: Trophy },

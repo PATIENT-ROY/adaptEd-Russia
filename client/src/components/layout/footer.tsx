@@ -27,7 +27,9 @@ export function Footer() {
       { href: user ? "/dashboard" : "/", labelKey: "nav.home" },
       { href: "/education-guide", labelKey: "nav.education" },
       { href: "/life-guide", labelKey: "nav.life" },
-      { href: "/reminders", labelKey: "nav.reminders" },
+      ...(user
+        ? [{ href: "/reminders", labelKey: "nav.reminders" }]
+        : []),
       { href: "/support", labelKey: "footer.support" },
     ],
     features: user
@@ -44,10 +46,31 @@ export function Footer() {
   ];
 
   return (
-    <footer className="bg-gradient-to-br from-slate-900 via-slate-800 to-slate-900 text-white footer-animate">
+    <footer className="relative isolate overflow-hidden bg-gradient-to-br from-slate-900 via-slate-800 to-slate-900 text-white footer-animate">
+      <div
+        aria-hidden
+        className="pointer-events-none absolute inset-0 z-0 flex select-none items-center justify-center overflow-hidden"
+      >
+        <div className="absolute h-56 w-56 rounded-full bg-blue-500/10 blur-[90px] sm:h-96 sm:w-96" />
+        <div className="text-center font-black leading-[0.82] tracking-[-0.065em] opacity-20 sm:flex sm:items-center sm:gap-[0.12em] sm:leading-none">
+          <span
+            className="block text-[clamp(5rem,12vw,12rem)] text-transparent"
+            style={{ WebkitTextStroke: "1.5px rgba(96, 165, 250, 0.42)" }}
+          >
+            AdaptEd
+          </span>
+          <span
+            className="block text-[clamp(5rem,12vw,12rem)] text-transparent"
+            style={{ WebkitTextStroke: "1.5px rgba(196, 181, 253, 0.42)" }}
+          >
+            Russia
+          </span>
+        </div>
+      </div>
+
       {/* Main Footer Content */}
-      <div className="mx-auto max-w-screen-2xl px-3 sm:px-4 lg:px-8 py-6 sm:py-8 lg:py-10">
-        <div className="grid grid-cols-1 sm:grid-cols-2 lg:grid-cols-3 gap-4 sm:gap-6 lg:gap-8">
+      <div className="relative z-10 mx-auto max-w-screen-2xl px-3 sm:px-4 lg:px-8 py-6 sm:py-8 lg:py-10">
+        <div className="grid grid-cols-1 gap-3 sm:grid-cols-2 sm:gap-6 lg:grid-cols-3 lg:gap-8">
           {/* Brand Section */}
           <div className="sm:col-span-2 lg:col-span-1 footer-link-animate">
             <div className="flex items-center space-x-2 sm:space-x-3 mb-3 sm:mb-4">
@@ -108,12 +131,12 @@ export function Footer() {
               <BookOpen className="h-4 w-4 sm:h-5 sm:w-5 mr-2 text-blue-400" />
               {t("footer.platform")}
             </h3>
-            <ul className="space-y-0.5 sm:space-y-1 mb-3 sm:mb-4">
+            <ul className="mb-3 space-y-2 sm:mb-4 sm:space-y-1">
               {footerLinks.platform.map((link, index) => (
                 <li key={link.href}>
                   <Link
                     href={link.href}
-                    className="text-xs sm:text-sm text-slate-300 hover:text-blue-400 transition-colors duration-300 hover:translate-x-1 inline-block py-0.5"
+                    className="inline-block min-h-0 py-0 text-xs text-slate-300 transition-colors duration-300 hover:translate-x-1 hover:text-blue-400 sm:py-0.5 sm:text-sm"
                     style={{ animationDelay: `${(index + 1) * 50}ms` }}
                   >
                     {t(link.labelKey)}
@@ -134,12 +157,12 @@ export function Footer() {
                   <Shield className="h-4 w-4 sm:h-5 sm:w-5 mr-2 text-blue-400" />
                   {t("footer.features")}
                 </h3>
-                <ul className="space-y-0.5 sm:space-y-1 mb-3 sm:mb-4">
+                <ul className="mb-3 space-y-2 sm:mb-4 sm:space-y-1">
                   {footerLinks.features.map((link, index) => (
                     <li key={link.href}>
                       <Link
                         href={link.href}
-                        className="text-xs sm:text-sm text-slate-300 hover:text-blue-400 transition-colors duration-300 hover:translate-x-1 inline-block py-0.5"
+                        className="inline-block min-h-0 py-0 text-xs text-slate-300 transition-colors duration-300 hover:translate-x-1 hover:text-blue-400 sm:py-0.5 sm:text-sm"
                         style={{ animationDelay: `${(index + 1) * 50}ms` }}
                       >
                         {t(link.labelKey)}
@@ -159,17 +182,17 @@ export function Footer() {
               <div className="flex items-center space-x-2 sm:space-x-3 text-slate-300 text-xs sm:text-sm">
                 <Mail className="h-3 w-3 sm:h-4 sm:w-4 text-blue-400 flex-shrink-0" />
                 <a
-                  href="mailto:support@adapted-russia.com"
-                  className="break-all hover:text-blue-400 transition-colors"
+                  href="mailto:support@adaptedrussia.ru"
+                  className="min-h-0 break-all transition-colors hover:text-blue-400"
                 >
-                  support@adapted-russia.com
+                  support@adaptedrussia.ru
                 </a>
               </div>
               <div className="flex items-center space-x-2 sm:space-x-3 text-slate-300 text-xs sm:text-sm">
                 <Phone className="h-3 w-3 sm:h-4 sm:w-4 text-blue-400 flex-shrink-0" />
                 <a
                   href="tel:+74951234567"
-                  className="hover:text-blue-400 transition-colors"
+                  className="min-h-0 transition-colors hover:text-blue-400"
                 >
                   +7 (495) 123-45-67
                 </a>
@@ -198,42 +221,44 @@ export function Footer() {
       </div>
 
       {/* Bottom Bar */}
-      <div className="border-t border-slate-700">
-        <div className="mx-auto max-w-screen-2xl px-3 sm:px-4 lg:px-8 py-3 sm:py-4 lg:py-5">
-          <div className="flex flex-col sm:flex-row items-center justify-between space-y-2 sm:space-y-0">
-            <div className="flex items-center flex-wrap justify-center sm:justify-start gap-x-2 gap-y-1 text-slate-400 text-xs sm:text-sm text-center sm:text-left">
-              <span>
+      <div className="relative z-10 border-t border-slate-700">
+        <div className="mx-auto max-w-screen-2xl px-3 pb-16 pt-3 sm:px-4 sm:py-4 lg:px-8 lg:py-5">
+          <div className="flex flex-col items-center justify-between gap-3 sm:flex-row sm:gap-4">
+            <div className="order-2 flex flex-wrap items-center justify-center gap-x-2 gap-y-1 text-center text-xs text-slate-400 sm:order-1 sm:justify-start sm:text-left sm:text-sm">
+              <span className="whitespace-nowrap">
                 © {currentYear} AdaptEd Russia. {t("footer.copyright")}.
               </span>
-              <span className="hidden sm:inline">|</span>
-              <span className="hidden sm:inline">{t("footer.madeWith")}</span>
-              <Heart className="h-3 w-3 sm:h-4 sm:w-4 text-red-500 inline" />
-              <span className="hidden sm:inline">{t("footer.inRussia")}</span>
+              <span>|</span>
+              <span>{t("footer.madeWith")}</span>
+              <Heart className="h-4 w-4 text-red-500" />
+              <span>{t("footer.inRussia")}</span>
             </div>
 
-            <div className="flex items-center flex-wrap justify-center sm:justify-end gap-x-3 sm:gap-x-4 gap-y-1 text-xs sm:text-sm">
+            <div className="order-1 grid w-full grid-cols-1 items-center justify-items-center gap-y-2 text-center text-xs sm:order-2 sm:flex sm:w-auto sm:flex-wrap sm:items-center sm:justify-end sm:gap-x-4 sm:gap-y-1 sm:text-sm lg:pr-20">
               <Link
                 href="/privacy-policy"
-                className="text-slate-400 hover:text-blue-400 transition-colors duration-300"
+                className="col-span-2 min-h-0 leading-snug text-slate-400 transition-colors duration-300 hover:text-blue-400 sm:col-span-1"
                 target="_blank"
                 rel="noopener noreferrer"
               >
                 {t("footer.privacy")}
               </Link>
-              <Link
-                href="/personal-data-consent"
-                className="text-slate-400 hover:text-blue-400 transition-colors duration-300"
-                target="_blank"
-                rel="noopener noreferrer"
-              >
-                {t("footer.personalDataConsent")}
-              </Link>
-              <div
-                className="flex items-center space-x-1 sm:space-x-2 text-slate-400"
-                aria-label={currentLanguage}
-              >
-                <Globe className="h-3 w-3 sm:h-4 sm:w-4" />
-                <span>{currentLanguage}</span>
+              <div className="flex items-center justify-center gap-2 whitespace-nowrap sm:contents">
+                <Link
+                  href="/personal-data-consent"
+                  className="min-h-0 leading-snug text-slate-400 transition-colors duration-300 hover:text-blue-400"
+                  target="_blank"
+                  rel="noopener noreferrer"
+                >
+                  {t("footer.personalDataConsent")}
+                </Link>
+                <div
+                  className="flex items-center justify-center space-x-1 text-slate-400 sm:space-x-2"
+                  aria-label={currentLanguage}
+                >
+                  <Globe className="h-3 w-3 sm:h-4 sm:w-4" />
+                  <span>{currentLanguage}</span>
+                </div>
               </div>
             </div>
           </div>

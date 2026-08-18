@@ -25,6 +25,7 @@ import { Guide } from "@/types";
 import { useTranslation } from "@/hooks/useTranslation";
 import { useGuideProgress } from "@/hooks/useGuideProgress";
 import { educationGuides } from "@/data/education-guides";
+import { HeroBackgroundImage } from "@/components/ui/hero-background-image";
 
 type Category = {
   id: string;
@@ -232,14 +233,10 @@ export function EducationGuideContent() {
     <Layout>
       <div className="space-y-6 sm:space-y-8">
         {/* Hero — compact height; crop biased so student peeks in on the right */}
-        <section className="relative left-1/2 right-1/2 -ml-[50vw] -mr-[50vw] w-screen overflow-hidden mb-6 sm:mb-8 min-h-[340px] sm:min-h-[420px] lg:min-h-[460px] bg-gradient-to-br from-blue-600 via-purple-600 to-indigo-700">
-          <div
-            className="absolute inset-0 bg-cover bg-no-repeat bg-[center_top] lg:bg-[72%_58%]"
-            aria-hidden
-            style={{
-              backgroundImage:
-                'url("/image-banner/image-education-guide.png?v=5")',
-            }}
+        <section className="relative left-1/2 right-1/2 -ml-[50vw] -mr-[50vw] w-screen overflow-hidden mb-6 sm:mb-8 min-h-[340px] sm:min-h-[420px] lg:min-h-[460px] bg-slate-200">
+          <HeroBackgroundImage
+            src="/image-banner/image-education-guide.png"
+            imageClassName="object-cover object-top lg:object-[72%_58%]"
           />
           <div className="absolute inset-0 bg-black/40 lg:bg-black/32" aria-hidden />
           <div

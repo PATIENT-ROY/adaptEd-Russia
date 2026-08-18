@@ -10,6 +10,7 @@ import {
   CardTitle,
 } from "@/components/ui/card";
 import { Button } from "@/components/ui/button";
+import { BackButton } from "@/components/ui/back-button";
 import { Input } from "@/components/ui/input";
 
 import { useSupport } from "@/hooks/useSupport";
@@ -31,7 +32,6 @@ import {
   Users,
   Globe,
   Shield,
-  ArrowLeft,
   ChevronDown,
   ChevronUp,
   Inbox,
@@ -97,6 +97,16 @@ export default function SupportPage() {
     }
   }, [user, loadMyTickets]);
 
+  useEffect(() => {
+    if (!user) return;
+
+    setFormData((current) => ({
+      ...current,
+      name: user.name,
+      email: user.email,
+    }));
+  }, [user]);
+
   const getStatusBadge = (status: string) => {
     switch (status) {
       case "OPEN":
@@ -139,7 +149,12 @@ export default function SupportPage() {
     try {
       await submitSupportForm(formData);
       setIsSubmitted(true);
-      setFormData({ name: "", email: "", subject: "", message: "" });
+      setFormData({
+        name: user?.name ?? "",
+        email: user?.email ?? "",
+        subject: "",
+        message: "",
+      });
       setPrivacyConsent(false);
       loadMyTickets();
     } catch (err) {
@@ -312,15 +327,7 @@ export default function SupportPage() {
         ) : (
           <>
             {/* Back Button */}
-            <Link href="/">
-              <Button
-                variant="ghost"
-                className="mb-6 hover:bg-blue-100"
-              >
-                <ArrowLeft className="h-4 w-4 mr-2" />
-                {t("support.back")}
-              </Button>
-            </Link>
+            <BackButton label={t("support.back")} className="mb-6" />
 
             {/* Header */}
             <div className="text-center mb-12">
@@ -363,6 +370,9 @@ export default function SupportPage() {
                             minLength={2}
                             value={formData.name}
                             onChange={handleInputChange}
+                            readOnly={Boolean(user)}
+                            aria-readonly={Boolean(user)}
+                            className={user ? "bg-gray-50 cursor-not-allowed" : undefined}
                             placeholder={t("support.form.namePlaceholder")}
                           />
                         </div>
@@ -380,6 +390,9 @@ export default function SupportPage() {
                             required
                             value={formData.email}
                             onChange={handleInputChange}
+                            readOnly={Boolean(user)}
+                            aria-readonly={Boolean(user)}
+                            className={user ? "bg-gray-50 cursor-not-allowed" : undefined}
                             placeholder="your@email.com"
                           />
                         </div>
