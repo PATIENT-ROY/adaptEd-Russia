@@ -233,57 +233,68 @@ function SettingsPanel({
 }) {
   return (
     <Card
-      className={`${profileCardClass} animate-fade-in-up`}
+      className={`${profileCardClass} animate-fade-in-up overflow-hidden`}
       style={profileCardStyle}
     >
       <CardHeader
-        className="relative z-10 cursor-pointer"
+        className="relative z-10 cursor-pointer select-none px-4 py-4 sm:px-6 sm:py-5"
         onClick={onToggle}
         role="button"
         aria-expanded={isOpen}
       >
-        <CardTitle className="flex items-center justify-between">
-          <div className="flex items-center space-x-3">
-            <div className="w-10 h-10 rounded-2xl bg-gradient-to-br from-slate-400 to-slate-600 flex items-center justify-center shadow-lg">
-              <Settings className="h-5 w-5 text-white" />
+        <CardTitle className="flex items-center justify-between gap-3">
+          <div className="flex min-w-0 items-center gap-3">
+            <div className="flex h-9 w-9 shrink-0 items-center justify-center rounded-xl bg-slate-800 text-white sm:h-10 sm:w-10 sm:rounded-2xl">
+              <Settings className="h-4 w-4 sm:h-5 sm:w-5" />
             </div>
-            <span className="text-xl font-bold">{t("profile.settings.title")}</span>
+            <div className="min-w-0">
+              <span className="block text-base font-bold tracking-tight text-slate-900 sm:text-xl">
+                {t("profile.settings.title")}
+              </span>
+            </div>
           </div>
           <div
-            className={`transition-transform duration-300 ${isOpen ? "rotate-180" : ""}`}
+            className={`flex h-8 w-8 shrink-0 items-center justify-center rounded-full bg-slate-100 transition-transform duration-300 ${
+              isOpen ? "rotate-180" : ""
+            }`}
           >
-            <ChevronDown className="h-5 w-5 text-slate-500" />
+            <ChevronDown className="h-4 w-4 text-slate-600" />
           </div>
         </CardTitle>
       </CardHeader>
       <div
-        className={`relative z-10 overflow-hidden transition-all duration-300 ${
-          isOpen ? "max-h-[1600px] opacity-100" : "max-h-0 opacity-0"
+        className={`relative z-10 overflow-hidden transition-all duration-300 ease-out ${
+          isOpen ? "max-h-[2000px] opacity-100" : "max-h-0 opacity-0"
         }`}
       >
-        <CardContent className="space-y-3 pb-6">
+        <CardContent className="space-y-4 px-4 pb-5 pt-0 sm:space-y-5 sm:px-6 sm:pb-6">
           <ProfileAccountSettings onLogout={onLogout} t={t} />
-          <Button
-            variant="outline"
-            disabled
-            title={t("profile.settings.comingSoon")}
-            className="w-full justify-start h-12 opacity-60 cursor-not-allowed border-red-200 text-red-600"
-          >
-            <Trash2 className="mr-3 h-5 w-5" />
-            {t("profile.settings.deleteAccount")}
-            <span className="ml-auto text-xs text-slate-400">
-              {t("profile.settings.comingSoon")}
-            </span>
-          </Button>
-          <Button
-            variant="outline"
-            onClick={onLogout}
-            className="w-full justify-start h-12 hover:bg-slate-50 transition-all duration-300"
-          >
-            <LogOut className="mr-3 h-5 w-5" />
-            {t("profile.settings.logout")}
-            <ChevronRight className="ml-auto h-4 w-4" />
-          </Button>
+
+          <div className="overflow-hidden rounded-2xl border border-slate-200/80 bg-white">
+            <div className="divide-y divide-slate-100 p-2 sm:p-2.5">
+              <Button
+                variant="ghost"
+                onClick={onLogout}
+                className="h-11 w-full justify-start rounded-xl px-3 text-sm font-medium text-slate-800 shadow-none hover:bg-slate-50"
+              >
+                <LogOut className="mr-2.5 h-4 w-4 text-slate-500" />
+                {t("profile.settings.logout")}
+                <ChevronRight className="ml-auto h-4 w-4 text-slate-400" />
+              </Button>
+              <Button
+                variant="ghost"
+                disabled
+                title={t("profile.settings.comingSoon")}
+                className="h-11 w-full justify-start rounded-xl px-3 text-sm font-medium text-red-600 opacity-55 shadow-none cursor-not-allowed"
+              >
+                <Trash2 className="mr-2.5 h-4 w-4" />
+                {t("profile.settings.deleteAccount")}
+                <span className="ml-auto text-[11px] font-medium text-slate-400">
+                  {t("profile.settings.comingSoon")}
+                </span>
+              </Button>
+            </div>
+          </div>
         </CardContent>
       </div>
     </Card>

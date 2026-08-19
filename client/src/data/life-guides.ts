@@ -1,4 +1,5 @@
 import { Guide, GuideCategory, Language, Difficulty } from "@/types";
+import { priorityLifeGuides } from "@/data/life-guides-priority-2026";
 
 export const lifeGuides: Guide[] = [
   {
@@ -1490,4 +1491,5 @@ export const lifeGuides: Guide[] = [
     createdAt: "2024-01-20",
     updatedAt: "2026-03-07",
   },
+  ...priorityLifeGuides,
 ];

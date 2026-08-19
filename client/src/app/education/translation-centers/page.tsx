@@ -9,16 +9,17 @@ import {
   Clock,
   Phone,
   Map,
-  ArrowLeft,
   ChevronDown,
   Star,
   CheckCircle,
 } from "lucide-react";
 import Link from "next/link";
 import { useState, useEffect } from "react";
+import { useRouter } from "next/navigation";
 import { useTranslation } from "@/hooks/useTranslation";
 import { useAuth } from "@/contexts/AuthContext";
 import { RUSSIAN_CITIES } from "@/constants/russianCities";
+import { BackButton } from "@/components/ui/back-button";
 
 interface TranslationCenter {
   id: string;
@@ -124,6 +125,7 @@ const cities = RUSSIAN_CITIES;
 export default function TranslationCentersPage() {
   const { t } = useTranslation();
   const { user } = useAuth();
+  const router = useRouter();
   const [selectedCity, setSelectedCity] = useState<string>("Москва");
   const [, setIsUsingProfileCity] = useState(false);
   const [centers, setCenters] = useState<TranslationCenter[]>([]);
@@ -177,12 +179,11 @@ export default function TranslationCentersPage() {
         {/* Header */}
         <div className="bg-white rounded-2xl sm:rounded-3xl p-4 sm:p-6 shadow-sm">
           <div className="flex flex-col sm:flex-row sm:items-center space-y-3 sm:space-y-0 sm:space-x-3">
-            <Link href="/education-guide">
-              <Button variant="ghost" size="sm" className="mb-2 sm:mb-0">
-                <ArrowLeft className="h-4 w-4 mr-2" />
-                {t("translationCenters.back")}
-              </Button>
-            </Link>
+            <BackButton
+              label={t("translationCenters.back")}
+              className="mb-2 sm:mb-0"
+              onClick={() => router.push("/education-guide")}
+            />
             <div className="rounded-lg bg-blue-50 p-3 w-fit">
               <FileText className="h-6 w-6 text-blue-600" />
             </div>

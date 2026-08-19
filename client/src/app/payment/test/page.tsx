@@ -285,7 +285,11 @@ function PaymentTestContent() {
     <Layout>
       <div className="min-h-screen bg-gradient-to-br from-slate-50 via-blue-50 to-indigo-50 py-8 rounded-2xl sm:rounded-3xl mx-4 sm:mx-6 lg:mx-8 my-4 sm:my-6 lg:my-8 overflow-hidden">
         <div className="max-w-7xl mx-auto px-4 sm:px-6 lg:px-8">
-          <BackButton label={t("support.back")} className="mb-6" />
+          <BackButton
+            label={t("support.back")}
+            className="mb-4"
+            onClick={() => router.push("/profile")}
+          />
 
           {/* Header */}
           <div className="text-center mb-8">

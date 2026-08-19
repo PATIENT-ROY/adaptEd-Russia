@@ -3,20 +3,19 @@
 import { Layout } from "@/components/layout/layout";
 import { Card, CardContent, CardHeader, CardTitle } from "@/components/ui/card";
 import { Input } from "@/components/ui/input";
-import { Button } from "@/components/ui/button";
 import { useState, useMemo } from "react";
-import Link from "next/link";
+import { useRouter } from "next/navigation";
 import {
   Search,
   BookOpen,
   Sparkles,
   TrendingUp,
   Languages,
-  ArrowLeft,
 } from "lucide-react";
 import { useLanguage } from "@/contexts/LanguageContext";
 import { Language } from "@/types";
 import { useTranslation } from "@/hooks/useTranslation";
+import { BackButton } from "@/components/ui/back-button";
 
 interface SlangTerm {
   term: string;
@@ -413,6 +412,7 @@ export default function StudentSlangPage() {
   const [selectedCategory, setSelectedCategory] = useState<string>("все");
   const { currentLanguage } = useLanguage();
   const { t } = useTranslation();
+  const router = useRouter();
 
   const filteredTerms = useMemo(() => {
     return slangDictionary.filter((term) => {
@@ -454,13 +454,11 @@ export default function StudentSlangPage() {
     <Layout>
       <div className="min-h-screen bg-gradient-to-br from-blue-50 via-white to-purple-50 py-8">
         <div className="max-w-6xl mx-auto px-4 sm:px-6 lg:px-8">
-          {/* Back Button */}
-          <Link href="/education-guide">
-            <Button variant="ghost" className="mb-6 hover:bg-blue-100">
-              <ArrowLeft className="h-4 w-4 mr-2" />
-              {t("studentSlang.back")}
-            </Button>
-          </Link>
+          <BackButton
+            label={t("studentSlang.back")}
+            className="mb-6"
+            onClick={() => router.push("/education-guide")}
+          />
 
           {/* Header */}
           <div className="text-center mb-12">
