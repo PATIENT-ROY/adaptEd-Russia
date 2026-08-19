@@ -325,6 +325,7 @@ exports.Prisma.QuestionScalarFieldEnum = {
   description: 'description',
   authorId: 'authorId',
   isAnswered: 'isAnswered',
+  acceptedAnswerId: 'acceptedAnswerId',
   createdAt: 'createdAt',
   updatedAt: 'updatedAt'
 };

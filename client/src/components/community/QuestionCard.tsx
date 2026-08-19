@@ -1,6 +1,7 @@
 "use client";
 
 import { useState, useRef, useEffect } from "react";
+import Link from "next/link";
 import {
   Card,
   CardContent,
@@ -19,8 +20,16 @@ import {
   Send,
   Sparkles,
   Trash2,
+  CheckCircle2,
+  Pencil,
+  ExternalLink,
 } from "lucide-react";
 import type { Answer } from "@/hooks/useQuestions";
+import { useTranslation } from "@/hooks/useTranslation";
+import {
+  formatAnswersCountLabel,
+  formatRelativeTime,
+} from "@/lib/community-i18n";
 
 type QuestionCardProps = {
   id: string;
@@ -31,16 +40,27 @@ type QuestionCardProps = {
   answers?: Answer[];
   author: string;
   authorId?: string;
-  time: string;
+  createdAt: number;
   isAnswered?: boolean;
+  acceptedAnswerId?: string | null;
   isExpanded?: boolean;
   onToggle?: () => void;
   onLike?: () => void;
   onAddAnswer?: (content: string) => Promise<void>;
   onDelete?: () => void;
+  onAcceptAnswer?: (answerId: string) => Promise<void>;
+  onUpdateAnswer?: (answerId: string, content: string) => Promise<void>;
+  onDeleteAnswer?: (answerId: string) => Promise<void>;
   isLiked?: boolean;
   isLoadingAnswers?: boolean;
   isOwner?: boolean;
+  currentUserId?: string;
+  /** When true, title is not a link (detail page) */
+  hideDetailLink?: boolean;
+  /** Show full description (detail page) */
+  fullDescription?: boolean;
+  /** Hide card title (shown in page header on detail) */
+  hideTitle?: boolean;
 };
 
 function AuthorAvatar({ name }: { name: string }) {
@@ -66,20 +86,34 @@ export function QuestionCard({
   likesCount,
   answers,
   author,
-  time,
+  createdAt,
   isAnswered = false,
+  acceptedAnswerId,
   isExpanded = false,
   onToggle,
   onLike,
   onAddAnswer,
   onDelete,
+  onAcceptAnswer,
+  onUpdateAnswer,
+  onDeleteAnswer,
   isLiked = false,
   isLoadingAnswers = false,
   isOwner = false,
+  currentUserId,
+  hideDetailLink = false,
+  fullDescription = false,
+  hideTitle = false,
 }: QuestionCardProps) {
+  const { t, currentLanguage } = useTranslation();
   const [answerText, setAnswerText] = useState("");
   const [isSubmitting, setIsSubmitting] = useState(false);
   const [confirmDelete, setConfirmDelete] = useState(false);
+  const [editingId, setEditingId] = useState<string | null>(null);
+  const [editText, setEditText] = useState("");
+  const [confirmAnswerDelete, setConfirmAnswerDelete] = useState<string | null>(
+    null,
+  );
   const textareaRef = useRef<HTMLTextAreaElement>(null);
 
   useEffect(() => {
@@ -111,10 +145,52 @@ export function QuestionCard({
     onDelete?.();
   };
 
+  const startEdit = (answer: Answer) => {
+    setEditingId(answer.id);
+    setEditText(answer.content);
+  };
+
+  const saveEdit = async () => {
+    if (!editingId || !editText.trim() || !onUpdateAnswer) return;
+    setIsSubmitting(true);
+    try {
+      await onUpdateAnswer(editingId, editText.trim());
+      setEditingId(null);
+      setEditText("");
+    } finally {
+      setIsSubmitting(false);
+    }
+  };
+
+  const handleDeleteAnswer = async (answerId: string) => {
+    if (confirmAnswerDelete !== answerId) {
+      setConfirmAnswerDelete(answerId);
+      setTimeout(() => setConfirmAnswerDelete(null), 3000);
+      return;
+    }
+    await onDeleteAnswer?.(answerId);
+    setConfirmAnswerDelete(null);
+  };
+
+  const timeLabel = formatRelativeTime(createdAt, t, currentLanguage);
+  const answersWord = formatAnswersCountLabel(
+    answersCount,
+    t,
+    currentLanguage,
+  );
+
+  const sortedAnswers = answers
+    ? [...answers].sort((a, b) => {
+        const aBest = a.isAccepted || a.id === acceptedAnswerId;
+        const bBest = b.isAccepted || b.id === acceptedAnswerId;
+        return Number(bBest) - Number(aBest);
+      })
+    : undefined;
+
   return (
     <Card
       data-testid={`question-card-${id}`}
-      className="relative overflow-hidden border-0 bg-white/80 backdrop-blur-sm shadow-lg shadow-slate-200/50"
+      className="relative overflow-hidden border-0 bg-white rounded-2xl sm:rounded-3xl shadow-sm"
     >
       <CardHeader className="p-3 sm:p-4 lg:p-6 pb-2 sm:pb-3">
         <div className="flex items-center justify-between">
@@ -131,10 +207,10 @@ export function QuestionCard({
               {isAnswered ? (
                 <>
                   <Sparkles className="w-3 h-3 mr-0.5 sm:mr-1" />
-                  Есть ответ
+                  {t("community.questions.badge.answered")}
                 </>
               ) : (
-                "Открыт"
+                t("community.questions.badge.open")
               )}
             </Badge>
             {answersCount >= 3 && (
@@ -143,36 +219,65 @@ export function QuestionCard({
                 size="sm"
                 className="text-xs bg-purple-50 text-purple-600 border-purple-200"
               >
-                Популярный
+                {t("community.questions.badge.popular")}
               </Badge>
             )}
           </div>
-          {isOwner && onDelete && (
-            <button
-              type="button"
-              onClick={handleDelete}
-              data-testid={`question-delete-${id}`}
-              className={`p-1.5 rounded-lg transition-colors text-xs flex items-center gap-1 ${
-                confirmDelete
-                  ? "bg-red-100 text-red-600 hover:bg-red-200"
-                  : "text-slate-400 hover:text-red-500 hover:bg-red-50"
-              }`}
-              title={
-                confirmDelete
-                  ? "Нажмите ещё раз для удаления"
-                  : "Удалить вопрос"
-              }
-            >
-              <Trash2 className="h-3.5 w-3.5" />
-              {confirmDelete && <span>Удалить?</span>}
-            </button>
-          )}
+          <div className="flex items-center gap-1">
+            {!hideDetailLink && (
+              <Link
+                href={`/community/questions/${id}`}
+                className="p-1.5 rounded-lg text-slate-400 hover:text-indigo-600 hover:bg-indigo-50 transition-colors"
+                title={t("community.questions.openDetail")}
+                aria-label={t("community.questions.openDetail")}
+              >
+                <ExternalLink className="h-3.5 w-3.5" />
+              </Link>
+            )}
+            {isOwner && onDelete && (
+              <button
+                type="button"
+                onClick={handleDelete}
+                data-testid={`question-delete-${id}`}
+                className={`p-1.5 rounded-lg transition-colors text-xs flex items-center gap-1 ${
+                  confirmDelete
+                    ? "bg-red-100 text-red-600 hover:bg-red-200"
+                    : "text-slate-400 hover:text-red-500 hover:bg-red-50"
+                }`}
+                title={
+                  confirmDelete
+                    ? t("community.questions.deleteConfirm")
+                    : t("community.questions.delete")
+                }
+              >
+                <Trash2 className="h-3.5 w-3.5" />
+                {confirmDelete && (
+                  <span>{t("community.questions.deleteConfirmShort")}</span>
+                )}
+              </button>
+            )}
+          </div>
         </div>
-        <CardTitle className="text-base sm:text-lg lg:text-xl font-semibold text-slate-900 leading-tight mt-1.5 sm:mt-2">
-          {title}
-        </CardTitle>
+        {!hideTitle && (
+          <CardTitle className="text-base sm:text-lg lg:text-xl font-semibold text-slate-900 leading-tight mt-1.5 sm:mt-2">
+            {hideDetailLink ? (
+              title
+            ) : (
+              <Link
+                href={`/community/questions/${id}`}
+                className="hover:text-indigo-700 transition-colors"
+              >
+                {title}
+              </Link>
+            )}
+          </CardTitle>
+        )}
         {description && (
-          <CardDescription className="text-xs sm:text-sm text-slate-600 mt-1 line-clamp-2">
+          <CardDescription
+            className={`text-xs sm:text-sm text-slate-600 ${
+              hideTitle ? "mt-0" : "mt-1"
+            } ${fullDescription ? "" : "line-clamp-2"}`}
+          >
             {description}
           </CardDescription>
         )}
@@ -181,28 +286,31 @@ export function QuestionCard({
       <CardContent className="p-3 sm:p-4 lg:p-6 pt-0">
         <div className="flex flex-col sm:flex-row sm:items-center sm:justify-between gap-2 sm:gap-3">
           <div className="flex items-center gap-2 sm:gap-3">
-            <button
-              type="button"
-              onClick={onToggle}
-              aria-expanded={isExpanded}
-              data-testid={`question-toggle-${id}`}
-              className="inline-flex items-center gap-1 sm:gap-1.5 px-2 sm:px-3 py-1 sm:py-1.5 rounded-full text-xs sm:text-sm font-medium text-slate-600 bg-slate-100 hover:bg-indigo-100 hover:text-indigo-700 transition-colors"
-            >
-              <MessageSquare className="h-3 w-3 sm:h-4 sm:w-4" />
-              <span>{answersCount}</span>
-              <span className="hidden xs:inline">
-                {answersCount === 1
-                  ? "ответ"
-                  : answersCount < 5
-                    ? "ответа"
-                    : "ответов"}
+            {onToggle && (
+              <button
+                type="button"
+                onClick={onToggle}
+                aria-expanded={isExpanded}
+                data-testid={`question-toggle-${id}`}
+                className="inline-flex items-center gap-1 sm:gap-1.5 px-2 sm:px-3 py-1 sm:py-1.5 rounded-full text-xs sm:text-sm font-medium text-slate-600 bg-slate-100 hover:bg-indigo-100 hover:text-indigo-700 transition-colors"
+              >
+                <MessageSquare className="h-3 w-3 sm:h-4 sm:w-4" />
+                <span>{answersCount}</span>
+                <span className="hidden xs:inline">{answersWord}</span>
+                {isExpanded ? (
+                  <ChevronUp className="h-3 w-3 sm:h-4 sm:w-4" />
+                ) : (
+                  <ChevronDown className="h-3 w-3 sm:h-4 sm:w-4" />
+                )}
+              </button>
+            )}
+            {!onToggle && (
+              <span className="inline-flex items-center gap-1 sm:gap-1.5 px-2 sm:px-3 py-1 sm:py-1.5 rounded-full text-xs sm:text-sm font-medium text-slate-600 bg-slate-100">
+                <MessageSquare className="h-3 w-3 sm:h-4 sm:w-4" />
+                <span>{answersCount}</span>
+                <span className="hidden xs:inline">{answersWord}</span>
               </span>
-              {isExpanded ? (
-                <ChevronUp className="h-3 w-3 sm:h-4 sm:w-4" />
-              ) : (
-                <ChevronDown className="h-3 w-3 sm:h-4 sm:w-4" />
-              )}
-            </button>
+            )}
             <Button
               type="button"
               variant={isLiked ? "default" : "outline"}
@@ -231,56 +339,165 @@ export function QuestionCard({
             </span>
             <span className="inline-flex items-center gap-1 text-slate-400">
               <Clock className="h-3 w-3 sm:h-3.5 sm:w-3.5" />
-              <span className="truncate">{time}</span>
+              <span className="truncate">{timeLabel}</span>
             </span>
           </div>
         </div>
 
-        {/* Expanded section with answers */}
         {isExpanded && (
           <div className="mt-4 sm:mt-5 space-y-3 sm:space-y-4 border-t border-slate-100 pt-4 sm:pt-5">
             {isLoadingAnswers ? (
               <div className="flex items-center justify-center py-6 sm:py-8">
                 <div className="animate-spin rounded-full h-5 w-5 sm:h-6 sm:w-6 border-b-2 border-indigo-600" />
                 <span className="ml-2 text-xs sm:text-sm text-slate-500">
-                  Загрузка...
+                  {t("community.questions.loading")}
                 </span>
               </div>
-            ) : answers && answers.length > 0 ? (
+            ) : sortedAnswers && sortedAnswers.length > 0 ? (
               <div className="space-y-2 sm:space-y-3">
                 <h4 className="text-xs sm:text-sm font-semibold text-slate-700 flex items-center gap-1.5 sm:gap-2">
                   <MessageSquare className="h-3.5 w-3.5 sm:h-4 sm:w-4 text-indigo-500" />
-                  Ответы ({answers.length})
+                  {t("community.questions.answersTitle").replace(
+                    "{n}",
+                    String(sortedAnswers.length),
+                  )}
                 </h4>
-                {answers.map((answer) => (
-                  <div
-                    key={answer.id}
-                    className="relative bg-gradient-to-br from-slate-50 to-slate-100/50 rounded-lg sm:rounded-xl px-3 sm:px-4 py-2.5 sm:py-3 text-xs sm:text-sm text-slate-700 border border-slate-100"
-                  >
-                    <p className="leading-relaxed whitespace-pre-wrap">
-                      {answer.content}
-                    </p>
-                    <div className="mt-1.5 sm:mt-2 flex items-center gap-2 sm:gap-3 text-xs text-slate-400">
-                      <AuthorAvatar name={answer.author} />
-                      <span className="font-medium text-slate-500">
-                        {answer.author}
-                      </span>
-                      <span>&middot;</span>
-                      <span>{answer.timeLabel}</span>
+                {sortedAnswers.map((answer) => {
+                  const isBest =
+                    answer.isAccepted || answer.id === acceptedAnswerId;
+                  const isAnswerOwner = currentUserId === answer.authorId;
+                  const canDeleteAnswer =
+                    isAnswerOwner || isOwner;
+
+                  return (
+                    <div
+                      key={answer.id}
+                      className={`relative rounded-lg sm:rounded-xl px-3 sm:px-4 py-2.5 sm:py-3 text-xs sm:text-sm text-slate-700 border shadow-sm ${
+                        isBest
+                          ? "bg-gradient-to-br from-emerald-50 via-white to-indigo-50/40 border-emerald-200 shadow-emerald-100/60"
+                          : "bg-gradient-to-br from-slate-50 to-slate-100/50 border-slate-100"
+                      }`}
+                    >
+                      {isBest && (
+                        <div className="mb-1.5 inline-flex items-center gap-1 rounded-full bg-gradient-to-r from-emerald-500 to-teal-500 px-2 py-0.5 text-[11px] sm:text-xs font-semibold text-white shadow-sm shadow-emerald-200">
+                          <CheckCircle2 className="h-3.5 w-3.5" />
+                          {t("community.questions.bestAnswer")}
+                        </div>
+                      )}
+                      {editingId === answer.id ? (
+                        <div className="space-y-2">
+                          <textarea
+                            value={editText}
+                            onChange={(e) => setEditText(e.target.value)}
+                            rows={3}
+                            className="w-full px-3 py-2 text-xs sm:text-sm border border-slate-200 rounded-lg sm:rounded-xl focus:ring-2 focus:ring-indigo-500 focus:border-transparent resize-none"
+                          />
+                          <div className="flex gap-2 justify-end">
+                            <Button
+                              type="button"
+                              variant="outline"
+                              size="sm"
+                              className="h-7 text-xs rounded-lg"
+                              onClick={() => setEditingId(null)}
+                            >
+                              {t("community.questions.form.cancel")}
+                            </Button>
+                            <Button
+                              type="button"
+                              size="sm"
+                              className="h-7 text-xs rounded-lg bg-gradient-to-r from-blue-600 to-purple-600 text-white border-0 shadow-md"
+                              disabled={!editText.trim() || isSubmitting}
+                              onClick={saveEdit}
+                            >
+                              {t("community.questions.saveAnswer")}
+                            </Button>
+                          </div>
+                        </div>
+                      ) : (
+                        <p className="leading-relaxed whitespace-pre-wrap">
+                          {answer.content}
+                        </p>
+                      )}
+                      <div className="mt-1.5 sm:mt-2 flex flex-wrap items-center gap-2 sm:gap-3 text-xs text-slate-400">
+                        <AuthorAvatar name={answer.author} />
+                        <span className="font-medium text-slate-500">
+                          {answer.author}
+                        </span>
+                        <span>&middot;</span>
+                        <span>
+                          {formatRelativeTime(
+                            answer.createdAt,
+                            t,
+                            currentLanguage,
+                          )}
+                        </span>
+                        <span className="flex-1" />
+                        {isOwner && onAcceptAnswer && editingId !== answer.id && (
+                          <button
+                            type="button"
+                            onClick={() => onAcceptAnswer(answer.id)}
+                            className={`inline-flex items-center gap-1 px-2 py-0.5 rounded-full text-[11px] sm:text-xs font-medium transition-all ${
+                              isBest
+                                ? "text-white bg-gradient-to-r from-emerald-500 to-teal-500 shadow-sm shadow-emerald-200"
+                                : "text-indigo-600 bg-indigo-50 hover:bg-indigo-100 border border-indigo-100"
+                            }`}
+                            title={t("community.questions.acceptAnswer")}
+                          >
+                            <CheckCircle2 className="h-3.5 w-3.5" />
+                            <span className="hidden sm:inline">
+                              {isBest
+                                ? t("community.questions.unacceptAnswer")
+                                : t("community.questions.acceptAnswer")}
+                            </span>
+                          </button>
+                        )}
+                        {isAnswerOwner &&
+                          onUpdateAnswer &&
+                          editingId !== answer.id && (
+                            <button
+                              type="button"
+                              onClick={() => startEdit(answer)}
+                              className="p-1.5 rounded-lg text-slate-400 hover:text-indigo-600 hover:bg-indigo-50 transition-colors"
+                              title={t("community.questions.editAnswer")}
+                            >
+                              <Pencil className="h-3.5 w-3.5" />
+                            </button>
+                          )}
+                        {canDeleteAnswer &&
+                          onDeleteAnswer &&
+                          editingId !== answer.id && (
+                            <button
+                              type="button"
+                              onClick={() => handleDeleteAnswer(answer.id)}
+                              className={`inline-flex items-center gap-1 p-1.5 rounded-lg text-xs transition-colors ${
+                                confirmAnswerDelete === answer.id
+                                  ? "bg-red-100 text-red-600"
+                                  : "text-slate-400 hover:text-red-500 hover:bg-red-50"
+                              }`}
+                              title={t("community.questions.deleteAnswer")}
+                            >
+                              <Trash2 className="h-3.5 w-3.5" />
+                              {confirmAnswerDelete === answer.id && (
+                                <span>
+                                  {t("community.questions.deleteConfirmShort")}
+                                </span>
+                              )}
+                            </button>
+                          )}
+                      </div>
                     </div>
-                  </div>
-                ))}
+                  );
+                })}
               </div>
             ) : (
               <div className="text-center py-4 sm:py-6 text-slate-400">
                 <MessageSquare className="h-6 w-6 sm:h-8 sm:w-8 mx-auto mb-1.5 sm:mb-2 opacity-50" />
                 <p className="text-xs sm:text-sm">
-                  Пока нет ответов. Будьте первым!
+                  {t("community.questions.noAnswers")}
                 </p>
               </div>
             )}
 
-            {/* Answer form */}
             {onAddAnswer && (
               <form onSubmit={handleSubmitAnswer} className="mt-3 sm:mt-4">
                 <div className="flex gap-2 items-end">
@@ -289,7 +506,7 @@ export function QuestionCard({
                     value={answerText}
                     onChange={(e) => setAnswerText(e.target.value)}
                     data-testid={`question-answer-input-${id}`}
-                    placeholder="Напишите ответ..."
+                    placeholder={t("community.questions.answerPlaceholder")}
                     rows={1}
                     className="flex-1 px-3 sm:px-4 py-2 sm:py-2.5 text-xs sm:text-sm border border-slate-200 rounded-lg sm:rounded-xl focus:ring-2 focus:ring-indigo-500 focus:border-transparent bg-white placeholder:text-slate-400 transition-shadow resize-none overflow-hidden"
                     disabled={isSubmitting}
@@ -305,7 +522,7 @@ export function QuestionCard({
                     size="sm"
                     data-testid={`question-answer-submit-${id}`}
                     disabled={!answerText.trim() || isSubmitting}
-                    className="px-3 sm:px-4 h-9 sm:h-10 bg-gradient-to-r from-indigo-600 to-purple-600 hover:from-indigo-700 hover:to-purple-700 text-white rounded-lg sm:rounded-xl shadow-md shadow-indigo-200 disabled:opacity-50 disabled:cursor-not-allowed flex-shrink-0"
+                    className="px-3 sm:px-4 h-9 sm:h-10 bg-gradient-to-r from-blue-600 to-purple-600 hover:from-blue-700 hover:to-purple-700 text-white rounded-xl shadow-md disabled:opacity-50 disabled:cursor-not-allowed flex-shrink-0"
                   >
                     {isSubmitting ? (
                       <div className="animate-spin rounded-full h-3.5 w-3.5 sm:h-4 sm:w-4 border-b-2 border-white" />

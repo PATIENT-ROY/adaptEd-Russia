@@ -4,6 +4,7 @@ import { useMemo } from "react";
 import { Card, CardContent, CardHeader, CardTitle } from "@/components/ui/card";
 import { CheckCircle2, Circle } from "lucide-react";
 import { useAuth } from "@/contexts/AuthContext";
+import { useTranslation } from "@/hooks/useTranslation";
 import { Reminder, ReminderCategory, ReminderStatus } from "@/types";
 
 type ProgressItem = {
@@ -18,6 +19,7 @@ type AdaptationProgressProps = {
 
 export function AdaptationProgress({ reminders = [] }: AdaptationProgressProps) {
   const { user } = useAuth();
+  const { t } = useTranslation();
 
   const items = useMemo<ProgressItem[]>(() => {
     const hasCompleted = (category: ReminderCategory) =>
@@ -30,17 +32,17 @@ export function AdaptationProgress({ reminders = [] }: AdaptationProgressProps) 
     return [
       {
         id: "university-registration",
-        label: "Регистрация в университете",
+        label: t("dashboard.adaptation.university"),
         completed: Boolean(user?.university?.trim()),
       },
       {
         id: "migration-accounting",
-        label: "Миграционный учет",
+        label: t("dashboard.adaptation.migration"),
         completed: hasCompleted(ReminderCategory.DOCUMENTS),
       },
       {
         id: "inn",
-        label: "Получение ИНН",
+        label: t("dashboard.adaptation.inn"),
         completed: reminders.some(
           (reminder) =>
             reminder.status === ReminderStatus.COMPLETED &&
@@ -49,17 +51,17 @@ export function AdaptationProgress({ reminders = [] }: AdaptationProgressProps) 
       },
       {
         id: "insurance",
-        label: "Медицинская страховка",
+        label: t("dashboard.adaptation.insurance"),
         completed: hasCompleted(ReminderCategory.HEALTH),
       },
     ];
-  }, [reminders, user?.university]);
+  }, [reminders, user?.university, t]);
 
   return (
     <Card className="border-0 shadow-xl">
       <CardHeader className="pb-2">
         <CardTitle className="text-xl sm:text-2xl font-bold text-slate-900">
-          Твоя адаптация
+          {t("dashboard.adaptation.title")}
         </CardTitle>
       </CardHeader>
       <CardContent className="pt-2">

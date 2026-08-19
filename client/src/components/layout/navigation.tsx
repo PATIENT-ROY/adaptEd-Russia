@@ -19,7 +19,7 @@ import {
   X,
   Shield,
   ScanLine,
-  Trophy,
+  Users,
 } from "lucide-react";
 import { useState } from "react";
 import type { Language } from "@/types";
@@ -40,7 +40,7 @@ const authenticatedNavigationItemsConfig = [
   { href: "/reminders", labelKey: "nav.reminders", icon: Bell },
   { href: "/ai-helper", labelKey: "nav.aiHelper", icon: MessageSquare },
   { href: "/docscan", labelKey: "nav.docscan", icon: ScanLine },
-  { href: "/achievements", labelKey: "nav.achievements", icon: Trophy },
+  { href: "/community/questions", labelKey: "nav.community", icon: Users },
 ];
 
 export function Navigation({
@@ -51,6 +51,10 @@ export function Navigation({
   const [isMobileMenuOpen, setIsMobileMenuOpen] = useState(false);
   const { user } = useAuth();
   const { t } = useTranslation();
+
+  const isNavActive = (href: string) =>
+    pathname === href ||
+    (href !== "/" && href !== "/dashboard" && pathname.startsWith(href));
 
   const navigationItems = navigationItemsConfig.map((item) =>
     item.labelKey === "nav.home"
@@ -102,7 +106,7 @@ export function Navigation({
             {/* Основная навигация для всех */}
             {navigationItems.map((item) => {
               const Icon = item.icon;
-              const isActive = pathname === item.href;
+              const isActive = isNavActive(item.href);
 
               return (
                 <Link
@@ -147,7 +151,7 @@ export function Navigation({
             {user &&
               authenticatedNavigationItemsConfig.map((item) => {
                 const Icon = item.icon;
-                const isActive = pathname === item.href;
+                const isActive = isNavActive(item.href);
 
                 return (
                   <Link
@@ -212,9 +216,10 @@ export function Navigation({
                 <Link href="/profile">
                   <Button
                     variant="outline"
-                    className="rounded-lg sm:rounded-xl border-slate-200 hover:bg-slate-50 text-xs sm:text-sm h-6 sm:h-7 lg:h-8 px-2 sm:px-3"
+                    className="rounded-lg sm:rounded-xl border-slate-200 hover:bg-slate-50 text-xs sm:text-sm h-7 w-7 p-1.5 sm:h-7 sm:w-auto lg:h-8 sm:px-3"
+                    aria-label={t("nav.profile")}
                   >
-                    <User className="me-1 h-2 w-2 sm:h-2.5 sm:w-2.5" />
+                    <User className="h-3.5 w-3.5 sm:me-1 sm:h-3.5 sm:w-3.5 lg:h-4 lg:w-4" />
                     <span className="hidden sm:inline">
                       {user.name.split(" ")[0]}
                     </span>
@@ -257,7 +262,7 @@ export function Navigation({
               {/* Основная навигация для всех */}
               {navigationItems.map((item, index) => {
                 const Icon = item.icon;
-                const isActive = pathname === item.href;
+                const isActive = isNavActive(item.href);
 
                 return (
                   <li
@@ -293,7 +298,7 @@ export function Navigation({
               {user &&
                 authenticatedNavigationItemsConfig.map((item, index) => {
                   const Icon = item.icon;
-                  const isActive = pathname === item.href;
+                  const isActive = isNavActive(item.href);
 
                   return (
                     <li

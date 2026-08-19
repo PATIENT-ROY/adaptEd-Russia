@@ -5,6 +5,8 @@ import {
   Bell,
   CheckCircle2,
   ChevronDown,
+  Eye,
+  EyeOff,
   KeyRound,
   Loader2,
   LogOut,
@@ -39,29 +41,101 @@ const TIMEZONES = [
 ] as const;
 
 const fieldClass =
-  "h-11 w-full rounded-xl border border-slate-200 bg-white px-3 text-sm text-slate-800 outline-none transition placeholder:text-slate-400 focus:border-slate-400 focus:ring-2 focus:ring-slate-100";
+  "h-11 w-full rounded-xl border border-slate-200 bg-white px-3 pr-11 text-sm text-slate-800 outline-none transition placeholder:text-slate-400 focus:border-slate-400 focus:ring-2 focus:ring-slate-100";
 
 function SectionHeader({
   icon: Icon,
   title,
   description,
+  open,
+  onToggle,
+  controlsId,
 }: {
   icon: typeof Bell;
   title: string;
   description: string;
+  open: boolean;
+  onToggle: () => void;
+  controlsId: string;
 }) {
   return (
-    <div className="flex items-start gap-3">
+    <button
+      type="button"
+      onClick={onToggle}
+      aria-expanded={open}
+      aria-controls={controlsId}
+      className="flex w-full items-start gap-3 px-4 py-4 text-left transition hover:bg-slate-50/80 sm:px-5"
+    >
       <div className="mt-0.5 flex h-9 w-9 shrink-0 items-center justify-center rounded-xl bg-slate-100 text-slate-700 sm:h-10 sm:w-10">
         <Icon className="h-4 w-4 sm:h-[18px] sm:w-[18px]" />
       </div>
-      <div className="min-w-0 pt-0.5">
+      <div className="min-w-0 flex-1 pt-0.5">
         <h3 className="text-sm font-semibold tracking-tight text-slate-900 sm:text-base">
           {title}
         </h3>
         <p className="mt-0.5 text-xs leading-relaxed text-slate-500 sm:text-sm">
           {description}
         </p>
+      </div>
+      <ChevronDown
+        aria-hidden
+        className={cn(
+          "mt-2 h-5 w-5 shrink-0 text-slate-500 transition-transform duration-200",
+          open && "rotate-180",
+        )}
+      />
+    </button>
+  );
+}
+
+function PasswordField({
+  id,
+  label,
+  value,
+  onChange,
+  autoComplete,
+  visible,
+  onToggleVisible,
+  showLabel,
+  hideLabel,
+}: {
+  id: string;
+  label: string;
+  value: string;
+  onChange: (value: string) => void;
+  autoComplete: string;
+  visible: boolean;
+  onToggleVisible: () => void;
+  showLabel: string;
+  hideLabel: string;
+}) {
+  return (
+    <div className="space-y-2">
+      <Label className="text-sm font-medium text-slate-700" htmlFor={id}>
+        {label}
+      </Label>
+      <div className="relative">
+        <Input
+          className={fieldClass}
+          id={id}
+          type={visible ? "text" : "password"}
+          autoComplete={autoComplete}
+          value={value}
+          onChange={(event) => onChange(event.target.value)}
+        />
+        <button
+          type="button"
+          onClick={onToggleVisible}
+          aria-label={visible ? hideLabel : showLabel}
+          title={visible ? hideLabel : showLabel}
+          className="absolute right-2.5 top-1/2 flex h-8 w-8 -translate-y-1/2 items-center justify-center rounded-lg text-slate-500 transition hover:bg-slate-100 hover:text-slate-800"
+        >
+          {visible ? (
+            <EyeOff className="h-4 w-4" />
+          ) : (
+            <Eye className="h-4 w-4" />
+          )}
+        </button>
       </div>
     </div>
   );
@@ -82,6 +156,11 @@ export function ProfileAccountSettings({
   const [currentPassword, setCurrentPassword] = useState("");
   const [newPassword, setNewPassword] = useState("");
   const [confirmPassword, setConfirmPassword] = useState("");
+  const [showCurrentPassword, setShowCurrentPassword] = useState(false);
+  const [showNewPassword, setShowNewPassword] = useState(false);
+  const [showConfirmPassword, setShowConfirmPassword] = useState(false);
+  const [notificationsOpen, setNotificationsOpen] = useState(false);
+  const [securityOpen, setSecurityOpen] = useState(false);
   const [message, setMessage] = useState<{
     text: string;
     error?: boolean;
@@ -190,182 +269,186 @@ export function ProfileAccountSettings({
 
       {/* Notifications */}
       <section className="overflow-hidden rounded-2xl border border-slate-200/80 bg-white">
-        <div className="border-b border-slate-100 px-4 py-4 sm:px-5">
+        <div className={cn(notificationsOpen && "border-b border-slate-100")}>
           <SectionHeader
             icon={Bell}
             title={t("profile.settings.notifications")}
             description={t("profile.settings.notificationsDesc")}
+            open={notificationsOpen}
+            onToggle={() => setNotificationsOpen((v) => !v)}
+            controlsId="settings-notifications-panel"
           />
         </div>
-        <div className="space-y-4 px-4 py-4 sm:px-5 sm:py-5">
-          <div className="flex min-h-12 items-center justify-between gap-4 rounded-xl bg-slate-50 px-3.5 py-3">
-            <div className="flex min-w-0 items-center gap-3">
-              <Mail className="h-4 w-4 shrink-0 text-slate-500" />
-              <Label
-                className="cursor-pointer text-sm font-medium text-slate-800"
-                htmlFor="email-notifications"
-              >
-                {t("profile.settings.emailNotifications")}
-              </Label>
-            </div>
-            <Switch
-              id="email-notifications"
-              checked={settings.emailNotifications}
-              onCheckedChange={(checked) =>
-                setSettings((value) => ({
-                  ...value,
-                  emailNotifications: checked,
-                }))
-              }
-            />
-          </div>
-
-          <div className="space-y-2">
-            <Label className="text-sm font-medium text-slate-700" htmlFor="timezone">
-              {t("profile.settings.timezone")}
-            </Label>
-            <div className="relative">
-              <select
-                id="timezone"
-                value={settings.timezone}
-                onChange={(event) =>
+        {notificationsOpen && (
+          <div
+            id="settings-notifications-panel"
+            className="space-y-4 px-4 py-4 sm:px-5 sm:py-5"
+          >
+            <div className="flex min-h-12 items-center justify-between gap-4 rounded-xl bg-slate-50 px-3.5 py-3">
+              <div className="flex min-w-0 items-center gap-3">
+                <Mail className="h-4 w-4 shrink-0 text-slate-500" />
+                <Label
+                  className="cursor-pointer text-sm font-medium text-slate-800"
+                  htmlFor="email-notifications"
+                >
+                  {t("profile.settings.emailNotifications")}
+                </Label>
+              </div>
+              <Switch
+                id="email-notifications"
+                checked={settings.emailNotifications}
+                onCheckedChange={(checked) =>
                   setSettings((value) => ({
                     ...value,
-                    timezone: event.target.value,
+                    emailNotifications: checked,
                   }))
                 }
-                className={cn(
-                  fieldClass,
-                  "appearance-none pr-10",
-                )}
-              >
-                {TIMEZONES.map(([value, label]) => (
-                  <option key={value} value={value}>
-                    {label}
-                  </option>
-                ))}
-              </select>
-              <ChevronDown
-                aria-hidden
-                className="pointer-events-none absolute right-3 top-1/2 h-4 w-4 -translate-y-1/2 text-slate-500"
               />
             </div>
-          </div>
 
-          <div className="flex justify-end pt-1">
-            <Button
-              onClick={saveSettings}
-              disabled={savingSettings}
-              size="sm"
-              className="h-10 w-full rounded-xl sm:w-auto sm:min-w-[180px]"
-            >
-              {savingSettings && (
-                <Loader2 className="mr-2 h-4 w-4 animate-spin" />
-              )}
-              {t("profile.settings.save")}
-            </Button>
+            <div className="space-y-2">
+              <Label
+                className="text-sm font-medium text-slate-700"
+                htmlFor="timezone"
+              >
+                {t("profile.settings.timezone")}
+              </Label>
+              <div className="relative">
+                <select
+                  id="timezone"
+                  value={settings.timezone}
+                  onChange={(event) =>
+                    setSettings((value) => ({
+                      ...value,
+                      timezone: event.target.value,
+                    }))
+                  }
+                  className={cn(fieldClass, "appearance-none pr-10")}
+                >
+                  {TIMEZONES.map(([value, label]) => (
+                    <option key={value} value={value}>
+                      {label}
+                    </option>
+                  ))}
+                </select>
+                <ChevronDown
+                  aria-hidden
+                  className="pointer-events-none absolute right-3 top-1/2 h-4 w-4 -translate-y-1/2 text-slate-500"
+                />
+              </div>
+            </div>
+
+            <div className="flex justify-end pt-1">
+              <Button
+                onClick={saveSettings}
+                disabled={savingSettings}
+                size="sm"
+                className="h-10 w-full rounded-xl sm:w-auto sm:min-w-[180px]"
+              >
+                {savingSettings && (
+                  <Loader2 className="mr-2 h-4 w-4 animate-spin" />
+                )}
+                {t("profile.settings.save")}
+              </Button>
+            </div>
           </div>
-        </div>
+        )}
       </section>
 
       {/* Security */}
       <section className="overflow-hidden rounded-2xl border border-slate-200/80 bg-white">
-        <div className="border-b border-slate-100 px-4 py-4 sm:px-5">
+        <div className={cn(securityOpen && "border-b border-slate-100")}>
           <SectionHeader
             icon={Shield}
             title={t("profile.settings.security")}
             description={t("profile.settings.securityDesc")}
+            open={securityOpen}
+            onToggle={() => setSecurityOpen((v) => !v)}
+            controlsId="settings-security-panel"
           />
         </div>
-        <div className="space-y-4 px-4 py-4 sm:px-5 sm:py-5">
-          <div className="grid gap-3">
-            <div className="space-y-2">
-              <Label
-                className="text-sm font-medium text-slate-700"
-                htmlFor="current-password"
-              >
-                {t("profile.settings.currentPassword")}
-              </Label>
-              <Input
-                className={fieldClass}
+        {securityOpen && (
+          <div
+            id="settings-security-panel"
+            className="space-y-4 px-4 py-4 sm:px-5 sm:py-5"
+          >
+            <div className="grid gap-3">
+              <PasswordField
                 id="current-password"
-                type="password"
-                autoComplete="current-password"
+                label={t("profile.settings.currentPassword")}
                 value={currentPassword}
-                onChange={(event) => setCurrentPassword(event.target.value)}
+                onChange={setCurrentPassword}
+                autoComplete="current-password"
+                visible={showCurrentPassword}
+                onToggleVisible={() => setShowCurrentPassword((v) => !v)}
+                showLabel={t("login.showPassword")}
+                hideLabel={t("login.hidePassword")}
               />
-            </div>
-            <div className="space-y-2">
-              <Label
-                className="text-sm font-medium text-slate-700"
-                htmlFor="new-password"
-              >
-                {t("profile.settings.newPassword")}
-              </Label>
-              <Input
-                className={fieldClass}
+              <PasswordField
                 id="new-password"
-                type="password"
-                autoComplete="new-password"
+                label={t("profile.settings.newPassword")}
                 value={newPassword}
-                onChange={(event) => setNewPassword(event.target.value)}
-              />
-            </div>
-            <div className="space-y-2">
-              <Label
-                className="text-sm font-medium text-slate-700"
-                htmlFor="confirm-password"
-              >
-                {t("profile.settings.confirmPassword")}
-              </Label>
-              <Input
-                className={fieldClass}
-                id="confirm-password"
-                type="password"
+                onChange={setNewPassword}
                 autoComplete="new-password"
+                visible={showNewPassword}
+                onToggleVisible={() => setShowNewPassword((v) => !v)}
+                showLabel={t("login.showPassword")}
+                hideLabel={t("login.hidePassword")}
+              />
+              <PasswordField
+                id="confirm-password"
+                label={t("profile.settings.confirmPassword")}
                 value={confirmPassword}
-                onChange={(event) => setConfirmPassword(event.target.value)}
+                onChange={setConfirmPassword}
+                autoComplete="new-password"
+                visible={showConfirmPassword}
+                onToggleVisible={() => setShowConfirmPassword((v) => !v)}
+                showLabel={t("login.showPassword")}
+                hideLabel={t("login.hidePassword")}
               />
             </div>
-          </div>
 
-          <div className="flex flex-col gap-2 border-t border-slate-100 pt-4">
-            <Button
-              onClick={changePassword}
-              disabled={
-                changingPassword ||
-                !currentPassword ||
-                !newPassword ||
-                !confirmPassword
-              }
-              variant="outline"
-              size="sm"
-              className="h-10 w-full whitespace-normal rounded-xl border-slate-200 shadow-none"
-            >
-              {changingPassword ? (
-                <Loader2 className="mr-2 h-4 w-4 shrink-0 animate-spin" />
-              ) : (
-                <KeyRound className="mr-2 h-4 w-4 shrink-0" />
-              )}
-              {t("profile.settings.changePassword")}
-            </Button>
-            <Button
-              onClick={logoutAll}
-              disabled={loggingOutAll}
-              variant="ghost"
-              size="sm"
-              className="h-auto min-h-10 w-full whitespace-normal rounded-xl px-3 py-2.5 text-left text-sm leading-snug text-red-600 hover:bg-red-50 hover:text-red-700"
-            >
-              {loggingOutAll ? (
-                <Loader2 className="mr-2 h-4 w-4 shrink-0 animate-spin" />
-              ) : (
-                <LogOut className="mr-2 h-4 w-4 shrink-0" />
-              )}
-              <span className="min-w-0 flex-1">{t("profile.settings.logoutAll")}</span>
-            </Button>
+            <div className="flex flex-col gap-2 border-t border-slate-100 pt-4">
+              <Button
+                onClick={changePassword}
+                disabled={
+                  changingPassword ||
+                  !currentPassword ||
+                  !newPassword ||
+                  !confirmPassword
+                }
+                variant="outline"
+                size="sm"
+                className="h-10 w-full whitespace-normal rounded-xl border-slate-200 shadow-none"
+              >
+                {changingPassword ? (
+                  <Loader2 className="mr-2 h-4 w-4 shrink-0 animate-spin" />
+                ) : (
+                  <KeyRound className="mr-2 h-4 w-4 shrink-0" />
+                )}
+                {t("profile.settings.changePassword")}
+              </Button>
+              <Button
+                onClick={logoutAll}
+                disabled={loggingOutAll}
+                variant="ghost"
+                size="sm"
+                className="h-auto min-h-10 w-full whitespace-normal rounded-xl px-3 py-2.5 text-left text-sm leading-snug text-red-600 hover:bg-red-50 hover:text-red-700"
+              >
+                {loggingOutAll ? (
+                  <Loader2 className="mr-2 h-4 w-4 shrink-0 animate-spin" />
+                ) : (
+                  <LogOut className="mr-2 h-4 w-4 shrink-0" />
+                )}
+                <span className="min-w-0 flex-1">
+                  {t("profile.settings.logoutAll")}
+                </span>
+              </Button>
+            </div>
           </div>
-        </div>
+        )}
       </section>
     </div>
   );
 }
+

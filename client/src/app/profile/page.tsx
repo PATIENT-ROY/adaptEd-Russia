@@ -63,11 +63,13 @@ import {
   PaymentStatus,
   ProfileOverview,
   ProfileQuickAction,
+  ProfileBillingItem,
   Role,
   Language,
 } from "@/types";
 import { useReview } from "@/hooks/useReview";
 import { ProfileAccountSettings } from "@/components/ui/profile-account-settings";
+import { localizePaymentDescription } from "@/lib/payment-i18n";
 
 const ProfileEditForm = dynamic(
   () => import("@/components/ui/profile-edit-form").then((m) => m.ProfileEditForm),
@@ -306,6 +308,9 @@ export default function ProfilePage() {
   const [isSettingsOpen, setIsSettingsOpen] = useState(false);
   const [isEditFormVisible, setIsEditFormVisible] = useState(false);
   const [isBillingHistoryOpen, setIsBillingHistoryOpen] = useState(false);
+  const [viewingInvoice, setViewingInvoice] = useState<ProfileBillingItem | null>(
+    null,
+  );
   const [isReviewModalOpen, setIsReviewModalOpen] = useState(false);
   const [deferBelowFold, setDeferBelowFold] = useState(false);
   const [profileOverview, setProfileOverview] =
@@ -397,6 +402,56 @@ export default function ProfilePage() {
     setToastMessage(msg);
     setTimeout(() => setToastMessage(null), 3000);
   }, []);
+
+  const invoiceStatusLabel = useCallback(
+    (status: string) => {
+      if (status === "paid") return t("profile.billing.status.paid");
+      if (status === "free") return t("profile.billing.status.active");
+      return t("profile.billing.status.pending");
+    },
+    [t],
+  );
+
+  const downloadInvoiceReceipt = useCallback(
+    (invoice: ProfileBillingItem) => {
+      const desc = localizePaymentDescription(invoice.description, t);
+      const status = invoiceStatusLabel(invoice.status);
+      const amount =
+        invoice.status === "free"
+          ? t("profile.billing.amount.free")
+          : `${invoice.amount} ${invoice.currency || "RUB"}`;
+      const date = new Date(invoice.date).toLocaleDateString(locale);
+      const method = invoice.paymentMethod || "—";
+      const html = `<!DOCTYPE html>
+<html lang="${currentLanguage?.toLowerCase?.() || "ru"}">
+<head><meta charset="utf-8"/><title>${invoice.invoiceNumber}</title>
+<style>
+  body{font-family:system-ui,-apple-system,sans-serif;max-width:560px;margin:40px auto;padding:24px;color:#0f172a}
+  h1{font-size:20px;margin:0 0 8px} .muted{color:#64748b;font-size:14px}
+  .row{display:flex;justify-content:space-between;padding:10px 0;border-bottom:1px solid #e2e8f0}
+  .amount{font-size:24px;font-weight:700;margin-top:16px}
+</style></head>
+<body>
+  <h1>AdaptEd Russia</h1>
+  <p class="muted">${t("profile.billing.invoice.receipt")}</p>
+  <div class="row"><span>${t("profile.billing.invoice.number")}</span><strong>${invoice.invoiceNumber}</strong></div>
+  <div class="row"><span>${t("profile.billing.invoice.date")}</span><strong>${date}</strong></div>
+  <div class="row"><span>${t("profile.billing.invoice.description")}</span><strong>${desc}</strong></div>
+  <div class="row"><span>${t("profile.billing.invoice.status")}</span><strong>${status}</strong></div>
+  <div class="row"><span>${t("profile.billing.invoice.method")}</span><strong>${method}</strong></div>
+  <p class="amount">${amount}</p>
+</body></html>`;
+      const blob = new Blob([html], { type: "text/html;charset=utf-8" });
+      const url = URL.createObjectURL(blob);
+      const a = document.createElement("a");
+      a.href = url;
+      a.download = `${invoice.invoiceNumber}.html`;
+      a.click();
+      URL.revokeObjectURL(url);
+      showToast(t("profile.billing.invoice.downloaded"));
+    },
+    [t, locale, currentLanguage, invoiceStatusLabel, showToast],
+  );
 
   const handleLogout = useCallback(() => {
     logout();
@@ -566,9 +621,86 @@ export default function ProfilePage() {
   const avatarInitial = mergedUser.name?.charAt(0)?.toUpperCase?.() ?? "A";
   const extendedUser = mergedUser;
 
-  const statsToRender = (profileOverview?.stats ?? []).slice(0, 3);
-  const quickActionsToRender =
-    profileOverview?.quickActions ?? fallbackQuickActions;
+  const STAT_I18N: Record<string, { title: string; period: string }> = {
+    "guides-viewed": {
+      title: "profile.stat.guidesViewed.title",
+      period: "profile.stat.guidesViewed.period",
+    },
+    "active-reminders": {
+      title: "profile.stat.activeReminders.title",
+      period: "profile.stat.activeReminders.period",
+    },
+    "ai-questions": {
+      title: "profile.stat.aiQuestions.title",
+      period: "profile.stat.aiQuestions.period",
+    },
+  };
+
+  const ACHIEVEMENT_I18N: Record<string, { title: string; desc: string }> = {
+    "first-steps": {
+      title: "profile.achievement.firstSteps.title",
+      desc: "profile.achievement.firstSteps.desc",
+    },
+    "active-student": {
+      title: "profile.achievement.activeStudent.title",
+      desc: "profile.achievement.activeStudent.desc",
+    },
+    "ai-expert": {
+      title: "profile.achievement.aiExpert.title",
+      desc: "profile.achievement.aiExpert.desc",
+    },
+    "adaptation-master": {
+      title: "profile.achievement.adaptationMaster.title",
+      desc: "profile.achievement.adaptationMaster.desc",
+    },
+  };
+
+  const localizeActivityTitle = (item: {
+    type: string;
+    title: string;
+  }): string => {
+    const prefixes: Record<string, { key: string; ru: string[] }> = {
+      task: {
+        key: "profile.activity.taskDone",
+        ru: ["Завершена задача: "],
+      },
+      reminder: {
+        key: "profile.activity.reminder",
+        ru: ["Напоминание: "],
+      },
+      ai: {
+        key: "profile.activity.ai",
+        ru: ["Вопрос к AI: "],
+      },
+      payment: {
+        key: "profile.activity.payment",
+        ru: ["Платёж: ", "Платеж: "],
+      },
+    };
+    const cfg = prefixes[item.type];
+    if (!cfg) return item.title;
+    let subject = item.title;
+    for (const p of cfg.ru) {
+      if (subject.startsWith(p)) {
+        subject = subject.slice(p.length);
+        break;
+      }
+    }
+    return t(cfg.key).replace("{title}", subject);
+  };
+
+  const statsToRender = (profileOverview?.stats ?? []).slice(0, 3).map((stat) => {
+    const keys = STAT_I18N[stat.id];
+    if (!keys) return stat;
+    return {
+      ...stat,
+      title: t(keys.title),
+      period: t(keys.period),
+    };
+  });
+
+  // Always translate on client — API hardcodes RU titles
+  const quickActionsToRender = fallbackQuickActions;
 
   const reviewCardTitle = review
     ? t("profile.quickAction.editReview")
@@ -593,10 +725,23 @@ export default function ProfilePage() {
     },
     ...quickActionsToRender,
   ];
-  const achievementsToRender = profileOverview?.achievements ?? [];
-  const recentActivityToRender = (
-    profileOverview?.recentActivity ?? []
-  ).slice(0, 6);
+  const achievementsToRender = (profileOverview?.achievements ?? []).map(
+    (achievement) => {
+      const keys = ACHIEVEMENT_I18N[achievement.id];
+      if (!keys) return achievement;
+      return {
+        ...achievement,
+        title: t(keys.title),
+        description: t(keys.desc),
+      };
+    },
+  );
+  const recentActivityToRender = (profileOverview?.recentActivity ?? [])
+    .slice(0, 6)
+    .map((item) => ({
+      ...item,
+      title: localizeActivityTitle(item),
+    }));
   const billingHistoryData = profileOverview?.billingHistory ?? [];
 
   return (
@@ -876,7 +1021,7 @@ export default function ProfilePage() {
           {deferBelowFold && (
           <>
           {/* Billing & Invoices */}
-          <div>
+          <div id="profile-billing-section">
             <div className="flex flex-col sm:flex-row sm:items-center sm:justify-between gap-3 sm:gap-0 mb-4 sm:mb-6">
               <h2 className="text-xl sm:text-2xl font-bold text-slate-900">
                 {t("profile.billing.title")}
@@ -963,7 +1108,10 @@ export default function ProfilePage() {
                               </div>
                               <div className="flex-1 min-w-0">
                                 <p className="font-semibold text-slate-900 text-sm sm:text-base truncate">
-                                  {invoice.description}
+                                  {localizePaymentDescription(
+                                    invoice.description,
+                                    t,
+                                  )}
                                 </p>
                                 <div className="flex flex-col sm:flex-row sm:items-center gap-1 sm:gap-4 text-xs sm:text-sm text-slate-600">
                                   <span className="truncate">
@@ -1030,9 +1178,11 @@ export default function ProfilePage() {
                                 <Button
                                   variant="ghost"
                                   size="sm"
-                                  disabled
-                                  title={t("profile.settings.comingSoon")}
-                                  className="h-7 w-7 sm:h-8 sm:w-8 p-0 opacity-50 cursor-not-allowed"
+                                  type="button"
+                                  aria-label={t("profile.billing.invoice.view")}
+                                  title={t("profile.billing.invoice.view")}
+                                  onClick={() => setViewingInvoice(invoice)}
+                                  className="h-7 w-7 sm:h-8 sm:w-8 p-0 hover:bg-slate-200"
                                 >
                                   <Eye className="h-3.5 w-3.5 sm:h-4 sm:w-4" />
                                 </Button>
@@ -1040,9 +1190,15 @@ export default function ProfilePage() {
                                   <Button
                                     variant="ghost"
                                     size="sm"
-                                    disabled
-                                    title={t("profile.settings.comingSoon")}
-                                    className="h-7 w-7 sm:h-8 sm:w-8 p-0 opacity-50 cursor-not-allowed"
+                                    type="button"
+                                    aria-label={t(
+                                      "profile.billing.invoice.download",
+                                    )}
+                                    title={t("profile.billing.invoice.download")}
+                                    onClick={() =>
+                                      downloadInvoiceReceipt(invoice)
+                                    }
+                                    className="h-7 w-7 sm:h-8 sm:w-8 p-0 hover:bg-slate-200"
                                   >
                                     <Download className="h-3.5 w-3.5 sm:h-4 sm:w-4" />
                                   </Button>
@@ -1180,26 +1336,86 @@ export default function ProfilePage() {
                         const gradient =
                           activityGradientMap[activity.color] ??
                           "from-slate-400 to-slate-600";
-                        return (
-                          <div
-                            key={activity.id}
-                            className="flex items-center space-x-4 p-4 rounded-xl bg-slate-50 hover:bg-slate-100 transition-colors duration-200"
-                          >
+
+                        const href =
+                          activity.type === "ai"
+                            ? "/ai-helper"
+                            : activity.type === "reminder" ||
+                                activity.type === "task"
+                              ? "/reminders"
+                              : activity.type === "guide"
+                                ? "/education-guide"
+                                : activity.type === "payment"
+                                  ? null
+                                  : "/dashboard";
+
+                        const openPaymentActivity = () => {
+                          const paymentId = activity.id.replace(
+                            /^payment-/,
+                            "",
+                          );
+                          const invoice = billingHistoryData.find(
+                            (inv) => inv.id === paymentId,
+                          );
+                          setIsBillingHistoryOpen(true);
+                          if (invoice) {
+                            setViewingInvoice(invoice);
+                          } else {
+                            // scroll billing into view after expand
+                            requestAnimationFrame(() => {
+                              document
+                                .getElementById("profile-billing-section")
+                                ?.scrollIntoView({
+                                  behavior: "smooth",
+                                  block: "start",
+                                });
+                            });
+                          }
+                        };
+
+                        const rowClassName =
+                          "flex w-full items-center space-x-4 p-4 rounded-xl bg-slate-50 hover:bg-slate-100 transition-colors duration-200 cursor-pointer text-left";
+
+                        const rowInner = (
+                          <>
                             <div
                               className={`w-10 h-10 rounded-2xl bg-gradient-to-br ${gradient} flex items-center justify-center`}
                             >
                               <Icon className="h-5 w-5 text-white" />
                             </div>
-                            <div className="flex-1">
-                              <p className="font-medium text-slate-900">
+                            <div className="flex-1 min-w-0">
+                              <p className="font-medium text-slate-900 truncate">
                                 {activity.title}
                               </p>
                               <p className="text-sm text-slate-500">
                                 {activityTime}
                               </p>
                             </div>
-                            <ChevronRight className="h-4 w-4 text-slate-400" />
-                          </div>
+                            <ChevronRight className="h-4 w-4 text-slate-400 flex-shrink-0" />
+                          </>
+                        );
+
+                        if (activity.type === "payment") {
+                          return (
+                            <button
+                              key={activity.id}
+                              type="button"
+                              onClick={openPaymentActivity}
+                              className={rowClassName}
+                            >
+                              {rowInner}
+                            </button>
+                          );
+                        }
+
+                        return (
+                          <Link
+                            key={activity.id}
+                            href={href || "/dashboard"}
+                            className={rowClassName}
+                          >
+                            {rowInner}
+                          </Link>
                         );
                       })}
                     </div>
@@ -1210,11 +1426,25 @@ export default function ProfilePage() {
               {/* Achievements */}
               <Card className={profileCardClass} style={profileCardStyle}>
                 <CardHeader className="relative z-10">
-                  <CardTitle className="flex items-center space-x-3">
-                    <div className="w-10 h-10 rounded-2xl bg-gradient-to-br from-yellow-400 to-orange-500 flex items-center justify-center shadow-lg">
-                      <Award className="h-5 w-5 text-white" />
-                    </div>
-                    <span className="text-xl font-bold">{t("profile.achievements.title")}</span>
+                  <CardTitle className="flex items-center justify-between gap-3">
+                    <Link
+                      href="/achievements"
+                      className="flex items-center space-x-3 group"
+                    >
+                      <div className="w-10 h-10 rounded-2xl bg-gradient-to-br from-yellow-400 to-orange-500 flex items-center justify-center shadow-lg">
+                        <Award className="h-5 w-5 text-white" />
+                      </div>
+                      <span className="text-xl font-bold group-hover:text-amber-700 transition-colors">
+                        {t("profile.achievements.title")}
+                      </span>
+                    </Link>
+                    <Link
+                      href="/achievements"
+                      className="inline-flex items-center gap-1 text-sm font-medium text-amber-700 hover:text-amber-800"
+                    >
+                      {t("profile.achievements.viewAll")}
+                      <ChevronRight className="h-4 w-4" />
+                    </Link>
                   </CardTitle>
                 </CardHeader>
                 <CardContent className="relative z-10">
@@ -1227,18 +1457,26 @@ export default function ProfilePage() {
                       <p className="text-sm mt-1">
                         {t("profile.achievements.empty.desc")}
                       </p>
+                      <Link
+                        href="/achievements"
+                        className="mt-4 inline-flex items-center gap-1 text-sm font-medium text-amber-700 hover:text-amber-800"
+                      >
+                        {t("profile.achievements.viewAll")}
+                        <ChevronRight className="h-4 w-4" />
+                      </Link>
                     </div>
                   ) : (
                     <div className="grid grid-cols-1 sm:grid-cols-2 gap-4">
                       {achievementsToRender.map((achievement) => {
                         const Icon = getIconByName(achievement.icon);
                         return (
-                          <div
+                          <Link
                             key={achievement.id}
-                            className={`p-4 rounded-2xl border-2 transition-all duration-300 ${
+                            href={`/achievements#${achievement.id}`}
+                            className={`block p-4 rounded-2xl border-2 transition-all duration-300 cursor-pointer focus-visible:outline-none focus-visible:ring-2 focus-visible:ring-amber-400 ${
                               achievement.unlocked
-                                ? "border-green-200 bg-green-50 hover:bg-green-100"
-                                : "border-slate-200 bg-slate-50 opacity-60"
+                                ? "border-green-200 bg-green-50 hover:bg-green-100 hover:border-green-300 hover:shadow-md"
+                                : "border-slate-200 bg-slate-50 opacity-60 hover:opacity-80 hover:bg-slate-100"
                             }`}
                           >
                             <div className="flex items-center space-x-3">
@@ -1251,7 +1489,7 @@ export default function ProfilePage() {
                               >
                                 <Icon className="h-5 w-5 sm:h-6 sm:w-6 text-white" />
                               </div>
-                              <div className="flex-1">
+                              <div className="flex-1 min-w-0">
                                 <h3
                                   className={`font-semibold text-sm sm:text-base ${
                                     achievement.unlocked
@@ -1271,11 +1509,13 @@ export default function ProfilePage() {
                                   {achievement.description}
                                 </p>
                               </div>
-                              {achievement.unlocked && (
-                                <CheckCircle className="h-4 w-4 sm:h-5 sm:w-5 text-green-500" />
+                              {achievement.unlocked ? (
+                                <CheckCircle className="h-4 w-4 sm:h-5 sm:w-5 text-green-500 flex-shrink-0" />
+                              ) : (
+                                <ChevronRight className="h-4 w-4 text-slate-400 flex-shrink-0" />
                               )}
                             </div>
-                          </div>
+                          </Link>
                         );
                       })}
                     </div>
@@ -1312,6 +1552,105 @@ export default function ProfilePage() {
             onCancel={() => setIsEditFormVisible(false)}
             isVisible={isEditFormVisible}
           />
+        )}
+
+        {/* Invoice detail modal */}
+        {viewingInvoice && (
+          <div
+            className="fixed inset-0 z-[120] flex items-center justify-center bg-black/40 p-4"
+            role="dialog"
+            aria-modal="true"
+            aria-labelledby="invoice-modal-title"
+            onClick={() => setViewingInvoice(null)}
+          >
+            <div
+              className="w-full max-w-md rounded-2xl bg-white p-5 sm:p-6 shadow-2xl"
+              onClick={(e) => e.stopPropagation()}
+            >
+              <div className="mb-4 flex items-start justify-between gap-3">
+                <div>
+                  <h3
+                    id="invoice-modal-title"
+                    className="text-lg font-bold text-slate-900"
+                  >
+                    {t("profile.billing.invoice.details")}
+                  </h3>
+                  <p className="mt-1 text-sm text-slate-500">
+                    {viewingInvoice.invoiceNumber}
+                  </p>
+                </div>
+                <button
+                  type="button"
+                  onClick={() => setViewingInvoice(null)}
+                  aria-label={t("profile.billing.invoice.close")}
+                  className="rounded-lg p-1.5 text-slate-400 hover:bg-slate-100 hover:text-slate-700"
+                >
+                  <X className="h-5 w-5" />
+                </button>
+              </div>
+
+              <div className="space-y-3 text-sm">
+                <div className="flex justify-between gap-4 border-b border-slate-100 pb-2">
+                  <span className="text-slate-500">
+                    {t("profile.billing.invoice.description")}
+                  </span>
+                  <span className="font-medium text-right text-slate-900">
+                    {localizePaymentDescription(viewingInvoice.description, t)}
+                  </span>
+                </div>
+                <div className="flex justify-between gap-4 border-b border-slate-100 pb-2">
+                  <span className="text-slate-500">
+                    {t("profile.billing.invoice.date")}
+                  </span>
+                  <span className="font-medium text-slate-900">
+                    {new Date(viewingInvoice.date).toLocaleDateString(locale)}
+                  </span>
+                </div>
+                <div className="flex justify-between gap-4 border-b border-slate-100 pb-2">
+                  <span className="text-slate-500">
+                    {t("profile.billing.invoice.status")}
+                  </span>
+                  <span className="font-medium text-slate-900">
+                    {invoiceStatusLabel(viewingInvoice.status)}
+                  </span>
+                </div>
+                <div className="flex justify-between gap-4 border-b border-slate-100 pb-2">
+                  <span className="text-slate-500">
+                    {t("profile.billing.invoice.method")}
+                  </span>
+                  <span className="font-medium text-slate-900">
+                    {viewingInvoice.paymentMethod || "—"}
+                  </span>
+                </div>
+                <div className="flex justify-between gap-4 pt-1">
+                  <span className="text-slate-500">
+                    {t("profile.billing.invoice.amount")}
+                  </span>
+                  <span className="text-lg font-bold text-slate-900">
+                    {viewingInvoice.status === "free"
+                      ? t("profile.billing.amount.free")
+                      : `${viewingInvoice.amount} ₽`}
+                  </span>
+                </div>
+              </div>
+
+              <div className="mt-6 flex justify-end gap-2">
+                {viewingInvoice.status === "paid" && (
+                  <Button
+                    type="button"
+                    variant="outline"
+                    onClick={() => downloadInvoiceReceipt(viewingInvoice)}
+                  >
+                    <Download className="mr-2 h-4 w-4" />
+                    {t("profile.billing.invoice.download")}
+                  </Button>
+                )}
+                <Button type="button" onClick={() => setViewingInvoice(null)}>
+                  {t("profile.billing.invoice.close")}
+                </Button>
+              </div>
+            </div>
+          </div>
         )}
 
         {/* Toast */}

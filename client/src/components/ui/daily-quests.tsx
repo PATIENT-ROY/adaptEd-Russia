@@ -1,7 +1,7 @@
 "use client";
 
 import { Card, CardContent, CardHeader, CardTitle } from "@/components/ui/card";
-import { DailyQuest } from "@/types";
+import { DailyQuest, QuestType } from "@/types";
 import { CheckCircle, Circle, Zap, Star, Trophy } from "lucide-react";
 import { useTranslation } from "@/hooks/useTranslation";
 
@@ -9,12 +9,37 @@ interface DailyQuestsProps {
   quests: DailyQuest[];
 }
 
+const QUEST_I18N: Record<string, { title: string; desc: string }> = {
+  [QuestType.READ_GUIDES]: {
+    title: "dailyQuests.readGuides.title",
+    desc: "dailyQuests.readGuides.desc",
+  },
+  [QuestType.ASK_AI]: {
+    title: "dailyQuests.askAi.title",
+    desc: "dailyQuests.askAi.desc",
+  },
+  [QuestType.CREATE_REMINDER]: {
+    title: "dailyQuests.createReminder.title",
+    desc: "dailyQuests.createReminder.desc",
+  },
+};
+
 export function DailyQuestsComponent({ quests }: DailyQuestsProps) {
   const { t } = useTranslation();
   const completedQuests = quests.filter((q) => q.completed).length;
   const totalQuests = quests.length;
   const completionPercentage =
     totalQuests > 0 ? (completedQuests / totalQuests) * 100 : 0;
+
+  const localizeQuest = (quest: DailyQuest) => {
+    const keys = QUEST_I18N[quest.questType];
+    if (!keys) return quest;
+    return {
+      ...quest,
+      title: t(keys.title),
+      description: t(keys.desc),
+    };
+  };
 
   return (
     <Card className="shadow-lg border-0 bg-gradient-to-br from-orange-50 to-yellow-50 no-hover">
@@ -53,7 +78,8 @@ export function DailyQuestsComponent({ quests }: DailyQuestsProps) {
               />
             </div>
 
-            {quests.map((quest) => {
+            {quests.map((rawQuest) => {
+              const quest = localizeQuest(rawQuest);
               const progressPercentage = Math.min(
                 (quest.progress / quest.target) * 100,
                 100,

@@ -490,6 +490,7 @@ function AdminUsersContent() {
                       setNewUser((prev) => ({ ...prev, name: e.target.value }))
                     }
                     placeholder={t("admin.users.modal.namePlaceholder")}
+                    maxLength={50}
                     required
                   />
                 </div>

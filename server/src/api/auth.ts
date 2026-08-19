@@ -17,7 +17,7 @@ const registerSchema = z.object({
     .regex(/[A-Z]/, 'Минимум одна заглавная буква')
     .regex(/[a-z]/, 'Минимум одна строчная буква')
     .regex(/[0-9]/, 'Минимум одна цифра'),
-  name: z.string().min(2, 'Имя должно содержать минимум 2 символа'),
+  name: z.string().min(2, 'Имя должно содержать минимум 2 символа').max(50, 'Имя не более 50 символов'),
   language: z.enum(['RU', 'EN', 'FR', 'AR', 'ZH']).default('RU'),
   country: z.string().min(2, 'Укажите страну'),
 });
@@ -29,7 +29,7 @@ const loginSchema = z.object({
 
 const adminInviteSchema = z.object({
   email: z.string().email('Неверный формат email'),
-  name: z.string().min(2, 'Имя должно содержать минимум 2 символа'),
+  name: z.string().min(2, 'Имя должно содержать минимум 2 символа').max(50, 'Имя не более 50 символов'),
   country: z.string().min(2, 'Укажите страну'),
   language: z.enum(['RU', 'EN', 'FR', 'AR', 'ZH']).default('RU'),
   role: z.enum(['STUDENT', 'ADMIN', 'GUEST']).default('STUDENT'),

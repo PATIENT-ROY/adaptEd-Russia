@@ -43,13 +43,36 @@ import {
   Payment,
   Subscription,
   PaymentResponse,
+  Language,
 } from "@/types";
 import { useTranslation } from "@/hooks/useTranslation";
+import {
+  localizePlanName,
+  localizePlanFeatures,
+  localizePaymentDescription,
+} from "@/lib/payment-i18n";
+
+function getLocaleByLanguage(language?: Language): string {
+  switch (language) {
+    case Language.EN:
+      return "en-US";
+    case Language.FR:
+      return "fr-FR";
+    case Language.AR:
+      return "ar";
+    case Language.ZH:
+      return "zh-CN";
+    case Language.RU:
+    default:
+      return "ru-RU";
+  }
+}
 
 function PaymentTestContent() {
   const searchParams = useSearchParams();
   const router = useRouter();
-  const { t } = useTranslation();
+  const { t, currentLanguage } = useTranslation();
+  const locale = getLocaleByLanguage(currentLanguage);
   const [plans, setPlans] = useState<SubscriptionPlan[]>([]);
   const [testData, setTestData] = useState<TestData | null>(null);
   const [selectedPlan, setSelectedPlan] = useState<SubscriptionPlan | null>(
@@ -443,43 +466,50 @@ function PaymentTestContent() {
                         }`}
                         onClick={() => setSelectedPlan(plan)}
                       >
-                        <CardContent className="p-4">
-                          {selectedPlan?.id === plan.id && (
-                            <div className="absolute top-3 right-3">
-                              <div className="w-6 h-6 bg-blue-500 rounded-full flex items-center justify-center">
+                        <CardContent className="p-4 sm:p-5">
+                          <div className="flex items-start justify-between gap-3 mb-3">
+                            <div className="min-w-0 flex-1">
+                              <h3 className="font-semibold text-base sm:text-lg leading-snug">
+                                {localizePlanName(plan, t)}
+                              </h3>
+                              <Badge variant="info" className="mt-1.5 w-fit">
+                                {plan.interval === "MONTHLY"
+                                  ? t("payment.test.intervalMonthly")
+                                  : t("payment.test.intervalYearly")}
+                              </Badge>
+                            </div>
+                            {selectedPlan?.id === plan.id && (
+                              <div className="w-6 h-6 shrink-0 bg-blue-500 rounded-full flex items-center justify-center">
                                 <Check className="h-4 w-4 text-white" />
                               </div>
-                            </div>
-                          )}
-                          <div className="flex items-center justify-between mb-2">
-                            <h3 className="font-semibold">{plan.name}</h3>
-                            <Badge variant="info">
-                              {plan.interval === "MONTHLY"
-                                ? t("payment.test.intervalMonthly")
-                                : t("payment.test.intervalYearly")}
-                            </Badge>
+                            )}
                           </div>
-                          <div className="text-2xl font-bold text-blue-600 mb-2">
-                            {plan.price} ₽
+                          <div className="text-2xl sm:text-3xl font-bold text-blue-600 mb-3 whitespace-nowrap">
+                            {plan.price}&nbsp;₽
                           </div>
-                          <ul className="text-sm text-gray-600 space-y-1">
+                          <ul className="text-sm sm:text-[15px] text-gray-600 space-y-2">
                             {(() => {
-                              try {
-                                const features = JSON.parse(plan.features);
-                                return features
-                                  .slice(0, 3)
-                                  .map((feature: string) => (
-                                    <li
-                                      key={feature}
-                                      className="flex items-center"
-                                    >
-                                      <CheckCircle className="h-3 w-3 mr-2 text-green-500" />
-                                      {feature}
-                                    </li>
-                                  ));
-                              } catch {
-                                return <li>{t("payment.test.featuresError")}</li>;
+                              const features = localizePlanFeatures(
+                                plan.features,
+                                t,
+                                3,
+                              );
+                              if (features.length === 0) {
+                                return (
+                                  <li>{t("payment.test.featuresError")}</li>
+                                );
                               }
+                              return features.map((feature) => (
+                                <li
+                                  key={feature}
+                                  className="flex items-start gap-2"
+                                >
+                                  <CheckCircle className="h-4 w-4 shrink-0 mt-0.5 text-green-500" />
+                                  <span className="leading-snug">
+                                    {feature}
+                                  </span>
+                                </li>
+                              ));
                             })()}
                           </ul>
                         </CardContent>
@@ -553,46 +583,60 @@ function PaymentTestContent() {
                 )}
 
                 {/* Selection status */}
-                <div className="mb-4 p-3 bg-gray-50 border border-gray-200 rounded-lg">
-                  <div className="flex items-center justify-between text-sm">
-                    <div className="flex items-center space-x-4">
+                <div className="mb-4 p-3 sm:p-4 bg-gray-50 border border-gray-200 rounded-lg">
+                  <div className="flex flex-col gap-2.5 sm:flex-row sm:items-center sm:justify-between sm:gap-4 text-sm">
+                    <div className="flex flex-col gap-2 sm:flex-row sm:items-center sm:gap-4 min-w-0">
                       <div
-                        className={`flex items-center ${
+                        className={`flex items-center gap-2 min-w-0 ${
                           selectedPlan ? "text-green-600" : "text-gray-500"
                         }`}
                       >
                         <CheckCircle
-                          className={`h-4 w-4 mr-1 ${
+                          className={`h-4 w-4 shrink-0 ${
                             selectedPlan ? "text-green-600" : "text-gray-400"
                           }`}
                         />
-                        <span>
-                          {t("payment.test.planLabel")}: {selectedPlan ? selectedPlan.name : t("payment.test.notSelected")}
+                        <span className="leading-snug">
+                          <span className="text-gray-500">
+                            {t("payment.test.planLabel")}:{" "}
+                          </span>
+                          <span className="font-medium">
+                            {selectedPlan
+                              ? localizePlanName(selectedPlan, t)
+                              : t("payment.test.notSelected")}
+                          </span>
                         </span>
                       </div>
                       <div
-                        className={`flex items-center ${
+                        className={`flex items-center gap-2 min-w-0 ${
                           paymentMethod ? "text-green-600" : "text-gray-500"
                         }`}
                       >
                         <CheckCircle
-                          className={`h-4 w-4 mr-1 ${
+                          className={`h-4 w-4 shrink-0 ${
                             paymentMethod ? "text-green-600" : "text-gray-400"
                           }`}
                         />
-                        <span>
-                          {t("payment.test.methodLabel")}:{" "}
-                          {paymentMethod === PaymentMethod.CARD
-                            ? t("payment.test.methodCardShort")
-                            : paymentMethod === PaymentMethod.SBP
-                            ? t("payment.test.methodSbpShort")
-                            : t("payment.test.methodWalletShort")}
+                        <span className="leading-snug">
+                          <span className="text-gray-500">
+                            {t("payment.test.methodLabel")}:{" "}
+                          </span>
+                          <span className="font-medium">
+                            {paymentMethod === PaymentMethod.CARD
+                              ? t("payment.test.methodCardShort")
+                              : paymentMethod === PaymentMethod.SBP
+                              ? t("payment.test.methodSbpShort")
+                              : t("payment.test.methodWalletShort")}
+                          </span>
                         </span>
                       </div>
                     </div>
                     {selectedPlan && (
-                      <div className="text-green-600 font-medium">
-                        {t("payment.test.readyToCreate")}
+                      <div className="flex items-center gap-2 text-green-600 font-medium sm:shrink-0">
+                        <CheckCircle className="h-4 w-4 shrink-0 sm:hidden" />
+                        <span className="leading-snug">
+                          {t("payment.test.readyToCreate")}
+                        </span>
                       </div>
                     )}
                   </div>
@@ -703,7 +747,9 @@ function PaymentTestContent() {
                       <div className="flex items-center justify-between">
                         <span className="text-sm text-gray-600">{t("payment.test.planLabel")}:</span>
                         <span className="font-medium">
-                          {subscription.plan?.name}
+                          {subscription.plan
+                            ? localizePlanName(subscription.plan, t)
+                            : "—"}
                         </span>
                       </div>
                       <div className="flex items-center justify-between">
@@ -736,23 +782,28 @@ function PaymentTestContent() {
                     <CardTitle>{t("payment.test.paymentHistory")}</CardTitle>
                   </CardHeader>
                   <CardContent>
-                    <div className="space-y-3 max-h-64 overflow-y-auto">
+                    <div className="space-y-3 max-h-72 overflow-y-auto">
                       {paymentHistory.slice(0, 5).map((payment) => (
                         <div
                           key={payment.id}
-                          className="flex items-center justify-between p-2 bg-gray-50 rounded"
+                          className="flex items-start gap-3 p-3 bg-gray-50 rounded-lg"
                         >
-                          <div>
-                            <div className="font-medium text-sm">
-                              {payment.description}
+                          <div className="min-w-0 flex-1">
+                            <div className="font-medium text-sm sm:text-base leading-snug">
+                              {localizePaymentDescription(
+                                payment.description,
+                                t,
+                              )}
                             </div>
-                            <div className="text-xs text-gray-600">
-                              {new Date(payment.createdAt).toLocaleDateString()}
+                            <div className="text-xs sm:text-sm text-gray-600 mt-1">
+                              {new Date(payment.createdAt).toLocaleDateString(
+                                locale,
+                              )}
                             </div>
                           </div>
-                          <div className="flex items-center space-x-2">
-                            <span className="font-medium">
-                              {payment.amount} ₽
+                          <div className="flex items-center gap-2 shrink-0 pt-0.5">
+                            <span className="font-semibold text-sm sm:text-base whitespace-nowrap">
+                              {payment.amount}&nbsp;₽
                             </span>
                             <Badge className={getStatusColor(payment.status)}>
                               {getStatusIcon(payment.status)}
