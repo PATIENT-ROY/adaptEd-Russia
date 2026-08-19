@@ -4,6 +4,7 @@ import { useEffect, useState, Suspense } from "react";
 import { useSearchParams, useRouter } from "next/navigation";
 import { Layout } from "@/components/layout/layout";
 import { Button } from "@/components/ui/button";
+import { BackButton } from "@/components/ui/back-button";
 import {
   Card,
   CardContent,
@@ -143,6 +144,11 @@ function PaymentCallbackContent() {
     <Layout>
       <div className="min-h-screen bg-gradient-to-br from-slate-50 via-blue-50 to-indigo-50 py-8">
         <div className="max-w-2xl mx-auto px-4 sm:px-6 lg:px-8">
+          <BackButton
+            label={t("support.back")}
+            className="mb-4"
+            onClick={() => router.push("/payment")}
+          />
           <Card>
             <CardHeader>
               <CardTitle className="flex items-center justify-center">
