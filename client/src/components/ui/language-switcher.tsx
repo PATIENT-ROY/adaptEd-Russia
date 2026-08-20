@@ -154,7 +154,7 @@ export function LanguageSwitcher({
             dismissHint();
           }
         }}
-        className="flex items-center gap-1 sm:gap-2 p-1 sm:px-2 sm:py-1 h-6 sm:h-7 lg:h-8 rounded-lg sm:rounded-xl"
+        className="flex items-center gap-1 sm:gap-2 p-1 sm:px-2 sm:py-1 h-6 sm:h-7 lg:h-8 rounded-lg sm:rounded-xl border-indigo-200 bg-white text-indigo-600 hover:border-indigo-300 hover:bg-indigo-50 hover:text-indigo-700"
       >
         <Globe className="h-2.5 w-2.5 sm:h-3 sm:w-3" />
         <span className="text-sm sm:text-base">{currentLang?.flag}</span>

@@ -2,7 +2,7 @@
 
 import Link from "next/link";
 import Image from "next/image";
-import { useEffect, useRef, useState, type ReactNode } from "react";
+import type { ReactNode } from "react";
 import {
   BookOpen,
   FileText,
@@ -11,9 +11,10 @@ import {
   Rocket,
   type LucideIcon,
 } from "lucide-react";
-import { motion, useInView, useReducedMotion } from "framer-motion";
+import { motion, useReducedMotion } from "framer-motion";
 import { useTranslation } from "@/hooks/useTranslation";
 import { useAdaptationCta } from "@/hooks/useAdaptationCta";
+import { useRevealInView } from "@/components/home/useRevealInView";
 
 const ITEMS: {
   key: string;
@@ -68,26 +69,25 @@ function FadeIn({
   children,
   className,
   delay = 0,
-  enabled,
 }: {
   children: ReactNode;
   className?: string;
   delay?: number;
-  enabled: boolean;
 }) {
-  const ref = useRef<HTMLDivElement>(null);
-  const inView = useInView(ref, { once: true, amount: 0.35 });
-  const show = !enabled || inView;
+  const shouldReduceMotion = useReducedMotion();
+  const { ref, show } = useRevealInView();
+
+  if (shouldReduceMotion) {
+    return <div className={className}>{children}</div>;
+  }
 
   return (
     <motion.div
       ref={ref}
-      className={className}
-      initial={false}
-      animate={
-        show ? { opacity: 1, y: 0, scale: 1 } : { opacity: 0, y: 28, scale: 0.97 }
-      }
-      transition={{ duration: 0.5, ease, delay: show ? delay : 0 }}
+      className={["home-fade-in", className].filter(Boolean).join(" ")}
+      initial={{ opacity: 0, y: 18 }}
+      animate={show ? { opacity: 1, y: 0 } : { opacity: 0, y: 22 }}
+      transition={{ duration: 0.55, ease, delay: show ? delay : 0 }}
     >
       {children}
     </motion.div>
@@ -98,23 +98,15 @@ export function AdaptationHeroSection() {
   const { t } = useTranslation();
   const { href: adaptationCtaHref, label: adaptationCtaLabel } =
     useAdaptationCta();
-  const reduceMotion = useReducedMotion();
-  const [ready, setReady] = useState(false);
-
-  useEffect(() => {
-    setReady(true);
-  }, []);
-
-  const enabled = ready && reduceMotion !== true;
 
   return (
     <section
       aria-label={t("home.section.adaptation.title")}
-      className="below-fold relative my-6 sm:my-8 lg:my-10 px-3 sm:px-4 lg:px-8"
+      className="home-adaptation-hero relative my-6 sm:my-8 lg:my-10 px-3 sm:px-4 lg:px-8"
     >
       <div className="relative mx-auto max-w-7xl">
         <div className="grid w-full grid-cols-1 items-center gap-8 lg:grid-cols-[minmax(0,1.05fr)_minmax(0,0.95fr)] lg:gap-12 xl:gap-16">
-          <FadeIn enabled={enabled}>
+          <FadeIn>
             <div className="overflow-hidden rounded-[28px] sm:rounded-[32px] border border-slate-100 bg-[#f4f1fa] shadow-sm">
               <Image
                 src="/images/illustration/adaptation-hero.png"
@@ -128,7 +120,7 @@ export function AdaptationHeroSection() {
           </FadeIn>
 
           <div className="min-w-0 flex flex-col justify-center">
-            <FadeIn enabled={enabled}>
+            <FadeIn>
               <div className="w-fit max-w-full">
                 <h2 className="text-2xl sm:text-3xl md:text-4xl font-bold tracking-tight text-slate-900">
                   {t("home.section.adaptation.title")}
@@ -146,8 +138,7 @@ export function AdaptationHeroSection() {
                 return (
                   <li key={item.key}>
                     <FadeIn
-                      enabled={enabled}
-                      delay={0.06 + index * 0.07}
+                      delay={0.04 + index * 0.05}
                       className="flex items-center gap-3 sm:gap-3.5 rounded-full border border-slate-200/90 bg-white px-3.5 py-3 sm:px-4 sm:py-3.5 shadow-[0_6px_24px_rgba(15,23,42,0.05)]"
                     >
                       <span
@@ -164,7 +155,7 @@ export function AdaptationHeroSection() {
               })}
             </ul>
 
-            <FadeIn enabled={enabled} className="mt-6 sm:mt-8" delay={0.38}>
+            <FadeIn className="mt-6 sm:mt-8" delay={0.24}>
               <Link
                 href={adaptationCtaHref}
                 className="inline-flex min-h-12 w-full sm:w-auto items-center justify-center gap-2 rounded-full bg-gradient-to-r from-blue-600 to-indigo-600 px-8 py-3 text-base font-semibold text-white shadow-lg shadow-blue-500/20 transition-all duration-200 hover:from-blue-700 hover:to-indigo-700 focus-visible:outline-none focus-visible:ring-2 focus-visible:ring-indigo-500 focus-visible:ring-offset-2"

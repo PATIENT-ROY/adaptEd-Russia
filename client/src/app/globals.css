@@ -225,7 +225,7 @@
 }
 
 .animate-slide-down {
-    animation: slideDown 0.3s ease-out forwards;
+    animation: slideDown 0.3s ease-out both;
 }
 
 .animate-fade-in-up {
@@ -237,7 +237,7 @@
 }
 
 .animate-fade-in {
-    animation: fadeIn 0.5s ease-out forwards;
+    animation: fadeIn 0.5s ease-out both;
 }
 
 .animate-slide-in-from-top {
@@ -734,21 +734,16 @@ nextjs-portal:not(:has(> *)) {
     contain-intrinsic-size: auto 600px;
 }
 
-/* Mobile Safari can delay Framer Motion's in-view event when it is combined
-   with content-visibility. Keep the feature cards immediately readable on
-   phones; the staggered reveal remains enabled from the sm breakpoint. */
-@media (max-width: 639px) {
-    .home-features-section {
-        content-visibility: visible;
-        contain-intrinsic-size: none;
-    }
-
-    .home-features-grid > * {
-        opacity: 1 !important;
-        transform: none !important;
-        transition: none !important;
-    }
+/* Don't combine content-visibility with Framer whileInView — IO never fires
+   and blocks stay at opacity: 0. Keep reveals always paintable. */
+.home-adaptation-hero,
+.home-how-it-works,
+.home-features-section,
+.home-mid-cta {
+    content-visibility: visible;
+    contain-intrinsic-size: none;
 }
+
 
 /* Language marquee — AdaptEd soft ticker */
 @keyframes language-marquee-scroll {

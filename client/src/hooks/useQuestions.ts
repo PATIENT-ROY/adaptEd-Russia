@@ -1,6 +1,8 @@
 import { useState, useCallback, useRef } from "react";
 import { API_BASE_URL } from "@/lib/api";
 
+export type QuestionStatusFilter = "all" | "answered" | "unanswered";
+
 export interface Question {
   id: string;
   title: string;
@@ -10,6 +12,7 @@ export interface Question {
   author: string;
   authorId: string;
   isAnswered: boolean;
+  acceptedAnswerId?: string | null;
   isLikedByCurrentUser: boolean;
   createdAt: number;
   timeLabel: string;
@@ -26,7 +29,17 @@ export interface Answer {
   author: string;
   authorId: string;
   createdAt: number;
+  updatedAt?: number;
   timeLabel: string;
+  isAccepted?: boolean;
+}
+
+export interface FetchQuestionsOpts {
+  sort?: "popular" | "new";
+  search?: string;
+  page?: number;
+  status?: QuestionStatusFilter;
+  mine?: boolean;
 }
 
 interface PaginatedResponse<T> {
@@ -34,6 +47,7 @@ interface PaginatedResponse<T> {
   data?: T;
   meta?: {
     total: number;
+    all?: number;
     page: number;
     limit: number;
     hasMore: boolean;
@@ -61,6 +75,12 @@ export const useQuestions = () => {
   const [answeredCount, setAnsweredCount] = useState(0);
   const [unansweredCount, setUnansweredCount] = useState(0);
   const pageRef = useRef(1);
+  const filtersRef = useRef<{
+    sort: "popular" | "new";
+    search?: string;
+    status: QuestionStatusFilter;
+    mine: boolean;
+  }>({ sort: "new", status: "all", mine: false });
 
   const getHeaders = useCallback((withAuth = false) => {
     const headers: Record<string, string> = {
@@ -76,11 +96,15 @@ export const useQuestions = () => {
   }, []);
 
   const fetchQuestions = useCallback(
-    async (
-      sort: "popular" | "new" = "new",
-      search?: string,
-      page = 1,
-    ) => {
+    async (opts: FetchQuestionsOpts = {}) => {
+      const sort = opts.sort ?? filtersRef.current.sort;
+      const search = opts.search ?? filtersRef.current.search;
+      const status = opts.status ?? filtersRef.current.status;
+      const mine = opts.mine ?? filtersRef.current.mine;
+      const page = opts.page ?? 1;
+
+      filtersRef.current = { sort, search, status, mine };
+
       const isAppend = page > 1;
       if (isAppend) {
         setIsLoadingMore(true);
@@ -94,13 +118,14 @@ export const useQuestions = () => {
           sort,
           page: String(page),
           limit: "20",
+          status,
         });
         if (search?.trim()) params.set("search", search.trim());
+        if (mine) params.set("mine", "true");
 
-        const response = await fetch(
-          `${API_BASE_URL}/questions?${params}`,
-          { headers: getHeaders(true) },
-        );
+        const response = await fetch(`${API_BASE_URL}/questions?${params}`, {
+          headers: getHeaders(true),
+        });
 
         const data: PaginatedResponse<Question[]> = await response.json();
 
@@ -117,7 +142,7 @@ export const useQuestions = () => {
 
         pageRef.current = page;
         setHasMore(data.meta?.hasMore ?? false);
-        setTotalCount(data.meta?.total ?? fetched.length);
+        setTotalCount(data.meta?.all ?? data.meta?.total ?? fetched.length);
         setAnsweredCount(data.meta?.answered ?? 0);
         setUnansweredCount(data.meta?.unanswered ?? 0);
         return fetched;
@@ -134,12 +159,9 @@ export const useQuestions = () => {
     [getHeaders],
   );
 
-  const loadMore = useCallback(
-    async (sort: "popular" | "new", search?: string) => {
-      return fetchQuestions(sort, search, pageRef.current + 1);
-    },
-    [fetchQuestions],
-  );
+  const loadMore = useCallback(async () => {
+    return fetchQuestions({ page: pageRef.current + 1 });
+  }, [fetchQuestions]);
 
   const fetchQuestion = useCallback(
     async (id: string): Promise<QuestionDetail | null> => {
@@ -189,6 +211,8 @@ export const useQuestions = () => {
 
         if (data.data) {
           setQuestions((prev) => [data.data!, ...prev]);
+          setTotalCount((c) => c + 1);
+          setUnansweredCount((c) => c + 1);
         }
 
         return data.data || null;
@@ -233,6 +257,128 @@ export const useQuestions = () => {
           ),
         );
 
+        return data.data || null;
+      } catch (err) {
+        const message =
+          err instanceof Error ? err.message : "Неизвестная ошибка";
+        setError(message);
+        return null;
+      }
+    },
+    [getHeaders],
+  );
+
+  const updateAnswer = useCallback(
+    async (
+      questionId: string,
+      answerId: string,
+      content: string,
+    ): Promise<Answer | null> => {
+      setError(null);
+      try {
+        const response = await fetch(
+          `${API_BASE_URL}/questions/${questionId}/answers/${answerId}`,
+          {
+            method: "PATCH",
+            headers: getHeaders(true),
+            body: JSON.stringify({ content }),
+          },
+        );
+        const data: ApiResponse<Answer> = await response.json();
+        if (!response.ok || !data.success) {
+          throw new Error(data.message || "Ошибка редактирования ответа");
+        }
+        return data.data || null;
+      } catch (err) {
+        const message =
+          err instanceof Error ? err.message : "Неизвестная ошибка";
+        setError(message);
+        return null;
+      }
+    },
+    [getHeaders],
+  );
+
+  const deleteAnswer = useCallback(
+    async (questionId: string, answerId: string): Promise<boolean> => {
+      setError(null);
+      try {
+        const response = await fetch(
+          `${API_BASE_URL}/questions/${questionId}/answers/${answerId}`,
+          {
+            method: "DELETE",
+            headers: getHeaders(true),
+          },
+        );
+        const data: ApiResponse<{
+          answersCount: number;
+          isAnswered: boolean;
+        }> = await response.json();
+        if (!response.ok || !data.success) {
+          throw new Error(data.message || "Ошибка удаления ответа");
+        }
+        if (data.data) {
+          setQuestions((prev) =>
+            prev.map((q) =>
+              q.id === questionId
+                ? {
+                    ...q,
+                    answersCount: data.data!.answersCount,
+                    isAnswered: data.data!.isAnswered,
+                    acceptedAnswerId:
+                      q.acceptedAnswerId === answerId
+                        ? null
+                        : q.acceptedAnswerId,
+                  }
+                : q,
+            ),
+          );
+        }
+        return true;
+      } catch (err) {
+        const message =
+          err instanceof Error ? err.message : "Неизвестная ошибка";
+        setError(message);
+        return false;
+      }
+    },
+    [getHeaders],
+  );
+
+  const acceptAnswer = useCallback(
+    async (
+      questionId: string,
+      answerId: string,
+    ): Promise<{ acceptedAnswerId: string | null; isAnswered: boolean } | null> => {
+      setError(null);
+      try {
+        const response = await fetch(
+          `${API_BASE_URL}/questions/${questionId}/answers/${answerId}/accept`,
+          {
+            method: "POST",
+            headers: getHeaders(true),
+          },
+        );
+        const data: ApiResponse<{
+          acceptedAnswerId: string | null;
+          isAnswered: boolean;
+        }> = await response.json();
+        if (!response.ok || !data.success) {
+          throw new Error(data.message || "Ошибка выбора лучшего ответа");
+        }
+        if (data.data) {
+          setQuestions((prev) =>
+            prev.map((q) =>
+              q.id === questionId
+                ? {
+                    ...q,
+                    acceptedAnswerId: data.data!.acceptedAnswerId,
+                    isAnswered: data.data!.isAnswered,
+                  }
+                : q,
+            ),
+          );
+        }
         return data.data || null;
       } catch (err) {
         const message =
@@ -383,6 +529,9 @@ export const useQuestions = () => {
     fetchQuestion,
     createQuestion,
     addAnswer,
+    updateAnswer,
+    deleteAnswer,
+    acceptAnswer,
     likeQuestion,
     unlikeQuestion,
     deleteQuestion,

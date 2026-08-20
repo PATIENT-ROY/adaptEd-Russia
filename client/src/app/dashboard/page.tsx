@@ -179,11 +179,11 @@ export default function DashboardPage() {
           <div className="space-y-6 sm:space-y-8">
             {/* Header Skeleton */}
             <div className="bg-gradient-to-r from-blue-50 to-indigo-50 rounded-2xl sm:rounded-3xl p-4 sm:p-6 lg:p-8 shadow-lg">
-              <div className="flex flex-col sm:flex-row sm:items-center space-y-4 sm:space-y-0 sm:space-x-4">
-                <div className="w-12 h-12 sm:w-16 sm:h-16 rounded-2xl bg-gray-200 animate-pulse"></div>
-                <div className="flex-1">
-                  <div className="h-6 sm:h-8 w-64 bg-gray-200 rounded animate-pulse mb-2"></div>
-                  <div className="h-4 sm:h-5 w-96 bg-gray-200 rounded animate-pulse"></div>
+              <div className="flex flex-row items-center gap-3 sm:gap-4">
+                <div className="w-12 h-12 sm:w-16 sm:h-16 rounded-2xl bg-gray-200 animate-pulse shrink-0"></div>
+                <div className="flex-1 min-w-0">
+                  <div className="h-6 sm:h-8 w-48 sm:w-64 bg-gray-200 rounded animate-pulse mb-2"></div>
+                  <div className="h-4 sm:h-5 w-full max-w-sm bg-gray-200 rounded animate-pulse"></div>
                 </div>
               </div>
             </div>
@@ -269,20 +269,26 @@ export default function DashboardPage() {
           {/* Welcome Header */}
           <Card className="bg-gradient-to-r from-blue-50 to-indigo-50 border-0 shadow-lg">
             <CardContent className="p-4 sm:p-6 lg:p-8">
-              <div className="flex flex-col sm:flex-row sm:items-center space-y-4 sm:space-y-0 sm:space-x-4">
+              <div className="flex flex-row items-center gap-3 sm:gap-4">
                 <Link
                   href="/profile"
-                  className="w-12 h-12 sm:w-16 sm:h-16 rounded-2xl bg-gradient-to-br from-blue-500 to-indigo-600 flex items-center justify-center shadow-lg hover:shadow-xl transition-shadow cursor-pointer flex-shrink-0"
+                  className="w-12 h-12 sm:w-16 sm:h-16 rounded-2xl bg-gradient-to-br from-blue-500 to-indigo-600 flex items-center justify-center shadow-lg hover:shadow-xl transition-shadow cursor-pointer shrink-0"
                   aria-label="Profile"
                 >
                   <span className="text-white text-lg sm:text-2xl font-bold">
                     {user?.name.charAt(0).toUpperCase() || "А"}
                   </span>
                 </Link>
-                <div>
-                  <h1 className="text-xl sm:text-2xl lg:text-3xl font-bold text-slate-900 mb-1 sm:mb-2 flex items-center gap-2">
-                    {welcomeMessage}
-                    <span className="animate-wave text-2xl sm:text-3xl lg:text-4xl" role="img" aria-label="машущая рука">👋</span>
+                <div className="min-w-0 flex-1">
+                  <h1 className="text-xl sm:text-2xl lg:text-3xl font-bold text-slate-900 mb-0.5 sm:mb-2 flex items-center gap-2 flex-wrap">
+                    <span className="min-w-0">{welcomeMessage}</span>
+                    <span
+                      className="animate-wave text-2xl sm:text-3xl lg:text-4xl shrink-0"
+                      role="img"
+                      aria-label="машущая рука"
+                    >
+                      👋
+                    </span>
                   </h1>
                   <p className="text-sm sm:text-base lg:text-lg text-slate-600">
                     {t("dashboard.welcome.subtitle")}

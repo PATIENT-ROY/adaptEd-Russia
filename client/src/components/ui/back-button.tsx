@@ -20,15 +20,13 @@ export function BackButton({ label, className, onClick }: BackButtonProps) {
       variant="outline"
       onClick={onClick ?? (() => router.back())}
       className={cn(
-        // Mobile — компактнее
-        "h-6 min-h-0 w-fit gap-0.5 rounded-md border border-slate-300 bg-white px-1.5 py-0 text-[10px] font-medium leading-none text-slate-700 shadow-none",
-        // Desktop — как сейчас (нормальный размер)
-        "sm:h-8 sm:gap-1 sm:rounded-lg sm:px-2.5 sm:text-xs",
+        "h-8 min-h-0 w-fit gap-1 rounded-lg border border-slate-300 bg-white px-2.5 py-0 text-xs font-medium leading-none text-slate-700 shadow-none",
+        "sm:h-9 sm:gap-1.5 sm:px-3 sm:text-sm",
         "hover:border-slate-400 hover:bg-slate-50 hover:text-slate-900 hover:shadow-none",
         className,
       )}
     >
-      <ArrowLeft className="h-2.5 w-2.5 shrink-0 sm:h-3.5 sm:w-3.5" />
+      <ArrowLeft className="h-3.5 w-3.5 shrink-0 sm:h-4 sm:w-4" />
       {label}
     </Button>
   );

@@ -1,15 +1,19 @@
 "use client";
 
-import { useEffect, useState } from "react";
+import { useEffect, useState, type ReactNode } from "react";
 import {
   Bell,
   CheckCircle2,
   ChevronDown,
+  ChevronRight,
+  Eye,
+  EyeOff,
   KeyRound,
   Loader2,
   LogOut,
   Mail,
   Shield,
+  X,
 } from "lucide-react";
 import { apiClient } from "@/lib/api";
 import type { AccountSettings } from "@/types";
@@ -39,29 +43,168 @@ const TIMEZONES = [
 ] as const;
 
 const fieldClass =
-  "h-11 w-full rounded-xl border border-slate-200 bg-white px-3 text-sm text-slate-800 outline-none transition placeholder:text-slate-400 focus:border-slate-400 focus:ring-2 focus:ring-slate-100";
+  "h-11 w-full rounded-xl border border-slate-200 bg-white px-3 pr-11 text-sm text-slate-800 outline-none transition placeholder:text-slate-400 focus:border-slate-400 focus:ring-2 focus:ring-slate-100";
 
-function SectionHeader({
+function SettingsCardEntry({
   icon: Icon,
   title,
   description,
+  onOpen,
 }: {
   icon: typeof Bell;
   title: string;
   description: string;
+  onOpen: () => void;
 }) {
   return (
-    <div className="flex items-start gap-3">
+    <button
+      type="button"
+      onClick={onOpen}
+      className="flex w-full items-start gap-3 px-4 py-4 text-left transition hover:bg-slate-50/80 sm:px-5"
+    >
       <div className="mt-0.5 flex h-9 w-9 shrink-0 items-center justify-center rounded-xl bg-slate-100 text-slate-700 sm:h-10 sm:w-10">
         <Icon className="h-4 w-4 sm:h-[18px] sm:w-[18px]" />
       </div>
-      <div className="min-w-0 pt-0.5">
+      <div className="min-w-0 flex-1 pt-0.5">
         <h3 className="text-sm font-semibold tracking-tight text-slate-900 sm:text-base">
           {title}
         </h3>
         <p className="mt-0.5 text-xs leading-relaxed text-slate-500 sm:text-sm">
           {description}
         </p>
+      </div>
+      <ChevronRight
+        aria-hidden
+        className="mt-2 h-5 w-5 shrink-0 text-slate-400"
+      />
+    </button>
+  );
+}
+
+function SettingsModalShell({
+  open,
+  title,
+  icon: Icon,
+  onClose,
+  closeLabel,
+  children,
+}: {
+  open: boolean;
+  title: string;
+  icon: typeof Bell;
+  onClose: () => void;
+  closeLabel: string;
+  children: ReactNode;
+}) {
+  useEffect(() => {
+    if (!open) return;
+    const prev = document.body.style.overflow;
+    document.body.style.overflow = "hidden";
+    const onKey = (e: KeyboardEvent) => {
+      if (e.key === "Escape") onClose();
+    };
+    window.addEventListener("keydown", onKey);
+    return () => {
+      document.body.style.overflow = prev;
+      window.removeEventListener("keydown", onKey);
+    };
+  }, [open, onClose]);
+
+  if (!open) return null;
+
+  return (
+    <div
+      className="fixed inset-0 z-[120] flex items-end justify-center sm:items-center sm:p-4"
+      role="dialog"
+      aria-modal="true"
+      aria-label={title}
+    >
+      <button
+        type="button"
+        aria-label={closeLabel}
+        className="absolute inset-0 bg-black/40 backdrop-blur-[2px]"
+        onClick={onClose}
+      />
+      <div
+        className={cn(
+          "relative z-10 flex w-full max-h-[88dvh] flex-col overflow-hidden bg-white shadow-2xl",
+          "rounded-t-2xl sm:max-w-md sm:rounded-2xl",
+          "animate-slide-in-from-bottom",
+        )}
+      >
+        <div className="mx-auto mt-2 h-1 w-10 shrink-0 rounded-full bg-slate-200 sm:hidden" />
+        <div className="flex items-center gap-2.5 border-b border-slate-100 px-4 py-3.5">
+          <div className="flex h-9 w-9 shrink-0 items-center justify-center rounded-xl bg-slate-100 text-slate-700">
+            <Icon className="h-4 w-4" />
+          </div>
+          <h3 className="min-w-0 flex-1 truncate text-base font-semibold text-slate-900">
+            {title}
+          </h3>
+          <button
+            type="button"
+            onClick={onClose}
+            aria-label={closeLabel}
+            className="flex h-9 w-9 shrink-0 items-center justify-center rounded-xl text-slate-500 transition hover:bg-slate-100 hover:text-slate-900"
+          >
+            <X className="h-5 w-5" />
+          </button>
+        </div>
+        <div className="min-h-0 flex-1 overflow-y-auto px-4 py-4 sm:px-5 sm:py-5">
+          {children}
+        </div>
+      </div>
+    </div>
+  );
+}
+
+function PasswordField({
+  id,
+  label,
+  value,
+  onChange,
+  autoComplete,
+  visible,
+  onToggleVisible,
+  showLabel,
+  hideLabel,
+}: {
+  id: string;
+  label: string;
+  value: string;
+  onChange: (value: string) => void;
+  autoComplete: string;
+  visible: boolean;
+  onToggleVisible: () => void;
+  showLabel: string;
+  hideLabel: string;
+}) {
+  return (
+    <div className="space-y-2">
+      <Label className="text-sm font-medium text-slate-700" htmlFor={id}>
+        {label}
+      </Label>
+      <div className="relative">
+        <Input
+          className={fieldClass}
+          id={id}
+          type={visible ? "text" : "password"}
+          autoComplete={autoComplete}
+          value={value}
+          onChange={(event) => onChange(event.target.value)}
+        />
+        <button
+          type="button"
+          onClick={onToggleVisible}
+          aria-label={visible ? hideLabel : showLabel}
+          title={visible ? hideLabel : showLabel}
+          className="absolute right-2.5 top-1/2 flex h-8 w-8 -translate-y-1/2 items-center justify-center rounded-lg text-slate-500 transition hover:bg-slate-100 hover:text-slate-800"
+        >
+          {visible ? (
+            <EyeOff className="h-4 w-4" />
+          ) : (
+            <Eye className="h-4 w-4" />
+          )}
+        </button>
       </div>
     </div>
   );
@@ -82,6 +225,12 @@ export function ProfileAccountSettings({
   const [currentPassword, setCurrentPassword] = useState("");
   const [newPassword, setNewPassword] = useState("");
   const [confirmPassword, setConfirmPassword] = useState("");
+  const [showCurrentPassword, setShowCurrentPassword] = useState(false);
+  const [showNewPassword, setShowNewPassword] = useState(false);
+  const [showConfirmPassword, setShowConfirmPassword] = useState(false);
+  const [activePanel, setActivePanel] = useState<
+    null | "notifications" | "security"
+  >(null);
   const [message, setMessage] = useState<{
     text: string;
     error?: boolean;
@@ -190,19 +339,37 @@ export function ProfileAccountSettings({
 
       {/* Notifications */}
       <section className="overflow-hidden rounded-2xl border border-slate-200/80 bg-white">
-        <div className="border-b border-slate-100 px-4 py-4 sm:px-5">
-          <SectionHeader
-            icon={Bell}
-            title={t("profile.settings.notifications")}
-            description={t("profile.settings.notificationsDesc")}
-          />
-        </div>
-        <div className="space-y-4 px-4 py-4 sm:px-5 sm:py-5">
-          <div className="flex min-h-12 items-center justify-between gap-4 rounded-xl bg-slate-50 px-3.5 py-3">
-            <div className="flex min-w-0 items-center gap-3">
+        <SettingsCardEntry
+          icon={Bell}
+          title={t("profile.settings.notifications")}
+          description={t("profile.settings.notificationsDesc")}
+          onOpen={() => setActivePanel("notifications")}
+        />
+      </section>
+
+      {/* Security */}
+      <section className="overflow-hidden rounded-2xl border border-slate-200/80 bg-white">
+        <SettingsCardEntry
+          icon={Shield}
+          title={t("profile.settings.security")}
+          description={t("profile.settings.securityDesc")}
+          onOpen={() => setActivePanel("security")}
+        />
+      </section>
+
+      <SettingsModalShell
+        open={activePanel === "notifications"}
+        icon={Bell}
+        title={t("profile.settings.notifications")}
+        onClose={() => setActivePanel(null)}
+        closeLabel={t("templates.back")}
+      >
+        <div className="space-y-4">
+          <div className="flex min-h-14 items-center justify-between gap-3 rounded-xl bg-slate-50 px-3.5 py-3.5">
+            <div className="flex min-w-0 flex-1 items-center gap-3">
               <Mail className="h-4 w-4 shrink-0 text-slate-500" />
               <Label
-                className="cursor-pointer text-sm font-medium text-slate-800"
+                className="cursor-pointer text-sm font-medium leading-snug text-slate-800"
                 htmlFor="email-notifications"
               >
                 {t("profile.settings.emailNotifications")}
@@ -221,7 +388,10 @@ export function ProfileAccountSettings({
           </div>
 
           <div className="space-y-2">
-            <Label className="text-sm font-medium text-slate-700" htmlFor="timezone">
+            <Label
+              className="text-sm font-medium text-slate-700"
+              htmlFor="timezone"
+            >
               {t("profile.settings.timezone")}
             </Label>
             <div className="relative">
@@ -234,10 +404,7 @@ export function ProfileAccountSettings({
                     timezone: event.target.value,
                   }))
                 }
-                className={cn(
-                  fieldClass,
-                  "appearance-none pr-10",
-                )}
+                className={cn(fieldClass, "appearance-none pr-10")}
               >
                 {TIMEZONES.map(([value, label]) => (
                   <option key={value} value={value}>
@@ -266,67 +433,50 @@ export function ProfileAccountSettings({
             </Button>
           </div>
         </div>
-      </section>
+      </SettingsModalShell>
 
-      {/* Security */}
-      <section className="overflow-hidden rounded-2xl border border-slate-200/80 bg-white">
-        <div className="border-b border-slate-100 px-4 py-4 sm:px-5">
-          <SectionHeader
-            icon={Shield}
-            title={t("profile.settings.security")}
-            description={t("profile.settings.securityDesc")}
-          />
-        </div>
-        <div className="space-y-4 px-4 py-4 sm:px-5 sm:py-5">
+      <SettingsModalShell
+        open={activePanel === "security"}
+        icon={Shield}
+        title={t("profile.settings.security")}
+        onClose={() => setActivePanel(null)}
+        closeLabel={t("templates.back")}
+      >
+        <div className="space-y-4">
           <div className="grid gap-3">
-            <div className="space-y-2">
-              <Label
-                className="text-sm font-medium text-slate-700"
-                htmlFor="current-password"
-              >
-                {t("profile.settings.currentPassword")}
-              </Label>
-              <Input
-                className={fieldClass}
-                id="current-password"
-                type="password"
-                autoComplete="current-password"
-                value={currentPassword}
-                onChange={(event) => setCurrentPassword(event.target.value)}
-              />
-            </div>
-            <div className="space-y-2">
-              <Label
-                className="text-sm font-medium text-slate-700"
-                htmlFor="new-password"
-              >
-                {t("profile.settings.newPassword")}
-              </Label>
-              <Input
-                className={fieldClass}
-                id="new-password"
-                type="password"
-                autoComplete="new-password"
-                value={newPassword}
-                onChange={(event) => setNewPassword(event.target.value)}
-              />
-            </div>
-            <div className="space-y-2">
-              <Label
-                className="text-sm font-medium text-slate-700"
-                htmlFor="confirm-password"
-              >
-                {t("profile.settings.confirmPassword")}
-              </Label>
-              <Input
-                className={fieldClass}
-                id="confirm-password"
-                type="password"
-                autoComplete="new-password"
-                value={confirmPassword}
-                onChange={(event) => setConfirmPassword(event.target.value)}
-              />
-            </div>
+            <PasswordField
+              id="current-password"
+              label={t("profile.settings.currentPassword")}
+              value={currentPassword}
+              onChange={setCurrentPassword}
+              autoComplete="current-password"
+              visible={showCurrentPassword}
+              onToggleVisible={() => setShowCurrentPassword((v) => !v)}
+              showLabel={t("login.showPassword")}
+              hideLabel={t("login.hidePassword")}
+            />
+            <PasswordField
+              id="new-password"
+              label={t("profile.settings.newPassword")}
+              value={newPassword}
+              onChange={setNewPassword}
+              autoComplete="new-password"
+              visible={showNewPassword}
+              onToggleVisible={() => setShowNewPassword((v) => !v)}
+              showLabel={t("login.showPassword")}
+              hideLabel={t("login.hidePassword")}
+            />
+            <PasswordField
+              id="confirm-password"
+              label={t("profile.settings.confirmPassword")}
+              value={confirmPassword}
+              onChange={setConfirmPassword}
+              autoComplete="new-password"
+              visible={showConfirmPassword}
+              onToggleVisible={() => setShowConfirmPassword((v) => !v)}
+              showLabel={t("login.showPassword")}
+              hideLabel={t("login.hidePassword")}
+            />
           </div>
 
           <div className="flex flex-col gap-2 border-t border-slate-100 pt-4">
@@ -361,11 +511,14 @@ export function ProfileAccountSettings({
               ) : (
                 <LogOut className="mr-2 h-4 w-4 shrink-0" />
               )}
-              <span className="min-w-0 flex-1">{t("profile.settings.logoutAll")}</span>
+              <span className="min-w-0 flex-1">
+                {t("profile.settings.logoutAll")}
+              </span>
             </Button>
           </div>
         </div>
-      </section>
+      </SettingsModalShell>
     </div>
   );
 }
+

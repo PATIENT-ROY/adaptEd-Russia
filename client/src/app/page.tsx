@@ -417,7 +417,7 @@ export default function HomePage() {
         {/* How it works */}
         <section
           aria-label={t("home.section.howItWorks.title")}
-          className="below-fold py-12 sm:py-16 md:py-20 bg-white rounded-2xl sm:rounded-3xl my-6 sm:my-8"
+          className="home-how-it-works py-12 sm:py-16 md:py-20 bg-white rounded-2xl sm:rounded-3xl my-6 sm:my-8"
         >
           <div className="max-w-7xl mx-auto px-4 sm:px-6 lg:px-8">
             <ScrollReveal className="text-center mb-8 sm:mb-10">
@@ -429,7 +429,7 @@ export default function HomePage() {
               </p>
             </ScrollReveal>
 
-            <StaggerReveal className="grid grid-cols-1 lg:grid-cols-3 gap-5 sm:gap-6">
+            <StaggerReveal className="home-how-it-works-grid grid grid-cols-1 lg:grid-cols-3 gap-5 sm:gap-6">
               <StaggerItem>
                 <Card className="group border border-slate-200 shadow-sm h-full hover:shadow-md transition-shadow bg-gradient-to-b from-white to-slate-50">
                   <CardContent className="p-5 h-full flex flex-col">
@@ -579,7 +579,7 @@ export default function HomePage() {
         {/* Features — single section */}
         <section
           aria-label={t("home.section.features.title")}
-          className="below-fold home-features-section py-12 sm:py-16 md:py-20 bg-slate-50 rounded-2xl sm:rounded-3xl my-6 sm:my-8"
+          className="home-features-section py-12 sm:py-16 md:py-20 bg-slate-50 rounded-2xl sm:rounded-3xl my-6 sm:my-8"
         >
           <div className="max-w-7xl mx-auto px-4 sm:px-6 lg:px-8">
             <ScrollReveal className="text-center mb-10 sm:mb-12">
@@ -754,7 +754,7 @@ export default function HomePage() {
         {/* Mid CTA */}
         <section
           aria-label={t("home.cta.title")}
-          className="below-fold relative overflow-hidden py-12 sm:py-16 rounded-2xl sm:rounded-3xl my-6 sm:my-8 bg-cover bg-center bg-no-repeat"
+          className="home-mid-cta relative overflow-hidden py-12 sm:py-16 rounded-2xl sm:rounded-3xl my-6 sm:my-8 bg-cover bg-center bg-no-repeat"
           style={{
             backgroundImage:
               "linear-gradient(to bottom right, rgba(30, 64, 175, 0.72), rgba(109, 40, 217, 0.74)), url(/images/illustration/adaptation-cta-v2.png)",

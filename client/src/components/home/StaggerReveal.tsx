@@ -5,8 +5,8 @@ import type { ReactNode } from "react";
 import {
   staggerContainerVariants,
   staggerItemVariants,
-  viewportOnce,
 } from "@/components/home/home-motion";
+import { useRevealInView } from "@/components/home/useRevealInView";
 
 type StaggerRevealProps = {
   children: ReactNode;
@@ -15,6 +15,7 @@ type StaggerRevealProps = {
 
 export function StaggerReveal({ children, className }: StaggerRevealProps) {
   const shouldReduceMotion = useReducedMotion();
+  const { ref, show } = useRevealInView();
 
   if (shouldReduceMotion) {
     return <div className={className}>{children}</div>;
@@ -22,9 +23,9 @@ export function StaggerReveal({ children, className }: StaggerRevealProps) {
 
   return (
     <motion.div
+      ref={ref}
       initial="hidden"
-      whileInView="visible"
-      viewport={viewportOnce}
+      animate={show ? "visible" : "hidden"}
       variants={staggerContainerVariants}
       className={className}
     >
@@ -46,7 +47,10 @@ export function StaggerItem({ children, className }: StaggerItemProps) {
   }
 
   return (
-    <motion.div variants={staggerItemVariants} className={className}>
+    <motion.div
+      variants={staggerItemVariants}
+      className={["home-stagger-item", className].filter(Boolean).join(" ")}
+    >
       {children}
     </motion.div>
   );

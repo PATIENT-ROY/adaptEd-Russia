@@ -2,7 +2,8 @@
 
 import { motion, useReducedMotion } from "framer-motion";
 import type { ReactNode } from "react";
-import { fadeUpVariants, viewportOnce } from "@/components/home/home-motion";
+import { fadeUpVariants } from "@/components/home/home-motion";
+import { useRevealInView } from "@/components/home/useRevealInView";
 
 type ScrollRevealProps = {
   children: ReactNode;
@@ -16,6 +17,7 @@ export function ScrollReveal({
   delay = 0,
 }: ScrollRevealProps) {
   const shouldReduceMotion = useReducedMotion();
+  const { ref, show } = useRevealInView();
 
   if (shouldReduceMotion) {
     return <div className={className}>{children}</div>;
@@ -23,12 +25,12 @@ export function ScrollReveal({
 
   return (
     <motion.div
+      ref={ref}
       initial="hidden"
-      whileInView="visible"
-      viewport={viewportOnce}
+      animate={show ? "visible" : "hidden"}
       variants={fadeUpVariants}
       transition={{ delay }}
-      className={className}
+      className={["home-scroll-reveal", className].filter(Boolean).join(" ")}
     >
       {children}
     </motion.div>

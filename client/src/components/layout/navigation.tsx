@@ -19,7 +19,7 @@ import {
   X,
   Shield,
   ScanLine,
-  Trophy,
+  Users,
 } from "lucide-react";
 import { useState } from "react";
 import type { Language } from "@/types";
@@ -40,7 +40,7 @@ const authenticatedNavigationItemsConfig = [
   { href: "/reminders", labelKey: "nav.reminders", icon: Bell },
   { href: "/ai-helper", labelKey: "nav.aiHelper", icon: MessageSquare },
   { href: "/docscan", labelKey: "nav.docscan", icon: ScanLine },
-  { href: "/achievements", labelKey: "nav.achievements", icon: Trophy },
+  { href: "/community/questions", labelKey: "nav.community", icon: Users },
 ];
 
 export function Navigation({
@@ -51,6 +51,10 @@ export function Navigation({
   const [isMobileMenuOpen, setIsMobileMenuOpen] = useState(false);
   const { user } = useAuth();
   const { t } = useTranslation();
+
+  const isNavActive = (href: string) =>
+    pathname === href ||
+    (href !== "/" && href !== "/dashboard" && pathname.startsWith(href));
 
   const navigationItems = navigationItemsConfig.map((item) =>
     item.labelKey === "nav.home"
@@ -76,21 +80,21 @@ export function Navigation({
               href="/"
               className="flex items-center space-x-2 sm:space-x-3 group"
             >
-              <div className="relative h-7 w-7 sm:h-9 sm:w-9 lg:h-11 lg:w-11 rounded-lg sm:rounded-xl overflow-hidden shadow-lg group-hover:shadow-xl transition-all duration-300 group-hover:scale-105">
+              <div className="relative h-8 w-8 sm:h-9 sm:w-9 lg:h-11 lg:w-11 rounded-lg sm:rounded-xl overflow-hidden shadow-lg group-hover:shadow-xl transition-all duration-300 group-hover:scale-105">
                 <Image
                   src="/AdaptEd.png"
                   alt="AdaptEd Russia Logo"
                   fill
                   className="object-contain"
-                  sizes="(max-width: 640px) 28px, (max-width: 1024px) 36px, 44px"
+                  sizes="(max-width: 640px) 32px, (max-width: 1024px) 36px, 44px"
                   priority
                 />
               </div>
               <div className="flex flex-col sm:flex-row sm:items-center sm:space-x-1">
-                <span className="text-xs sm:text-base lg:text-lg font-bold text-slate-900 group-hover:text-blue-600 transition-colors duration-200 leading-tight">
+                <span className="text-sm sm:text-base lg:text-lg font-bold text-slate-900 group-hover:text-blue-600 transition-colors duration-200 leading-tight">
                   AdaptEd
                 </span>
-                <span className="text-xs sm:text-base lg:text-lg font-bold text-slate-900 group-hover:text-blue-600 transition-colors duration-200 leading-tight">
+                <span className="text-sm sm:text-base lg:text-lg font-bold text-slate-900 group-hover:text-blue-600 transition-colors duration-200 leading-tight">
                   Russia
                 </span>
               </div>
@@ -102,7 +106,7 @@ export function Navigation({
             {/* Основная навигация для всех */}
             {navigationItems.map((item) => {
               const Icon = item.icon;
-              const isActive = pathname === item.href;
+              const isActive = isNavActive(item.href);
 
               return (
                 <Link
@@ -147,7 +151,7 @@ export function Navigation({
             {user &&
               authenticatedNavigationItemsConfig.map((item) => {
                 const Icon = item.icon;
-                const isActive = pathname === item.href;
+                const isActive = isNavActive(item.href);
 
                 return (
                   <Link
@@ -212,9 +216,10 @@ export function Navigation({
                 <Link href="/profile">
                   <Button
                     variant="outline"
-                    className="rounded-lg sm:rounded-xl border-slate-200 hover:bg-slate-50 text-xs sm:text-sm h-6 sm:h-7 lg:h-8 px-2 sm:px-3"
+                    className="rounded-lg sm:rounded-xl border-indigo-200 bg-white text-indigo-600 hover:border-indigo-300 hover:bg-indigo-50 hover:text-indigo-700 text-xs sm:text-sm h-7 w-7 p-1.5 sm:h-7 sm:w-auto lg:h-8 sm:px-3"
+                    aria-label={t("nav.profile")}
                   >
-                    <User className="me-1 h-2 w-2 sm:h-2.5 sm:w-2.5" />
+                    <User className="h-3.5 w-3.5 sm:me-1 sm:h-3.5 sm:w-3.5 lg:h-4 lg:w-4" />
                     <span className="hidden sm:inline">
                       {user.name.split(" ")[0]}
                     </span>
@@ -226,7 +231,7 @@ export function Navigation({
                 <Link href="/login">
                   <Button
                     variant="outline"
-                    className="rounded-lg sm:rounded-xl text-xs sm:text-sm h-6 sm:h-7 lg:h-8 px-2 sm:px-3"
+                    className="rounded-lg sm:rounded-xl border-indigo-200 bg-white text-indigo-600 hover:border-indigo-300 hover:bg-indigo-50 hover:text-indigo-700 text-xs sm:text-sm h-6 sm:h-7 lg:h-8 px-2 sm:px-3"
                   >
                     {t("nav.login")}
                   </Button>
@@ -237,7 +242,7 @@ export function Navigation({
             {/* Mobile menu button */}
             <Button
               variant="outline"
-              className="lg:hidden rounded-lg sm:rounded-xl p-1.5 sm:p-2 h-7 sm:h-8 w-7 sm:w-8"
+              className="lg:hidden rounded-lg sm:rounded-xl p-1.5 sm:p-2 h-7 sm:h-8 w-7 sm:w-8 border-indigo-200 bg-white text-indigo-600 hover:border-indigo-300 hover:bg-indigo-50 hover:text-indigo-700"
               onClick={() => setIsMobileMenuOpen(!isMobileMenuOpen)}
               aria-label="Toggle menu"
             >
@@ -257,7 +262,7 @@ export function Navigation({
               {/* Основная навигация для всех */}
               {navigationItems.map((item, index) => {
                 const Icon = item.icon;
-                const isActive = pathname === item.href;
+                const isActive = isNavActive(item.href);
 
                 return (
                   <li
@@ -293,7 +298,7 @@ export function Navigation({
               {user &&
                 authenticatedNavigationItemsConfig.map((item, index) => {
                   const Icon = item.icon;
-                  const isActive = pathname === item.href;
+                  const isActive = isNavActive(item.href);
 
                   return (
                     <li

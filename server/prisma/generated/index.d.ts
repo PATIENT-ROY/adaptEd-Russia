@@ -18430,6 +18430,7 @@ export namespace Prisma {
     description: string | null
     authorId: string | null
     isAnswered: boolean | null
+    acceptedAnswerId: string | null
     createdAt: Date | null
     updatedAt: Date | null
   }
@@ -18440,6 +18441,7 @@ export namespace Prisma {
     description: string | null
     authorId: string | null
     isAnswered: boolean | null
+    acceptedAnswerId: string | null
     createdAt: Date | null
     updatedAt: Date | null
   }
@@ -18450,6 +18452,7 @@ export namespace Prisma {
     description: number
     authorId: number
     isAnswered: number
+    acceptedAnswerId: number
     createdAt: number
     updatedAt: number
     _all: number
@@ -18462,6 +18465,7 @@ export namespace Prisma {
     description?: true
     authorId?: true
     isAnswered?: true
+    acceptedAnswerId?: true
     createdAt?: true
     updatedAt?: true
   }
@@ -18472,6 +18476,7 @@ export namespace Prisma {
     description?: true
     authorId?: true
     isAnswered?: true
+    acceptedAnswerId?: true
     createdAt?: true
     updatedAt?: true
   }
@@ -18482,6 +18487,7 @@ export namespace Prisma {
     description?: true
     authorId?: true
     isAnswered?: true
+    acceptedAnswerId?: true
     createdAt?: true
     updatedAt?: true
     _all?: true
@@ -18565,6 +18571,7 @@ export namespace Prisma {
     description: string | null
     authorId: string
     isAnswered: boolean
+    acceptedAnswerId: string | null
     createdAt: Date
     updatedAt: Date
     _count: QuestionCountAggregateOutputType | null
@@ -18592,6 +18599,7 @@ export namespace Prisma {
     description?: boolean
     authorId?: boolean
     isAnswered?: boolean
+    acceptedAnswerId?: boolean
     createdAt?: boolean
     updatedAt?: boolean
     author?: boolean | UserDefaultArgs<ExtArgs>
@@ -18606,6 +18614,7 @@ export namespace Prisma {
     description?: boolean
     authorId?: boolean
     isAnswered?: boolean
+    acceptedAnswerId?: boolean
     createdAt?: boolean
     updatedAt?: boolean
     author?: boolean | UserDefaultArgs<ExtArgs>
@@ -18617,6 +18626,7 @@ export namespace Prisma {
     description?: boolean
     authorId?: boolean
     isAnswered?: boolean
+    acceptedAnswerId?: boolean
     createdAt?: boolean
     updatedAt?: boolean
   }
@@ -18644,6 +18654,7 @@ export namespace Prisma {
       description: string | null
       authorId: string
       isAnswered: boolean
+      acceptedAnswerId: string | null
       createdAt: Date
       updatedAt: Date
     }, ExtArgs["result"]["question"]>
@@ -19047,6 +19058,7 @@ export namespace Prisma {
     readonly description: FieldRef<"Question", 'String'>
     readonly authorId: FieldRef<"Question", 'String'>
     readonly isAnswered: FieldRef<"Question", 'Boolean'>
+    readonly acceptedAnswerId: FieldRef<"Question", 'String'>
     readonly createdAt: FieldRef<"Question", 'DateTime'>
     readonly updatedAt: FieldRef<"Question", 'DateTime'>
   }
@@ -23509,6 +23521,7 @@ export namespace Prisma {
     description: 'description',
     authorId: 'authorId',
     isAnswered: 'isAnswered',
+    acceptedAnswerId: 'acceptedAnswerId',
     createdAt: 'createdAt',
     updatedAt: 'updatedAt'
   };
@@ -24948,6 +24961,7 @@ export namespace Prisma {
     description?: StringNullableFilter<"Question"> | string | null
     authorId?: StringFilter<"Question"> | string
     isAnswered?: BoolFilter<"Question"> | boolean
+    acceptedAnswerId?: StringNullableFilter<"Question"> | string | null
     createdAt?: DateTimeFilter<"Question"> | Date | string
     updatedAt?: DateTimeFilter<"Question"> | Date | string
     author?: XOR<UserRelationFilter, UserWhereInput>
@@ -24961,6 +24975,7 @@ export namespace Prisma {
     description?: SortOrderInput | SortOrder
     authorId?: SortOrder
     isAnswered?: SortOrder
+    acceptedAnswerId?: SortOrderInput | SortOrder
     createdAt?: SortOrder
     updatedAt?: SortOrder
     author?: UserOrderByWithRelationInput
@@ -24977,6 +24992,7 @@ export namespace Prisma {
     description?: StringNullableFilter<"Question"> | string | null
     authorId?: StringFilter<"Question"> | string
     isAnswered?: BoolFilter<"Question"> | boolean
+    acceptedAnswerId?: StringNullableFilter<"Question"> | string | null
     createdAt?: DateTimeFilter<"Question"> | Date | string
     updatedAt?: DateTimeFilter<"Question"> | Date | string
     author?: XOR<UserRelationFilter, UserWhereInput>
@@ -24990,6 +25006,7 @@ export namespace Prisma {
     description?: SortOrderInput | SortOrder
     authorId?: SortOrder
     isAnswered?: SortOrder
+    acceptedAnswerId?: SortOrderInput | SortOrder
     createdAt?: SortOrder
     updatedAt?: SortOrder
     _count?: QuestionCountOrderByAggregateInput
@@ -25006,6 +25023,7 @@ export namespace Prisma {
     description?: StringNullableWithAggregatesFilter<"Question"> | string | null
     authorId?: StringWithAggregatesFilter<"Question"> | string
     isAnswered?: BoolWithAggregatesFilter<"Question"> | boolean
+    acceptedAnswerId?: StringNullableWithAggregatesFilter<"Question"> | string | null
     createdAt?: DateTimeWithAggregatesFilter<"Question"> | Date | string
     updatedAt?: DateTimeWithAggregatesFilter<"Question"> | Date | string
   }
@@ -26709,6 +26727,7 @@ export namespace Prisma {
     title: string
     description?: string | null
     isAnswered?: boolean
+    acceptedAnswerId?: string | null
     createdAt?: Date | string
     updatedAt?: Date | string
     author: UserCreateNestedOneWithoutQuestionsInput
@@ -26722,6 +26741,7 @@ export namespace Prisma {
     description?: string | null
     authorId: string
     isAnswered?: boolean
+    acceptedAnswerId?: string | null
     createdAt?: Date | string
     updatedAt?: Date | string
     answers?: AnswerUncheckedCreateNestedManyWithoutQuestionInput
@@ -26733,6 +26753,7 @@ export namespace Prisma {
     title?: StringFieldUpdateOperationsInput | string
     description?: NullableStringFieldUpdateOperationsInput | string | null
     isAnswered?: BoolFieldUpdateOperationsInput | boolean
+    acceptedAnswerId?: NullableStringFieldUpdateOperationsInput | string | null
     createdAt?: DateTimeFieldUpdateOperationsInput | Date | string
     updatedAt?: DateTimeFieldUpdateOperationsInput | Date | string
     author?: UserUpdateOneRequiredWithoutQuestionsNestedInput
@@ -26746,6 +26767,7 @@ export namespace Prisma {
     description?: NullableStringFieldUpdateOperationsInput | string | null
     authorId?: StringFieldUpdateOperationsInput | string
     isAnswered?: BoolFieldUpdateOperationsInput | boolean
+    acceptedAnswerId?: NullableStringFieldUpdateOperationsInput | string | null
     createdAt?: DateTimeFieldUpdateOperationsInput | Date | string
     updatedAt?: DateTimeFieldUpdateOperationsInput | Date | string
     answers?: AnswerUncheckedUpdateManyWithoutQuestionNestedInput
@@ -26758,6 +26780,7 @@ export namespace Prisma {
     description?: string | null
     authorId: string
     isAnswered?: boolean
+    acceptedAnswerId?: string | null
     createdAt?: Date | string
     updatedAt?: Date | string
   }
@@ -26767,6 +26790,7 @@ export namespace Prisma {
     title?: StringFieldUpdateOperationsInput | string
     description?: NullableStringFieldUpdateOperationsInput | string | null
     isAnswered?: BoolFieldUpdateOperationsInput | boolean
+    acceptedAnswerId?: NullableStringFieldUpdateOperationsInput | string | null
     createdAt?: DateTimeFieldUpdateOperationsInput | Date | string
     updatedAt?: DateTimeFieldUpdateOperationsInput | Date | string
   }
@@ -26777,6 +26801,7 @@ export namespace Prisma {
     description?: NullableStringFieldUpdateOperationsInput | string | null
     authorId?: StringFieldUpdateOperationsInput | string
     isAnswered?: BoolFieldUpdateOperationsInput | boolean
+    acceptedAnswerId?: NullableStringFieldUpdateOperationsInput | string | null
     createdAt?: DateTimeFieldUpdateOperationsInput | Date | string
     updatedAt?: DateTimeFieldUpdateOperationsInput | Date | string
   }
@@ -28039,6 +28064,7 @@ export namespace Prisma {
     description?: SortOrder
     authorId?: SortOrder
     isAnswered?: SortOrder
+    acceptedAnswerId?: SortOrder
     createdAt?: SortOrder
     updatedAt?: SortOrder
   }
@@ -28049,6 +28075,7 @@ export namespace Prisma {
     description?: SortOrder
     authorId?: SortOrder
     isAnswered?: SortOrder
+    acceptedAnswerId?: SortOrder
     createdAt?: SortOrder
     updatedAt?: SortOrder
   }
@@ -28059,6 +28086,7 @@ export namespace Prisma {
     description?: SortOrder
     authorId?: SortOrder
     isAnswered?: SortOrder
+    acceptedAnswerId?: SortOrder
     createdAt?: SortOrder
     updatedAt?: SortOrder
   }
@@ -29917,6 +29945,7 @@ export namespace Prisma {
     title: string
     description?: string | null
     isAnswered?: boolean
+    acceptedAnswerId?: string | null
     createdAt?: Date | string
     updatedAt?: Date | string
     answers?: AnswerCreateNestedManyWithoutQuestionInput
@@ -29928,6 +29957,7 @@ export namespace Prisma {
     title: string
     description?: string | null
     isAnswered?: boolean
+    acceptedAnswerId?: string | null
     createdAt?: Date | string
     updatedAt?: Date | string
     answers?: AnswerUncheckedCreateNestedManyWithoutQuestionInput
@@ -30350,6 +30380,7 @@ export namespace Prisma {
     description?: StringNullableFilter<"Question"> | string | null
     authorId?: StringFilter<"Question"> | string
     isAnswered?: BoolFilter<"Question"> | boolean
+    acceptedAnswerId?: StringNullableFilter<"Question"> | string | null
     createdAt?: DateTimeFilter<"Question"> | Date | string
     updatedAt?: DateTimeFilter<"Question"> | Date | string
   }
@@ -32789,6 +32820,7 @@ export namespace Prisma {
     title: string
     description?: string | null
     isAnswered?: boolean
+    acceptedAnswerId?: string | null
     createdAt?: Date | string
     updatedAt?: Date | string
     author: UserCreateNestedOneWithoutQuestionsInput
@@ -32801,6 +32833,7 @@ export namespace Prisma {
     description?: string | null
     authorId: string
     isAnswered?: boolean
+    acceptedAnswerId?: string | null
     createdAt?: Date | string
     updatedAt?: Date | string
     likes?: QuestionLikeUncheckedCreateNestedManyWithoutQuestionInput
@@ -32898,6 +32931,7 @@ export namespace Prisma {
     title?: StringFieldUpdateOperationsInput | string
     description?: NullableStringFieldUpdateOperationsInput | string | null
     isAnswered?: BoolFieldUpdateOperationsInput | boolean
+    acceptedAnswerId?: NullableStringFieldUpdateOperationsInput | string | null
     createdAt?: DateTimeFieldUpdateOperationsInput | Date | string
     updatedAt?: DateTimeFieldUpdateOperationsInput | Date | string
     author?: UserUpdateOneRequiredWithoutQuestionsNestedInput
@@ -32910,6 +32944,7 @@ export namespace Prisma {
     description?: NullableStringFieldUpdateOperationsInput | string | null
     authorId?: StringFieldUpdateOperationsInput | string
     isAnswered?: BoolFieldUpdateOperationsInput | boolean
+    acceptedAnswerId?: NullableStringFieldUpdateOperationsInput | string | null
     createdAt?: DateTimeFieldUpdateOperationsInput | Date | string
     updatedAt?: DateTimeFieldUpdateOperationsInput | Date | string
     likes?: QuestionLikeUncheckedUpdateManyWithoutQuestionNestedInput
@@ -32997,6 +33032,7 @@ export namespace Prisma {
     title: string
     description?: string | null
     isAnswered?: boolean
+    acceptedAnswerId?: string | null
     createdAt?: Date | string
     updatedAt?: Date | string
     author: UserCreateNestedOneWithoutQuestionsInput
@@ -33009,6 +33045,7 @@ export namespace Prisma {
     description?: string | null
     authorId: string
     isAnswered?: boolean
+    acceptedAnswerId?: string | null
     createdAt?: Date | string
     updatedAt?: Date | string
     answers?: AnswerUncheckedCreateNestedManyWithoutQuestionInput
@@ -33106,6 +33143,7 @@ export namespace Prisma {
     title?: StringFieldUpdateOperationsInput | string
     description?: NullableStringFieldUpdateOperationsInput | string | null
     isAnswered?: BoolFieldUpdateOperationsInput | boolean
+    acceptedAnswerId?: NullableStringFieldUpdateOperationsInput | string | null
     createdAt?: DateTimeFieldUpdateOperationsInput | Date | string
     updatedAt?: DateTimeFieldUpdateOperationsInput | Date | string
     author?: UserUpdateOneRequiredWithoutQuestionsNestedInput
@@ -33118,6 +33156,7 @@ export namespace Prisma {
     description?: NullableStringFieldUpdateOperationsInput | string | null
     authorId?: StringFieldUpdateOperationsInput | string
     isAnswered?: BoolFieldUpdateOperationsInput | boolean
+    acceptedAnswerId?: NullableStringFieldUpdateOperationsInput | string | null
     createdAt?: DateTimeFieldUpdateOperationsInput | Date | string
     updatedAt?: DateTimeFieldUpdateOperationsInput | Date | string
     answers?: AnswerUncheckedUpdateManyWithoutQuestionNestedInput
@@ -33581,6 +33620,7 @@ export namespace Prisma {
     title: string
     description?: string | null
     isAnswered?: boolean
+    acceptedAnswerId?: string | null
     createdAt?: Date | string
     updatedAt?: Date | string
   }
@@ -33876,6 +33916,7 @@ export namespace Prisma {
     title?: StringFieldUpdateOperationsInput | string
     description?: NullableStringFieldUpdateOperationsInput | string | null
     isAnswered?: BoolFieldUpdateOperationsInput | boolean
+    acceptedAnswerId?: NullableStringFieldUpdateOperationsInput | string | null
     createdAt?: DateTimeFieldUpdateOperationsInput | Date | string
     updatedAt?: DateTimeFieldUpdateOperationsInput | Date | string
     answers?: AnswerUpdateManyWithoutQuestionNestedInput
@@ -33887,6 +33928,7 @@ export namespace Prisma {
     title?: StringFieldUpdateOperationsInput | string
     description?: NullableStringFieldUpdateOperationsInput | string | null
     isAnswered?: BoolFieldUpdateOperationsInput | boolean
+    acceptedAnswerId?: NullableStringFieldUpdateOperationsInput | string | null
     createdAt?: DateTimeFieldUpdateOperationsInput | Date | string
     updatedAt?: DateTimeFieldUpdateOperationsInput | Date | string
     answers?: AnswerUncheckedUpdateManyWithoutQuestionNestedInput
@@ -33898,6 +33940,7 @@ export namespace Prisma {
     title?: StringFieldUpdateOperationsInput | string
     description?: NullableStringFieldUpdateOperationsInput | string | null
     isAnswered?: BoolFieldUpdateOperationsInput | boolean
+    acceptedAnswerId?: NullableStringFieldUpdateOperationsInput | string | null
     createdAt?: DateTimeFieldUpdateOperationsInput | Date | string
     updatedAt?: DateTimeFieldUpdateOperationsInput | Date | string
   }

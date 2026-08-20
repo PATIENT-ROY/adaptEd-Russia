@@ -2,27 +2,49 @@ import * as React from "react";
 import { cn } from "@/lib/utils";
 
 export interface SwitchProps
-  extends React.InputHTMLAttributes<HTMLInputElement> {
+  extends Omit<React.InputHTMLAttributes<HTMLInputElement>, "type"> {
   checked?: boolean;
   onCheckedChange?: (checked: boolean) => void;
 }
 
 const Switch = React.forwardRef<HTMLInputElement, SwitchProps>(
-  ({ className, checked, onCheckedChange, ...props }, ref) => {
+  ({ className, checked = false, onCheckedChange, disabled, ...props }, ref) => {
     return (
-      <input
-        type="checkbox"
-        ref={ref}
-        checked={checked}
-        onChange={(e) => onCheckedChange?.(e.target.checked)}
+      <button
+        type="button"
+        role="switch"
+        aria-checked={checked}
+        disabled={disabled}
+        onClick={() => onCheckedChange?.(!checked)}
         className={cn(
-          "peer h-6 w-11 shrink-0 cursor-pointer appearance-none rounded-full border-2 border-transparent transition-colors focus-visible:outline-none focus-visible:ring-2 focus-visible:ring-ring focus-visible:ring-offset-2 focus-visible:ring-offset-background disabled:cursor-not-allowed disabled:opacity-50 data-[state=checked]:bg-primary data-[state=unchecked]:bg-input",
-          className
+          "relative inline-flex h-8 w-14 min-w-14 shrink-0 cursor-pointer items-center rounded-full p-1 transition-colors",
+          "focus-visible:outline-none focus-visible:ring-2 focus-visible:ring-blue-500 focus-visible:ring-offset-2",
+          "disabled:cursor-not-allowed disabled:opacity-50",
+          "touch-manipulation",
+          checked ? "bg-blue-600" : "bg-slate-300",
+          className,
         )}
-        {...props}
-      />
+      >
+        <span
+          aria-hidden
+          className={cn(
+            "pointer-events-none block h-6 w-6 rounded-full bg-white shadow-md ring-1 ring-black/5 transition-transform duration-200 ease-out",
+            checked ? "translate-x-6" : "translate-x-0",
+          )}
+        />
+        <input
+          ref={ref}
+          type="checkbox"
+          className="sr-only"
+          checked={checked}
+          disabled={disabled}
+          onChange={(e) => onCheckedChange?.(e.target.checked)}
+          tabIndex={-1}
+          {...props}
+        />
+      </button>
     );
-  }
+  },
 );
 Switch.displayName = "Switch";
 

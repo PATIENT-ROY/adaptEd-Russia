@@ -320,16 +320,16 @@ export default function AchievementsPage() {
         <div className="space-y-6 sm:space-y-8">
           {/* Header */}
           <div className="bg-white rounded-2xl sm:rounded-3xl p-4 sm:p-6 shadow-sm">
-            <div className="flex flex-col sm:flex-row sm:items-center space-y-3 sm:space-y-0 sm:space-x-3">
-              <BackButton label={t("achievements.back")} />
-              <div className="rounded-lg bg-yellow-50 p-3 w-fit">
-                <Trophy className="h-6 w-6 text-yellow-600" />
+            <BackButton label={t("achievements.back")} className="mb-3 sm:mb-4" />
+            <div className="flex flex-row items-center gap-3">
+              <div className="rounded-lg bg-yellow-50 p-2.5 sm:p-3 shrink-0">
+                <Trophy className="h-5 w-5 sm:h-6 sm:w-6 text-yellow-600" />
               </div>
-              <div className="flex-1">
-                <h1 className="text-xl sm:text-2xl font-bold text-gray-900">
+              <div className="flex-1 min-w-0">
+                <h1 className="text-xl sm:text-2xl font-bold text-gray-900 leading-tight">
                   {t("achievements.header.title")}
                 </h1>
-                <p className="text-sm sm:text-base text-gray-600">
+                <p className="text-sm sm:text-base text-gray-600 mt-0.5">
                   {t("achievements.header.subtitle")}
                 </p>
               </div>
@@ -499,7 +499,8 @@ export default function AchievementsPage() {
               return (
                 <Card
                   key={achievement.id}
-                  className={`transition-all duration-300 ${
+                  id={achievement.id}
+                  className={`scroll-mt-24 transition-all duration-300 ${
                     isEarned
                       ? "shadow-xl hover:shadow-2xl border-2 border-yellow-300"
                       : "opacity-60 hover:opacity-80 border-gray-200"

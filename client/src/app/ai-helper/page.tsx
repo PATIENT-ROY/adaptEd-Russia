@@ -623,11 +623,11 @@ export default function AiHelperPage() {
         <Layout>
           <div className="space-y-4 sm:space-y-6 lg:space-y-8">
             <div className="bg-white rounded-2xl sm:rounded-3xl p-4 sm:p-6 shadow-sm">
-              <div className="flex flex-col sm:flex-row sm:items-center space-y-3 sm:space-y-0 sm:space-x-3">
-                <div className="w-12 h-12 bg-gray-200 rounded-lg animate-pulse" />
-                <div className="flex-1">
+              <div className="flex flex-row items-center gap-3">
+                <div className="w-12 h-12 bg-gray-200 rounded-lg animate-pulse shrink-0" />
+                <div className="flex-1 min-w-0">
                   <div className="h-6 w-48 bg-gray-200 rounded animate-pulse mb-2" />
-                  <div className="h-4 w-96 max-w-full bg-gray-200 rounded animate-pulse" />
+                  <div className="h-4 w-full max-w-sm bg-gray-200 rounded animate-pulse" />
                 </div>
               </div>
             </div>
@@ -680,26 +680,37 @@ export default function AiHelperPage() {
           {/* Header */}
           <div className="bg-white rounded-2xl sm:rounded-3xl p-4 sm:p-6 shadow-sm">
             <div className="flex flex-col space-y-4">
-              <div className="flex flex-col sm:flex-row sm:items-center space-y-3 sm:space-y-0 sm:space-x-3">
-                <div className={`rounded-lg p-3 w-fit ${currentModeConfig.bgColor}`}>
-                  <currentModeConfig.icon className={`h-6 w-6 ${currentModeConfig.color}`} />
+              <div className="flex flex-row items-center gap-3">
+                <div
+                  className={`rounded-lg p-2.5 sm:p-3 shrink-0 ${currentModeConfig.bgColor}`}
+                >
+                  <currentModeConfig.icon
+                    className={`h-5 w-5 sm:h-6 sm:w-6 ${currentModeConfig.color}`}
+                  />
                 </div>
-                <div className="flex-1">
-                  <h1 className="text-xl sm:text-2xl font-bold text-gray-900">
+                <div className="flex-1 min-w-0">
+                  <h1 className="text-xl sm:text-2xl font-bold text-gray-900 leading-tight">
                     {t("aiHelper.header.title")} — {currentModeConfig.name}
                   </h1>
-                  <p className="text-sm sm:text-base text-gray-600">
+                  <p className="text-sm sm:text-base text-gray-600 mt-0.5">
                     {currentModeConfig.description}
                   </p>
                 </div>
                 <Link
                   href="/templates"
-                  className="inline-flex items-center px-4 py-2 bg-gradient-to-r from-purple-500 to-pink-500 text-white rounded-lg hover:from-purple-600 hover:to-pink-600 transition-all text-sm font-medium"
+                  className="hidden sm:inline-flex items-center px-4 py-2 bg-gradient-to-r from-purple-500 to-pink-500 text-white rounded-lg hover:from-purple-600 hover:to-pink-600 transition-all text-sm font-medium shrink-0"
                 >
                   <FileText className="h-4 w-4 mr-2" />
                   {t("aiHelper.templates")}
                 </Link>
               </div>
+              <Link
+                href="/templates"
+                className="sm:hidden inline-flex items-center justify-center px-4 py-2.5 bg-gradient-to-r from-purple-500 to-pink-500 text-white rounded-xl text-sm font-medium"
+              >
+                <FileText className="h-4 w-4 mr-2" />
+                {t("aiHelper.templates")}
+              </Link>
 
               {/* Mode switcher */}
               <div className="flex flex-wrap gap-2" role="tablist" aria-label={t("aiHelper.header.title")}>

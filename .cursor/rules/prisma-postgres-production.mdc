@@ -1,0 +1,30 @@
+---
+description: Never commit Prisma schema with sqlite — production is PostgreSQL
+alwaysApply: true
+---
+
+# Prisma datasource — production is PostgreSQL
+
+NetAngels production uses **PostgreSQL**. Local may temporarily use SQLite (`file:…`) for convenience.
+
+## Hard rules for any agent
+
+- **Do NOT commit or push** `server/prisma/schema.prisma` while it has `provider = "sqlite"`.
+- **Do NOT** open a PR / merge to `main` that changes production datasource to sqlite.
+- Before any `git add` / `git commit` that includes `server/prisma/schema.prisma`, verify:
+
+```prisma
+datasource db {
+  provider = "postgresql"
+  url      = env("DATABASE_URL")
+}
+```
+
+- If local schema is sqlite only for local login, leave that change **uncommitted**, or restore postgresql before committing.
+- Local `.env` with `DATABASE_URL="file:…"` is fine and must stay out of git (already gitignored).
+- Temporary ETL schemas under `server/prisma/migrate-sqlite-to-postgres/` may use sqlite/postgres providers as designed — do not confuse them with production `schema.prisma`.
+
+## If you need both
+
+- Production / `main`: `provider = "postgresql"`
+- Local-only experiment: sqlite OK in working tree, **never** in the commit

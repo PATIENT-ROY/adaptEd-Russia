@@ -323,6 +323,7 @@ export default function RegisterPage() {
                         placeholder={t("register.namePlaceholder")}
                         value={formData.name}
                         onChange={handleChange}
+                        maxLength={50}
                         className="pl-10 h-12 border-slate-200 focus:border-blue-500 focus:ring-blue-500"
                         autoFocus
                         required

@@ -4,8 +4,9 @@ export const premiumEase = [0.22, 1, 0.36, 1] as const;
 
 export const viewportOnce = {
   once: true,
-  margin: "-72px" as const,
-  amount: 0.18 as const,
+  // Fire when the block is actually in the viewport, not 20% below the fold.
+  margin: "0px 0px -12% 0px" as const,
+  amount: 0.22 as const,
 };
 
 export const fadeUpVariants: Variants = {
@@ -13,7 +14,7 @@ export const fadeUpVariants: Variants = {
   visible: {
     opacity: 1,
     y: 0,
-    transition: { duration: 0.7, ease: premiumEase },
+    transition: { duration: 0.65, ease: premiumEase },
   },
 };
 
@@ -30,7 +31,7 @@ export const staggerContainerVariants: Variants = {
   visible: {
     transition: {
       staggerChildren: 0.1,
-      delayChildren: 0.06,
+      delayChildren: 0.08,
     },
   },
 };
@@ -40,7 +41,7 @@ export const staggerItemVariants: Variants = {
   visible: {
     opacity: 1,
     y: 0,
-    transition: { duration: 0.62, ease: premiumEase },
+    transition: { duration: 0.55, ease: premiumEase },
   },
 };
 
