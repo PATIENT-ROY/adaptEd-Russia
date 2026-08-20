@@ -74,13 +74,13 @@ export function Footer() {
           {/* Brand Section */}
           <div className="sm:col-span-2 lg:col-span-1 footer-link-animate">
             <div className="flex items-center space-x-2 sm:space-x-3 mb-3 sm:mb-4">
-              <div className="relative h-7 w-7 sm:h-8 sm:w-8 lg:h-10 lg:w-10 rounded-xl overflow-hidden shadow-lg">
+              <div className="relative h-8 w-8 lg:h-10 lg:w-10 rounded-xl overflow-hidden shadow-lg">
                 <Image
                   src="/AdaptEd.png"
                   alt="AdaptEd Russia Logo"
                   fill
                   className="object-contain"
-                  sizes="(max-width: 640px) 28px, (max-width: 1024px) 32px, 40px"
+                  sizes="(max-width: 640px) 32px, (max-width: 1024px) 32px, 40px"
                 />
               </div>
               <div className="flex flex-col">
