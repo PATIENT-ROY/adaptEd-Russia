@@ -1,6 +1,7 @@
 "use client";
 
 import { useEffect, useState, type ReactNode } from "react";
+import { createPortal } from "react-dom";
 import { useBodyScrollLock } from "@/hooks/useBodyScrollLock";
 import {
   Bell,
@@ -44,7 +45,7 @@ const TIMEZONES = [
 ] as const;
 
 const fieldClass =
-  "h-11 w-full rounded-xl border border-slate-200 bg-white px-3 pr-11 text-sm text-slate-800 outline-none transition placeholder:text-slate-400 focus:border-slate-400 focus:ring-2 focus:ring-slate-100";
+  "h-11 w-full rounded-xl border border-slate-200 bg-white px-3 pr-11 text-base text-slate-800 outline-none transition placeholder:text-slate-400 focus:border-slate-400 focus:ring-2 focus:ring-slate-100 sm:text-sm";
 
 function SettingsCardEntry({
   icon: Icon,
@@ -110,11 +111,11 @@ function SettingsModalShell({
     };
   }, [open, onClose]);
 
-  if (!open) return null;
+  if (!open || typeof document === "undefined") return null;
 
-  return (
+  return createPortal(
     <div
-      className="fixed inset-0 z-[120] flex items-end justify-center sm:items-center sm:p-4"
+      className="fixed inset-0 z-[120] flex items-end justify-center p-3 pb-[max(0.75rem,env(safe-area-inset-bottom))] sm:items-center sm:p-4"
       role="dialog"
       aria-modal="true"
       aria-label={title}
@@ -127,13 +128,12 @@ function SettingsModalShell({
       />
       <div
         className={cn(
-          "relative z-10 flex w-full max-h-[88dvh] flex-col overflow-hidden overscroll-contain bg-white shadow-2xl",
-          "rounded-t-2xl sm:max-w-md sm:rounded-2xl",
+          "relative z-10 flex w-full max-w-md max-h-[calc(100dvh-1.5rem)] flex-col overflow-hidden overscroll-contain rounded-2xl border border-slate-200/80 bg-white shadow-2xl sm:max-h-[88dvh]",
           "animate-slide-in-from-bottom",
         )}
       >
-        <div className="mx-auto mt-2 h-1 w-10 shrink-0 rounded-full bg-slate-200 sm:hidden" />
-        <div className="flex items-center gap-2.5 border-b border-slate-100 px-4 py-3.5">
+        <div className="mx-auto mt-2.5 h-1 w-10 shrink-0 rounded-full bg-slate-200 sm:hidden" />
+        <div className="flex items-center gap-2.5 border-b border-slate-100 px-4 py-3 sm:py-3.5">
           <div className="flex h-9 w-9 shrink-0 items-center justify-center rounded-xl bg-slate-100 text-slate-700">
             <Icon className="h-4 w-4" />
           </div>
@@ -149,11 +149,12 @@ function SettingsModalShell({
             <X className="h-5 w-5" />
           </button>
         </div>
-        <div className="min-h-0 flex-1 overflow-y-auto overscroll-contain px-4 py-4 sm:px-5 sm:py-5">
+        <div className="min-h-0 flex-1 overflow-y-auto overscroll-contain px-4 py-4 pb-5 sm:px-5 sm:py-5">
           {children}
         </div>
       </div>
-    </div>
+    </div>,
+    document.body,
   );
 }
 
@@ -179,8 +180,8 @@ function PasswordField({
   hideLabel: string;
 }) {
   return (
-    <div className="space-y-2">
-      <Label className="text-sm font-medium text-slate-700" htmlFor={id}>
+    <div className="space-y-1.5 sm:space-y-2">
+      <Label className="text-base font-medium text-slate-700 sm:text-sm" htmlFor={id}>
         {label}
       </Label>
       <div className="relative">
@@ -442,8 +443,8 @@ export function ProfileAccountSettings({
         onClose={() => setActivePanel(null)}
         closeLabel={t("templates.back")}
       >
-        <div className="space-y-4">
-          <div className="grid gap-3">
+        <div className="space-y-3.5 sm:space-y-4">
+          <div className="grid gap-3.5 sm:gap-3">
             <PasswordField
               id="current-password"
               label={t("profile.settings.currentPassword")}
@@ -479,7 +480,7 @@ export function ProfileAccountSettings({
             />
           </div>
 
-          <div className="flex flex-col gap-2 border-t border-slate-100 pt-4">
+          <div className="flex flex-col gap-2 border-t border-slate-100 pt-3.5 sm:pt-4">
             <Button
               onClick={changePassword}
               disabled={
@@ -504,7 +505,7 @@ export function ProfileAccountSettings({
               disabled={loggingOutAll}
               variant="ghost"
               size="sm"
-              className="h-auto min-h-10 w-full whitespace-normal rounded-xl px-3 py-2.5 text-left text-sm leading-snug text-red-600 hover:bg-red-50 hover:text-red-700"
+              className="h-auto min-h-10 w-full justify-start whitespace-normal rounded-xl px-3 py-2.5 text-left text-sm leading-snug text-red-600 hover:bg-red-50 hover:text-red-700"
             >
               {loggingOutAll ? (
                 <Loader2 className="mr-2 h-4 w-4 shrink-0 animate-spin" />
@@ -521,4 +522,3 @@ export function ProfileAccountSettings({
     </div>
   );
 }
-

@@ -1,26 +1,16 @@
-"use client";
-
-import { useEffect } from "react";
-
 interface StructuredDataProps {
   data: Record<string, unknown>;
 }
 
 export function StructuredData({ data }: StructuredDataProps) {
-  useEffect(() => {
-    // Добавляем структурированные данные в head
-    const script = document.createElement("script");
-    script.type = "application/ld+json";
-    script.text = JSON.stringify(data);
-    document.head.appendChild(script);
-
-    return () => {
-      // Удаляем скрипт при размонтировании
-      document.head.removeChild(script);
-    };
-  }, [data]);
-
-  return null;
+  return (
+    <script
+      type="application/ld+json"
+      dangerouslySetInnerHTML={{
+        __html: JSON.stringify(data).replace(/</g, "\\u003c"),
+      }}
+    />
+  );
 }
 
 // Предустановленные структурированные данные
@@ -30,12 +20,7 @@ export const websiteStructuredData = {
   name: "AdaptEd Russia",
   description:
     "Платформа для помощи иностранным студентам в адаптации к жизни и учёбе в российских вузах",
-  url: "https://adapted-russia.com",
-  potentialAction: {
-    "@type": "SearchAction",
-    target: "https://adapted-russia.com/search?q={search_term_string}",
-    "query-input": "required name=search_term_string",
-  },
+  url: "https://adaptedrussia.ru",
 };
 
 export const organizationStructuredData = {
@@ -44,13 +29,8 @@ export const organizationStructuredData = {
   name: "AdaptEd Russia",
   description:
     "Платформа для помощи иностранным студентам в адаптации к жизни и учёбе в России",
-  url: "https://adapted-russia.com",
-  logo: "https://adapted-russia.com/favicon.svg",
-  sameAs: [
-    "https://twitter.com/adaptedrussia",
-    "https://facebook.com/adaptedrussia",
-    "https://instagram.com/adaptedrussia",
-  ],
+  url: "https://adaptedrussia.ru",
+  logo: "https://adaptedrussia.ru/favicon.svg",
 };
 
 export const educationalServiceStructuredData = {

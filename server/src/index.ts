@@ -56,47 +56,59 @@ app.use(helmet());
 const ENABLE_RATE_LIMIT = process.env.RATE_LIMIT !== 'false';
 
 // Стандартный лимитер для большинства API
+const standardWindowMs = Number(process.env.RATE_LIMIT_WINDOW_MS) || 15 * 60 * 1000;
+const standardMax = Number(process.env.RATE_LIMIT_MAX_REQUESTS) || (
+  process.env.NODE_ENV === 'production' ? 600 : 2000
+);
+
 const standardLimiter = rateLimit({
-  windowMs: 15 * 60 * 1000,
-  max: process.env.NODE_ENV === 'production' ? 100 : 1000,
-  message: 'Слишком много запросов с этого IP, попробуйте позже.',
+  windowMs: standardWindowMs,
+  max: standardMax,
+  skip: (req) => req.method === 'OPTIONS',
+  handler: (_req, res) => {
+    res.status(429).json({ error: 'RATE_LIMITED' });
+  },
   standardHeaders: true,
   legacyHeaders: false,
 });
 
-// Строгий лимитер для аутентификации (защита от брутфорса)
 const authLimiter = rateLimit({
-  windowMs: 15 * 60 * 1000, // 15 минут
-  max: 10, // максимум 10 попыток входа
-  message: 'Слишком много попыток входа, попробуйте позже.',
+  windowMs: 15 * 60 * 1000,
+  max: 10,
+  handler: (_req, res) => {
+    res.status(429).json({ error: 'AUTH_RATE_LIMITED' });
+  },
   standardHeaders: true,
   legacyHeaders: false,
 });
 
-// Лимитер для AI чата (ресурсоёмкие запросы)
 const aiLimiter = rateLimit({
-  windowMs: 60 * 1000, // 1 минута
-  max: 10, // максимум 10 сообщений в минуту
-  message: 'Слишком много запросов к AI, подождите минуту.',
+  windowMs: 60 * 1000,
+  max: 10,
+  handler: (_req, res) => {
+    res.status(429).json({ error: 'AI_RATE_LIMITED' });
+  },
   standardHeaders: true,
   legacyHeaders: false,
 });
 
-// Лимитер для операций удаления
 const deleteLimiter = rateLimit({
-  windowMs: 60 * 60 * 1000, // 1 час
-  max: 20, // максимум 20 удалений в час
-  message: 'Слишком много операций удаления, попробуйте позже.',
+  windowMs: 60 * 60 * 1000,
+  max: 20,
+  handler: (_req, res) => {
+    res.status(429).json({ error: 'DELETE_RATE_LIMITED' });
+  },
   standardHeaders: true,
   legacyHeaders: false,
 });
 
-// Лимитер для платежей
 const paymentLimiter = rateLimit({
-  windowMs: 60 * 60 * 1000, // 1 час
-  max: 10, // максимум 10 платежей в час
+  windowMs: 60 * 60 * 1000,
+  max: 10,
   skip: (req) => req.method === 'GET' || req.method === 'HEAD' || req.method === 'OPTIONS',
-  message: 'Слишком много платежных операций.',
+  handler: (_req, res) => {
+    res.status(429).json({ error: 'PAYMENT_RATE_LIMITED' });
+  },
   standardHeaders: true,
   legacyHeaders: false,
 });
