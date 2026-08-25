@@ -20,6 +20,7 @@ import { useRouter } from "next/navigation";
 import { Guide } from "@/types";
 import { useTranslation } from "@/hooks/useTranslation";
 import { useGuideProgress } from "@/hooks/useGuideProgress";
+import { useGuideDeeplink } from "@/hooks/useGuideDeeplink";
 import { lifeGuides } from "@/data/life-guides";
 import { HeroBackgroundImage } from "@/components/ui/hero-background-image";
 
@@ -97,7 +98,12 @@ const emergencyContacts = [
 export function LifeGuideContent() {
   const { t } = useTranslation();
   const router = useRouter();
-  const [searchQuery, setSearchQuery] = useState("");
+  const urlQuery = useGuideDeeplink("life-guide-search");
+  const [typedQuery, setTypedQuery] = useState<string | null>(null);
+  const searchQuery = typedQuery ?? urlQuery;
+  const setSearchQuery = useCallback((value: string) => {
+    setTypedQuery(value);
+  }, []);
   const [selectedCategory, setSelectedCategory] = useState("all");
   const [guidesVisibleCount, setGuidesVisibleCount] = useState(12);
   const [activeGuide, setActiveGuide] = useState<Guide | null>(null);
@@ -349,7 +355,7 @@ export function LifeGuideContent() {
         {/* Arrival checklist — «Я только приехал» */}
         <section
           id="life-guide-arrival"
-          className="scroll-mt-20 rounded-2xl sm:rounded-3xl bg-white border border-slate-100 p-4 sm:p-6 shadow-sm"
+          className="scroll-mt-24 rounded-2xl sm:rounded-3xl bg-white border border-slate-100 p-4 sm:p-6 shadow-sm"
         >
           <div className="mb-5 sm:mb-6">
             <p className="text-xs sm:text-sm font-semibold uppercase tracking-wide text-emerald-700 mb-1.5">
@@ -365,7 +371,11 @@ export function LifeGuideContent() {
 
           <div className="space-y-5 sm:space-y-6">
             {arrivalPhases.map((phase, phaseIndex) => (
-              <div key={phase.id}>
+              <div
+                key={phase.id}
+                id={`life-guide-phase-${phase.id}`}
+                className="scroll-mt-24"
+              >
                 <div className="flex items-baseline gap-2.5 mb-2.5">
                   <span className="text-xs font-bold tabular-nums text-emerald-600">
                     {String(phaseIndex + 1).padStart(2, "0")}
@@ -430,7 +440,7 @@ export function LifeGuideContent() {
         {/* Search */}
         <section
           id="life-guide-search"
-          className="scroll-mt-20 rounded-2xl sm:rounded-3xl bg-white border border-slate-100 p-4 sm:p-6 shadow-sm"
+          className="scroll-mt-24 rounded-2xl sm:rounded-3xl bg-white border border-slate-100 p-4 sm:p-6 shadow-sm"
         >
           <div className="flex flex-col sm:flex-row gap-3">
             <div className="flex-1 relative">
@@ -463,7 +473,7 @@ export function LifeGuideContent() {
         {/* Guides */}
         <section
           id="life-guide-guides"
-          className="scroll-mt-20 rounded-2xl sm:rounded-3xl bg-white border border-slate-100 p-4 sm:p-6 shadow-sm"
+          className="scroll-mt-24 rounded-2xl sm:rounded-3xl bg-white border border-slate-100 p-4 sm:p-6 shadow-sm"
         >
           <div className="flex items-center justify-between gap-3 mb-4 sm:mb-5">
             <h2 className="text-base sm:text-lg font-semibold text-slate-900">

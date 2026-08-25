@@ -20,6 +20,7 @@ import {
 import Link from "next/link";
 import { useAuth } from "@/contexts/AuthContext";
 import { useState, useMemo, useEffect } from "react";
+import { useBodyScrollLock } from "@/hooks/useBodyScrollLock";
 import { Language, Role } from "@/types";
 import { useTranslation } from "@/hooks/useTranslation";
 import { API_BASE_URL } from "@/lib/api";
@@ -69,6 +70,7 @@ function AdminUsersContent() {
   const [isSubmitting, setIsSubmitting] = useState(false);
   const [copiedInvite, setCopiedInvite] = useState(false);
   const [inviteStatus, setInviteStatus] = useState<string>("");
+  useBodyScrollLock(isAddUserOpen);
 
   const filteredUsers = useMemo(() => {
     return users.filter((user) => {
@@ -470,7 +472,7 @@ function AdminUsersContent() {
       </div>
       {isAddUserOpen && (
         <div className="fixed inset-0 z-50 flex items-center justify-center bg-black/40 backdrop-blur-sm p-4">
-          <Card className="w-full max-w-md">
+          <Card className="w-full max-w-md max-h-[90vh] overflow-y-auto overscroll-contain">
             <CardHeader>
               <CardTitle className="flex items-center space-x-2">
                 <Plus className="h-5 w-5" />

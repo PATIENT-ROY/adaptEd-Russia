@@ -46,6 +46,7 @@ import {
   Language,
 } from "@/types";
 import { useTranslation } from "@/hooks/useTranslation";
+import { useBodyScrollLock } from "@/hooks/useBodyScrollLock";
 import {
   localizePlanName,
   localizePlanFeatures,
@@ -94,6 +95,7 @@ function PaymentTestContent() {
   const [toastMessage, setToastMessage] = useState<string | null>(null);
   const [toastType, setToastType] = useState<"success" | "error" | "info">("info");
   const [showConfirm, setShowConfirm] = useState(false);
+  useBodyScrollLock(showConfirm);
   const [confirmMessage, setConfirmMessage] = useState("");
   const [confirmCallback, setConfirmCallback] = useState<(() => void) | null>(null);
 

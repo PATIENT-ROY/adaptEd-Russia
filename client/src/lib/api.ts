@@ -1,9 +1,11 @@
-import { 
-  ApiResponse, 
-  AuthResponse, 
-  LoginRequest, 
-  RegisterRequest, 
-  User, 
+import { t } from '@/lib/translations';
+import {
+  ApiResponse,
+  AuthResponse,
+  Language,
+  LoginRequest,
+  RegisterRequest,
+  User,
   UpdateProfileRequest,
   Reminder,
   Note,
@@ -86,34 +88,59 @@ class ApiClient {
     }
   }
 
-  // Получить понятное сообщение об ошибке по статус коду
-  private getErrorMessage(status: number, serverMessage?: string): string {
-    if (serverMessage) return serverMessage;
-    
-    switch (status) {
-      case 400:
-        return 'Некорректные данные запроса';
-      case 401:
-        return 'Сеанс истёк. Пожалуйста, войдите заново';
-      case 403:
-        return 'У вас нет доступа к этому ресурсу';
-      case 404:
-        return 'Запрашиваемый ресурс не найден';
-      case 409:
-        return 'Конфликт данных. Возможно, такая запись уже существует';
-      case 422:
-        return 'Ошибка валидации данных';
-      case 429:
-        return 'Слишком много запросов. Подождите немного';
-      case 500:
-        return 'Ошибка сервера. Попробуйте позже';
-      case 502:
-      case 503:
-      case 504:
-        return 'Сервер временно недоступен. Попробуйте позже';
-      default:
-        return `Ошибка запроса (${status})`;
+  private getUiLanguage(): Language {
+    if (typeof window === 'undefined') return Language.RU;
+    const saved = localStorage.getItem('language');
+    if (saved && Object.values(Language).includes(saved as Language)) {
+      return saved as Language;
     }
+    return Language.RU;
+  }
+
+  private tr(key: string): string {
+    return t(key, this.getUiLanguage());
+  }
+
+  private getErrorMessage(status: number, serverMessage?: string): string {
+    const codeKey: Record<string, string> = {
+      RATE_LIMITED: 'api.error.tooManyRequests',
+      AUTH_RATE_LIMITED: 'api.error.tooManyLogins',
+      AI_RATE_LIMITED: 'api.error.tooManyAi',
+      DELETE_RATE_LIMITED: 'api.error.tooManyDeletes',
+      PAYMENT_RATE_LIMITED: 'api.error.tooManyPayments',
+    };
+    if (serverMessage && codeKey[serverMessage]) {
+      return this.tr(codeKey[serverMessage]);
+    }
+
+    const byStatus: Record<number, string> = {
+      400: 'api.error.badRequest',
+      401: 'api.error.unauthorized',
+      403: 'api.error.forbidden',
+      404: 'api.error.notFound',
+      409: 'api.error.conflict',
+      422: 'api.error.validation',
+      429: 'api.error.tooManyRequests',
+      500: 'api.error.server',
+      502: 'api.error.unavailable',
+      503: 'api.error.unavailable',
+      504: 'api.error.unavailable',
+    };
+
+    // Infra / limiter copy is localized; keep specific business messages.
+    if (
+      status === 429 ||
+      status === 500 ||
+      status === 502 ||
+      status === 503 ||
+      status === 504 ||
+      !serverMessage
+    ) {
+      const key = byStatus[status] ?? 'api.error.generic';
+      return this.tr(key).replace('{status}', String(status));
+    }
+
+    return serverMessage;
   }
 
   // Основной метод запроса
@@ -170,7 +197,7 @@ class ApiClient {
         data = text ? JSON.parse(text) : {};
       } catch (parseError) {
         logError('API request - JSON parse error:', parseError);
-        throw new Error('Не удалось распарсить ответ сервера');
+        throw new Error(this.tr('api.error.parse'));
       }
 
       return data;
@@ -179,7 +206,7 @@ class ApiClient {
       
       // Обработка ошибок подключения
       if (error instanceof TypeError && error.message === 'Failed to fetch') {
-        const connectionError = new Error('Нет подключения к серверу. Проверьте интернет.');
+        const connectionError = new Error(this.tr('api.error.connection'));
         connectionError.name = 'ConnectionError';
         logWarn('API connection error - server may be down');
         throw connectionError;

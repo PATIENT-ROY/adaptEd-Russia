@@ -1,6 +1,7 @@
 "use client";
 
 import { useState, useEffect } from "react";
+import { useBodyScrollLock } from "@/hooks/useBodyScrollLock";
 import { Button } from "./button";
 import {
   Card,
@@ -49,6 +50,8 @@ export function LogoutNotification({
       return () => clearTimeout(timer);
     }
   }, [isVisible, onClose, isClient]);
+
+  useBodyScrollLock(isClient && isVisible);
 
   if (!isClient || !isVisible) return null;
 

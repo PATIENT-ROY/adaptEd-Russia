@@ -148,7 +148,7 @@ export default function HomePage() {
 
   const pricingTeaser = useMemo(
     () =>
-      `${t("home.pricing.freemium.price")} · Premium ${t("home.pricing.premium.price")}`,
+      `${t("home.pricing.freemium.price")} · ${t("home.pricing.premium")} ${t("home.pricing.premium.price")}`,
     [t],
   );
 
@@ -431,7 +431,7 @@ export default function HomePage() {
 
             <StaggerReveal className="home-how-it-works-grid grid grid-cols-1 lg:grid-cols-3 gap-5 sm:gap-6">
               <StaggerItem>
-                <Card className="group border border-slate-200 shadow-sm h-full hover:shadow-md transition-shadow bg-gradient-to-b from-white to-slate-50">
+                <Card className="no-hover border border-slate-200 shadow-sm h-full bg-gradient-to-b from-white to-slate-50">
                   <CardContent className="p-5 h-full flex flex-col">
                     <HowItWorksStepHeader
                       step="01"
@@ -471,7 +471,7 @@ export default function HomePage() {
               </StaggerItem>
 
               <StaggerItem>
-                <Card className="group border border-slate-200 shadow-sm h-full hover:shadow-md transition-shadow bg-gradient-to-b from-white to-slate-50">
+                <Card className="no-hover border border-slate-200 shadow-sm h-full bg-gradient-to-b from-white to-slate-50">
                   <CardContent className="p-5 h-full flex flex-col">
                     <HowItWorksStepHeader
                       step="02"
@@ -524,7 +524,7 @@ export default function HomePage() {
               </StaggerItem>
 
               <StaggerItem>
-                <Card className="group border border-slate-200 shadow-sm h-full hover:shadow-md transition-shadow bg-gradient-to-b from-white to-slate-50">
+                <Card className="no-hover border border-slate-200 shadow-sm h-full bg-gradient-to-b from-white to-slate-50">
                   <CardContent className="p-5 h-full flex flex-col">
                     <HowItWorksStepHeader
                       step="03"
@@ -649,7 +649,7 @@ export default function HomePage() {
               {pricingPlans.map((plan) => (
                 <Card
                   key={plan.id}
-                  className={`relative flex flex-col bg-white ${
+                  className={`no-hover relative flex flex-col bg-white ${
                     plan.popular
                       ? "ring-2 ring-blue-500 shadow-xl"
                       : "border border-slate-200 shadow-sm"
@@ -892,6 +892,7 @@ export default function HomePage() {
                     showMoreLabel={t("home.review.showMore")}
                     showLessLabel={t("home.review.showLess")}
                     publishedLabel={t("home.review.publishedAfterModeration")}
+                    premiumLabel={t("home.pricing.premium")}
                   />
                 ))}
               </div>

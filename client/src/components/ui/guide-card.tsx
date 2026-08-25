@@ -96,7 +96,7 @@ export function GuideCard({ guide, onClick, className, isRead, onRead }: GuideCa
       guide.tags.some((tag) => tag.toLowerCase().includes("сленг"))
     ) {
       onRead?.(guide.id);
-      router.push("/student-slang");
+      router.push("/education/student-slang");
     } else {
       setShowModal(true);
     }

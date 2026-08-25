@@ -5,6 +5,7 @@ import { Layout } from "@/components/layout/layout";
 import { Card, CardContent, CardHeader, CardTitle } from "@/components/ui/card";
 import { Button } from "@/components/ui/button";
 import { useTranslation } from "@/hooks/useTranslation";
+import { useBodyScrollLock } from "@/hooks/useBodyScrollLock";
 import { PREMIUM_CHECKOUT_PATH } from "@/constants/routes";
 import { ProtectedRoute } from "@/components/auth/ProtectedRoute";
 import {
@@ -312,6 +313,7 @@ export default function ProfilePage() {
     null,
   );
   const [isReviewModalOpen, setIsReviewModalOpen] = useState(false);
+  useBodyScrollLock(!!viewingInvoice);
   const [deferBelowFold, setDeferBelowFold] = useState(false);
   const [profileOverview, setProfileOverview] =
     useState<ProfileOverview | null>(null);
@@ -747,9 +749,9 @@ export default function ProfilePage() {
   return (
     <ProtectedRoute>
     <Layout>
-      <div className="min-h-screen bg-gradient-to-br from-slate-50 via-blue-50 to-indigo-50 rounded-2xl sm:rounded-3xl overflow-hidden">
+      <div className="min-h-screen">
         {/* Hero Section */}
-        <div className="relative overflow-hidden bg-gradient-to-br from-blue-600 via-purple-600 to-indigo-700 py-5 sm:py-10 md:py-14 rounded-2xl sm:rounded-3xl mb-6 sm:mb-8">
+        <div className="relative overflow-hidden bg-gradient-to-br from-blue-600 via-purple-600 to-indigo-700 py-5 sm:py-10 md:py-14 rounded-2xl sm:rounded-3xl mt-4 sm:mt-6 mb-6 sm:mb-8">
           <div className="absolute inset-0 bg-black/10" />
           <div
             className="absolute inset-0"
@@ -900,7 +902,7 @@ export default function ProfilePage() {
           </div>
         </div>
 
-        <div className="max-w-7xl mx-auto px-3 sm:px-4 lg:px-6 py-6 sm:py-8 space-y-6 sm:space-y-8">
+        <div className="max-w-7xl mx-auto px-3 sm:px-4 lg:px-6 py-6 sm:py-8 space-y-6 sm:space-y-8 bg-gradient-to-br from-slate-50 via-blue-50 to-indigo-50 rounded-2xl sm:rounded-3xl">
           {profileError && (
             <div
               role="alert"
@@ -1564,7 +1566,7 @@ export default function ProfilePage() {
             onClick={() => setViewingInvoice(null)}
           >
             <div
-              className="w-full max-w-md rounded-2xl bg-white p-5 sm:p-6 shadow-2xl"
+              className="w-full max-w-md rounded-2xl bg-white p-5 sm:p-6 shadow-2xl overscroll-contain"
               onClick={(e) => e.stopPropagation()}
             >
               <div className="mb-4 flex items-start justify-between gap-3">

@@ -17,6 +17,7 @@ import {
   CheckCircle,
 } from "lucide-react";
 import { useState, useCallback, useEffect, useRef } from "react";
+import { useBodyScrollLock } from "@/hooks/useBodyScrollLock";
 import { useDropzone } from "react-dropzone";
 import type { FileRejection } from "react-dropzone";
 
@@ -476,13 +477,7 @@ export function DocScanContent() {
     return () => document.removeEventListener("keydown", handleKeyDown);
   }, [showModal]);
 
-  // Lock body scroll when modal is open
-  useEffect(() => {
-    document.body.style.overflow = showModal ? "hidden" : "unset";
-    return () => {
-      document.body.style.overflow = "unset";
-    };
-  }, [showModal]);
+  useBodyScrollLock(showModal);
 
   return (
     <ProtectedRoute
@@ -690,7 +685,7 @@ export function DocScanContent() {
             </div>
 
             {/* Modal Body */}
-            <div className="flex-1 overflow-y-auto p-4 sm:p-6">
+            <div className="flex-1 overflow-y-auto overscroll-contain p-4 sm:p-6">
               <div className="max-w-4xl mx-auto space-y-4">
                 {/* Original text */}
                 <div

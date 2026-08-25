@@ -9,6 +9,7 @@ import {
   Home,
   Globe2,
   Rocket,
+  Check,
   type LucideIcon,
 } from "lucide-react";
 import { motion, useReducedMotion } from "framer-motion";
@@ -19,51 +20,31 @@ import { useRevealInView } from "@/components/home/useRevealInView";
 const ITEMS: {
   key: string;
   icon: LucideIcon;
-  tone: string;
+  iconClass: string;
 }[] = [
   {
     key: "home.section.adaptation.checklist.study",
     icon: BookOpen,
-    tone: "bg-blue-100 text-blue-700",
+    iconClass: "text-blue-600",
   },
   {
     key: "home.section.adaptation.checklist.documents",
     icon: FileText,
-    tone: "bg-violet-100 text-violet-700",
+    iconClass: "text-violet-600",
   },
   {
     key: "home.section.adaptation.checklist.dormitory",
     icon: Home,
-    tone: "bg-emerald-100 text-emerald-700",
+    iconClass: "text-emerald-600",
   },
   {
     key: "home.section.adaptation.checklist.life",
     icon: Globe2,
-    tone: "bg-amber-100 text-amber-700",
+    iconClass: "text-amber-600",
   },
 ];
 
 const ease = [0.22, 1, 0.36, 1] as const;
-
-function WaveDivider() {
-  return (
-    <svg
-      className="mt-3 mb-5 w-full max-w-full text-indigo-400/70"
-      viewBox="0 0 400 14"
-      preserveAspectRatio="none"
-      fill="none"
-      aria-hidden
-    >
-      <path
-        d="M1 8c20-7 40 7 60 0s40 7 60 0 40 7 60 0 40 7 60 0 40 7 60 0 40 7 60 0 40 7 38 0"
-        stroke="currentColor"
-        strokeWidth="2.25"
-        strokeLinecap="round"
-        vectorEffect="non-scaling-stroke"
-      />
-    </svg>
-  );
-}
 
 function FadeIn({
   children,
@@ -125,28 +106,32 @@ export function AdaptationHeroSection() {
                 <h2 className="text-2xl sm:text-3xl md:text-4xl font-bold tracking-tight text-slate-900">
                   {t("home.section.adaptation.title")}
                 </h2>
-                <WaveDivider />
               </div>
-              <p className="mb-5 sm:mb-6 max-w-md text-sm sm:text-base text-slate-600 leading-relaxed">
+              <p className="mt-3 mb-5 sm:mb-6 max-w-md text-sm sm:text-base text-slate-600 leading-relaxed">
                 {t("home.section.adaptation.description")}
               </p>
             </FadeIn>
 
-            <ul className="flex flex-col gap-2.5 sm:gap-3 m-0 p-0 list-none">
+            <ul className="m-0 max-w-md cursor-default list-none divide-y divide-slate-200/80 p-0">
               {ITEMS.map((item, index) => {
                 const Icon = item.icon;
                 return (
                   <li key={item.key}>
                     <FadeIn
                       delay={0.04 + index * 0.05}
-                      className="flex items-center gap-3 sm:gap-3.5 rounded-full border border-slate-200/90 bg-white px-3.5 py-3 sm:px-4 sm:py-3.5 shadow-[0_6px_24px_rgba(15,23,42,0.05)]"
+                      className="flex items-center gap-3 py-2.5 sm:py-3"
                     >
                       <span
-                        className={`flex h-10 w-10 sm:h-11 sm:w-11 shrink-0 items-center justify-center rounded-full ${item.tone}`}
+                        className="flex h-[18px] w-[18px] shrink-0 items-center justify-center rounded-[4px] border-2 border-emerald-500 bg-emerald-500 text-white"
+                        aria-hidden
                       >
-                        <Icon className="h-5 w-5" aria-hidden />
+                        <Check className="h-3 w-3" strokeWidth={3} />
                       </span>
-                      <span className="flex-1 text-sm sm:text-base font-semibold text-slate-900">
+                      <Icon
+                        className={`h-4 w-4 shrink-0 ${item.iconClass}`}
+                        aria-hidden
+                      />
+                      <span className="text-sm sm:text-base font-medium text-slate-800">
                         {t(item.key)}
                       </span>
                     </FadeIn>
@@ -158,7 +143,7 @@ export function AdaptationHeroSection() {
             <FadeIn className="mt-6 sm:mt-8" delay={0.24}>
               <Link
                 href={adaptationCtaHref}
-                className="inline-flex min-h-12 w-full sm:w-auto items-center justify-center gap-2 rounded-full bg-gradient-to-r from-blue-600 to-indigo-600 px-8 py-3 text-base font-semibold text-white shadow-lg shadow-blue-500/20 transition-all duration-200 hover:from-blue-700 hover:to-indigo-700 focus-visible:outline-none focus-visible:ring-2 focus-visible:ring-indigo-500 focus-visible:ring-offset-2"
+                className="inline-flex min-h-12 w-full sm:w-auto items-center justify-center gap-2 rounded-full bg-gradient-to-r from-blue-600 to-indigo-600 px-8 py-3 text-base font-semibold text-white shadow-lg shadow-blue-500/20 transition-all duration-200 hover:from-blue-700 hover:to-indigo-700 hover:text-white focus-visible:outline-none focus-visible:ring-2 focus-visible:ring-indigo-500 focus-visible:ring-offset-2 focus-visible:text-white"
               >
                 <Rocket className="h-5 w-5" aria-hidden />
                 {adaptationCtaLabel}

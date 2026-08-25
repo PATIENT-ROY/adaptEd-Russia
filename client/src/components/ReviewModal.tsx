@@ -4,6 +4,7 @@ import { Review } from "@/types";
 import { Button } from "@/components/ui/button";
 import { X } from "lucide-react";
 import { useTranslation } from "@/hooks/useTranslation";
+import { useBodyScrollLock } from "@/hooks/useBodyScrollLock";
 
 const TEXT_MIN = 20;
 const TEXT_MAX = 500;
@@ -52,6 +53,7 @@ export function ReviewModal({
   }, [review]);
 
   const textareaRef = useRef<HTMLTextAreaElement>(null);
+  useBodyScrollLock(isOpen);
 
   useEffect(() => {
     if (!isOpen) {
@@ -90,7 +92,7 @@ export function ReviewModal({
         onClick={onClose}
       />
       <div
-        className="relative z-10 w-full max-w-md bg-white rounded-lg shadow-lg p-6"
+        className="relative z-10 w-full max-w-md max-h-[90vh] overflow-y-auto overscroll-contain bg-white rounded-lg shadow-lg p-6"
         onClick={(e) => e.stopPropagation()}
       >
         <div className="flex justify-between items-center mb-4">

@@ -2,6 +2,9 @@ import type { NextConfig } from 'next'
 import path from 'path'
 
 const nextConfig: NextConfig = {
+  // Не смешиваем dev-кэш с production build: параллельная сборка больше не
+  // ломает локальные CSS/JS чанки и навигацию из-за устаревшей `.next`.
+  distDir: process.env.NODE_ENV === 'development' ? '.next-dev' : '.next',
   // Для Netlify плагин сам управляет output
   output: process.env.NETLIFY ? undefined : 'standalone',
   // Monorepo (root/ + client/): tracing должен смотреть на корень репозитория
@@ -94,6 +97,11 @@ const nextConfig: NextConfig = {
       {
         source: '/education',
         destination: '/education-guide',
+        permanent: true,
+      },
+      {
+        source: '/student-slang',
+        destination: '/education/student-slang',
         permanent: true,
       },
       {

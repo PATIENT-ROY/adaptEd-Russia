@@ -34,14 +34,11 @@ export const metadata: Metadata = {
     address: false,
     telephone: false,
   },
-  metadataBase: new URL("https://adapted-russia.com"),
-  alternates: {
-    canonical: "/",
-  },
+  metadataBase: new URL("https://adaptedrussia.ru"),
   openGraph: {
     type: "website",
     locale: "ru_RU",
-    url: "https://adapted-russia.com",
+    url: "https://adaptedrussia.ru",
     title: "AdaptEd Russia - Помощь иностранным студентам в России",
     description:
       "Платформа для помощи иностранным студентам в адаптации к жизни и учёбе в российских вузах.",

@@ -1,6 +1,7 @@
 "use client";
 
 import { useState, useEffect } from "react";
+import { useBodyScrollLock } from "@/hooks/useBodyScrollLock";
 import Link from "next/link";
 import { Layout } from "@/components/layout/layout";
 import { ProtectedRoute } from "@/components/auth/ProtectedRoute";
@@ -83,6 +84,7 @@ function AdminSupportContent() {
   const [searchTerm, setSearchTerm] = useState("");
   const [statusFilter, setStatusFilter] = useState<string>("all");
   const [priorityFilter, setPriorityFilter] = useState<string>("all");
+  useBodyScrollLock(!!selectedTicket);
 
   const loadTickets = async () => {
     try {
@@ -504,7 +506,7 @@ function AdminSupportContent() {
         {/* Ticket detail modal */}
         {selectedTicket && (
           <div className="fixed inset-0 bg-black bg-opacity-50 flex items-center justify-center p-4 z-50">
-            <Card className="w-full max-w-4xl max-h-[90vh] overflow-y-auto">
+            <Card className="w-full max-w-4xl max-h-[90vh] overflow-y-auto overscroll-contain">
               <CardHeader>
                 <div className="flex items-center justify-between">
                   <CardTitle>{selectedTicket.subject}</CardTitle>
