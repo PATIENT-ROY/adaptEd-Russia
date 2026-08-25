@@ -94,6 +94,12 @@ const ROW_TOPICS: Phrase[] = [
   },
   { lang: "AI", text: "Помощник 24/7", href: "/ai-helper", tone: "brand" },
   {
+    lang: "Club",
+    text: "Сообщество студентов",
+    href: "/community/questions",
+    tone: "brand",
+  },
+  {
     lang: "Life",
     text: "Общежитие и транспорт",
     href: `/life-guide?q=${encodeURIComponent("общежитие")}`,
@@ -145,7 +151,6 @@ function MarqueePill({
   return (
     <Link
       href={item.href}
-      scroll={false}
       className={`language-marquee__pill language-marquee__pill--${tone}`}
       dir={item.rtl ? "rtl" : "ltr"}
       tabIndex={duplicate ? -1 : undefined}
