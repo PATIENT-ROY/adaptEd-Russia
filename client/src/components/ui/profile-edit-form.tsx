@@ -1,6 +1,7 @@
 "use client";
 
 import { useState, useEffect, useMemo, useRef } from "react";
+import { useBodyScrollLock } from "@/hooks/useBodyScrollLock";
 import { Button } from "./button";
 import { Input } from "./input";
 import {
@@ -69,6 +70,7 @@ export function ProfileEditForm({
   onCancel,
   isVisible,
 }: ProfileEditFormProps) {
+  useBodyScrollLock(isVisible);
   const [formData, setFormData] = useState({
     name: user.name || "",
     university: user.university || "",
@@ -227,7 +229,7 @@ export function ProfileEditForm({
 
   return (
     <div className="fixed inset-0 z-50 flex items-center justify-center p-4 bg-black/20 backdrop-blur-sm animate-fade-in">
-      <Card className="w-full max-w-md max-h-[90vh] overflow-y-auto border-0 shadow-2xl animate-slide-in-from-top">
+      <Card className="w-full max-w-md max-h-[90vh] overflow-y-auto overscroll-contain border-0 shadow-2xl animate-slide-in-from-top">
         <CardHeader className="text-center pb-4 relative">
           <Button
             variant="ghost"

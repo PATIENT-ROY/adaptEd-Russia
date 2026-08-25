@@ -201,7 +201,9 @@ function UsageBar({
             <span>{t("aiHelper.usage.title")}</span>
           </h3>
           <span className="text-xs font-medium text-gray-500">
-            {plan === "FREEMIUM" ? "Free" : "Premium"}
+            {plan === "FREEMIUM"
+              ? t("home.pricing.freemium")
+              : t("home.pricing.premium")}
           </span>
         </div>
 

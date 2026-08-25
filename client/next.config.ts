@@ -97,6 +97,11 @@ const nextConfig: NextConfig = {
         permanent: true,
       },
       {
+        source: '/student-slang',
+        destination: '/education/student-slang',
+        permanent: true,
+      },
+      {
         source: '/life',
         destination: '/life-guide',
         permanent: true,

@@ -1,7 +1,7 @@
 import { educationGuides } from "@/data/education-guides";
 import { lifeGuides } from "@/data/life-guides";
 
-/** Tool cards open elsewhere (e.g. /student-slang), not in the education articles grid. */
+/** Tool cards open elsewhere (e.g. /education/student-slang), not in the education articles grid. */
 const EDUCATION_TOOL_IDS = new Set(["slang-dictionary"]);
 
 export const EDUCATION_GUIDES_COUNT = educationGuides.filter(

@@ -4,10 +4,6 @@ import { Layout } from "@/components/layout/layout";
 import { GuideCard } from "@/components/ui/guide-card";
 import { Button } from "@/components/ui/button";
 import {
-  ScheduleFilter,
-  ScheduleFilters,
-} from "@/components/ui/schedule-filter";
-import {
   Search,
   Filter,
   BookOpen,
@@ -24,6 +20,7 @@ import Link from "next/link";
 import { Guide } from "@/types";
 import { useTranslation } from "@/hooks/useTranslation";
 import { useGuideProgress } from "@/hooks/useGuideProgress";
+import { useGuideDeeplink } from "@/hooks/useGuideDeeplink";
 import { educationGuides } from "@/data/education-guides";
 import { HeroBackgroundImage } from "@/components/ui/hero-background-image";
 
@@ -46,7 +43,7 @@ type ToolCard = {
   name: string;
   description: string;
   icon: React.ComponentType<{ className?: string }>;
-  href?: string;
+  href: string;
 };
 
 const articleGuides = educationGuides.filter(
@@ -72,11 +69,13 @@ const HERO_CATEGORY_IDS = new Set([
 
 export function EducationGuideContent() {
   const { t } = useTranslation();
-  const [searchQuery, setSearchQuery] = useState("");
+  const urlQuery = useGuideDeeplink("education-guide-search");
+  const [typedQuery, setTypedQuery] = useState<string | null>(null);
+  const searchQuery = typedQuery ?? urlQuery;
+  const setSearchQuery = useCallback((value: string) => {
+    setTypedQuery(value);
+  }, []);
   const [selectedCategory, setSelectedCategory] = useState("all");
-  const [selectedTool, setSelectedTool] = useState<"schedule" | null>(null);
-  const [showSchedule, setShowSchedule] = useState(false);
-  const [isLoading, setIsLoading] = useState(false);
 
   const { isRead, markAsRead } = useGuideProgress(
     "education",
@@ -106,13 +105,14 @@ export function EducationGuideContent() {
       name: t("educationGuide.categories.schedule"),
       description: t("educationGuide.tools.scheduleDescription"),
       icon: Clock,
+      href: "/education/schedule",
     },
     {
       id: "dictionary",
       name: t("educationGuide.categories.dictionary"),
       description: t("educationGuide.tools.dictionaryDescription"),
       icon: BookOpen,
-      href: "/student-slang",
+      href: "/education/student-slang",
     },
     {
       id: "translation-centers",
@@ -137,19 +137,6 @@ export function EducationGuideContent() {
       setSelectedCategory("all");
     }
   }, [selectedCategory]);
-
-  const handleShowSchedule = async (filters: ScheduleFilters) => {
-    setIsLoading(true);
-    setShowSchedule(false);
-
-    // Имитация загрузки данных (filters будут использоваться при подключении API)
-    void filters;
-    await new Promise((resolve) => setTimeout(resolve, 400));
-
-    setIsLoading(false);
-    setShowSchedule(true);
-    // Пока нет API ВУЗа, всегда показываем "Ничего не найдено"
-  };
 
   // Фильтрация гайдов
   const filteredGuides = useMemo(() => {
@@ -315,41 +302,19 @@ export function EducationGuideContent() {
                 {t("educationGuide.tools.subtitle")}
               </p>
             </div>
-            {selectedTool === "schedule" && (
-              <Button
-                variant="outline"
-                size="sm"
-                onClick={() => {
-                  setSelectedTool(null);
-                  setShowSchedule(false);
-                }}
-              >
-                {t("educationGuide.tools.hide")}
-              </Button>
-            )}
           </div>
           <div className="grid grid-cols-1 md:grid-cols-3 gap-4">
             {toolCards.map((tool) => {
               const Icon = tool.icon;
-              const isScheduleTool = tool.id === "schedule";
-              const isActive = selectedTool === tool.id;
 
               const cardContent = (
-                <div
-                  className={`h-full rounded-2xl border p-4 transition-all duration-300 ${
-                    isActive
-                      ? "border-blue-300 bg-blue-50 shadow-sm"
-                      : "border-gray-200 bg-gray-50 hover:bg-white hover:shadow-sm"
-                  }`}
-                >
+                <div className="h-full rounded-2xl border border-gray-200 bg-gray-50 p-4 transition-all duration-300 hover:bg-white hover:shadow-sm">
                   <div className="flex items-start justify-between gap-3 mb-4">
                     <div className="rounded-xl bg-white p-3 shadow-sm">
                       <Icon className="h-5 w-5 text-blue-600" />
                     </div>
                     <span className="text-xs font-medium text-gray-500">
-                      {isScheduleTool
-                        ? t("educationGuide.tools.inline")
-                        : t("educationGuide.tools.separate")}
+                      {t("educationGuide.tools.separate")}
                     </span>
                   </div>
                   <div className="space-y-2">
@@ -361,79 +326,31 @@ export function EducationGuideContent() {
                     </p>
                   </div>
                   <div className="mt-4 flex items-center text-sm font-medium text-blue-700">
-                    <span>
-                      {isScheduleTool
-                        ? t("educationGuide.tools.open")
-                        : t("educationGuide.tools.goTo")}
-                    </span>
+                    <span>{t("educationGuide.tools.goTo")}</span>
                     <ArrowRight className="ml-1 h-4 w-4" />
                   </div>
                 </div>
               );
 
-              if (tool.href) {
-                return (
-                  <Link key={tool.id} href={tool.href} className="block h-full">
-                    {cardContent}
-                  </Link>
-                );
-              }
-
               return (
-                <button
+                <Link
                   key={tool.id}
-                  type="button"
-                  className="text-left h-full"
-                  onClick={() => {
-                    setSelectedTool(isActive ? null : "schedule");
-                    setShowSchedule(false);
-                  }}
+                  href={tool.href}
+                  className="block h-full"
+                  data-tool={tool.id}
                 >
                   {cardContent}
-                </button>
+                </Link>
               );
             })}
           </div>
-
-          {selectedTool === "schedule" && (
-            <div className="mt-6 space-y-6">
-              <ScheduleFilter onShowSchedule={handleShowSchedule} />
-              {isLoading && (
-                <div className="bg-white rounded-2xl sm:rounded-3xl p-6">
-                  <div className="text-center py-12">
-                    <div className="animate-spin mb-4">
-                      <Clock className="h-12 w-12 text-blue-600 mx-auto" />
-                    </div>
-                    <h3 className="text-lg font-medium text-gray-900 mb-2">
-                      {t("educationGuide.schedule.searching")}
-                    </h3>
-                    <p className="text-gray-600">
-                      {t("educationGuide.schedule.pleaseWait")}
-                    </p>
-                  </div>
-                </div>
-              )}
-              {showSchedule && (
-                <div className="bg-white rounded-2xl sm:rounded-3xl p-6 shadow-sm">
-                  <div className="text-center py-12">
-                    <div className="mb-4">
-                      <Clock className="h-12 w-12 text-gray-400 mx-auto" />
-                    </div>
-                    <h3 className="text-lg font-medium text-gray-900 mb-2">
-                      {t("educationGuide.schedule.notFound")}
-                    </h3>
-                    <p className="text-gray-600">
-                      {t("educationGuide.schedule.notFoundDescription")}
-                    </p>
-                  </div>
-                </div>
-              )}
-            </div>
-          )}
         </div>
 
         {/* Search and Filters */}
-        <div className="bg-white rounded-2xl sm:rounded-3xl p-4 sm:p-6 transition-all duration-300">
+        <div
+          id="education-guide-search"
+          className="scroll-mt-24 bg-white rounded-2xl sm:rounded-3xl p-4 sm:p-6 transition-all duration-300"
+        >
           <div className="mb-4">
             <h2 className="text-base sm:text-lg font-semibold text-gray-900">
               {t("educationGuide.learn.title")}
@@ -446,6 +363,7 @@ export function EducationGuideContent() {
             <div className="flex-1 relative">
               <Search className="absolute left-3 top-1/2 transform -translate-y-1/2 h-4 w-4 text-gray-400 transition-colors duration-300" />
               <input
+                id="education-guide-search-input"
                 type="text"
                 placeholder={t("educationGuide.search.placeholder")}
                 value={searchQuery}
@@ -472,7 +390,7 @@ export function EducationGuideContent() {
         {/* Guides */}
         <div
           id="education-guide-guides"
-          className="scroll-mt-20 bg-white rounded-2xl sm:rounded-3xl p-4 sm:p-6"
+          className="scroll-mt-24 bg-white rounded-2xl sm:rounded-3xl p-4 sm:p-6"
         >
           <div className="flex items-center justify-between mb-4 sm:mb-5">
             <h2 className="text-base sm:text-lg font-semibold text-gray-900 transition-all duration-300">

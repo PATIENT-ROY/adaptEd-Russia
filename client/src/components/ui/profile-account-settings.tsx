@@ -1,6 +1,7 @@
 "use client";
 
 import { useEffect, useState, type ReactNode } from "react";
+import { useBodyScrollLock } from "@/hooks/useBodyScrollLock";
 import {
   Bell,
   CheckCircle2,
@@ -96,16 +97,15 @@ function SettingsModalShell({
   closeLabel: string;
   children: ReactNode;
 }) {
+  useBodyScrollLock(open);
+
   useEffect(() => {
     if (!open) return;
-    const prev = document.body.style.overflow;
-    document.body.style.overflow = "hidden";
     const onKey = (e: KeyboardEvent) => {
       if (e.key === "Escape") onClose();
     };
     window.addEventListener("keydown", onKey);
     return () => {
-      document.body.style.overflow = prev;
       window.removeEventListener("keydown", onKey);
     };
   }, [open, onClose]);
@@ -127,7 +127,7 @@ function SettingsModalShell({
       />
       <div
         className={cn(
-          "relative z-10 flex w-full max-h-[88dvh] flex-col overflow-hidden bg-white shadow-2xl",
+          "relative z-10 flex w-full max-h-[88dvh] flex-col overflow-hidden overscroll-contain bg-white shadow-2xl",
           "rounded-t-2xl sm:max-w-md sm:rounded-2xl",
           "animate-slide-in-from-bottom",
         )}
@@ -149,7 +149,7 @@ function SettingsModalShell({
             <X className="h-5 w-5" />
           </button>
         </div>
-        <div className="min-h-0 flex-1 overflow-y-auto px-4 py-4 sm:px-5 sm:py-5">
+        <div className="min-h-0 flex-1 overflow-y-auto overscroll-contain px-4 py-4 sm:px-5 sm:py-5">
           {children}
         </div>
       </div>

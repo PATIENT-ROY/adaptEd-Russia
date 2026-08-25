@@ -175,33 +175,31 @@ export default function TranslationCentersPage() {
 
   return (
     <Layout>
-      <div className="space-y-6 sm:space-y-8">
-        {/* Header */}
-        <div className="bg-white rounded-2xl sm:rounded-3xl p-4 sm:p-6 shadow-sm">
-          <div className="flex flex-col sm:flex-row sm:items-center space-y-3 sm:space-y-0 sm:space-x-3">
-            <BackButton
-              label={t("translationCenters.back")}
-              className="mb-2 sm:mb-0"
-              onClick={() => router.push("/education-guide")}
-            />
-            <div className="rounded-lg bg-blue-50 p-3 w-fit">
-              <FileText className="h-6 w-6 text-blue-600" />
-            </div>
-            <div className="flex-1">
-              <h1 className="text-xl sm:text-2xl font-bold text-gray-900">
-                {user
-                  ? `${t("translationCenters.titleInCity")} ${selectedCity}`
-                  : t("translationCenters.titleGuest")}
-              </h1>
-              <p className="text-sm sm:text-base text-gray-600">
-                {user
-                  ? t("translationCenters.subtitleUser")
-                  : t("translationCenters.subtitleGuest")}
-              </p>
-            </div>
-          </div>
-        </div>
+      <div className="min-h-screen bg-gradient-to-br from-blue-50 via-white to-purple-50 py-8">
+        <div className="max-w-6xl mx-auto px-4 sm:px-6 lg:px-8">
+          <BackButton
+            label={t("translationCenters.back")}
+            className="mb-6"
+            onClick={() => router.push("/education-guide")}
+          />
 
+          <div className="text-center mb-12">
+            <div className="inline-flex items-center justify-center w-16 h-16 rounded-full bg-gradient-to-br from-blue-600 to-purple-600 mb-4">
+              <FileText className="h-8 w-8 text-white" />
+            </div>
+            <h1 className="text-4xl font-bold text-gray-900 mb-4">
+              {user
+                ? `${t("translationCenters.titleInCity")} ${selectedCity}`
+                : t("translationCenters.titleGuest")}
+            </h1>
+            <p className="text-xl text-gray-600">
+              {user
+                ? t("translationCenters.subtitleUser")
+                : t("translationCenters.subtitleGuest")}
+            </p>
+          </div>
+
+          <div className="space-y-6 sm:space-y-8">
         {/* City Selector */}
         <div className="bg-white rounded-2xl sm:rounded-3xl p-4 sm:p-6 shadow-sm">
           <div className="flex flex-col sm:flex-row sm:items-center gap-3 sm:gap-4">
@@ -368,6 +366,8 @@ export default function TranslationCentersPage() {
             ))}
           </div>
         )}
+          </div>
+        </div>
       </div>
     </Layout>
   );

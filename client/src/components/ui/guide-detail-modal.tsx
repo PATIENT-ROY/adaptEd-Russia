@@ -6,6 +6,7 @@ import { formatDate } from "@/lib/date-utils";
 import { Button } from "./button";
 import { Card, CardContent, CardHeader, CardTitle } from "./card";
 import { useEffect, useState } from "react";
+import { useBodyScrollLock } from "@/hooks/useBodyScrollLock";
 
 // Функция для обработки markdown
 function formatMarkdown(text: string): string {
@@ -143,18 +144,7 @@ export function GuideDetailModal({
 }: GuideDetailModalProps) {
   const [showQuickSummary, setShowQuickSummary] = useState(true);
 
-  // Prevent body scroll when modal is open
-  useEffect(() => {
-    if (isOpen) {
-      document.body.style.overflow = "hidden";
-    } else {
-      document.body.style.overflow = "unset";
-    }
-
-    return () => {
-      document.body.style.overflow = "unset";
-    };
-  }, [isOpen]);
+  useBodyScrollLock(isOpen);
 
   useEffect(() => {
     if (isOpen) {
@@ -195,7 +185,7 @@ export function GuideDetailModal({
           </div>
         </CardHeader>
 
-        <CardContent className="space-y-5 p-5 sm:p-6 overflow-y-auto flex-1">
+        <CardContent className="space-y-5 p-5 sm:p-6 overflow-y-auto overscroll-contain flex-1">
           {/* Meta Info */}
           <div className="flex flex-wrap items-center gap-3 text-sm text-gray-600">
             <div className="flex items-center gap-2">
