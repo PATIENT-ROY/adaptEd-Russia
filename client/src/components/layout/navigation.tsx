@@ -12,7 +12,7 @@ import {
   Home,
   BookOpen,
   Home as HomeIcon,
-  Bell,
+  Sparkles,
   MessageSquare,
   User,
   Menu,
@@ -37,8 +37,8 @@ const navigationItemsConfig = [
 ];
 
 const authenticatedNavigationItemsConfig = [
-  { href: "/reminders", labelKey: "nav.reminders", icon: Bell },
   { href: "/ai-helper", labelKey: "nav.aiHelper", icon: MessageSquare },
+  { href: "/reminders", labelKey: "nav.reminders", icon: Sparkles },
   { href: "/docscan", labelKey: "nav.docscan", icon: ScanLine },
   { href: "/community/questions", labelKey: "nav.community", icon: Users },
 ];
@@ -66,20 +66,20 @@ export function Navigation({
     <nav
       className="modern-nav fixed inset-x-0 top-0 z-50"
       style={{
-        background: "rgba(255, 255, 255, 0.75)",
+        background: "rgba(255, 255, 255, 0.96)",
         backdropFilter: "blur(15px)",
         borderBottom: "1px solid rgba(255, 255, 255, 0.3)",
         boxShadow: "0 4px 6px -1px rgba(0, 0, 0, 0.1)",
         paddingRight: "var(--scrollbar-gap, 0px)",
       }}
     >
-      <div className="mx-auto max-w-screen-2xl w-full px-4 sm:px-6 lg:px-8 relative">
+      <div className="relative mx-auto w-full max-w-screen-2xl px-3 min-[390px]:px-4 sm:px-6 lg:px-8">
         <div className="flex h-14 sm:h-16 items-center justify-between">
           {/* Logo */}
           <div className="flex items-center">
             <Link
               href="/"
-              className="flex items-center space-x-2 sm:space-x-3 group"
+              className="group flex items-center space-x-1.5 sm:space-x-3"
             >
               <div className="relative h-8 w-8 sm:h-9 sm:w-9 lg:h-11 lg:w-11 rounded-lg sm:rounded-xl overflow-hidden shadow-lg group-hover:shadow-xl transition-all duration-300 group-hover:scale-105">
                 <Image
@@ -92,10 +92,10 @@ export function Navigation({
                 />
               </div>
               <div className="flex flex-col sm:flex-row sm:items-center sm:space-x-1">
-                <span className="text-sm sm:text-base lg:text-lg font-bold text-slate-900 group-hover:text-blue-600 transition-colors duration-200 leading-tight">
+                <span className="text-[13px] sm:text-base lg:text-lg font-bold text-slate-900 group-hover:text-blue-600 transition-colors duration-200 leading-tight">
                   AdaptEd
                 </span>
-                <span className="text-sm sm:text-base lg:text-lg font-bold text-slate-900 group-hover:text-blue-600 transition-colors duration-200 leading-tight">
+                <span className="text-[13px] sm:text-base lg:text-lg font-bold text-slate-900 group-hover:text-blue-600 transition-colors duration-200 leading-tight">
                   Russia
                 </span>
               </div>
@@ -196,7 +196,7 @@ export function Navigation({
           </div>
 
           {/* Right side - Language Switcher, Profile, Mobile Menu */}
-          <div className="flex items-center gap-1 sm:gap-2 lg:gap-3">
+          <div className="flex min-w-0 items-center gap-1 sm:gap-2 lg:gap-3">
             <LanguageSwitcher
               currentLanguage={currentLanguage}
               onLanguageChange={onLanguageChange}
@@ -232,7 +232,7 @@ export function Navigation({
                 <Link href="/login">
                   <Button
                     variant="outline"
-                    className="rounded-lg sm:rounded-xl border-indigo-200 bg-white text-indigo-600 hover:border-indigo-300 hover:bg-indigo-50 hover:text-indigo-700 text-xs sm:text-sm h-6 sm:h-7 lg:h-8 px-2 sm:px-3"
+                    className="h-7 max-w-[84px] rounded-lg border-indigo-200 bg-white px-2 text-[11px] text-indigo-600 hover:border-indigo-300 hover:bg-indigo-50 hover:text-indigo-700 min-[390px]:max-w-none min-[390px]:text-xs sm:h-7 sm:rounded-xl sm:px-3 sm:text-sm lg:h-8"
                   >
                     {t("nav.login")}
                   </Button>

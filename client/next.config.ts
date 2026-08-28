@@ -10,13 +10,15 @@ const nextConfig: NextConfig = {
   // Monorepo (root/ + client/): tracing должен смотреть на корень репозитория
   // иначе Netlify runtime может терять части server bundle и отдавать 502.
   outputFileTracingRoot: path.join(process.cwd(), ".."),
-  experimental: {
-    optimizePackageImports: ['lucide-react'],
-  },
   images: {
     domains: ['localhost'],
     unoptimized: process.env.NETLIFY ? true : false,
     formats: ['image/avif', 'image/webp'],
+    localPatterns: [
+      {
+        pathname: '/**',
+      },
+    ],
     remotePatterns: [
       {
         protocol: 'https',

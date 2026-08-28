@@ -1,32 +1,10 @@
-export const countrySuggestions = [
-  "Россия",
-  "Казахстан",
-  "Узбекистан",
-  "Азербайджан",
-  "Армения",
-  "Беларусь",
-  "Кыргызстан",
-  "Таджикистан",
-  "Туркменистан",
-  "Молдова",
-  "Украина",
-  "Грузия",
-  "Китай",
-  "Вьетнам",
-  "Индия",
-  "Пакистан",
-  "Египет",
-  "Нигерия",
-  "Марокко",
-  "Бразилия",
-  "Мексика",
-  "Аргентина",
-  "США",
-  "Канада",
-  "Германия",
-  "Франция",
-  "Италия",
-  "Испания",
-  "Польша",
-  "Турция",
-];
+import countries from "i18n-iso-countries";
+import ruLocale from "i18n-iso-countries/langs/ru.json";
+
+countries.registerLocale(ruLocale);
+
+const russianCountryCollator = new Intl.Collator("ru");
+
+export const countrySuggestions = Object.values(countries.getNames("ru")).sort(
+  russianCountryCollator.compare,
+);

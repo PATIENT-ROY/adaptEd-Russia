@@ -76,7 +76,7 @@ export const HeroTypewriter = memo(function HeroTypewriter({
   return (
     <p
       ref={containerRef}
-      className="mx-auto mb-4 max-w-3xl cursor-default select-none px-4 text-center sm:mb-6 lg:mb-8"
+      className="mx-auto mb-3 flex min-h-[3.25rem] max-w-3xl cursor-default select-none items-center justify-center px-2 text-center sm:mb-6 sm:min-h-[3.5rem] sm:px-4 lg:mb-8 lg:min-h-[4rem]"
     >
       <span
         aria-live="polite"

@@ -92,7 +92,7 @@ const ROW_TOPICS: Phrase[] = [
     href: `/life-guide?q=${encodeURIComponent("РВПО")}`,
     tone: "life",
   },
-  { lang: "AI", text: "Помощник 24/7", href: "/ai-helper", tone: "brand" },
+  { lang: "AI", text: "Помощник и инструменты", href: "/ai-helper", tone: "brand" },
   {
     lang: "Club",
     text: "Сообщество студентов",

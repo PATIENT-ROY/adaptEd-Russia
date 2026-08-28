@@ -35,6 +35,9 @@ export const metadata: Metadata = {
     telephone: false,
   },
   metadataBase: new URL("https://adaptedrussia.ru"),
+  alternates: {
+    canonical: "/",
+  },
   openGraph: {
     type: "website",
     locale: "ru_RU",
@@ -45,9 +48,9 @@ export const metadata: Metadata = {
     siteName: "AdaptEd Russia",
     images: [
       {
-        url: "/favicon.svg",
-        width: 32,
-        height: 32,
+        url: "/og-image.png",
+        width: 1200,
+        height: 630,
         alt: "AdaptEd Russia - Помощь иностранным студентам",
       },
     ],
@@ -57,7 +60,7 @@ export const metadata: Metadata = {
     title: "AdaptEd Russia - Помощь иностранным студентам в России",
     description:
       "Платформа для помощи иностранным студентам в адаптации к жизни и учёбе в российских вузах.",
-    images: ["/favicon.svg"],
+    images: ["/og-image.png"],
   },
   robots: {
     index: true,
@@ -71,22 +74,11 @@ export default function RootLayout({
   children: React.ReactNode;
 }) {
   return (
-    <html lang="ru">
+    <html lang="ru" data-scroll-behavior="smooth">
       <head>
         <link rel="icon" type="image/svg+xml" href="/favicon.svg?v=2" />
-        <link
-          rel="icon"
-          type="image/png"
-          sizes="32x32"
-          href="/favicon.svg?v=2"
-        />
-        <link
-          rel="icon"
-          type="image/png"
-          sizes="16x16"
-          href="/favicon.svg?v=2"
-        />
-        <link rel="apple-touch-icon" href="/favicon.svg?v=2" />
+        <link rel="icon" type="image/png" sizes="1024x1024" href="/AdaptEd.png" />
+        <link rel="apple-touch-icon" sizes="1024x1024" href="/AdaptEd.png" />
         <link rel="manifest" href="/site.webmanifest" />
         <meta name="theme-color" content="#2563eb" />
         <meta name="msapplication-TileColor" content="#2563eb" />

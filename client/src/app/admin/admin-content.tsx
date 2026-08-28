@@ -12,6 +12,7 @@ import {
   Activity,
   Award,
   Star,
+  ScanLine,
 } from "lucide-react";
 import Link from "next/link";
 import { useAuth } from "@/contexts/AuthContext";
@@ -75,7 +76,7 @@ export function AdminContent() {
       change: stats?.ai?.change ?? "0%",
       period: t("admin.dashboard.stats.perWeek"),
       icon: MessageSquare,
-      color: "from-purple-500 to-purple-600",
+      color: "from-orange-500 to-orange-600",
     },
     {
       title: t("admin.dashboard.stats.guideReads"),
@@ -122,8 +123,8 @@ export function AdminContent() {
     { title: t("admin.dashboard.actions.users"), description: t("admin.dashboard.actions.usersDesc"), icon: Users, href: "/admin/users", color: "from-blue-500 to-blue-600" },
     { title: t("admin.dashboard.actions.guides"), description: t("admin.dashboard.actions.guidesDesc"), icon: BookOpen, href: "/admin/guides", color: "from-green-500 to-green-600" },
     { title: t("admin.dashboard.actions.support"), description: t("admin.dashboard.actions.supportDesc"), icon: Bell, href: "/admin/support", color: "from-red-500 to-red-600" },
-    { title: t("admin.dashboard.actions.ai"), description: t("admin.dashboard.actions.aiDesc"), icon: Activity, href: "/admin/ai-analytics", color: "from-purple-500 to-purple-600" },
-    { title: t("admin.dashboard.actions.docscan"), description: t("admin.dashboard.actions.docscanDesc"), icon: BookOpen, href: "/admin/docscan/analytics", color: "from-indigo-500 to-indigo-600" },
+    { title: t("admin.dashboard.actions.ai"), description: t("admin.dashboard.actions.aiDesc"), icon: MessageSquare, href: "/admin/ai-analytics", color: "from-orange-500 to-orange-600" },
+    { title: t("admin.dashboard.actions.docscan"), description: t("admin.dashboard.actions.docscanDesc"), icon: ScanLine, href: "/admin/docscan/analytics", color: "from-indigo-500 to-indigo-600" },
     { title: t("admin.dashboard.actions.community"), description: t("admin.dashboard.actions.communityDesc"), icon: Users, href: "/community/questions", color: "from-pink-500 to-rose-600" },
     { title: t("admin.dashboard.actions.reviews"), description: t("admin.dashboard.actions.reviewsDesc"), icon: Star, href: "/admin/reviews", color: "from-yellow-500 to-orange-500" },
     { title: t("admin.dashboard.actions.achievements"), description: t("admin.dashboard.actions.achievementsDesc"), icon: Award, href: "/admin/achievements", color: "from-amber-500 to-orange-500" },

@@ -30,7 +30,12 @@ export const organizationStructuredData = {
   description:
     "Платформа для помощи иностранным студентам в адаптации к жизни и учёбе в России",
   url: "https://adaptedrussia.ru",
-  logo: "https://adaptedrussia.ru/favicon.svg",
+  logo: {
+    "@type": "ImageObject",
+    url: "https://adaptedrussia.ru/AdaptEd.png",
+    width: 1024,
+    height: 1024,
+  },
 };
 
 export const educationalServiceStructuredData = {

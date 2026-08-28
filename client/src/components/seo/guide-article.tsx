@@ -25,17 +25,39 @@ export function GuideArticle({
     dateModified: guide.updatedAt,
     inLanguage: "ru-RU",
     mainEntityOfPage: articleUrl,
+    image: [`${SITE_URL}/og-image.png`],
     author: { "@type": "Organization", name: "AdaptEd Russia" },
     publisher: {
       "@type": "Organization",
       name: "AdaptEd Russia",
-      logo: { "@type": "ImageObject", url: `${SITE_URL}/favicon.svg` },
+      logo: {
+        "@type": "ImageObject",
+        url: `${SITE_URL}/AdaptEd.png`,
+        width: 1024,
+        height: 1024,
+      },
     },
+  };
+
+  const breadcrumbs = {
+    "@context": "https://schema.org",
+    "@type": "BreadcrumbList",
+    itemListElement: [
+      { "@type": "ListItem", position: 1, name: "Главная", item: SITE_URL },
+      {
+        "@type": "ListItem",
+        position: 2,
+        name: section === "life" ? "Гайды по жизни" : "Гайды по учёбе",
+        item: `${SITE_URL}${catalogUrl}`,
+      },
+      { "@type": "ListItem", position: 3, name: guide.title, item: articleUrl },
+    ],
   };
 
   return (
     <main className="min-h-screen bg-slate-50 px-4 py-8 sm:px-6 sm:py-12">
       <StructuredData data={schema} />
+      <StructuredData data={breadcrumbs} />
       <article className="mx-auto max-w-4xl rounded-2xl border border-slate-200 bg-white p-5 shadow-sm sm:p-10">
         <Link
           href={catalogUrl}
@@ -59,7 +81,16 @@ export function GuideArticle({
         </header>
 
         <div className="prose prose-slate max-w-none break-words prose-headings:scroll-mt-24 prose-a:text-blue-600 prose-table:block prose-table:overflow-x-auto">
-          <ReactMarkdown remarkPlugins={[remarkGfm]}>{guide.content}</ReactMarkdown>
+          <ReactMarkdown
+            remarkPlugins={[remarkGfm]}
+            components={{
+              h1: ({ children }) => <h2>{children}</h2>,
+              h2: ({ children }) => <h3>{children}</h3>,
+              h3: ({ children }) => <h4>{children}</h4>,
+            }}
+          >
+            {guide.content}
+          </ReactMarkdown>
         </div>
       </article>
     </main>

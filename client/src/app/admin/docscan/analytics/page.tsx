@@ -6,7 +6,7 @@ import { Card, CardContent, CardHeader, CardTitle } from "@/components/ui/card";
 import {
   Activity,
   ArrowLeft,
-  BookOpen,
+  ScanLine,
   TrendingUp,
   Users,
   AlertTriangle,
@@ -59,7 +59,7 @@ function DocscanAnalyticsContent() {
     {
       label: t("admin.docscan.kpi.totalScans"),
       value: loading ? "…" : String(analytics?.totalReads ?? 0),
-      icon: BookOpen,
+      icon: ScanLine,
     },
     {
       label: t("admin.docscan.kpi.activeUsers"),
@@ -104,7 +104,7 @@ function DocscanAnalyticsContent() {
                 <ArrowLeft className="h-5 w-5" />
               </Link>
               <div className="rounded-lg bg-indigo-50 p-3">
-                <BookOpen className="h-6 w-6 text-indigo-600" />
+                <ScanLine className="h-6 w-6 text-indigo-600" />
               </div>
               <div>
                 <h1 className="text-xl sm:text-2xl font-bold text-gray-900">

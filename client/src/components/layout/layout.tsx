@@ -24,7 +24,7 @@ export function Layout({ children }: LayoutProps) {
         currentLanguage={currentLanguage}
         onLanguageChange={setLanguage}
       />
-      <main id="main-content" className="mx-auto max-w-7xl px-4 sm:px-6 lg:px-8 pt-14 sm:pt-16 pb-8 sm:pb-10 md:pb-12 lg:pb-16">
+      <main id="main-content" className="app-main mx-auto max-w-7xl px-4 sm:px-6 lg:px-8 pb-8 sm:pb-10 md:pb-12 lg:pb-16">
         {children}
       </main>
     </div>

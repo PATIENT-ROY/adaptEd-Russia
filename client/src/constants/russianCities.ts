@@ -155,5 +155,5 @@ export const RUSSIAN_CITIES = [
   "Юрга",
   "Якутск",
   "Ярославль",
-].sort();
+].sort((a, b) => a.localeCompare(b, "ru"));
 

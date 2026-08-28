@@ -209,7 +209,7 @@ export default function SupportPage() {
     {
       question: "Как работает AI-помощник?",
       answer:
-        "AI-помощник имеет 3 режима: Учёба (экзамены, курсовые), Жизнь (документы, адаптация), Генератор (тексты). Также доступны готовые шаблоны для курсовых, резюме, писем и заявлений.",
+        "В AdaptEd AI есть два способа работы: задайте вопрос AI-помощнику своими словами или выберите готовый AI-инструмент для текстов, презентаций, решения задач, изучения тем, экзаменов и конспектов.",
     },
     {
       question: "Как получить доступ к образовательным гайдам?",
@@ -247,6 +247,7 @@ export default function SupportPage() {
   if (isInitialLoading) {
     return (
       <div className="min-h-screen bg-gradient-to-br from-blue-50 via-white to-purple-50 py-8">
+        <h1 className="sr-only">Поддержка иностранных студентов</h1>
         <div className="max-w-6xl mx-auto px-4 sm:px-6 lg:px-8">
           {/* Back Button Skeleton */}
           <div className="h-10 w-24 bg-gray-200 rounded animate-pulse mb-6"></div>

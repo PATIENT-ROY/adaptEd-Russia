@@ -20,6 +20,7 @@
         "clsx": "^2.1.1",
         "date-fns": "^3.6.0",
         "framer-motion": "^11.10.16",
+        "i18n-iso-countries": "^7.14.0",
         "lucide-react": "^0.460.0",
         "next": "^15.5.12",
         "pdfjs-dist": "^5.4.296",
@@ -35,8 +36,8 @@
         "zod": "^3.23.8"
     },
     "devDependencies": {
-        "@playwright/test": "^1.54.2",
         "@eslint/eslintrc": "^3",
+        "@playwright/test": "^1.54.2",
         "@types/node": "^20",
         "@types/react": "^19",
         "@types/react-dom": "^19",
