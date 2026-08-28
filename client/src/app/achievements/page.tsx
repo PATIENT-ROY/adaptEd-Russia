@@ -296,10 +296,10 @@ export default function AchievementsPage() {
               <div className="h-6 w-40 bg-gray-200 rounded animate-pulse mb-4" />
               <div className="h-4 w-64 bg-gray-200 rounded animate-pulse" />
             </div>
-            <div className="grid grid-cols-1 sm:grid-cols-2 lg:grid-cols-3 gap-4">
+            <div className="grid auto-rows-fr grid-cols-1 sm:grid-cols-2 lg:grid-cols-3 gap-4">
               {Array.from({ length: 6 }).map((_, index) => (
-                <Card key={`skeleton-achievement-${index}`} className="animate-pulse">
-                  <CardContent className="p-6 space-y-4">
+                <Card key={`skeleton-achievement-${index}`} className="h-full min-h-[22rem] animate-pulse">
+                  <CardContent className="h-full p-6 space-y-4">
                     <div className="w-16 h-16 bg-gray-200 rounded-2xl mx-auto" />
                     <div className="h-4 bg-gray-200 rounded w-3/4 mx-auto" />
                     <div className="h-3 bg-gray-200 rounded w-full" />
@@ -483,7 +483,7 @@ export default function AchievementsPage() {
           </div>
 
           {/* Achievements Grid */}
-          <div className="grid grid-cols-1 sm:grid-cols-2 lg:grid-cols-3 xl:grid-cols-4 gap-4 sm:gap-6">
+          <div className="grid auto-rows-fr grid-cols-1 sm:grid-cols-2 lg:grid-cols-3 xl:grid-cols-4 gap-4 sm:gap-6">
             {filteredAchievements.map((achievement: AchievementStatus) => {
               const isEarned = achievement.unlocked;
               const rarityConfig = RARITY_CONFIG[achievement.rarity];
@@ -500,14 +500,14 @@ export default function AchievementsPage() {
                 <Card
                   key={achievement.id}
                   id={achievement.id}
-                  className={`scroll-mt-24 transition-all duration-300 ${
+                  className={`h-full min-h-[22rem] scroll-mt-24 transition-all duration-300 ${
                     isEarned
                       ? "shadow-xl hover:shadow-2xl border-2 border-yellow-300"
                       : "opacity-60 hover:opacity-80 border-gray-200"
                   }`}
                 >
-                  <CardContent className="p-4 sm:p-6">
-                    <div className="flex flex-col items-center text-center space-y-3">
+                  <CardContent className="h-full p-4 sm:p-6">
+                    <div className="flex h-full flex-col items-center gap-3 text-center">
                       <div
                         className={`w-16 h-16 sm:w-20 sm:h-20 rounded-2xl flex items-center justify-center text-4xl sm:text-5xl ${
                           isEarned
@@ -522,14 +522,14 @@ export default function AchievementsPage() {
                         )}
                       </div>
                       <h3
-                        className={`font-bold text-base sm:text-lg ${
+                        className={`flex min-h-12 items-center justify-center font-bold text-base sm:text-lg ${
                           isEarned ? "text-gray-900" : "text-gray-500"
                         }`}
                       >
                         {achievement.name}
                       </h3>
                       <p
-                        className={`text-xs sm:text-sm ${
+                        className={`flex-grow text-xs sm:text-sm ${
                           isEarned ? "text-gray-600" : "text-gray-400"
                         }`}
                       >
@@ -544,6 +544,7 @@ export default function AchievementsPage() {
                         <Zap className="h-4 w-4" />
                         <span>+{achievement.xpReward} XP</span>
                       </div>
+                      <div className="mt-auto flex min-h-[3.25rem] w-full items-end">
                       {isEarned ? (
                         <div className="w-full pt-2 border-t border-gray-200 relative">
                           <div className="absolute -top-1 -right-1 text-lg">🎉</div>
@@ -568,6 +569,7 @@ export default function AchievementsPage() {
                           </div>
                         </div>
                       ) : null}
+                      </div>
                     </div>
                   </CardContent>
                 </Card>

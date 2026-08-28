@@ -28,73 +28,10 @@ import {
   ArrowLeft,
 } from "lucide-react";
 import { Role, Plan, Language } from "@/types";
+import { countrySuggestions } from "@/constants/countries";
 
 const STEP_TRANSITION_DURATION = 0.35; // seconds
 const STEP_TRANSITION_MS = STEP_TRANSITION_DURATION * 1000;
-
-// Список стран
-const countries = [
-  "Россия",
-  "Казахстан",
-  "Узбекистан",
-  "Азербайджан",
-  "Армения",
-  "Белоруссия",
-  "Кыргызстан",
-  "Таджикистан",
-  "Туркменистан",
-  "Молдова",
-  "Украина",
-  "Грузия",
-  "Китай",
-  "Вьетнам",
-  "Индонезия",
-  "Индия",
-  "Бангладеш",
-  "Пакистан",
-  "Иран",
-  "Египет",
-  "Нигерия",
-  "Эфиопия",
-  "Кения",
-  "Марокко",
-  "Тунис",
-  "Алжир",
-  "Гана",
-  "Сенегал",
-  "Бразилия",
-  "Мексика",
-  "Аргентина",
-  "Колумбия",
-  "Чили",
-  "Перу",
-  "Боливия",
-  "США",
-  "Канада",
-  "Великобритания",
-  "Германия",
-  "Франция",
-  "Италия",
-  "Испания",
-  "Польша",
-  "Чехия",
-  "Венгрия",
-  "Румыния",
-  "Болгария",
-  "Греция",
-  "Португалия",
-  "Нидерланды",
-  "Бельгия",
-  "Австрия",
-  "Швейцария",
-  "Швеция",
-  "Норвегия",
-  "Дания",
-  "Финляндия",
-  "Ирландия",
-  "Исландия",
-  "Люксембург",
-];
 
 export default function RegisterPage() {
   const [formData, setFormData] = useState({
@@ -371,7 +308,7 @@ export default function RegisterPage() {
                         required
                       >
                         <option value="">{t("register.countryPlaceholder")}</option>
-                        {countries.map((country) => (
+                        {countrySuggestions.map((country) => (
                           <option key={country} value={country}>
                             {country}
                           </option>

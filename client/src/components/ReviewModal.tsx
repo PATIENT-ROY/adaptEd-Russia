@@ -1,4 +1,4 @@
-import React, { useEffect, useRef, useState } from "react";
+import React, { useEffect, useState } from "react";
 import { RatingStars } from "./RatingStars";
 import { Review } from "@/types";
 import { Button } from "@/components/ui/button";
@@ -52,7 +52,6 @@ export function ReviewModal({
     }
   }, [review]);
 
-  const textareaRef = useRef<HTMLTextAreaElement>(null);
   useBodyScrollLock(isOpen);
 
   useEffect(() => {
@@ -62,8 +61,6 @@ export function ReviewModal({
       setAllowPublication(false);
       setPrivacyConsent(false);
       setRatingTouched(false);
-    } else {
-      setTimeout(() => textareaRef.current?.focus(), 100);
     }
   }, [isOpen]);
 
@@ -122,7 +119,6 @@ export function ReviewModal({
             {tt("profile.review.modal.text", "Текст отзыва")}
           </label>
           <textarea
-            ref={textareaRef}
             maxLength={TEXT_MAX}
             rows={4}
             placeholder={PLACEHOLDER}

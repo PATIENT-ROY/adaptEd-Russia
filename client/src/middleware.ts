@@ -2,6 +2,17 @@ import { NextResponse } from 'next/server';
 import type { NextRequest } from 'next/server';
 
 export function middleware(request: NextRequest) {
+  const forwardedHost = request.headers.get('x-forwarded-host');
+  const host = (forwardedHost || request.headers.get('host') || '').split(':')[0];
+
+  if (host === 'www.adaptedrussia.ru') {
+    const canonicalUrl = request.nextUrl.clone();
+    canonicalUrl.protocol = 'https:';
+    canonicalUrl.host = 'adaptedrussia.ru';
+    canonicalUrl.port = '';
+    return NextResponse.redirect(canonicalUrl, 308);
+  }
+
   const response = NextResponse.next();
 
   // Кэширование статических ресурсов

@@ -2,7 +2,7 @@ import type { Metadata } from "next";
 import { notFound } from "next/navigation";
 import { educationGuides } from "@/data/education-guides";
 import { GuideArticle } from "@/components/seo/guide-article";
-import { SITE_URL, guideDescription } from "@/lib/seo";
+import { SITE_URL, SOCIAL_IMAGE, guideDescription } from "@/lib/seo";
 
 type Props = { params: Promise<{ id: string }> };
 
@@ -29,6 +29,13 @@ export async function generateMetadata({ params }: Props): Promise<Metadata> {
       title: guide.title,
       description: guideDescription(guide),
       modifiedTime: guide.updatedAt,
+      images: [SOCIAL_IMAGE],
+    },
+    twitter: {
+      card: "summary_large_image",
+      title: guide.title,
+      description: guideDescription(guide),
+      images: [SOCIAL_IMAGE.url],
     },
   };
 }

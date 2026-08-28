@@ -308,7 +308,7 @@ export function EducationGuideContent() {
               const Icon = tool.icon;
 
               const cardContent = (
-                <div className="h-full rounded-2xl border border-gray-200 bg-gray-50 p-4 transition-all duration-300 hover:bg-white hover:shadow-sm">
+                <div className="flex h-full flex-col rounded-2xl border border-gray-200 bg-gray-50 p-4 transition-all duration-300 hover:bg-white hover:shadow-sm">
                   <div className="flex items-start justify-between gap-3 mb-4">
                     <div className="rounded-xl bg-white p-3 shadow-sm">
                       <Icon className="h-5 w-5 text-blue-600" />
@@ -317,7 +317,7 @@ export function EducationGuideContent() {
                       {t("educationGuide.tools.separate")}
                     </span>
                   </div>
-                  <div className="space-y-2">
+                  <div className="flex-1 space-y-2">
                     <h3 className="text-base font-semibold text-gray-900">
                       {tool.name}
                     </h3>
@@ -325,7 +325,7 @@ export function EducationGuideContent() {
                       {tool.description}
                     </p>
                   </div>
-                  <div className="mt-4 flex items-center text-sm font-medium text-blue-700">
+                  <div className="mt-auto flex items-center pt-4 text-sm font-medium text-blue-700">
                     <span>{t("educationGuide.tools.goTo")}</span>
                     <ArrowRight className="ml-1 h-4 w-4" />
                   </div>

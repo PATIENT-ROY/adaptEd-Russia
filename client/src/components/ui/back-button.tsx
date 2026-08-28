@@ -9,16 +9,17 @@ interface BackButtonProps {
   label: string;
   className?: string;
   onClick?: () => void;
+  href?: string;
 }
 
-export function BackButton({ label, className, onClick }: BackButtonProps) {
+export function BackButton({ label, className, onClick, href }: BackButtonProps) {
   const router = useRouter();
 
   return (
     <Button
       type="button"
       variant="outline"
-      onClick={onClick ?? (() => router.back())}
+      onClick={onClick ?? (() => href ? router.push(href) : router.back())}
       className={cn(
         "h-8 min-h-0 w-fit gap-1 rounded-lg border border-slate-300 bg-white px-2.5 py-0 text-xs font-medium leading-none text-slate-700 shadow-none",
         "sm:h-9 sm:gap-1.5 sm:px-3 sm:text-sm",

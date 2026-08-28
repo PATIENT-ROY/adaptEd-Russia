@@ -1,6 +1,5 @@
 "use client";
 
-import dynamic from "next/dynamic";
 import { Layout } from "@/components/layout/layout";
 import { Card, CardContent, CardHeader, CardTitle } from "@/components/ui/card";
 import { Button } from "@/components/ui/button";
@@ -44,6 +43,7 @@ import {
   X,
   Sparkles,
   Home,
+  Users,
   Trophy,
 } from "lucide-react";
 import Link from "next/link";
@@ -70,17 +70,9 @@ import {
 } from "@/types";
 import { useReview } from "@/hooks/useReview";
 import { ProfileAccountSettings } from "@/components/ui/profile-account-settings";
+import { ProfileEditForm } from "@/components/ui/profile-edit-form";
+import { ReviewModal } from "@/components/ReviewModal";
 import { localizePaymentDescription } from "@/lib/payment-i18n";
-
-const ProfileEditForm = dynamic(
-  () => import("@/components/ui/profile-edit-form").then((m) => m.ProfileEditForm),
-  { ssr: false }
-);
-
-const ReviewModal = dynamic(
-  () => import("@/components/ReviewModal").then((m) => m.ReviewModal),
-  { ssr: false }
-);
 
 interface ExtendedUser extends UserType {
   university?: string;
@@ -152,6 +144,7 @@ const iconMap = {
   Award,
   Trophy,
   Home,
+  Users,
   GraduationCap,
   Crown,
   Sparkles,
@@ -358,35 +351,43 @@ export default function ProfilePage() {
       },
       {
         id: "education-guide",
-        title: t("profile.quickAction.educationGuide.title"),
-        description: t("profile.quickAction.educationGuide.desc"),
+        title: t("home.features.navigator"),
+        description: t("home.features.navigator.desc"),
         icon: "BookOpen",
         color: "from-blue-500 to-blue-600",
         href: "/education-guide",
       },
       {
         id: "smart-reminders",
-        title: t("profile.quickAction.reminders.title"),
-        description: t("profile.quickAction.reminders.desc"),
+        title: t("home.features.reminders"),
+        description: t("home.features.reminders.desc"),
         icon: "Sparkles",
         color: "from-purple-500 to-indigo-600",
         href: "/reminders",
       },
       {
         id: "ai-assistant",
-        title: t("profile.quickAction.ai.title"),
-        description: t("profile.quickAction.ai.desc"),
+        title: "AdaptEd AI",
+        description: t("home.features.ai.desc"),
         icon: "MessageSquare",
         color: "from-orange-500 to-orange-600",
         href: "/ai-helper",
       },
       {
         id: "docscan",
-        title: t("profile.quickAction.docscan.title"),
-        description: t("profile.quickAction.docscan.desc"),
+        title: t("home.features.docscan"),
+        description: t("home.features.docscan.desc"),
         icon: "ScanLine",
         color: "from-indigo-500 to-indigo-600",
         href: "/docscan",
+      },
+      {
+        id: "community",
+        title: t("home.features.community"),
+        description: t("home.features.community.desc"),
+        icon: "Users",
+        color: "from-pink-500 to-rose-600",
+        href: "/community/questions",
       },
       {
         id: "support",
@@ -928,7 +929,7 @@ export default function ProfilePage() {
             <h2 className="text-xl sm:text-2xl font-bold text-slate-900 mb-4 sm:mb-6">
               {t("profile.quickActions.title")}
             </h2>
-            <div className="grid grid-cols-1 sm:grid-cols-2 lg:grid-cols-3 gap-3 sm:gap-4 lg:gap-6">
+            <div className="grid auto-rows-fr grid-cols-1 sm:grid-cols-2 lg:grid-cols-3 gap-3 sm:gap-4 lg:gap-6">
               {customQuickActions.map((action) => {
                 const Icon = getIconByName(action.icon);
                 const isReviewAction = action.id === "leave-review";
@@ -952,7 +953,7 @@ export default function ProfilePage() {
                         : null;
                 const card = (
                   <Card
-                    className={`${profileCardClass} cursor-pointer h-full ${
+                    className={`${profileCardClass} cursor-pointer h-full min-h-[15rem] sm:min-h-[18rem] ${
                       isProfileLoading ? "animate-pulse" : ""
                     }`}
                     style={profileCardStyle}
@@ -970,7 +971,7 @@ export default function ProfilePage() {
                       >
                         <Icon className="h-5 w-5 sm:h-7 sm:w-7 md:h-8 md:w-8 text-white" />
                       </div>
-                      <h3 className="text-sm sm:text-lg lg:text-xl font-bold text-slate-900 mb-1.5 sm:mb-2 flex-shrink-0 leading-snug line-clamp-2 pr-16 sm:pr-20">
+                      <h3 className="min-h-10 sm:min-h-14 text-sm sm:text-lg lg:text-xl font-bold text-slate-900 mb-1.5 sm:mb-2 flex-shrink-0 leading-snug line-clamp-2 pr-16 sm:pr-20">
                         {action.title}
                       </h3>
                       <p className="text-sm sm:text-base text-slate-600 flex-grow leading-relaxed">
@@ -989,14 +990,14 @@ export default function ProfilePage() {
                     <button
                       key={action.id}
                       onClick={() => setIsReviewModalOpen(true)}
-                      className="w-full text-left"
+                      className="h-full w-full text-left"
                     >
                       {card}
                     </button>
                   );
                 }
                 return (
-                  <Link key={action.id} href={action.href}>
+                  <Link key={action.id} href={action.href} className="block h-full">
                     {card}
                   </Link>
                 );

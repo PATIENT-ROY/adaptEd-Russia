@@ -26,16 +26,6 @@ import type { User as UserType } from "@/types";
 import { RUSSIAN_CITIES } from "@/constants/russianCities";
 import { RUSSIAN_UNIVERSITIES } from "@/constants/universities";
 
-const POPULAR_RUSSIAN_CITIES = [
-  "Москва",
-  "Санкт-Петербург",
-  "Екатеринбург",
-  "Казань",
-  "Новосибирск",
-  "Нижний Новгород",
-  "Краснодар",
-  "Ростов-на-Дону",
-];
 
 const POPULAR_RUSSIAN_UNIVERSITIES = [
   "МГУ имени М.В. Ломоносова",
@@ -147,8 +137,8 @@ export function ProfileEditForm({
             .replace(/ё/g, "е")
             .includes(query),
         )
-      : POPULAR_RUSSIAN_CITIES;
-    return source.slice(0, 8);
+      : RUSSIAN_CITIES;
+    return source;
   }, [formData.city]);
 
   const universitySuggestions = useMemo(() => {

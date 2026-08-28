@@ -10,6 +10,7 @@ export default function sitemap(): MetadataRoute.Sitemap {
     ["/life-guide", "weekly", 0.9],
     ["/education/student-slang", "monthly", 0.7],
     ["/education/translation-centers", "monthly", 0.7],
+    ["/education/schedule", "monthly", 0.7],
     ["/support", "monthly", 0.6],
     ["/privacy-policy", "yearly", 0.3],
     ["/personal-data-consent", "yearly", 0.3],
@@ -18,7 +19,6 @@ export default function sitemap(): MetadataRoute.Sitemap {
   const pages: MetadataRoute.Sitemap = staticPages.map(
     ([path, changeFrequency, priority]) => ({
       url: `${SITE_URL}${path}`,
-      lastModified: new Date(),
       changeFrequency,
       priority,
     }),

@@ -23,6 +23,17 @@
         --input: 214.3 31.8% 91.4%;
         --ring: 221.2 83.2% 53.3%;
         --radius: 0.75rem;
+        --app-navigation-height: 3.5rem;
+        --app-safe-area-top: max(
+            env(safe-area-inset-top, 0px),
+            var(--tg-content-safe-area-inset-top, 0px)
+        );
+    }
+
+    @media (min-width: 640px) {
+        :root {
+            --app-navigation-height: 4rem;
+        }
     }
 }
 
@@ -129,9 +140,14 @@
     left: 0;
     right: 0;
     z-index: 50;
-    background: rgba(255, 255, 255, 0.92);
+    padding-top: var(--app-safe-area-top);
+    background: rgba(255, 255, 255, 0.96);
     border-bottom: 1px solid rgba(226, 232, 240, 0.8);
     box-shadow: 0 4px 6px -1px rgba(0, 0, 0, 0.1);
+}
+
+.app-main {
+    padding-top: calc(var(--app-navigation-height) + var(--app-safe-area-top));
 }
 
 .modern-nav-item {
