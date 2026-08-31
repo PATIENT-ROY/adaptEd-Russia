@@ -841,7 +841,7 @@ export default function HomePage() {
                 <div className="flex flex-col gap-6 border-b border-slate-200 pb-8 sm:flex-row sm:items-center">
                   <div className="h-20 w-20 shrink-0 overflow-hidden rounded-full bg-slate-100 ring-4 ring-blue-50 sm:h-24 sm:w-24">
                     <Image
-                      src="/founder-imahe/IMG_0654.jpeg"
+                      src="/founder-image/IMG_0654.jpeg"
                       alt={t("home.about.avatarAlt")}
                       width={160}
                       height={160}
