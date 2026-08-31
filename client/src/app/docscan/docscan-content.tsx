@@ -394,23 +394,6 @@ export function DocScanContent() {
     URL.revokeObjectURL(url);
   }, [translatedText, result?.text]);
 
-  const downloadAsPdf = useCallback(() => {
-    const text = translatedText || result?.text;
-    if (!text) return;
-    const blob = new Blob(
-      [
-        `<html><head><meta charset="utf-8"><title>DocScan</title></head><body style="font-family:Arial;padding:20px;"><pre style="white-space:pre-wrap;">${text}</pre></body></html>`,
-      ],
-      { type: "text/html" }
-    );
-    const url = URL.createObjectURL(blob);
-    const a = document.createElement("a");
-    a.href = url;
-    a.download = translatedText ? "docscan-translated.html" : "docscan-result.html";
-    a.click();
-    URL.revokeObjectURL(url);
-  }, [translatedText, result?.text]);
-
   const handleTranslate = useCallback(async () => {
     if (!result?.text) return;
     setIsTranslating(true);
@@ -799,14 +782,6 @@ export function DocScanContent() {
                   >
                     <Download className="mr-2 h-4 w-4" />
                     {t("docscan.download.txt")}
-                  </Button>
-                  <Button
-                    onClick={downloadAsPdf}
-                    variant="outline"
-                    className="flex-1 border-2 rounded-xl py-3 sm:py-4"
-                  >
-                    <Download className="mr-2 h-4 w-4" />
-                    {t("docscan.download.pdf")}
                   </Button>
                 </div>
               </div>

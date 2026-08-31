@@ -8,6 +8,7 @@ import {
   User,
   UpdateProfileRequest,
   Reminder,
+  ReminderQuota,
   Note,
   NoteParseResult,
   Guide,
@@ -109,6 +110,10 @@ class ApiClient {
       DELETE_RATE_LIMITED: 'api.error.tooManyDeletes',
       PAYMENT_RATE_LIMITED: 'api.error.tooManyPayments',
     };
+    if (serverMessage === "LIMIT_FREEMIUM" || serverMessage === "LIMIT_PREMIUM") {
+      return serverMessage;
+    }
+
     if (serverMessage && codeKey[serverMessage]) {
       return this.tr(codeKey[serverMessage]);
     }
@@ -351,6 +356,11 @@ class ApiClient {
   async getReminders(): Promise<Reminder[]> {
     const response = await this.requestWithRetry<Reminder[]>('/reminders');
     return this.ensureData(response, 'Не удалось загрузить напоминания');
+  }
+
+  async getReminderQuota(): Promise<ReminderQuota> {
+    const response = await this.requestWithRetry<ReminderQuota>('/reminders/quota');
+    return this.ensureData(response, 'Не удалось загрузить лимит уведомлений');
   }
 
   async createReminder(data: Omit<Reminder, 'id' | 'createdAt' | 'updatedAt' | 'userId'>): Promise<Reminder> {

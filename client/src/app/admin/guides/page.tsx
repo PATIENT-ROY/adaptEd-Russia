@@ -23,7 +23,8 @@ import Link from "next/link";
 import { useAuth } from "@/contexts/AuthContext";
 import { useState, useEffect } from "react";
 import { Role } from "@/types";
-import { fetchAdminGuides, type AdminGuideRow } from "@/lib/admin-api";
+import { fetchAdminGuideStats, type AdminGuideRow } from "@/lib/admin-api";
+import { mergeAdminGuides } from "@/lib/admin-guide-catalog";
 
 const statusColors: Record<string, string> = {
   published: "bg-green-100 text-green-700",
@@ -32,7 +33,17 @@ const statusColors: Record<string, string> = {
 };
 
 function guidePublicHref(guide: AdminGuideRow) {
-  return guide.category === "life" ? "/life-guide" : "/education-guide";
+  if (guide.href) return guide.href;
+  const section = guide.category === "education" ? "education" : "life";
+  return `/guides/${section}/${encodeURIComponent(guide.id)}`;
+}
+
+function guideRowKey(guide: AdminGuideRow) {
+  return guide.rowKey ?? `${guide.category}:${guide.id}`;
+}
+
+function guidePreview(content: string) {
+  return content.replace(/^#+\s+/m, "").replace(/\s+/g, " ").trim().slice(0, 60);
 }
 
 export default function AdminGuidesPage() {
@@ -48,7 +59,9 @@ function AdminGuidesContent() {
   const { t } = useTranslation();
   const isAdmin = user?.role === Role.ADMIN;
 
-  const [guides, setGuides] = useState<AdminGuideRow[]>([]);
+  const [guides, setGuides] = useState<AdminGuideRow[]>(() =>
+    mergeAdminGuides([], []),
+  );
   const [guidesLoading, setGuidesLoading] = useState(true);
   const [searchTerm, setSearchTerm] = useState("");
   const [statusFilter, setStatusFilter] = useState("all");
@@ -60,10 +73,13 @@ function AdminGuidesContent() {
     (async () => {
       setGuidesLoading(true);
       try {
-        const data = await fetchAdminGuides();
-        if (!cancelled) setGuides(data);
+        const stats = await fetchAdminGuideStats();
+        if (!cancelled) {
+          setGuides(mergeAdminGuides(stats.reads, stats.dbGuides));
+        }
       } catch (error) {
         console.error("Failed to load admin guides:", error);
+        if (!cancelled) setGuides(mergeAdminGuides([], []));
       } finally {
         if (!cancelled) setGuidesLoading(false);
       }
@@ -184,7 +200,7 @@ function AdminGuidesContent() {
         <Card>
           <CardHeader>
             <CardTitle>
-              {t("admin.guides.table.title")} ({guidesLoading ? "…" : filteredGuides.length})
+              {t("admin.guides.table.title")} ({filteredGuides.length})
             </CardTitle>
           </CardHeader>
           <CardContent>
@@ -212,7 +228,7 @@ function AdminGuidesContent() {
                 <tbody>
                   {filteredGuides.map((guide) => (
                     <tr
-                      key={guide.id}
+                      key={guideRowKey(guide)}
                       className="border-b border-gray-100 hover:bg-gray-50"
                     >
                       <td className="py-3 px-4">
@@ -225,7 +241,7 @@ function AdminGuidesContent() {
                               {guide.title}
                             </p>
                             <p className="text-sm text-gray-600 truncate">
-                              {guide.content.substring(0, 60)}...
+                              {guidePreview(guide.content)}...
                             </p>
                             <div className="flex items-center space-x-2 mt-1">
                               {guide.tags.slice(0, 2).map((tag) => (
@@ -269,7 +285,7 @@ function AdminGuidesContent() {
                       <td className="py-3 px-4">
                         <div className="text-sm">
                           <p className="text-gray-900">
-                            {guide.views} {t("admin.guides.activity.views")}
+                            {guidesLoading ? "…" : guide.views} {t("admin.guides.activity.views")}
                           </p>
                           <p className="text-gray-600">
                             {t("admin.guides.activity.author")}: {guide.author}
@@ -344,7 +360,9 @@ function AdminGuidesContent() {
                     {t("admin.guides.stats.totalViews")}
                   </p>
                   <p className="text-xl font-bold text-gray-900">
-                    {guides.reduce((sum, guide) => sum + guide.views, 0)}
+                    {guidesLoading
+                      ? "…"
+                      : guides.reduce((sum, guide) => sum + guide.views, 0)}
                   </p>
                 </div>
               </div>

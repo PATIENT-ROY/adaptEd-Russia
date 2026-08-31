@@ -8,7 +8,6 @@ import { useBodyScrollLock } from "@/hooks/useBodyScrollLock";
 
 const TEXT_MIN = 20;
 const TEXT_MAX = 500;
-const PLACEHOLDER = "Например: Понравились гайды про сессию и напоминания…";
 
 interface ReviewModalProps {
   isOpen: boolean;
@@ -111,7 +110,7 @@ export function ReviewModal({
             <RatingStars value={rating} onChange={setRating} />
           </div>
           {ratingTouched && !ratingValid && (
-            <p className="mt-1 text-xs text-amber-600">Выберите рейтинг</p>
+            <p className="mt-1 text-xs text-amber-600">{tt("profile.review.modal.ratingRequired", "Выберите рейтинг")}</p>
           )}
         </div>
         <div className="mb-4">
@@ -121,7 +120,7 @@ export function ReviewModal({
           <textarea
             maxLength={TEXT_MAX}
             rows={4}
-            placeholder={PLACEHOLDER}
+            placeholder={tt("profile.review.modal.placeholder", "Например: Понравились гайды про сессию и напоминания…")}
             className="w-full border border-gray-300 rounded-md p-2 focus:ring-2 focus:ring-blue-500"
             value={text}
             onChange={(e) => setText(e.target.value)}
@@ -129,7 +128,7 @@ export function ReviewModal({
           <div className="mt-1 flex justify-between items-center">
             {textTrimmed.length > 0 && textTrimmed.length < TEXT_MIN && (
               <p className="text-xs text-amber-600">
-                Минимум {TEXT_MIN} символов
+                {tt("profile.review.modal.minChars", "Минимум {n} символов").replace("{n}", String(TEXT_MIN))}
               </p>
             )}
             <span className="text-xs text-gray-500 ml-auto">

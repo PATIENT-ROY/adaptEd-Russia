@@ -37,8 +37,6 @@ const createMockPayment = (amount: number, description: string, metadata?: Recor
 
 // Функция для создания платежа
 export const createPayment = async (amount: number, description: string, metadata?: Record<string, string>) => {
-  console.log('Creating test payment:', { amount, description, metadata });
-  
   // Имитируем задержку сети
   await new Promise(resolve => setTimeout(resolve, 500));
   
@@ -47,8 +45,6 @@ export const createPayment = async (amount: number, description: string, metadat
 
 // Функция для получения информации о платеже
 export const getPayment = async (paymentId: string) => {
-  console.log('Getting test payment:', paymentId);
-  
   await new Promise(resolve => setTimeout(resolve, 300));
   
   return {
@@ -67,8 +63,6 @@ export const getPayment = async (paymentId: string) => {
 
 // Функция для отмены платежа
 export const cancelPayment = async (paymentId: string) => {
-  console.log('Canceling test payment:', paymentId);
-  
   await new Promise(resolve => setTimeout(resolve, 300));
   
   return {
@@ -79,8 +73,6 @@ export const cancelPayment = async (paymentId: string) => {
 
 // Функция для проверки статуса платежа
 export const checkPaymentStatus = async (paymentId: string) => {
-  console.log('Checking test payment status:', paymentId);
-  
   await new Promise(resolve => setTimeout(resolve, 200));
   
   return {

@@ -7,10 +7,12 @@ import { useTranslation } from "@/hooks/useTranslation";
 import { useBodyScrollLock } from "@/hooks/useBodyScrollLock";
 import { PREMIUM_CHECKOUT_PATH } from "@/constants/routes";
 import { ProtectedRoute } from "@/components/auth/ProtectedRoute";
+import { FeaturePreviewGate } from "@/components/auth/FeaturePreviewGate";
 import {
   User,
   Mail,
   Calendar,
+  CalendarClock,
   Crown,
   Settings,
   Bell,
@@ -54,8 +56,6 @@ import { useAuth } from "@/contexts/AuthContext";
 import {
   fetchProfileOverview,
   API_BASE_URL,
-  applyPremium,
-  fixMyPlan,
   getPayment,
 } from "@/lib/api";
 import {
@@ -65,6 +65,7 @@ import {
   ProfileOverview,
   ProfileQuickAction,
   ProfileBillingItem,
+  ProfileActivityItem,
   Role,
   Language,
 } from "@/types";
@@ -73,6 +74,9 @@ import { ProfileAccountSettings } from "@/components/ui/profile-account-settings
 import { ProfileEditForm } from "@/components/ui/profile-edit-form";
 import { ReviewModal } from "@/components/ReviewModal";
 import { localizePaymentDescription } from "@/lib/payment-i18n";
+import { guideArticlePath } from "@/lib/guide-routes";
+import { educationGuides } from "@/data/education-guides";
+import { lifeGuides } from "@/data/life-guides";
 
 interface ExtendedUser extends UserType {
   university?: string;
@@ -137,6 +141,7 @@ const iconMap = {
   FileText,
   Target,
   MessageSquare,
+  CalendarClock,
   BookOpen,
   Bell,
   ScanLine,
@@ -297,7 +302,41 @@ function SettingsPanel({
   );
 }
 
-export default function ProfilePage() {
+function resolveGuideFromActivity(item: {
+  meta?: Record<string, unknown>;
+}) {
+  const type = item.meta?.guideType;
+  const id = item.meta?.guideId;
+  if (typeof type !== "string" || typeof id !== "string") {
+    return null;
+  }
+  const list = type === "life" ? lifeGuides : educationGuides;
+  return list.find((guide) => guide.id === id) ?? null;
+}
+
+function activityGuideHref(activity: ProfileActivityItem): string {
+  const type = activity.meta?.guideType;
+  const id = activity.meta?.guideId;
+  const guide = resolveGuideFromActivity(activity);
+  if (guide) return guideArticlePath(guide);
+  if ((type === "life" || type === "education") && typeof id === "string") {
+    return `/guides/${type}/${encodeURIComponent(id)}`;
+  }
+  return type === "life" ? "/life-guide" : "/education-guide";
+}
+
+function ProfilePreviewFallback() {
+  const { t } = useTranslation();
+  return (
+    <FeaturePreviewGate
+      featureName={t("profile.preview.feature")}
+      previewTitle={t("profile.preview.title")}
+      previewText={t("profile.preview.text")}
+    />
+  );
+}
+
+function ProfileContent() {
   const router = useRouter();
   const [isSettingsOpen, setIsSettingsOpen] = useState(false);
   const [isEditFormVisible, setIsEditFormVisible] = useState(false);
@@ -351,40 +390,48 @@ export default function ProfilePage() {
       },
       {
         id: "education-guide",
-        title: t("home.features.navigator"),
-        description: t("home.features.navigator.desc"),
+        title: t("profile.quickAction.educationGuide.title"),
+        description: t("profile.quickAction.educationGuide.desc"),
         icon: "BookOpen",
         color: "from-blue-500 to-blue-600",
         href: "/education-guide",
       },
       {
+        id: "life-guide",
+        title: t("profile.quickAction.lifeGuide.title"),
+        description: t("profile.quickAction.lifeGuide.desc"),
+        icon: "Home",
+        color: "from-emerald-500 to-teal-600",
+        href: "/life-guide",
+      },
+      {
         id: "smart-reminders",
-        title: t("home.features.reminders"),
-        description: t("home.features.reminders.desc"),
-        icon: "Sparkles",
+        title: t("profile.quickAction.reminders.title"),
+        description: t("profile.quickAction.reminders.desc"),
+        icon: "CalendarClock",
         color: "from-purple-500 to-indigo-600",
         href: "/reminders",
       },
       {
         id: "ai-assistant",
-        title: "AdaptEd AI",
-        description: t("home.features.ai.desc"),
-        icon: "MessageSquare",
-        color: "from-orange-500 to-orange-600",
+        title: t("profile.quickAction.ai.title"),
+        description: t("profile.quickAction.ai.desc"),
+        icon: "Sparkles",
+        color: "from-violet-500 to-indigo-600",
         href: "/ai-helper",
       },
       {
         id: "docscan",
-        title: t("home.features.docscan"),
-        description: t("home.features.docscan.desc"),
+        title: t("profile.quickAction.docscan.title"),
+        description: t("profile.quickAction.docscan.desc"),
         icon: "ScanLine",
         color: "from-indigo-500 to-indigo-600",
         href: "/docscan",
       },
       {
         id: "community",
-        title: t("home.features.community"),
-        description: t("home.features.community.desc"),
+        title: t("dashboard.quickActions.community.title"),
+        description: t("dashboard.quickActions.community.description"),
         icon: "Users",
         color: "from-pink-500 to-rose-600",
         href: "/community/questions",
@@ -611,13 +658,11 @@ export default function ProfilePage() {
 
   if (!mergedUser) {
     return (
-      <ProtectedRoute>
         <Layout>
           <div className="min-h-[40vh] flex items-center justify-center">
             <div className="animate-spin rounded-full h-10 w-10 border-2 border-blue-600 border-t-transparent" />
           </div>
         </Layout>
-      </ProtectedRoute>
     );
   }
 
@@ -661,6 +706,7 @@ export default function ProfilePage() {
   const localizeActivityTitle = (item: {
     type: string;
     title: string;
+    meta?: Record<string, unknown>;
   }): string => {
     const prefixes: Record<string, { key: string; ru: string[] }> = {
       task: {
@@ -679,6 +725,10 @@ export default function ProfilePage() {
         key: "profile.activity.payment",
         ru: ["Платёж: ", "Платеж: "],
       },
+      guide: {
+        key: "profile.activity.guide",
+        ru: ["Прочитан гайд: "],
+      },
     };
     const cfg = prefixes[item.type];
     if (!cfg) return item.title;
@@ -688,6 +738,9 @@ export default function ProfilePage() {
         subject = subject.slice(p.length);
         break;
       }
+    }
+    if (item.type === "guide") {
+      subject = resolveGuideFromActivity(item)?.title ?? subject;
     }
     return t(cfg.key).replace("{title}", subject);
   };
@@ -748,7 +801,6 @@ export default function ProfilePage() {
   const billingHistoryData = profileOverview?.billingHistory ?? [];
 
   return (
-    <ProtectedRoute>
     <Layout>
       <div className="min-h-screen">
         {/* Hero Section */}
@@ -769,7 +821,7 @@ export default function ProfilePage() {
                   {avatarUrl ? (
                     <Image
                       src={avatarUrl}
-                      alt="Avatar"
+                      alt={t("profile.avatar.alt")}
                       width={128}
                       height={128}
                       className="w-full h-full object-cover"
@@ -843,29 +895,6 @@ export default function ProfilePage() {
                         <Zap className="mr-1 sm:mr-2 h-3 w-3 sm:h-4 sm:w-4 md:h-5 md:w-5" />
                         {t("home.pricing.freemium")}
                       </span>
-                      {billingHistoryData.some((inv) => inv.status === "paid") && (
-                        <Button
-                          size="sm"
-                          variant="outline"
-                          className="border-white/50 text-white hover:bg-white/20 text-xs"
-                          onClick={async () => {
-                            try {
-                              await fixMyPlan();
-                              showToast(t("profile.plan.premiumApplied"));
-                              await loadProfileOverview();
-                              setTimeout(() => window.location.reload(), 500);
-                            } catch (e) {
-                              showToast(
-                                e instanceof Error
-                                  ? e.message
-                                  : t("profile.error.generic"),
-                              );
-                            }
-                          }}
-                        >
-                          {t("profile.plan.fixPlan")}
-                        </Button>
-                      )}
                     </span>
                   )}
                 </div>
@@ -929,7 +958,7 @@ export default function ProfilePage() {
             <h2 className="text-xl sm:text-2xl font-bold text-slate-900 mb-4 sm:mb-6">
               {t("profile.quickActions.title")}
             </h2>
-            <div className="grid auto-rows-fr grid-cols-1 sm:grid-cols-2 lg:grid-cols-3 gap-3 sm:gap-4 lg:gap-6">
+            <div className="grid auto-rows-fr grid-cols-1 sm:grid-cols-2 lg:grid-cols-3 gap-3 sm:gap-4">
               {customQuickActions.map((action) => {
                 const Icon = getIconByName(action.icon);
                 const isReviewAction = action.id === "leave-review";
@@ -953,32 +982,36 @@ export default function ProfilePage() {
                         : null;
                 const card = (
                   <Card
-                    className={`${profileCardClass} cursor-pointer h-full min-h-[15rem] sm:min-h-[18rem] ${
+                    className={`${profileCardClass} cursor-pointer h-full hover:-translate-y-0.5 transition-transform ${
                       isProfileLoading ? "animate-pulse" : ""
                     }`}
                     style={profileCardStyle}
                   >
-                    <CardContent className="p-4 sm:p-6 relative z-10 flex flex-col h-full">
+                    <CardContent className="p-4 sm:p-5 relative z-10">
                       {statusBadge && (
                         <span
-                          className={`absolute top-2.5 right-2.5 sm:top-4 sm:right-4 inline-flex items-center px-2 py-0.5 rounded-full text-xs font-medium ${statusBadge.className}`}
+                          className={`absolute top-2.5 right-2.5 inline-flex items-center px-2 py-0.5 rounded-full text-xs font-medium ${statusBadge.className}`}
                         >
                           {statusBadge.label}
                         </span>
                       )}
-                      <div
-                        className={`w-11 h-11 sm:w-14 sm:h-14 md:w-16 md:h-16 rounded-xl sm:rounded-2xl bg-gradient-to-br ${action.color} flex items-center justify-center mb-3 sm:mb-4 shadow-lg flex-shrink-0`}
-                      >
-                        <Icon className="h-5 w-5 sm:h-7 sm:w-7 md:h-8 md:w-8 text-white" />
+                      <div className="flex items-start gap-3.5 sm:gap-4">
+                        <div
+                          className={`w-11 h-11 sm:w-12 sm:h-12 rounded-xl bg-gradient-to-br ${action.color} flex items-center justify-center shadow-md shrink-0`}
+                        >
+                          <Icon className="h-5 w-5 sm:h-6 sm:w-6 text-white" />
+                        </div>
+                        <div className="min-w-0 pr-12">
+                          <h3 className="text-base sm:text-lg font-semibold text-slate-900 leading-snug line-clamp-2">
+                            {action.title}
+                          </h3>
+                          <p className="mt-1 text-sm text-slate-600 leading-snug line-clamp-2">
+                            {action.description}
+                          </p>
+                        </div>
                       </div>
-                      <h3 className="min-h-10 sm:min-h-14 text-sm sm:text-lg lg:text-xl font-bold text-slate-900 mb-1.5 sm:mb-2 flex-shrink-0 leading-snug line-clamp-2 pr-16 sm:pr-20">
-                        {action.title}
-                      </h3>
-                      <p className="text-sm sm:text-base text-slate-600 flex-grow leading-relaxed">
-                        {action.description}
-                      </p>
                       {review?.status === "APPROVED" && isReviewAction && (
-                        <p className="mt-2 text-sm text-green-700 bg-green-50 rounded-lg px-2 py-1.5">
+                        <p className="mt-2 text-xs sm:text-sm text-green-700 bg-green-50 rounded-lg px-2 py-1">
                           {t("profile.review.status.approved")}
                         </p>
                       )}
@@ -1155,29 +1188,6 @@ export default function ProfilePage() {
                               </div>
 
                               <div className="flex space-x-1 sm:space-x-2 flex-shrink-0">
-                                {invoice.status === "pending" && (
-                                  <Button
-                                    variant="outline"
-                                    size="sm"
-                                    className="text-xs px-2 py-1 h-7 sm:h-8 hover:bg-green-50 hover:border-green-300 hover:text-green-700"
-                                    onClick={async () => {
-                                      try {
-                                        await applyPremium(invoice.id);
-                                        showToast(t("profile.plan.premiumApplied"));
-                                        await loadProfileOverview();
-                                        setTimeout(() => window.location.reload(), 500);
-                                      } catch (e) {
-                                        showToast(
-                                          e instanceof Error
-                                            ? e.message
-                                            : t("profile.error.generic"),
-                                        );
-                                      }
-                                    }}
-                                  >
-                                    {t("profile.billing.applyPremium")}
-                                  </Button>
-                                )}
                                 <Button
                                   variant="ghost"
                                   size="sm"
@@ -1347,7 +1357,7 @@ export default function ProfilePage() {
                                 activity.type === "task"
                               ? "/reminders"
                               : activity.type === "guide"
-                                ? "/education-guide"
+                                ? activityGuideHref(activity)
                                 : activity.type === "payment"
                                   ? null
                                   : "/dashboard";
@@ -1671,6 +1681,13 @@ export default function ProfilePage() {
         )}
       </div>
     </Layout>
+  );
+}
+
+export default function ProfilePage() {
+  return (
+    <ProtectedRoute fallback={<ProfilePreviewFallback />}>
+      <ProfileContent />
     </ProtectedRoute>
   );
 }

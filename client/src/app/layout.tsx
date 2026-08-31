@@ -7,6 +7,7 @@ import { ConditionalFooter } from "@/components/layout/conditional-footer";
 import { HtmlLang } from "@/components/language/html-lang";
 import { CookieConsent } from "@/components/ui/cookie-consent";
 import { ErrorBoundary } from "@/components/auth/ErrorBoundary";
+import { YandexMetrika } from "@/components/analytics/yandex-metrika";
 
 export const metadata: Metadata = {
   title: {
@@ -88,6 +89,7 @@ export default function RootLayout({
           <AuthProvider>
             <LanguageProvider>
               <HtmlLang />
+              <YandexMetrika />
               <NotificationsWrapper>
                 {children}
                 <ConditionalFooter />

@@ -40,37 +40,37 @@ interface GuideSuggestion {
 }
 
 const GUIDE_DATABASE: GuideSuggestion[] = [
-  { title: 'Словарь студенческого сленга', url: '/education-guide', category: 'education', keywords: ['сленг', 'слова', 'термин', 'пара', 'хвост', 'автомат', 'стипуха', 'slang'] },
-  { title: 'Как проходит обучение в вузе', url: '/education-guide', category: 'education', keywords: ['обучение', 'семестр', 'лекция', 'семинар', 'учебный процесс', 'пары', 'университет', 'разобраться с университетом', 'как устроен вуз', 'международный отдел', 'деканат', 'кампус', 'структура вуза'], summary: 'В российском вузе обычно помогают: куратор, международный отдел, деканат/кафедра. Разберитесь с расписанием, личным кабинетом, правилами посещения и контактами поддержки.' },
-  { title: 'Разница между экзаменом и зачётом', url: '/education-guide', category: 'education', keywords: ['экзамен', 'зачёт', 'зачет', 'оценка', 'балл', 'пятёрка'] },
-  { title: 'Как подготовиться к сессии', url: '/education-guide', category: 'education', keywords: ['сессия', 'подготовка', 'готовиться', 'конспект', 'шпаргалка', 'пересдача'] },
-  { title: 'Как написать курсовую работу', url: '/education-guide', category: 'education', keywords: ['курсовая', 'курсовой', 'научная работа', 'оформление', 'введение', 'заключение', 'диплом', 'дипломная'] },
-  { title: 'Оформление документов для вуза', url: '/education-guide', category: 'education', keywords: ['справка', 'заявление', 'деканат', 'приёмная', 'ведомость'] },
-  { title: 'Как не быть отчисленным', url: '/education-guide', category: 'education', keywords: ['отчисление', 'отчислен', 'долг', 'задолженность', 'пропуск', 'академическ'] },
-  { title: 'Стипендии и гранты', url: '/education-guide', category: 'education', keywords: ['стипендия', 'грант', 'финансовая помощь', 'выплата', 'бюджет'] },
-  { title: 'Расписание и учебный план', url: '/education-guide', category: 'education', keywords: ['расписание', 'график', 'учебный план', 'модуль', 'звонок'] },
-  { title: 'Как зарегистрироваться в общежитии', url: '/life-guide', category: 'life', keywords: ['общежитие', 'заселение', 'комната', 'жильё', 'проживание', 'dormitory', 'общага'] },
-  { title: 'Транспорт и проезд', url: '/life-guide', category: 'life', keywords: ['транспорт', 'метро', 'автобус', 'троллейбус', 'проезд', 'карта тройка', 'маршрут'] },
-  { title: 'Медицинская помощь', url: '/life-guide', category: 'life', keywords: ['врач', 'больница', 'поликлиника', 'страховка', 'медицина', 'здоровье', 'аптека', 'лекарств'] },
-  { title: 'Банки и финансы', url: '/life-guide', category: 'life', keywords: ['банк', 'карта', 'перевод', 'деньги', 'счёт', 'обмен', 'валюта', 'сбербанк'] },
-  { title: 'SIM-карта и связь', url: '/life-guide', category: 'life', keywords: ['sim', 'телефон', 'связь', 'интернет', 'оператор', 'тариф', 'мтс', 'билайн', 'мегафон'] },
+  { title: 'Словарь студенческого сленга', url: '/guides/education/slang-dictionary', category: 'education', keywords: ['сленг', 'слова', 'термин', 'пара', 'хвост', 'автомат', 'стипуха', 'slang'] },
+  { title: 'Как проходит обучение в вузе', url: '/guides/education/0-main', category: 'education', keywords: ['обучение', 'семестр', 'лекция', 'семинар', 'учебный процесс', 'пары', 'университет', 'разобраться с университетом', 'как устроен вуз', 'международный отдел', 'деканат', 'кампус', 'структура вуза'], summary: 'В российском вузе обычно помогают: куратор, международный отдел, деканат/кафедра. Разберитесь с расписанием, личным кабинетом, правилами посещения и контактами поддержки.' },
+  { title: 'Разница между экзаменом и зачётом', url: '/guides/education/0', category: 'education', keywords: ['экзамен', 'зачёт', 'зачет', 'оценка', 'балл', 'пятёрка'] },
+  { title: 'Как подготовиться к сессии', url: '/guides/education/1', category: 'education', keywords: ['сессия', 'подготовка', 'готовиться', 'конспект', 'шпаргалка', 'пересдача'] },
+  { title: 'Как написать курсовую работу', url: '/guides/education/4', category: 'education', keywords: ['курсовая', 'курсовой', 'научная работа', 'оформление', 'введение', 'заключение', 'диплом', 'дипломная'] },
+  { title: 'Оформление документов для вуза', url: '/guides/education/edu-academic-docs', category: 'education', keywords: ['справка', 'заявление', 'деканат', 'приёмная', 'ведомость'] },
+  { title: 'Как не быть отчисленным', url: '/guides/education/expulsion-academic', category: 'education', keywords: ['отчисление', 'отчислен', 'долг', 'задолженность', 'пропуск', 'академическ'] },
+  { title: 'Стипендии и гранты', url: '/education-guide?q=стипендия', category: 'education', keywords: ['стипендия', 'грант', 'финансовая помощь', 'выплата', 'бюджет'] },
+  { title: 'Расписание и учебный план', url: '/education-guide?q=расписание', category: 'education', keywords: ['расписание', 'график', 'учебный план', 'модуль', 'звонок'] },
+  { title: 'Как зарегистрироваться в общежитии', url: '/guides/life/1', category: 'life', keywords: ['общежитие', 'заселение', 'комната', 'жильё', 'проживание', 'dormitory', 'общага'] },
+  { title: 'Транспорт и проезд', url: '/guides/life/5', category: 'life', keywords: ['транспорт', 'метро', 'автобус', 'троллейбус', 'проезд', 'карта тройка', 'маршрут'] },
+  { title: 'Медицинская помощь', url: '/guides/life/4', category: 'life', keywords: ['врач', 'больница', 'поликлиника', 'страховка', 'медицина', 'здоровье', 'аптека', 'лекарств'] },
+  { title: 'Банки и финансы', url: '/guides/life/8', category: 'life', keywords: ['банк', 'карта', 'перевод', 'деньги', 'счёт', 'обмен', 'валюта', 'сбербанк'] },
+  { title: 'SIM-карта и связь', url: '/guides/life/sim-card', category: 'life', keywords: ['sim', 'телефон', 'связь', 'интернет', 'оператор', 'тариф', 'мтс', 'билайн', 'мегафон'] },
   {
     title: 'Регистрация и миграционный учёт',
-    url: '/life-guide',
+    url: '/guides/life/7',
     category: 'life',
     keywords: ['регистрация', 'миграц', 'виза', 'патент', 'разрешение', 'мвд', 'уфмс', 'учёт', 'migration'],
     summary: 'После приезда иностранный студент обычно проходит миграционный учёт (регистрацию по месту пребывания) через вуз/общежитие/принимающую сторону. Сроки и список документов уточняйте в международном отделе вуза и на официальных ресурсах МВД/Госуслуг.',
   },
   {
     title: 'Что делать после приезда',
-    url: '/life-guide',
+    url: '/life-guide#life-guide-arrival',
     category: 'life',
     keywords: ['после приезда', 'приехал', 'первый день', 'первые шаги', 'аэропорт', 'arrival'],
     summary: 'Чеклист после приезда: куратор/международный отдел, заселение/адрес, миграционный учёт, SIM, банк, страховка, кампус. Конкретные сроки зависят от вуза и региона.',
   },
   {
     title: 'Потеря паспорта',
-    url: '/life-guide',
+    url: '/guides/life/3',
     category: 'life',
     keywords: [
       'потерял паспорт',
@@ -397,7 +397,6 @@ async function generateAIResponse(options: AIOptions): Promise<string> {
   const DEEPSEEK_API_URL = 'https://api.deepseek.com/v1/chat/completions';
   const MAX_RETRIES = 3;
 
-  console.log('[AI] Generating response, history:', options.conversationHistory.length, 'messages');
   let lastError: Error | null = null;
 
   const messages = [
@@ -412,8 +411,6 @@ async function generateAIResponse(options: AIOptions): Promise<string> {
       console.error('[AI] No available DeepSeek API keys');
       break;
     }
-
-    console.log(`[AI] Attempt ${attempt + 1}/${MAX_RETRIES} with key: ${apiKey.substring(0, 10)}...`);
 
     try {
       const response = await fetch(DEEPSEEK_API_URL, {
@@ -458,7 +455,6 @@ async function generateAIResponse(options: AIOptions): Promise<string> {
         throw new Error('Empty AI response');
       }
 
-      console.log('[AI] Success:', aiResponse.substring(0, 100) + '...');
       return aiResponse;
     } catch (error) {
       lastError = error instanceof Error ? error : new Error(String(error));

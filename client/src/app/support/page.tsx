@@ -19,10 +19,10 @@ import { useTranslation } from "@/hooks/useTranslation";
 import { API_BASE_URL } from "@/lib/api";
 import type { FAQItem } from "@/types";
 import { Badge } from "@/components/ui/badge";
+import { Layout } from "@/components/layout/layout";
 import {
   MessageSquare,
   Mail,
-  Phone,
   Clock,
   HelpCircle,
   Send,
@@ -30,13 +30,14 @@ import {
   AlertCircle,
   FileText,
   Users,
-  Globe,
   Shield,
   ChevronDown,
   ChevronUp,
   Inbox,
   Reply,
 } from "lucide-react";
+
+const SUPPORT_EMAIL = "support@adaptedrussia.ru";
 
 interface SupportTicket {
   id: string;
@@ -227,25 +228,15 @@ export default function SupportPage() {
     {
       icon: Mail,
       title: t("support.contact.email.title"),
-      description: "support@adapted-russia.ru",
+      description: SUPPORT_EMAIL,
       response: t("support.contact.email.response"),
-    },
-    {
-      icon: Phone,
-      title: t("support.contact.phone.title"),
-      description: "+7 (800) 555-0123",
-      response: t("support.contact.phone.response"),
-    },
-    {
-      icon: MessageSquare,
-      title: t("support.contact.chat.title"),
-      description: t("support.contact.chat.description"),
-      response: t("support.contact.chat.response"),
+      href: `mailto:${SUPPORT_EMAIL}`,
     },
   ];
 
   if (isInitialLoading) {
     return (
+      <Layout>
       <div className="min-h-screen bg-gradient-to-br from-blue-50 via-white to-purple-50 py-8">
         <h1 className="sr-only">Поддержка иностранных студентов</h1>
         <div className="max-w-6xl mx-auto px-4 sm:px-6 lg:px-8">
@@ -304,10 +295,12 @@ export default function SupportPage() {
           </div>
         </div>
       </div>
+      </Layout>
     );
   }
 
   return (
+    <Layout>
     <div className="min-h-screen bg-gradient-to-br from-blue-50 via-white to-purple-50 py-8">
       <div className="max-w-6xl mx-auto px-4 sm:px-6 lg:px-8">
         {isSubmitted ? (
@@ -506,18 +499,15 @@ export default function SupportPage() {
                 <Card>
                   <CardHeader>
                     <CardTitle className="flex items-center gap-2">
-                      <Phone className="h-5 w-5" />
+                      <Mail className="h-5 w-5" />
                       {t("support.contact.title")}
                     </CardTitle>
                   </CardHeader>
                   <CardContent className="space-y-4">
                     {contactMethods.map((method) => {
                       const Icon = method.icon;
-                      return (
-                        <div
-                          key={method.title}
-                          className="flex items-start gap-3 p-3 rounded-lg bg-gray-50"
-                        >
+                      const body = (
+                        <>
                           <Icon className="h-5 w-5 text-blue-600 mt-0.5" />
                           <div>
                             <h4 className="font-medium text-gray-900">
@@ -530,6 +520,22 @@ export default function SupportPage() {
                               {method.response}
                             </p>
                           </div>
+                        </>
+                      );
+                      return method.href ? (
+                        <a
+                          key={method.title}
+                          href={method.href}
+                          className="flex items-start gap-3 p-3 rounded-lg bg-gray-50 transition hover:bg-gray-100"
+                        >
+                          {body}
+                        </a>
+                      ) : (
+                        <div
+                          key={method.title}
+                          className="flex items-start gap-3 p-3 rounded-lg bg-gray-50"
+                        >
+                          {body}
                         </div>
                       );
                     })}
@@ -720,31 +726,26 @@ export default function SupportPage() {
                   </CardTitle>
                 </CardHeader>
                 <CardContent>
-                  <div className="grid sm:grid-cols-2 lg:grid-cols-4 gap-4">
-                    <div className="text-center p-4 rounded-lg bg-blue-50">
+                  <div className="grid sm:grid-cols-2 lg:grid-cols-3 gap-4">
+                    <Link href="/education-guide" className="text-center p-4 rounded-lg bg-blue-50 transition hover:bg-blue-100">
                       <FileText className="h-8 w-8 text-blue-600 mx-auto mb-2" />
                       <h4 className="font-medium">{t("support.resources.docs")}</h4>
                       <p className="text-sm text-gray-600">
                         {t("support.resources.docsDesc")}
                       </p>
-                    </div>
-                    <div className="text-center p-4 rounded-lg bg-green-50">
+                    </Link>
+                    <Link href="/community/questions" className="text-center p-4 rounded-lg bg-green-50 transition hover:bg-green-100">
                       <Users className="h-8 w-8 text-green-600 mx-auto mb-2" />
                       <h4 className="font-medium">{t("support.resources.community")}</h4>
                       <p className="text-sm text-gray-600">{t("support.resources.communityDesc")}</p>
-                    </div>
-                    <div className="text-center p-4 rounded-lg bg-purple-50">
-                      <Globe className="h-8 w-8 text-purple-600 mx-auto mb-2" />
-                      <h4 className="font-medium">{t("support.resources.blog")}</h4>
-                      <p className="text-sm text-gray-600">{t("support.resources.blogDesc")}</p>
-                    </div>
-                    <div className="text-center p-4 rounded-lg bg-orange-50">
+                    </Link>
+                    <Link href="/privacy-policy" className="text-center p-4 rounded-lg bg-orange-50 transition hover:bg-orange-100">
                       <Shield className="h-8 w-8 text-orange-600 mx-auto mb-2" />
                       <h4 className="font-medium">{t("support.resources.security")}</h4>
                       <p className="text-sm text-gray-600">
                         {t("support.resources.securityDesc")}
                       </p>
-                    </div>
+                    </Link>
                   </div>
                 </CardContent>
               </Card>
@@ -753,5 +754,6 @@ export default function SupportPage() {
         )}
       </div>
     </div>
+    </Layout>
   );
 }

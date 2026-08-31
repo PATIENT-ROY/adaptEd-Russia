@@ -14,15 +14,16 @@ import {
   AlertTriangle,
   ArrowRight,
   Building2,
+  UserPlus,
 } from "lucide-react";
 import { useState, useMemo, useEffect, useCallback } from "react";
 import Link from "next/link";
-import { Guide } from "@/types";
 import { useTranslation } from "@/hooks/useTranslation";
 import { useGuideProgress } from "@/hooks/useGuideProgress";
 import { useGuideDeeplink } from "@/hooks/useGuideDeeplink";
 import { educationGuides } from "@/data/education-guides";
 import { HeroBackgroundImage } from "@/components/ui/hero-background-image";
+import { guideInEducationCategory, guideMatchesQuery } from "@/lib/guide-search";
 
 type Category = {
   id: string;
@@ -35,6 +36,7 @@ const categoriesConfig: Omit<Category, "name">[] = [
   { id: "papers", icon: BookOpen },
   { id: "documents", icon: FileText },
   { id: "structure", icon: Building2 },
+  { id: "admission", icon: UserPlus },
   { id: "expulsion-risks", icon: AlertTriangle },
 ];
 
@@ -56,6 +58,7 @@ const ENABLED_CATEGORY_IDS = new Set([
   "papers",
   "documents",
   "structure",
+  "admission",
   "expulsion-risks",
 ]);
 
@@ -64,6 +67,7 @@ const HERO_CATEGORY_IDS = new Set([
   "papers",
   "documents",
   "structure",
+  "admission",
   "expulsion-risks",
 ]);
 
@@ -138,82 +142,12 @@ export function EducationGuideContent() {
     }
   }, [selectedCategory]);
 
-  // Фильтрация гайдов
   const filteredGuides = useMemo(() => {
-    let filtered = articleGuides.filter((guide) => guide.isPublished);
-
-    // Фильтр по поиску
-    if (searchQuery.trim()) {
-      filtered = filtered.filter(
-        (guide) =>
-          guide.title.toLowerCase().includes(searchQuery.toLowerCase()) ||
-          guide.content.toLowerCase().includes(searchQuery.toLowerCase()) ||
-          guide.tags.some((tag) =>
-            tag.toLowerCase().includes(searchQuery.toLowerCase()),
-          ),
-      );
-    }
-
-    // Фильтр по категории
-    if (safeSelectedCategory !== "all") {
-      filtered = filtered.filter((guide) => {
-        switch (safeSelectedCategory) {
-          case "exams":
-            return guide.tags.some((tag) =>
-              ["сессия", "экзамены", "незачёт", "зачёт", "пересдача"].includes(
-                tag,
-              ),
-            );
-          case "papers":
-            return guide.tags.some((tag) =>
-              [
-                "курсовая",
-                "написание",
-                "исследование",
-                "научная работа",
-                "ГОСТ",
-              ].includes(tag),
-            );
-          case "documents":
-            // Только учебные документы вуза — миграция/виза/РВПО живут в «Быт»
-            return guide.tags.some((tag) =>
-              [
-                "учебные документы",
-                "справка",
-                "зачётка",
-                "студенческий",
-                "выписка",
-                "справка-вызов",
-                "академический отпуск",
-              ].includes(tag),
-            );
-          case "structure":
-            return guide.tags.some((tag) =>
-              ["структура", "кафедра", "ректорат", "для новичков"].includes(
-                tag,
-              ),
-            );
-          case "expulsion-risks":
-            return guide.tags.some((tag) =>
-              [
-                "отчисление",
-                "риски",
-                "неуспеваемость",
-                "посещаемость",
-                "долги",
-                "хвосты",
-                "восстановление",
-                "дисциплина",
-                "пропуски",
-              ].includes(tag),
-            );
-          default:
-            return true;
-        }
-      });
-    }
-
-    return filtered;
+    return articleGuides.filter((guide) => {
+      if (!guide.isPublished) return false;
+      if (searchQuery.trim() && !guideMatchesQuery(guide, searchQuery)) return false;
+      return guideInEducationCategory(guide, safeSelectedCategory);
+    });
   }, [searchQuery, safeSelectedCategory]);
 
   return (

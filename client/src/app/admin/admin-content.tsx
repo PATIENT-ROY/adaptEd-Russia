@@ -6,7 +6,7 @@ import { Button } from "@/components/ui/button";
 import {
   Users,
   BookOpen,
-  MessageSquare,
+  Sparkles,
   Bell,
   Shield,
   Activity,
@@ -18,11 +18,13 @@ import Link from "next/link";
 import { useAuth } from "@/contexts/AuthContext";
 import { Role } from "@/types";
 import { useTranslation } from "@/hooks/useTranslation";
-import { useEffect, useState } from "react";
+import { useEffect, useMemo, useState } from "react";
 import {
   fetchAdminDashboard,
   type AdminDashboardData,
 } from "@/lib/admin-api";
+import { lookupCatalogGuide } from "@/lib/admin-guide-catalog";
+import { TOTAL_GUIDES_COUNT } from "@/constants/content-stats";
 
 const cardClass = "border-0 shadow-xl backdrop-blur-sm bg-white/90";
 
@@ -64,7 +66,7 @@ export function AdminContent() {
     },
     {
       title: t("admin.dashboard.stats.guides"),
-      value: loading ? "…" : String(stats?.guides?.value ?? 0),
+      value: String(TOTAL_GUIDES_COUNT),
       change: stats?.guides?.change ?? "0%",
       period: t("admin.dashboard.stats.updated"),
       icon: BookOpen,
@@ -75,8 +77,8 @@ export function AdminContent() {
       value: loading ? "…" : String(stats?.ai?.value ?? 0),
       change: stats?.ai?.change ?? "0%",
       period: t("admin.dashboard.stats.perWeek"),
-      icon: MessageSquare,
-      color: "from-orange-500 to-orange-600",
+      icon: Sparkles,
+      color: "from-violet-500 to-indigo-600",
     },
     {
       title: t("admin.dashboard.stats.guideReads"),
@@ -89,7 +91,22 @@ export function AdminContent() {
   ];
 
   const recentUsers = dashboard?.recentUsers ?? [];
-  const recentGuides = dashboard?.recentGuides ?? [];
+  const recentGuides = useMemo(() => {
+    const fromReads = (dashboard?.topReads ?? []).map((row) => {
+      const type = row.guideType === "education" ? "education" : "life";
+      const catalog = lookupCatalogGuide(type, row.guideId);
+      return {
+        id: `${type}:${row.guideId}`,
+        title: catalog?.title ?? row.guideId,
+        category: type,
+        views: row.count,
+        status: catalog && !catalog.isPublished ? "draft" : "published",
+        createdAt: catalog?.updatedAt ?? "",
+      };
+    });
+    if (fromReads.length > 0) return fromReads;
+    return dashboard?.recentGuides ?? [];
+  }, [dashboard]);
   const ops = dashboard?.ops;
 
   const opsItems = [
@@ -123,7 +140,7 @@ export function AdminContent() {
     { title: t("admin.dashboard.actions.users"), description: t("admin.dashboard.actions.usersDesc"), icon: Users, href: "/admin/users", color: "from-blue-500 to-blue-600" },
     { title: t("admin.dashboard.actions.guides"), description: t("admin.dashboard.actions.guidesDesc"), icon: BookOpen, href: "/admin/guides", color: "from-green-500 to-green-600" },
     { title: t("admin.dashboard.actions.support"), description: t("admin.dashboard.actions.supportDesc"), icon: Bell, href: "/admin/support", color: "from-red-500 to-red-600" },
-    { title: t("admin.dashboard.actions.ai"), description: t("admin.dashboard.actions.aiDesc"), icon: MessageSquare, href: "/admin/ai-analytics", color: "from-orange-500 to-orange-600" },
+    { title: t("admin.dashboard.actions.ai"), description: t("admin.dashboard.actions.aiDesc"), icon: Sparkles, href: "/admin/ai-analytics", color: "from-violet-500 to-indigo-600" },
     { title: t("admin.dashboard.actions.docscan"), description: t("admin.dashboard.actions.docscanDesc"), icon: ScanLine, href: "/admin/docscan/analytics", color: "from-indigo-500 to-indigo-600" },
     { title: t("admin.dashboard.actions.community"), description: t("admin.dashboard.actions.communityDesc"), icon: Users, href: "/community/questions", color: "from-pink-500 to-rose-600" },
     { title: t("admin.dashboard.actions.reviews"), description: t("admin.dashboard.actions.reviewsDesc"), icon: Star, href: "/admin/reviews", color: "from-yellow-500 to-orange-500" },

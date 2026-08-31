@@ -14,8 +14,11 @@ import {
   ArrowLeft,
   Copy,
   CheckCircle2,
-  MessageSquare,
+  Sparkles,
   BookOpen,
+  UserMinus,
+  Trash2,
+  MailX,
 } from "lucide-react";
 import Link from "next/link";
 import { useAuth } from "@/contexts/AuthContext";
@@ -25,7 +28,7 @@ import { Language, Role } from "@/types";
 import { useTranslation } from "@/hooks/useTranslation";
 import { API_BASE_URL } from "@/lib/api";
 import { countrySuggestions } from "@/constants/countries";
-import { fetchAdminUsers, type AdminUserRow } from "@/lib/admin-api";
+import { fetchAdminUsers, revokeAdminInvite, demoteAdminUser, deleteAdminUser, type AdminUserRow } from "@/lib/admin-api";
 
 const statusColors: Record<string, string> = {
   active: "bg-green-100 text-green-700",
@@ -56,6 +59,7 @@ function AdminUsersContent() {
   const [usersLoading, setUsersLoading] = useState(true);
   const [searchTerm, setSearchTerm] = useState("");
   const [roleFilter, setRoleFilter] = useState("all");
+  const [statusFilter, setStatusFilter] = useState("all");
   const [isAddUserOpen, setIsAddUserOpen] = useState(false);
   const [newUser, setNewUser] = useState({
     name: "",
@@ -70,7 +74,14 @@ function AdminUsersContent() {
   const [isSubmitting, setIsSubmitting] = useState(false);
   const [copiedInvite, setCopiedInvite] = useState(false);
   const [inviteStatus, setInviteStatus] = useState<string>("");
-  useBodyScrollLock(isAddUserOpen);
+  const [pendingAction, setPendingAction] = useState<
+    null | { kind: "revoke" | "demote" | "delete"; user: AdminUserRow }
+  >(null);
+  const [deleteEmail, setDeleteEmail] = useState("");
+  const [actionBusy, setActionBusy] = useState(false);
+  const [actionError, setActionError] = useState("");
+  const [toast, setToast] = useState<string | null>(null);
+  useBodyScrollLock(isAddUserOpen || pendingAction !== null);
 
   const filteredUsers = useMemo(() => {
     return users.filter((user) => {
@@ -80,10 +91,12 @@ function AdminUsersContent() {
         user.country.toLowerCase().includes(searchTerm.toLowerCase());
 
       const matchesRole = roleFilter === "all" || user.role === roleFilter;
+      const matchesStatus =
+        statusFilter === "all" || user.status === statusFilter;
 
-      return matchesSearch && matchesRole;
+      return matchesSearch && matchesRole && matchesStatus;
     });
-  }, [users, searchTerm, roleFilter]);
+  }, [users, searchTerm, roleFilter, statusFilter]);
 
   useEffect(() => {
     if (!isAdmin) return;
@@ -202,6 +215,7 @@ function AdminUsersContent() {
         language: String(payload.data.user.language || "RU").toLowerCase(),
         role: String(payload.data.user.role || "STUDENT").toLowerCase(),
         status: "pending",
+        invitePending: true,
         registeredAt: new Date().toISOString().split("T")[0],
         lastLogin: "—",
         guidesRead: 0,
@@ -238,9 +252,68 @@ function AdminUsersContent() {
     }
   };
 
+  const closeActionModal = () => {
+    if (actionBusy) return;
+    setPendingAction(null);
+    setDeleteEmail("");
+    setActionError("");
+  };
+
+  const showToast = (message: string) => {
+    setToast(message);
+    window.setTimeout(() => setToast(null), 3500);
+  };
+
+  const runPendingAction = async () => {
+    if (!pendingAction) return;
+    const target = pendingAction.user;
+    setActionBusy(true);
+    setActionError("");
+    try {
+      if (pendingAction.kind === "revoke") {
+        const result = await revokeAdminInvite(target.id);
+        if (result.data.deleted) {
+          setUsers((prev) => prev.filter((row) => row.id !== target.id));
+        } else if (result.data.user) {
+          setUsers((prev) =>
+            prev.map((row) => (row.id === target.id ? result.data.user! : row)),
+          );
+        }
+        showToast(result.message || t("admin.users.toast.revoked"));
+      } else if (pendingAction.kind === "demote") {
+        const result = await demoteAdminUser(target.id);
+        if (result.data.user) {
+          setUsers((prev) =>
+            prev.map((row) => (row.id === target.id ? result.data.user : row)),
+          );
+        }
+        showToast(result.message || t("admin.users.toast.demoted"));
+      } else {
+        const result = await deleteAdminUser(target.id, deleteEmail.trim());
+        if (result.data.deleted) {
+          setUsers((prev) => prev.filter((row) => row.id !== target.id));
+        }
+        showToast(result.message || t("admin.users.toast.deleted"));
+      }
+      setPendingAction(null);
+      setDeleteEmail("");
+    } catch (error) {
+      setActionError(error instanceof Error ? error.message : t("admin.users.actions.failed"));
+    } finally {
+      setActionBusy(false);
+    }
+  };
+
+  const adminCount = users.filter((row) => row.role === "admin").length;
+
   return (
     <Layout>
       <div className="space-y-6 sm:space-y-8">
+        {toast && (
+          <div className="rounded-xl bg-emerald-50 text-emerald-800 px-4 py-3 text-sm">
+            {toast}
+          </div>
+        )}
         {/* Header */}
         <div className="bg-white rounded-2xl sm:rounded-3xl p-4 sm:p-6 shadow-sm">
           <div className="flex flex-col sm:flex-row sm:items-center justify-between space-y-4 sm:space-y-0">
@@ -302,6 +375,18 @@ function AdminUsersContent() {
               </select>
                 <ChevronDown className="h-4 w-4 text-gray-400 pointer-events-none absolute right-3 top-1/2 -translate-y-1/2" />
               </div>
+              <div className="relative w-full sm:w-48">
+              <select
+                value={statusFilter}
+                onChange={(e) => setStatusFilter(e.target.value)}
+                  className="w-full appearance-none px-3 py-2 pr-9 border border-slate-300 rounded-lg focus:ring-2 focus:ring-blue-500 focus:border-blue-500"
+              >
+                <option value="all">{t("admin.users.filters.status.all")}</option>
+                <option value="active">{t("admin.users.filters.status.active")}</option>
+                <option value="pending">{t("admin.users.filters.status.pending")}</option>
+              </select>
+                <ChevronDown className="h-4 w-4 text-gray-400 pointer-events-none absolute right-3 top-1/2 -translate-y-1/2" />
+              </div>
             </div>
           </CardContent>
         </Card>
@@ -329,6 +414,9 @@ function AdminUsersContent() {
                     </th>
                     <th className="text-left py-3 px-4 font-medium text-gray-900">
                       {t("admin.users.table.activity")}
+                    </th>
+                    <th className="text-right py-3 px-4 font-medium text-gray-900">
+                      {t("admin.users.table.actions")}
                     </th>
                   </tr>
                 </thead>
@@ -395,6 +483,59 @@ function AdminUsersContent() {
                           </p>
                         </div>
                       </td>
+                      <td className="py-3 px-4">
+                        <div className="flex flex-wrap items-center justify-end gap-2">
+                          {u.invitePending && u.id !== user?.id && (
+                            <Button
+                              type="button"
+                              variant="outline"
+                              size="sm"
+                              aria-label={t("admin.users.actions.revoke")}
+                              onClick={() => {
+                                setActionError("");
+                                setPendingAction({ kind: "revoke", user: u });
+                              }}
+                            >
+                              <MailX className="h-4 w-4 mr-1" />
+                              {t("admin.users.actions.revoke")}
+                            </Button>
+                          )}
+                          {u.role === "admin" &&
+                            u.id !== user?.id &&
+                            adminCount > 1 && (
+                              <Button
+                                type="button"
+                                variant="outline"
+                                size="sm"
+                                aria-label={t("admin.users.actions.demote")}
+                                onClick={() => {
+                                  setActionError("");
+                                  setPendingAction({ kind: "demote", user: u });
+                                }}
+                              >
+                                <UserMinus className="h-4 w-4 mr-1" />
+                                {t("admin.users.actions.demote")}
+                              </Button>
+                            )}
+                          {u.role !== "admin" && u.id !== user?.id && (
+                            <Button
+                              type="button"
+                              variant="outline"
+                              size="sm"
+                              className="text-red-700 border-red-200 hover:bg-red-50"
+                              aria-label={t("admin.users.actions.delete")}
+                              onClick={() => {
+                                setActionError("");
+                                setDeleteEmail("");
+                                setPendingAction({ kind: "delete", user: u });
+                              }}
+                            >
+                              <Trash2 className="h-4 w-4 mr-1" />
+                              {t("admin.users.actions.delete")}
+                            </Button>
+                          )}
+                        </div>
+                      </td>
                     </tr>
                   ))}
                 </tbody>
@@ -438,8 +579,8 @@ function AdminUsersContent() {
           <Card>
             <CardContent className="p-4 sm:p-6">
               <div className="flex items-center space-x-3">
-                <div className="w-10 h-10 rounded-xl bg-gradient-to-br from-purple-500 to-purple-600 flex items-center justify-center">
-                  <MessageSquare className="h-5 w-5 text-white" />
+                <div className="w-10 h-10 rounded-xl bg-gradient-to-br from-violet-500 to-indigo-600 flex items-center justify-center">
+                  <Sparkles className="h-5 w-5 text-white" />
                 </div>
                 <div>
                   <p className="text-sm font-medium text-gray-600">{t("admin.users.stats.withAi")}</p>
@@ -621,6 +762,81 @@ function AdminUsersContent() {
                   </Button>
                 </div>
               </form>
+            </CardContent>
+          </Card>
+        </div>
+      )}
+      {pendingAction && (
+        <div className="fixed inset-0 z-50 flex items-center justify-center bg-black/40 backdrop-blur-sm p-4">
+          <Card className="w-full max-w-md">
+            <CardHeader>
+              <CardTitle>
+                {pendingAction.kind === "revoke"
+                  ? t("admin.users.actions.confirmRevokeTitle")
+                  : pendingAction.kind === "demote"
+                    ? t("admin.users.actions.confirmDemoteTitle")
+                    : t("admin.users.actions.confirmDeleteTitle")}
+              </CardTitle>
+            </CardHeader>
+            <CardContent className="space-y-4">
+              <p className="text-sm text-gray-600">
+                {pendingAction.kind === "revoke"
+                  ? t("admin.users.actions.confirmRevokeBody")
+                  : pendingAction.kind === "demote"
+                    ? t("admin.users.actions.confirmDemoteBody").replace(
+                        "{name}",
+                        pendingAction.user.name,
+                      )
+                    : t("admin.users.actions.confirmDeleteBody").replace(
+                        "{email}",
+                        pendingAction.user.email,
+                      )}
+              </p>
+              {pendingAction.kind === "delete" && (
+                <div className="space-y-2">
+                  <label htmlFor="confirm-delete-email" className="text-sm font-medium text-gray-700">
+                    {t("admin.users.actions.confirmEmail")}
+                  </label>
+                  <Input
+                    id="confirm-delete-email"
+                    value={deleteEmail}
+                    onChange={(e) => setDeleteEmail(e.target.value)}
+                    placeholder={pendingAction.user.email}
+                    autoComplete="off"
+                  />
+                </div>
+              )}
+              {actionError && (
+                <p className="text-sm text-red-600">{actionError}</p>
+              )}
+              <div className="flex items-center justify-end space-x-2">
+                <Button type="button" variant="outline" onClick={closeActionModal} disabled={actionBusy}>
+                  {t("admin.users.actions.cancel")}
+                </Button>
+                <Button
+                  type="button"
+                  onClick={runPendingAction}
+                  disabled={
+                    actionBusy ||
+                    (pendingAction.kind === "delete" &&
+                      deleteEmail.trim().toLowerCase() !==
+                        pendingAction.user.email.toLowerCase())
+                  }
+                  className={
+                    pendingAction.kind === "delete"
+                      ? "bg-red-600 hover:bg-red-700 text-white"
+                      : undefined
+                  }
+                >
+                  {actionBusy
+                    ? t("admin.users.actions.working")
+                    : pendingAction.kind === "revoke"
+                      ? t("admin.users.actions.revoke")
+                      : pendingAction.kind === "demote"
+                        ? t("admin.users.actions.demote")
+                        : t("admin.users.actions.delete")}
+                </Button>
+              </div>
             </CardContent>
           </Card>
         </div>

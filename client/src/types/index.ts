@@ -108,6 +108,12 @@ export interface Note {
   aiSummary?: string;
   createdAt: string;
   updatedAt: string;
+  reminders?: Array<{
+    id: string;
+    title: string;
+    status: string;
+    dueDate: string;
+  }>;
 }
 
 export interface ParsedReminder {
@@ -135,8 +141,15 @@ export interface Reminder {
   category: ReminderCategory;
   notificationMethod: string;
   noteId?: string;
+  notifiedAt?: string | null;
   createdAt: string;
   updatedAt: string;
+}
+
+export interface ReminderQuota {
+  used: number;
+  limit: number | null;
+  plan: "FREEMIUM" | "PREMIUM";
 }
 
 export interface Guide {
