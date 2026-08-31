@@ -7204,6 +7204,7 @@ export namespace Prisma {
     category: string | null
     notificationMethod: string | null
     noteId: string | null
+    notifiedAt: Date | null
     createdAt: Date | null
     updatedAt: Date | null
   }
@@ -7219,6 +7220,7 @@ export namespace Prisma {
     category: string | null
     notificationMethod: string | null
     noteId: string | null
+    notifiedAt: Date | null
     createdAt: Date | null
     updatedAt: Date | null
   }
@@ -7234,6 +7236,7 @@ export namespace Prisma {
     category: number
     notificationMethod: number
     noteId: number
+    notifiedAt: number
     createdAt: number
     updatedAt: number
     _all: number
@@ -7251,6 +7254,7 @@ export namespace Prisma {
     category?: true
     notificationMethod?: true
     noteId?: true
+    notifiedAt?: true
     createdAt?: true
     updatedAt?: true
   }
@@ -7266,6 +7270,7 @@ export namespace Prisma {
     category?: true
     notificationMethod?: true
     noteId?: true
+    notifiedAt?: true
     createdAt?: true
     updatedAt?: true
   }
@@ -7281,6 +7286,7 @@ export namespace Prisma {
     category?: true
     notificationMethod?: true
     noteId?: true
+    notifiedAt?: true
     createdAt?: true
     updatedAt?: true
     _all?: true
@@ -7369,6 +7375,7 @@ export namespace Prisma {
     category: string
     notificationMethod: string
     noteId: string | null
+    notifiedAt: Date | null
     createdAt: Date
     updatedAt: Date
     _count: ReminderCountAggregateOutputType | null
@@ -7401,6 +7408,7 @@ export namespace Prisma {
     category?: boolean
     notificationMethod?: boolean
     noteId?: boolean
+    notifiedAt?: boolean
     createdAt?: boolean
     updatedAt?: boolean
     user?: boolean | UserDefaultArgs<ExtArgs>
@@ -7418,6 +7426,7 @@ export namespace Prisma {
     category?: boolean
     notificationMethod?: boolean
     noteId?: boolean
+    notifiedAt?: boolean
     createdAt?: boolean
     updatedAt?: boolean
     user?: boolean | UserDefaultArgs<ExtArgs>
@@ -7435,6 +7444,7 @@ export namespace Prisma {
     category?: boolean
     notificationMethod?: boolean
     noteId?: boolean
+    notifiedAt?: boolean
     createdAt?: boolean
     updatedAt?: boolean
   }
@@ -7465,6 +7475,7 @@ export namespace Prisma {
       category: string
       notificationMethod: string
       noteId: string | null
+      notifiedAt: Date | null
       createdAt: Date
       updatedAt: Date
     }, ExtArgs["result"]["reminder"]>
@@ -7872,6 +7883,7 @@ export namespace Prisma {
     readonly category: FieldRef<"Reminder", 'String'>
     readonly notificationMethod: FieldRef<"Reminder", 'String'>
     readonly noteId: FieldRef<"Reminder", 'String'>
+    readonly notifiedAt: FieldRef<"Reminder", 'DateTime'>
     readonly createdAt: FieldRef<"Reminder", 'DateTime'>
     readonly updatedAt: FieldRef<"Reminder", 'DateTime'>
   }
@@ -23347,6 +23359,7 @@ export namespace Prisma {
     category: 'category',
     notificationMethod: 'notificationMethod',
     noteId: 'noteId',
+    notifiedAt: 'notifiedAt',
     createdAt: 'createdAt',
     updatedAt: 'updatedAt'
   };
@@ -24045,6 +24058,7 @@ export namespace Prisma {
     category?: StringFilter<"Reminder"> | string
     notificationMethod?: StringFilter<"Reminder"> | string
     noteId?: StringNullableFilter<"Reminder"> | string | null
+    notifiedAt?: DateTimeNullableFilter<"Reminder"> | Date | string | null
     createdAt?: DateTimeFilter<"Reminder"> | Date | string
     updatedAt?: DateTimeFilter<"Reminder"> | Date | string
     user?: XOR<UserRelationFilter, UserWhereInput>
@@ -24062,6 +24076,7 @@ export namespace Prisma {
     category?: SortOrder
     notificationMethod?: SortOrder
     noteId?: SortOrderInput | SortOrder
+    notifiedAt?: SortOrderInput | SortOrder
     createdAt?: SortOrder
     updatedAt?: SortOrder
     user?: UserOrderByWithRelationInput
@@ -24082,6 +24097,7 @@ export namespace Prisma {
     category?: StringFilter<"Reminder"> | string
     notificationMethod?: StringFilter<"Reminder"> | string
     noteId?: StringNullableFilter<"Reminder"> | string | null
+    notifiedAt?: DateTimeNullableFilter<"Reminder"> | Date | string | null
     createdAt?: DateTimeFilter<"Reminder"> | Date | string
     updatedAt?: DateTimeFilter<"Reminder"> | Date | string
     user?: XOR<UserRelationFilter, UserWhereInput>
@@ -24099,6 +24115,7 @@ export namespace Prisma {
     category?: SortOrder
     notificationMethod?: SortOrder
     noteId?: SortOrderInput | SortOrder
+    notifiedAt?: SortOrderInput | SortOrder
     createdAt?: SortOrder
     updatedAt?: SortOrder
     _count?: ReminderCountOrderByAggregateInput
@@ -24120,6 +24137,7 @@ export namespace Prisma {
     category?: StringWithAggregatesFilter<"Reminder"> | string
     notificationMethod?: StringWithAggregatesFilter<"Reminder"> | string
     noteId?: StringNullableWithAggregatesFilter<"Reminder"> | string | null
+    notifiedAt?: DateTimeNullableWithAggregatesFilter<"Reminder"> | Date | string | null
     createdAt?: DateTimeWithAggregatesFilter<"Reminder"> | Date | string
     updatedAt?: DateTimeWithAggregatesFilter<"Reminder"> | Date | string
   }
@@ -25701,6 +25719,7 @@ export namespace Prisma {
     status?: string
     category: string
     notificationMethod?: string
+    notifiedAt?: Date | string | null
     createdAt?: Date | string
     updatedAt?: Date | string
     user: UserCreateNestedOneWithoutRemindersInput
@@ -25718,6 +25737,7 @@ export namespace Prisma {
     category: string
     notificationMethod?: string
     noteId?: string | null
+    notifiedAt?: Date | string | null
     createdAt?: Date | string
     updatedAt?: Date | string
   }
@@ -25731,6 +25751,7 @@ export namespace Prisma {
     status?: StringFieldUpdateOperationsInput | string
     category?: StringFieldUpdateOperationsInput | string
     notificationMethod?: StringFieldUpdateOperationsInput | string
+    notifiedAt?: NullableDateTimeFieldUpdateOperationsInput | Date | string | null
     createdAt?: DateTimeFieldUpdateOperationsInput | Date | string
     updatedAt?: DateTimeFieldUpdateOperationsInput | Date | string
     user?: UserUpdateOneRequiredWithoutRemindersNestedInput
@@ -25748,6 +25769,7 @@ export namespace Prisma {
     category?: StringFieldUpdateOperationsInput | string
     notificationMethod?: StringFieldUpdateOperationsInput | string
     noteId?: NullableStringFieldUpdateOperationsInput | string | null
+    notifiedAt?: NullableDateTimeFieldUpdateOperationsInput | Date | string | null
     createdAt?: DateTimeFieldUpdateOperationsInput | Date | string
     updatedAt?: DateTimeFieldUpdateOperationsInput | Date | string
   }
@@ -25763,6 +25785,7 @@ export namespace Prisma {
     category: string
     notificationMethod?: string
     noteId?: string | null
+    notifiedAt?: Date | string | null
     createdAt?: Date | string
     updatedAt?: Date | string
   }
@@ -25776,6 +25799,7 @@ export namespace Prisma {
     status?: StringFieldUpdateOperationsInput | string
     category?: StringFieldUpdateOperationsInput | string
     notificationMethod?: StringFieldUpdateOperationsInput | string
+    notifiedAt?: NullableDateTimeFieldUpdateOperationsInput | Date | string | null
     createdAt?: DateTimeFieldUpdateOperationsInput | Date | string
     updatedAt?: DateTimeFieldUpdateOperationsInput | Date | string
   }
@@ -25791,6 +25815,7 @@ export namespace Prisma {
     category?: StringFieldUpdateOperationsInput | string
     notificationMethod?: StringFieldUpdateOperationsInput | string
     noteId?: NullableStringFieldUpdateOperationsInput | string | null
+    notifiedAt?: NullableDateTimeFieldUpdateOperationsInput | Date | string | null
     createdAt?: DateTimeFieldUpdateOperationsInput | Date | string
     updatedAt?: DateTimeFieldUpdateOperationsInput | Date | string
   }
@@ -27530,6 +27555,7 @@ export namespace Prisma {
     category?: SortOrder
     notificationMethod?: SortOrder
     noteId?: SortOrder
+    notifiedAt?: SortOrder
     createdAt?: SortOrder
     updatedAt?: SortOrder
   }
@@ -27545,6 +27571,7 @@ export namespace Prisma {
     category?: SortOrder
     notificationMethod?: SortOrder
     noteId?: SortOrder
+    notifiedAt?: SortOrder
     createdAt?: SortOrder
     updatedAt?: SortOrder
   }
@@ -27560,6 +27587,7 @@ export namespace Prisma {
     category?: SortOrder
     notificationMethod?: SortOrder
     noteId?: SortOrder
+    notifiedAt?: SortOrder
     createdAt?: SortOrder
     updatedAt?: SortOrder
   }
@@ -29688,6 +29716,7 @@ export namespace Prisma {
     status?: string
     category: string
     notificationMethod?: string
+    notifiedAt?: Date | string | null
     createdAt?: Date | string
     updatedAt?: Date | string
     note?: NoteCreateNestedOneWithoutRemindersInput
@@ -29703,6 +29732,7 @@ export namespace Prisma {
     category: string
     notificationMethod?: string
     noteId?: string | null
+    notifiedAt?: Date | string | null
     createdAt?: Date | string
     updatedAt?: Date | string
   }
@@ -30134,6 +30164,7 @@ export namespace Prisma {
     category?: StringFilter<"Reminder"> | string
     notificationMethod?: StringFilter<"Reminder"> | string
     noteId?: StringNullableFilter<"Reminder"> | string | null
+    notifiedAt?: DateTimeNullableFilter<"Reminder"> | Date | string | null
     createdAt?: DateTimeFilter<"Reminder"> | Date | string
     updatedAt?: DateTimeFilter<"Reminder"> | Date | string
   }
@@ -30901,6 +30932,7 @@ export namespace Prisma {
     status?: string
     category: string
     notificationMethod?: string
+    notifiedAt?: Date | string | null
     createdAt?: Date | string
     updatedAt?: Date | string
     user: UserCreateNestedOneWithoutRemindersInput
@@ -30916,6 +30948,7 @@ export namespace Prisma {
     status?: string
     category: string
     notificationMethod?: string
+    notifiedAt?: Date | string | null
     createdAt?: Date | string
     updatedAt?: Date | string
   }
@@ -33545,6 +33578,7 @@ export namespace Prisma {
     category: string
     notificationMethod?: string
     noteId?: string | null
+    notifiedAt?: Date | string | null
     createdAt?: Date | string
     updatedAt?: Date | string
   }
@@ -33674,6 +33708,7 @@ export namespace Prisma {
     status?: StringFieldUpdateOperationsInput | string
     category?: StringFieldUpdateOperationsInput | string
     notificationMethod?: StringFieldUpdateOperationsInput | string
+    notifiedAt?: NullableDateTimeFieldUpdateOperationsInput | Date | string | null
     createdAt?: DateTimeFieldUpdateOperationsInput | Date | string
     updatedAt?: DateTimeFieldUpdateOperationsInput | Date | string
     note?: NoteUpdateOneWithoutRemindersNestedInput
@@ -33689,6 +33724,7 @@ export namespace Prisma {
     category?: StringFieldUpdateOperationsInput | string
     notificationMethod?: StringFieldUpdateOperationsInput | string
     noteId?: NullableStringFieldUpdateOperationsInput | string | null
+    notifiedAt?: NullableDateTimeFieldUpdateOperationsInput | Date | string | null
     createdAt?: DateTimeFieldUpdateOperationsInput | Date | string
     updatedAt?: DateTimeFieldUpdateOperationsInput | Date | string
   }
@@ -33703,6 +33739,7 @@ export namespace Prisma {
     category?: StringFieldUpdateOperationsInput | string
     notificationMethod?: StringFieldUpdateOperationsInput | string
     noteId?: NullableStringFieldUpdateOperationsInput | string | null
+    notifiedAt?: NullableDateTimeFieldUpdateOperationsInput | Date | string | null
     createdAt?: DateTimeFieldUpdateOperationsInput | Date | string
     updatedAt?: DateTimeFieldUpdateOperationsInput | Date | string
   }
@@ -34075,6 +34112,7 @@ export namespace Prisma {
     status?: string
     category: string
     notificationMethod?: string
+    notifiedAt?: Date | string | null
     createdAt?: Date | string
     updatedAt?: Date | string
   }
@@ -34088,6 +34126,7 @@ export namespace Prisma {
     status?: StringFieldUpdateOperationsInput | string
     category?: StringFieldUpdateOperationsInput | string
     notificationMethod?: StringFieldUpdateOperationsInput | string
+    notifiedAt?: NullableDateTimeFieldUpdateOperationsInput | Date | string | null
     createdAt?: DateTimeFieldUpdateOperationsInput | Date | string
     updatedAt?: DateTimeFieldUpdateOperationsInput | Date | string
     user?: UserUpdateOneRequiredWithoutRemindersNestedInput
@@ -34103,6 +34142,7 @@ export namespace Prisma {
     status?: StringFieldUpdateOperationsInput | string
     category?: StringFieldUpdateOperationsInput | string
     notificationMethod?: StringFieldUpdateOperationsInput | string
+    notifiedAt?: NullableDateTimeFieldUpdateOperationsInput | Date | string | null
     createdAt?: DateTimeFieldUpdateOperationsInput | Date | string
     updatedAt?: DateTimeFieldUpdateOperationsInput | Date | string
   }
@@ -34117,6 +34157,7 @@ export namespace Prisma {
     status?: StringFieldUpdateOperationsInput | string
     category?: StringFieldUpdateOperationsInput | string
     notificationMethod?: StringFieldUpdateOperationsInput | string
+    notifiedAt?: NullableDateTimeFieldUpdateOperationsInput | Date | string | null
     createdAt?: DateTimeFieldUpdateOperationsInput | Date | string
     updatedAt?: DateTimeFieldUpdateOperationsInput | Date | string
   }

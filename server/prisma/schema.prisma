@@ -125,6 +125,7 @@ model Reminder {
   category           String
   notificationMethod String   @default("email")
   noteId             String?
+  notifiedAt         DateTime?
   createdAt          DateTime @default(now())
   updatedAt          DateTime @updatedAt
   
@@ -135,6 +136,7 @@ model Reminder {
   @@index([dueDate])
   @@index([status])
   @@index([noteId])
+  @@index([notifiedAt])
   @@map("reminders")
 }
 

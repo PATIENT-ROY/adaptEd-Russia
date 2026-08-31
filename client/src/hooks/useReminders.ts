@@ -1,6 +1,6 @@
 import { useState, useEffect, useCallback } from 'react';
 import { apiClient } from '@/lib/api';
-import type { Reminder } from '@/types';
+import type { Reminder, ReminderQuota } from '@/types';
 import { ReminderStatus, ReminderPriority, ReminderCategory } from '@/types';
 
 // Функция нормализации напоминания
@@ -70,6 +70,7 @@ const normalizeReminder = (reminder: Partial<Reminder> | Reminder): Reminder => 
 
 export function useReminders(userId: string) {
   const [reminders, setReminders] = useState<Reminder[]>([]);
+  const [quota, setQuota] = useState<ReminderQuota | null>(null);
   const [loading, setLoading] = useState(true);
   const [error, setError] = useState<string | null>(null);
 
@@ -110,6 +111,11 @@ export function useReminders(userId: string) {
       
       setReminders(normalized);
       setError(null);
+      try {
+        setQuota(await apiClient.getReminderQuota());
+      } catch {
+        /* quota is optional for the list */
+      }
     } catch (err) {
       if (err instanceof Error && err.name === 'ConnectionError') {
         setError('Сервер недоступен. Проверьте подключение.');
@@ -129,70 +135,26 @@ export function useReminders(userId: string) {
 
   const createReminder = async (reminderData: Omit<Reminder, 'id' | 'createdAt' | 'updatedAt' | 'userId'>) => {
     try {
-      let response;
-      try {
-        response = await apiClient.createReminder(reminderData);
-      } catch {
-        // При ошибке API создаём временное напоминание
-        const manualReminder: Reminder = {
-          id: `temp-${Date.now()}`,
-          userId: '',
-          title: reminderData.title,
-          description: reminderData.description,
-          dueDate: reminderData.dueDate,
-          category: reminderData.category,
-          priority: reminderData.priority,
-          status: reminderData.status || ReminderStatus.PENDING,
-          notificationMethod: reminderData.notificationMethod || 'email',
-          createdAt: new Date().toISOString(),
-          updatedAt: new Date().toISOString(),
-        };
-        const normalized = normalizeReminder(manualReminder);
-        if (!normalized.dueDate && reminderData.dueDate) normalized.dueDate = reminderData.dueDate;
-        if (!normalized.category && reminderData.category) normalized.category = reminderData.category;
-        setReminders(prev => [normalized, ...prev]);
-        return normalized;
+      const response = await apiClient.createReminder(reminderData);
+      if (!response?.id) {
+        throw new Error('Сервер вернул некорректные данные');
       }
-      
-      // Если ответ пустой, используем данные из запроса
-      let reminderToNormalize = response;
-      if (!response || (typeof response === 'object' && Object.keys(response).length === 0) || !response.id) {
-        reminderToNormalize = {
-          id: `temp-${Date.now()}`,
-          userId: '',
-          ...reminderData,
-          createdAt: new Date().toISOString(),
-          updatedAt: new Date().toISOString(),
-        } as Reminder;
-      }
-      
-      const normalized = normalizeReminder(reminderToNormalize);
-      
-      // Восстанавливаем данные если потерялись
+
+      const normalized = normalizeReminder(response);
       if (!normalized.dueDate && reminderData.dueDate) normalized.dueDate = reminderData.dueDate;
       if (!normalized.category && reminderData.category) normalized.category = reminderData.category;
-      
-      setReminders(prev => [normalized, ...prev]);
+
+      setReminders((prev) => [normalized, ...prev]);
+      setError(null);
+      try {
+        setQuota(await apiClient.getReminderQuota());
+      } catch {
+        /* ignore */
+      }
       return normalized;
     } catch (err) {
-      // Fallback при ошибке
-      try {
-        const fallbackReminder: Reminder = {
-          id: `temp-${Date.now()}`,
-          userId: '',
-          ...reminderData,
-          createdAt: new Date().toISOString(),
-          updatedAt: new Date().toISOString(),
-        } as Reminder;
-        const normalized = normalizeReminder(fallbackReminder);
-        if (!normalized.dueDate && reminderData.dueDate) normalized.dueDate = reminderData.dueDate;
-        if (!normalized.category && reminderData.category) normalized.category = reminderData.category;
-        setReminders(prev => [normalized, ...prev]);
-        return normalized;
-      } catch {
-        setError('Ошибка при создании напоминания');
-        throw err;
-      }
+      setError('Ошибка при создании напоминания');
+      throw err;
     }
   };
 
@@ -229,6 +191,7 @@ export function useReminders(userId: string) {
 
   return {
     reminders,
+    quota,
     loading,
     error,
     createReminder,

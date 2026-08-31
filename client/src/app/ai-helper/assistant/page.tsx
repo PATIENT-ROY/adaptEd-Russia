@@ -33,24 +33,19 @@ import {
   MicOff,
   GraduationCap,
   FileText,
-  Briefcase,
-  PenTool,
   HelpCircle,
   FileCheck,
   Calculator,
-  Languages,
   Check,
   Copy,
-  Sparkles,
   ArrowRight,
-  Lock,
-  Zap,
 } from "lucide-react";
 import ReactMarkdown from "react-markdown";
 import Link from "next/link";
-import { PREMIUM_CHECKOUT_PATH } from "@/constants/routes";
+import { UsageBar, LimitOverlay } from "@/components/ai/AiUsage";
+import { Language } from "@/types";
 
-type AIMode = "study" | "life" | "generator";
+type AIMode = "study" | "life";
 
 interface AIModeConfig {
   id: AIMode;
@@ -64,44 +59,40 @@ interface AIModeConfig {
 const MODE_ICONS: Record<AIMode, React.ComponentType<{ className?: string }>> = {
   study: GraduationCap,
   life: Home,
-  generator: PenTool,
 };
 
 const MODE_STYLES: Record<AIMode, { color: string; bgColor: string }> = {
   study: { color: "text-blue-600", bgColor: "bg-blue-50 border-blue-200" },
   life: { color: "text-green-600", bgColor: "bg-green-50 border-green-200" },
-  generator: { color: "text-purple-600", bgColor: "bg-purple-50 border-purple-200" },
 };
 
 const QUICK_QUESTION_ICONS: Record<string, React.ComponentType<{ className?: string }>> = {
   s1: GraduationCap, s2: BookOpen, s3: HelpCircle, s4: Calculator,
   l1: AlertCircle, l2: Home, l3: Clock, l4: FileCheck,
-  g1: FileText, g2: Briefcase, g3: PenTool, g4: Languages,
 };
 
 const TIP_COLORS: Record<AIMode, string> = {
   study: "bg-blue-500",
   life: "bg-green-500",
-  generator: "bg-purple-500",
 };
 
 const BORDER_COLORS: Record<AIMode, string> = {
   study: "border-blue-200 hover:bg-blue-50",
   life: "border-green-200 hover:bg-green-50",
-  generator: "border-purple-200 hover:bg-purple-50",
 };
 
 const GRADIENT_COLORS: Record<AIMode, string> = {
   study: "bg-gradient-to-br from-blue-500 to-blue-600",
   life: "bg-gradient-to-br from-green-500 to-green-600",
-  generator: "bg-gradient-to-br from-purple-500 to-pink-600",
 };
 
-const DEFAULT_RELATED_GUIDE_KEYS = [
-  "aiHelper.guides.default.1",
-  "aiHelper.guides.default.2",
-  "aiHelper.guides.default.3",
-] as const;
+const TIME_LOCALE: Record<Language, string> = {
+  [Language.RU]: "ru-RU",
+  [Language.EN]: "en-US",
+  [Language.FR]: "fr-FR",
+  [Language.AR]: "ar",
+  [Language.ZH]: "zh-CN",
+};
 
 interface ISpeechRecognition extends EventTarget {
   lang: string;
@@ -177,115 +168,6 @@ function CopyButton({ text, label }: { text: string; label: string }) {
   );
 }
 
-// ── Usage Bar ───────────────────────────────────────────────────────
-
-function UsageBar({
-  used,
-  limit,
-  plan,
-  t,
-}: {
-  used: number;
-  limit: number;
-  plan: string;
-  t: (key: string) => string;
-}) {
-  const percentage = Math.min((used / limit) * 100, 100);
-  const isLow = percentage >= 80;
-
-  return (
-    <Card>
-      <CardContent className="p-4 sm:p-5">
-        <div className="flex items-center justify-between mb-2">
-          <h3 className="text-sm font-semibold text-gray-900 flex items-center space-x-1.5">
-            <Zap className="h-4 w-4 text-amber-500" />
-            <span>{t("aiHelper.usage.title")}</span>
-          </h3>
-          <span className="text-xs font-medium text-gray-500">
-            {plan === "FREEMIUM"
-              ? t("home.pricing.freemium")
-              : t("home.pricing.premium")}
-          </span>
-        </div>
-
-        <div className="w-full bg-gray-200 rounded-full h-2.5 mb-2">
-          <div
-            className={`h-2.5 rounded-full transition-all duration-500 ${
-              isLow
-                ? "bg-gradient-to-r from-red-400 to-red-500"
-                : "bg-gradient-to-r from-blue-400 to-purple-500"
-            }`}
-            style={{ width: `${percentage}%` }}
-          />
-        </div>
-
-        <p className="text-xs text-gray-600">
-          {t("aiHelper.usage.counter")
-            .replace("{used}", String(used))
-            .replace("{limit}", String(limit))}
-        </p>
-
-        {plan === "FREEMIUM" && (
-          <Link
-            href={PREMIUM_CHECKOUT_PATH}
-            className="mt-3 flex items-center justify-center space-x-1.5 w-full px-3 py-2 bg-gradient-to-r from-amber-400 to-orange-500 text-white rounded-lg text-xs font-medium hover:from-amber-500 hover:to-orange-600 transition-all"
-          >
-            <Sparkles className="h-3.5 w-3.5" />
-            <span>{t("aiHelper.usage.upgrade")}</span>
-          </Link>
-        )}
-      </CardContent>
-    </Card>
-  );
-}
-
-// ── Limit Overlay ───────────────────────────────────────────────────
-
-function LimitOverlay({
-  plan,
-  onDismiss,
-  t,
-}: {
-  plan: string;
-  onDismiss: () => void;
-  t: (key: string) => string;
-}) {
-  return (
-    <div className="absolute inset-0 bg-white/90 backdrop-blur-sm z-10 flex items-center justify-center p-6 rounded-2xl">
-      <div className="text-center max-w-sm">
-        <div className="w-16 h-16 mx-auto mb-4 rounded-full bg-amber-100 flex items-center justify-center">
-          <Lock className="h-8 w-8 text-amber-600" />
-        </div>
-        <h3 className="text-lg font-bold text-gray-900 mb-2">
-          {t("aiHelper.limit.title")}
-        </h3>
-        <p className="text-sm text-gray-600 mb-4">
-          {plan === "FREEMIUM"
-            ? t("aiHelper.limit.freemiumDesc")
-            : t("aiHelper.limit.premiumDesc")}
-        </p>
-        {plan === "FREEMIUM" && (
-          <Link
-            href={PREMIUM_CHECKOUT_PATH}
-            className="inline-flex items-center space-x-2 px-6 py-3 bg-gradient-to-r from-amber-400 to-orange-500 text-white rounded-xl font-medium hover:from-amber-500 hover:to-orange-600 transition-all mb-3"
-          >
-            <Sparkles className="h-4 w-4" />
-            <span>{t("aiHelper.limit.upgrade")}</span>
-          </Link>
-        )}
-        <div>
-          <button
-            onClick={onDismiss}
-            className="text-sm text-gray-500 hover:text-gray-700"
-          >
-            {t("aiHelper.limit.dismiss")}
-          </button>
-        </div>
-      </div>
-    </div>
-  );
-}
-
 // ── Related Guides Component ────────────────────────────────────────
 
 function RelatedGuidesBlock({
@@ -332,7 +214,8 @@ function RelatedGuidesBlock({
 
 export default function AiAssistantPage() {
   const { user } = useAuth();
-  const { t } = useTranslation();
+  const { t, currentLanguage } = useTranslation();
+  const timeLocale = TIME_LOCALE[currentLanguage] || "ru-RU";
   const {
     messages,
     loading,
@@ -366,12 +249,11 @@ export default function AiAssistantPage() {
   );
 
   const defaultRelatedGuides = useMemo(
-    () =>
-      DEFAULT_RELATED_GUIDE_KEYS.map((key) => ({
-        title: t(key),
-        url: "/life-guide",
-        category: "life",
-      })),
+    () => [
+      { title: t("aiHelper.guides.default.1"), url: "/guides/life/1", category: "life" },
+      { title: t("aiHelper.guides.default.2"), url: "/guides/life/7", category: "life" },
+      { title: t("aiHelper.guides.default.3"), url: "/guides/life/insurance-dms", category: "life" },
+    ],
     [t],
   );
 
@@ -393,19 +275,12 @@ export default function AiAssistantPage() {
       description: t("aiHelper.mode.study.desc"),
       ...MODE_STYLES.study,
     },
-    {
+      {
       id: "life",
       name: t("aiHelper.mode.life"),
       icon: MODE_ICONS.life,
       description: t("aiHelper.mode.life.desc"),
       ...MODE_STYLES.life,
-    },
-    {
-      id: "generator",
-      name: t("aiHelper.mode.generator"),
-      icon: MODE_ICONS.generator,
-      description: t("aiHelper.mode.generator.desc"),
-      ...MODE_STYLES.generator,
     },
   ], [t]);
 
@@ -421,12 +296,6 @@ export default function AiAssistantPage() {
       { id: "l2", question: t("aiHelper.quickQuestions.life.2"), icon: QUICK_QUESTION_ICONS.l2 },
       { id: "l3", question: t("aiHelper.quickQuestions.life.3"), icon: QUICK_QUESTION_ICONS.l3 },
       { id: "l4", question: t("aiHelper.quickQuestions.life.4"), icon: QUICK_QUESTION_ICONS.l4 },
-    ],
-    generator: [
-      { id: "g1", question: t("aiHelper.quickQuestions.generator.1"), icon: QUICK_QUESTION_ICONS.g1 },
-      { id: "g2", question: t("aiHelper.quickQuestions.generator.2"), icon: QUICK_QUESTION_ICONS.g2 },
-      { id: "g3", question: t("aiHelper.quickQuestions.generator.3"), icon: QUICK_QUESTION_ICONS.g3 },
-      { id: "g4", question: t("aiHelper.quickQuestions.generator.4"), icon: QUICK_QUESTION_ICONS.g4 },
     ],
   }), [t]);
 
@@ -683,7 +552,7 @@ export default function AiAssistantPage() {
           {/* Header */}
           <div className="bg-white rounded-2xl sm:rounded-3xl p-4 sm:p-6 shadow-sm">
             <div className="flex flex-col space-y-4">
-              <BackButton label="Все AI-возможности" href="/ai-helper" />
+              <BackButton label={t("templates.backToHub")} href="/ai-helper" />
               <div className="flex flex-row items-center gap-3">
                 <div
                   className={`rounded-lg p-2.5 sm:p-3 shrink-0 ${currentModeConfig.bgColor}`}
@@ -738,6 +607,13 @@ export default function AiAssistantPage() {
                     </button>
                   );
                 })}
+                <Link
+                  href="/ai-helper/tools"
+                  className="flex items-center space-x-2 px-4 py-2 rounded-xl border-2 border-purple-200 bg-purple-50 text-purple-700 hover:bg-purple-100 transition-all"
+                >
+                  <FileText className="h-4 w-4" />
+                  <span className="font-medium">{t("aiHelper.templates")}</span>
+                </Link>
               </div>
             </div>
           </div>
@@ -836,11 +712,11 @@ export default function AiAssistantPage() {
                                     {message.timestamp
                                       ? new Date(
                                           message.timestamp
-                                        ).toLocaleTimeString("ru-RU", {
+                                        ).toLocaleTimeString(timeLocale, {
                                           hour: "2-digit",
                                           minute: "2-digit",
                                         })
-                                      : new Date().toLocaleTimeString("ru-RU", {
+                                      : new Date().toLocaleTimeString(timeLocale, {
                                           hour: "2-digit",
                                           minute: "2-digit",
                                         })}
@@ -1112,16 +988,7 @@ export default function AiAssistantPage() {
                     <div key={i} className="flex items-start space-x-3">
                       <div className={`w-2 h-2 sm:w-2.5 sm:h-2.5 rounded-full ${tipColor} mt-1.5 sm:mt-2 flex-shrink-0`} />
                       <p className="leading-relaxed">
-                        {currentMode === "generator" && i === 2 ? (
-                          <>
-                            <Link href="/ai-helper/tools" className="text-purple-600 hover:underline font-medium">
-                              {tip.split(" ")[0]}
-                            </Link>
-                            {" "}{tip.split(" ").slice(1).join(" ")}
-                          </>
-                        ) : (
-                          tip
-                        )}
+                        {tip}
                       </p>
                     </div>
                   ))}

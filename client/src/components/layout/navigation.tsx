@@ -12,8 +12,8 @@ import {
   Home,
   BookOpen,
   Home as HomeIcon,
+  CalendarClock,
   Sparkles,
-  MessageSquare,
   User,
   Menu,
   X,
@@ -37,8 +37,8 @@ const navigationItemsConfig = [
 ];
 
 const authenticatedNavigationItemsConfig = [
-  { href: "/ai-helper", labelKey: "nav.aiHelper", icon: MessageSquare },
-  { href: "/reminders", labelKey: "nav.reminders", icon: Sparkles },
+  { href: "/ai-helper", labelKey: "nav.aiHelper", icon: Sparkles },
+  { href: "/reminders", labelKey: "nav.reminders", icon: CalendarClock },
   { href: "/docscan", labelKey: "nav.docscan", icon: ScanLine },
   { href: "/community/questions", labelKey: "nav.community", icon: Users },
 ];

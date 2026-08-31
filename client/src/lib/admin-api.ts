@@ -18,6 +18,12 @@ async function adminFetch<T>(path: string): Promise<T> {
 
 type StatMetric = { value: number; change: string };
 
+export type GuideReadCount = {
+  guideId: string;
+  guideType: string;
+  count: number;
+};
+
 export type AdminDashboardData = {
   stats: {
     users: StatMetric;
@@ -47,6 +53,7 @@ export type AdminDashboardData = {
     status: string;
     createdAt: string;
   }>;
+  topReads: GuideReadCount[];
 };
 
 const emptyMetric = (): StatMetric => ({ value: 0, change: '0%' });
@@ -89,6 +96,9 @@ function normalizeDashboard(raw: unknown): AdminDashboardData {
     recentGuides: Array.isArray(data.recentGuides)
       ? (data.recentGuides as AdminDashboardData['recentGuides'])
       : [],
+    topReads: Array.isArray(data.topReads)
+      ? (data.topReads as GuideReadCount[])
+      : [],
   };
 }
 
@@ -100,6 +110,7 @@ export type AdminUserRow = {
   language: string;
   role: string;
   status: string;
+  invitePending?: boolean;
   registeredAt: string;
   lastLogin: string;
   guidesRead: number;
@@ -108,6 +119,8 @@ export type AdminUserRow = {
 
 export type AdminGuideRow = {
   id: string;
+  rowKey?: string;
+  href?: string;
   title: string;
   category: string;
   content: string;
@@ -120,6 +133,11 @@ export type AdminGuideRow = {
   author: string;
 };
 
+export type AdminGuidesPayload = {
+  dbGuides: AdminGuideRow[];
+  reads: GuideReadCount[];
+};
+
 export async function fetchAdminDashboard() {
   const raw = await adminFetch<unknown>('/dashboard');
   return normalizeDashboard(raw);
@@ -129,8 +147,55 @@ export function fetchAdminUsers() {
   return adminFetch<AdminUserRow[]>('/users');
 }
 
-export function fetchAdminGuides() {
-  return adminFetch<AdminGuideRow[]>('/guides');
+async function adminMutate<T>(
+  path: string,
+  method: 'POST' | 'DELETE',
+  body?: unknown,
+): Promise<{ data: T; message?: string }> {
+  const res = await fetch(`${API_BASE_URL}/admin${path}`, {
+    method,
+    headers: {
+      ...authHeaders(),
+      ...(body !== undefined ? { 'Content-Type': 'application/json' } : {}),
+    },
+    body: body !== undefined ? JSON.stringify(body) : undefined,
+  });
+  const json = (await res.json().catch(() => ({}))) as {
+    success?: boolean;
+    data?: T;
+    error?: string;
+    message?: string;
+  };
+  if (!res.ok || json.success === false) {
+    throw new Error(json.error || `Admin API error: ${res.status}`);
+  }
+  return { data: json.data as T, message: json.message };
+}
+
+export function revokeAdminInvite(userId: string) {
+  return adminMutate<{ deleted: boolean; id?: string; user?: AdminUserRow }>(
+    `/users/${encodeURIComponent(userId)}/revoke-invite`,
+    'POST',
+  );
+}
+
+export function demoteAdminUser(userId: string) {
+  return adminMutate<{ user: AdminUserRow }>(
+    `/users/${encodeURIComponent(userId)}/demote`,
+    'POST',
+  );
+}
+
+export function deleteAdminUser(userId: string, confirmEmail: string) {
+  return adminMutate<{ deleted: boolean; id: string }>(
+    `/users/${encodeURIComponent(userId)}`,
+    'DELETE',
+    { confirmEmail },
+  );
+}
+
+export function fetchAdminGuideStats() {
+  return adminFetch<AdminGuidesPayload>('/guides');
 }
 
 export function fetchAdminAiAnalytics() {

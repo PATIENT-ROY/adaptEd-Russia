@@ -30,93 +30,22 @@ let achievementsLastAttemptAt = 0;
 let achievementsCache: AchievementsOverview | null = null;
 const ACHIEVEMENTS_FETCH_COOLDOWN_MS = 5_000; // 5 сек — не спамить API
 
-const FALLBACK_OVERVIEW: AchievementsOverview = {
-  achievements: [
-    {
-      id: "ach-1",
-      name: "Первый гайд",
-      description: "Прочитайте свой первый гайд",
-      category: AchievementCategory.GETTING_STARTED,
-      icon: "📘",
-      xpReward: 50,
-      requirement: "read_1_guide",
-      rarity: "common",
-      unlocked: true,
-      progress: 1,
-      progressCurrent: 1,
-      progressTarget: 1,
-    },
-    {
-      id: "ach-2",
-      name: "Первые 7 дней",
-      description: "Заходите в приложение 7 дней подряд",
-      category: AchievementCategory.GETTING_STARTED,
-      icon: "🔥",
-      xpReward: 80,
-      requirement: "streak_7_days",
-      rarity: "rare",
-      unlocked: false,
-      progress: 4 / 7,
-      progressCurrent: 4,
-      progressTarget: 7,
-    },
-    {
-      id: "ach-3",
-      name: "Сессия под контролем",
-      description: "Прочитайте 5 учебных гайдов",
-      category: AchievementCategory.EDUCATION,
-      icon: "🎓",
-      xpReward: 120,
-      requirement: "read_5_guides",
-      rarity: "rare",
-      unlocked: true,
-      progress: 1,
-      progressCurrent: 5,
-      progressTarget: 5,
-    },
-    {
-      id: "ach-4",
-      name: "Документы без стресса",
-      description: "Завершите 3 гайда по документам",
-      category: AchievementCategory.LIFE,
-      icon: "📄",
-      xpReward: 100,
-      requirement: "finish_doc_guides",
-      rarity: "common",
-      unlocked: false,
-      progress: 2 / 3,
-      progressCurrent: 2,
-      progressTarget: 3,
-    },
-    {
-      id: "ach-5",
-      name: "Чемпион активности",
-      description: "Задайте 10 вопросов в AI",
-      category: AchievementCategory.ACTIVITY,
-      icon: "⚡️",
-      xpReward: 140,
-      requirement: "ask_ai_10",
-      rarity: "epic",
-      unlocked: false,
-      progress: 3 / 10,
-      progressCurrent: 3,
-      progressTarget: 10,
-    },
-  ],
-  unlockedCount: 2,
-  totalCount: 5,
-  totalXP: 170,
+const EMPTY_OVERVIEW: AchievementsOverview = {
+  achievements: [],
+  unlockedCount: 0,
+  totalCount: 0,
+  totalXP: 0,
   metrics: {
-    guidesRead: 4,
-    aiQuestions: 2,
-    remindersCreated: 3,
-    remindersCompleted: 2,
-    docScanCount: 1,
-    streak: 4,
-    daysSinceRegistration: 12,
+    guidesRead: 0,
+    aiQuestions: 0,
+    remindersCreated: 0,
+    remindersCompleted: 0,
+    docScanCount: 0,
+    streak: 0,
+    daysSinceRegistration: 0,
     grantApplications: 0,
     level: UserLevel.NEWBIE,
-    xp: 170,
+    xp: 0,
   },
 };
 
@@ -183,7 +112,7 @@ export default function AchievementsPage() {
     if (fetchedRef.current || achievementsFetchInProgress) return;
 
     if (inCooldown) {
-      setOverview(achievementsCache ?? FALLBACK_OVERVIEW);
+      setOverview(achievementsCache ?? EMPTY_OVERVIEW);
       setIsLoading(false);
       return;
     }
@@ -204,10 +133,9 @@ export default function AchievementsPage() {
         setOverview(data);
       } catch (err) {
         if (cancelled) return;
-        const message = err instanceof Error ? err.message : "Ошибка загрузки";
-        setError(message);
-        achievementsCache = FALLBACK_OVERVIEW;
-        setOverview(FALLBACK_OVERVIEW);
+        setError("load_failed");
+        achievementsCache = EMPTY_OVERVIEW;
+        setOverview(EMPTY_OVERVIEW);
       } finally {
         if (!cancelled) setIsLoading(false);
         achievementsFetchInProgress = false;
@@ -226,10 +154,9 @@ export default function AchievementsPage() {
       achievementsCache = data;
       setOverview(data);
     } catch (err) {
-      const message = err instanceof Error ? err.message : "Ошибка загрузки";
-      setError(message);
-      achievementsCache = FALLBACK_OVERVIEW;
-      setOverview(FALLBACK_OVERVIEW);
+      setError("load_failed");
+      achievementsCache = EMPTY_OVERVIEW;
+      setOverview(EMPTY_OVERVIEW);
     } finally {
       setIsLoading(false);
     }
@@ -336,7 +263,7 @@ export default function AchievementsPage() {
             </div>
           </div>
 
-          {error && !overview && (
+          {error && (
             <Card className="border-red-200 bg-red-50">
               <CardContent className="p-4 sm:p-6">
                 <div className="flex flex-col sm:flex-row sm:items-center sm:justify-between gap-3">
@@ -348,31 +275,6 @@ export default function AchievementsPage() {
                       <h2 className="text-sm sm:text-base font-semibold text-red-700">
                         {t("achievements.error.load")}
                       </h2>
-                      <p className="text-sm text-red-600/80">{error}</p>
-                    </div>
-                  </div>
-                  <Button variant="outline" onClick={() => loadAchievements()}>
-                    {t("achievements.error.retry")}
-                  </Button>
-                </div>
-              </CardContent>
-            </Card>
-          )}
-          {error && overview && (
-            <Card className="border-yellow-200 bg-yellow-50">
-              <CardContent className="p-4 sm:p-6">
-                <div className="flex flex-col sm:flex-row sm:items-center sm:justify-between gap-3">
-                  <div className="flex items-start space-x-3">
-                    <div className="rounded-full bg-yellow-100 p-2">
-                      <Sparkles className="h-5 w-5 text-yellow-700" />
-                    </div>
-                    <div>
-                      <h2 className="text-sm sm:text-base font-semibold text-yellow-800">
-                        {t("achievements.demo")}
-                      </h2>
-                      <p className="text-sm text-yellow-700/80">
-                        {t("achievements.error.api")} {error}
-                      </p>
                     </div>
                   </div>
                   <Button variant="outline" onClick={() => loadAchievements()}>

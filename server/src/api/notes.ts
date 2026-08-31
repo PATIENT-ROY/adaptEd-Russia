@@ -4,6 +4,7 @@ import { prisma } from '../lib/database';
 import { authMiddleware } from '../lib/auth';
 import { ApiResponse } from '../types/index.js';
 import { getNextApiKey, markKeyAsFailed, resetKey } from '../lib/deepseek-keys';
+import { dispatchDueReminders } from '../lib/reminder-notifications';
 
 const router = Router();
 
@@ -224,6 +225,12 @@ router.post('/parse', authMiddleware, async (req: Request, res: Response) => {
       },
       message: `Создано ${createdReminders.length} напоминаний из заметки`,
     } as ApiResponse);
+
+    if (createdReminders.some((item) => new Date(item.dueDate).getTime() <= Date.now())) {
+      dispatchDueReminders().catch((error) => {
+        console.error('[notes] dispatch after parse failed:', error);
+      });
+    }
   } catch (error) {
     if (error instanceof z.ZodError) {
       return res.status(400).json({ success: false, error: 'Ошибка валидации', details: error.errors } as ApiResponse);
@@ -318,7 +325,6 @@ async function parseNoteWithAI(noteContent: string, today: string): Promise<AIPa
       resetKey(apiKey);
 
       const raw = data.choices?.[0]?.message?.content || '';
-      console.log('[Notes AI] Raw response:', raw.substring(0, 300));
 
       // Чистим от markdown-обёртки если есть
       const cleaned = raw.replace(/```json\n?/g, '').replace(/```\n?/g, '').trim();

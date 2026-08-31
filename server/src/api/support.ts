@@ -57,14 +57,6 @@ router.post("/contact", async (req: AuthenticatedRequest, res) => {
       },
     });
     
-    // Логирование обращения
-    console.log("Новое обращение в поддержку:", {
-      ticketId: ticket.id,
-      ...validatedData,
-      timestamp: new Date().toISOString(),
-      ip: req.ip,
-    });
-    
     res.status(200).json({
       success: true,
       message: "Сообщение успешно отправлено. Мы ответим вам в ближайшее время.",

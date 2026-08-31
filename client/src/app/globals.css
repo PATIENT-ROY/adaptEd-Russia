@@ -147,7 +147,7 @@
 }
 
 .app-main {
-    padding-top: calc(var(--app-navigation-height) + var(--app-safe-area-top));
+    padding-top: calc(var(--app-navigation-height) + var(--app-safe-area-top) + 1rem);
 }
 
 .modern-nav-item {

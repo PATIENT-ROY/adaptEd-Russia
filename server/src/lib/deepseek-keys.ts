@@ -58,7 +58,6 @@ export function markKeyAsFailed(key: string): void {
  */
 export function resetKey(key: string): void {
   failedKeys.delete(key);
-  console.log(`DeepSeek API ключ сброшен и снова доступен: ${key.substring(0, 10)}...`);
 }
 
 /**

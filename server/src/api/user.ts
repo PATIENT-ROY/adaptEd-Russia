@@ -683,7 +683,14 @@ router.get('/profile/overview', authMiddleware, async (req: Request, res: Respon
       where: { userId: authUser.userId },
     }).catch(() => 0);
 
-    const [userData, reminders, payments, chatMessages, guidesCompletedCount] = await Promise.all([
+    const guideReadsPromise = prisma.guideRead.findMany({
+      where: { userId: authUser.userId },
+      select: { guideId: true, guideType: true, readAt: true },
+      orderBy: { readAt: 'desc' },
+      take: 5,
+    }).catch(() => []);
+
+    const [userData, reminders, payments, chatMessages, guidesCompletedCount, recentGuideReads] = await Promise.all([
       getUserById(authUser.userId),
       prisma.reminder.findMany({
         where: { userId: authUser.userId },
@@ -701,6 +708,7 @@ router.get('/profile/overview', authMiddleware, async (req: Request, res: Respon
         take: 10,
       }),
       guideReadsCountPromise,
+      guideReadsPromise,
     ]);
 
     if (!userData) {
@@ -780,10 +788,18 @@ router.get('/profile/overview', authMiddleware, async (req: Request, res: Respon
         href: '/education-guide',
       },
       {
+        id: 'life-guide',
+        title: 'Бытовой гид',
+        description: 'Жильё, документы, медицина и быт в России',
+        icon: 'Home',
+        color: 'from-emerald-500 to-teal-600',
+        href: '/life-guide',
+      },
+      {
         id: 'smart-reminders',
         title: 'Умные напоминания',
         description: 'Управление задачами и сроками',
-        icon: 'Bell',
+        icon: 'CalendarClock',
         color: 'from-purple-500 to-purple-600',
         href: '/reminders',
       },
@@ -791,8 +807,8 @@ router.get('/profile/overview', authMiddleware, async (req: Request, res: Respon
         id: 'ai-assistant',
         title: 'AI Помощник',
         description: 'Задавайте вопросы на родном языке',
-        icon: 'MessageSquare',
-        color: 'from-orange-500 to-orange-600',
+        icon: 'Sparkles',
+        color: 'from-violet-500 to-indigo-600',
         href: '/ai-helper',
       },
       {
@@ -862,6 +878,18 @@ router.get('/profile/overview', authMiddleware, async (req: Request, res: Respon
         meta: {
           dueDate: reminder.dueDate.toISOString(),
           status: reminder.status,
+        },
+      })),
+      ...recentGuideReads.map((read) => ({
+        id: `guide-${read.guideType}-${read.guideId}`,
+        type: 'guide' as const,
+        title: `Прочитан гайд: ${read.guideId}`,
+        timestamp: read.readAt.toISOString(),
+        icon: 'BookOpen',
+        color: 'text-blue-600',
+        meta: {
+          guideId: read.guideId,
+          guideType: read.guideType,
         },
       })),
       ...chatMessages.slice(0, 3).map((message) => ({

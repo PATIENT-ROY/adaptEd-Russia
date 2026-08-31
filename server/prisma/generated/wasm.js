@@ -184,6 +184,7 @@ exports.Prisma.ReminderScalarFieldEnum = {
   category: 'category',
   notificationMethod: 'notificationMethod',
   noteId: 'noteId',
+  notifiedAt: 'notifiedAt',
   createdAt: 'createdAt',
   updatedAt: 'updatedAt'
 };

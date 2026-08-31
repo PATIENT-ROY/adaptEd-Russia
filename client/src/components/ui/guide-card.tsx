@@ -1,13 +1,12 @@
 import React from "react";
-import { Button } from "./button";
+import Link from "next/link";
 import { ArrowRight, BookOpen, Home, Clock, CheckCircle2 } from "lucide-react";
 import { cn } from "@/lib/utils";
 import { Guide, GuideCategory } from "@/types";
 import { formatDate } from "@/lib/date-utils";
-import { useRouter } from "next/navigation";
-import { GuideDetailModal } from "./guide-detail-modal";
 import { GuideCardBase } from "./guide-card-base";
 import { useTranslation } from "@/hooks/useTranslation";
+import { guideArticlePath } from "@/lib/guide-routes";
 
 interface GuideCardProps {
   guide: Guide;
@@ -26,12 +25,17 @@ const categoryIcons = {
   [GuideCategory.OTHER]: BookOpen,
 };
 
+const CATEGORY_I18N: Record<GuideCategory, string> = {
+  [GuideCategory.EDUCATION]: "guideCard.category.education",
+  [GuideCategory.LIFE]: "guideCard.category.life",
+  [GuideCategory.DOCUMENTS]: "guideCard.category.documents",
+  [GuideCategory.CULTURE]: "guideCard.category.culture",
+  [GuideCategory.LEGAL]: "guideCard.category.legal",
+  [GuideCategory.OTHER]: "guideCard.category.other",
+};
+
 const PREVIEW_MAX_LEN = 90;
 
-/**
- * First real paragraph only (skip headings + list rows).
- * Deterministic on server/client — no emoji unicode ranges.
- */
 function getGuidePreview(content: string, maxLen = PREVIEW_MAX_LEN): string {
   if (!content.trim()) return "";
 
@@ -83,50 +87,22 @@ function getGuidePreview(content: string, maxLen = PREVIEW_MAX_LEN): string {
 }
 
 export function GuideCard({ guide, onClick, className, isRead, onRead }: GuideCardProps) {
-  const router = useRouter();
   const { t } = useTranslation();
-  const [showModal, setShowModal] = React.useState(false);
   const Icon = categoryIcons[guide.category];
+  const href = guideArticlePath(guide);
 
-  const handleReadMore = (e: React.MouseEvent) => {
-    e.stopPropagation();
-
-    if (
-      guide.title.toLowerCase().includes("сленг") ||
-      guide.tags.some((tag) => tag.toLowerCase().includes("сленг"))
-    ) {
-      onRead?.(guide.id);
-      router.push("/education/student-slang");
-    } else {
-      setShowModal(true);
-    }
-  };
-
-  const handleModalClose = () => {
-    setShowModal(false);
+  const handleOpen = () => {
+    onClick?.();
     onRead?.(guide.id);
   };
 
   const previewText =
     getGuidePreview(guide.content) || t("guideCard.previewFallback");
 
-  const categoryLabel = guide.category === GuideCategory.EDUCATION
-    ? "Образование"
-    : guide.category === GuideCategory.LIFE
-    ? "Быт"
-    : guide.category === GuideCategory.DOCUMENTS
-    ? "Документы"
-    : guide.category === GuideCategory.CULTURE
-    ? "Культура"
-    : guide.category === GuideCategory.LEGAL
-    ? "Право"
-    : "Другое";
-
   return (
-    <>
+    <Link href={href} onClick={handleOpen} className="block h-full">
       <GuideCardBase
         className={cn(className, isRead && "ring-1 ring-green-200 bg-green-50/30")}
-        onClick={onClick}
         icon={
           <div className="relative">
             <div
@@ -150,7 +126,7 @@ export function GuideCard({ guide, onClick, className, isRead, onRead }: GuideCa
           </div>
         }
         title={guide.title}
-        subtitle={categoryLabel}
+        subtitle={t(CATEGORY_I18N[guide.category] ?? "guideCard.category.other")}
         description={previewText}
         footerActions={
           <>
@@ -158,24 +134,13 @@ export function GuideCard({ guide, onClick, className, isRead, onRead }: GuideCa
               <span>©</span>
               <span>{formatDate(guide.updatedAt)}</span>
             </div>
-            <Button
-              variant="ghost"
-              size="sm"
-              onClick={handleReadMore}
-              className="h-auto p-0 text-blue-600 hover:text-blue-700 text-sm font-medium group transition-all duration-300"
-            >
+            <span className="inline-flex items-center text-sm font-medium text-blue-600 group-hover:text-blue-700">
               {t("guideCard.open")}
-              <ArrowRight className="ml-1 h-3.5 w-3.5 group-hover:translate-x-1 transition-transform duration-300" />
-            </Button>
+              <ArrowRight className="ml-1 h-3.5 w-3.5 transition-transform duration-300 group-hover:translate-x-1" />
+            </span>
           </>
         }
       />
-
-      <GuideDetailModal
-        guide={guide}
-        isOpen={showModal}
-        onClose={handleModalClose}
-      />
-    </>
+    </Link>
   );
 }

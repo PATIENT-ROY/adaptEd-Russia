@@ -2,7 +2,6 @@
 
 import { Layout } from "@/components/layout/layout";
 import { GuideCard } from "@/components/ui/guide-card";
-import { GuideDetailModal } from "@/components/ui/guide-detail-modal";
 import { Button } from "@/components/ui/button";
 import {
   Search,
@@ -17,12 +16,14 @@ import {
 } from "lucide-react";
 import { useState, useMemo, useEffect, useCallback } from "react";
 import { useRouter } from "next/navigation";
-import { Guide } from "@/types";
+import Link from "next/link";
 import { useTranslation } from "@/hooks/useTranslation";
 import { useGuideProgress } from "@/hooks/useGuideProgress";
 import { useGuideDeeplink } from "@/hooks/useGuideDeeplink";
 import { lifeGuides } from "@/data/life-guides";
 import { HeroBackgroundImage } from "@/components/ui/hero-background-image";
+import { lifeGuidePath } from "@/lib/guide-routes";
+import { guideInLifeCategory, guideMatchesQuery } from "@/lib/guide-search";
 
 type ArrivalStep = {
   id: string;
@@ -46,7 +47,7 @@ const arrivalPhases: ArrivalPhase[] = [
     steps: [
       { id: "migration-card", labelKey: "lifeGuide.arrival.steps.migrationCard", guideId: "migration-card" },
       { id: "contact-uni", labelKey: "lifeGuide.arrival.steps.contactUniversity", guideId: "contact-university" },
-      { id: "housing", labelKey: "lifeGuide.arrival.steps.housing", guideId: "1" },
+      { id: "housing", labelKey: "lifeGuide.arrival.steps.housing", categoryId: "housing" },
     ],
   },
   {
@@ -76,6 +77,7 @@ const arrivalPhases: ArrivalPhase[] = [
       { id: "university", labelKey: "lifeGuide.arrival.steps.university", href: "/education-guide" },
       { id: "daily", labelKey: "lifeGuide.arrival.steps.dailyLife", guideId: "daily-life" },
       { id: "social", labelKey: "lifeGuide.arrival.steps.social", guideId: "social-adapt" },
+      { id: "culture", labelKey: "lifeGuide.arrival.steps.culture", guideId: "russian-cultural-code" },
     ],
   },
 ];
@@ -106,7 +108,6 @@ export function LifeGuideContent() {
   }, []);
   const [selectedCategory, setSelectedCategory] = useState("all");
   const [guidesVisibleCount, setGuidesVisibleCount] = useState(12);
-  const [activeGuide, setActiveGuide] = useState<Guide | null>(null);
 
   const { isRead, markAsRead } = useGuideProgress("life", lifeGuides.length);
   const handleMarkRead = useCallback((guideId: string) => {
@@ -124,7 +125,8 @@ export function LifeGuideContent() {
           (g) => g.id === step.guideId && g.isPublished,
         );
         if (guide) {
-          setActiveGuide(guide);
+          markAsRead(guide.id);
+          router.push(lifeGuidePath(guide.id));
           return;
         }
       }
@@ -136,7 +138,7 @@ export function LifeGuideContent() {
           ?.scrollIntoView({ behavior: "smooth", block: "start" });
       }
     },
-    [router],
+    [router, markAsRead, setSearchQuery],
   );
 
   const categories = categoriesConfig.map((category) => ({
@@ -148,131 +150,12 @@ export function LifeGuideContent() {
     setGuidesVisibleCount(12);
   }, [searchQuery, selectedCategory]);
 
-  // Фильтрация гайдов
   const filteredGuides = useMemo(() => {
-    let filtered = lifeGuides.filter((guide) => guide.isPublished);
-
-    // Фильтр по поиску
-    if (searchQuery.trim()) {
-      filtered = filtered.filter(
-        (guide) =>
-          guide.title.toLowerCase().includes(searchQuery.toLowerCase()) ||
-          guide.content.toLowerCase().includes(searchQuery.toLowerCase()) ||
-          guide.tags.some((tag) =>
-            tag.toLowerCase().includes(searchQuery.toLowerCase())
-          )
-      );
-    }
-
-    // Фильтр по категории
-    if (selectedCategory !== "all") {
-      filtered = filtered.filter((guide) => {
-        switch (selectedCategory) {
-          case "documents":
-            return guide.tags.some((tag) =>
-              [
-                "ИНН",
-                "СНИЛС",
-                "документы",
-                "паспорт",
-                "потеря",
-                "замена",
-                "миграция",
-                "регистрация",
-                "РВП",
-                "РВПО",
-                "ВНЖ",
-                "виза",
-                "учёт",
-                "расходы",
-                "госпошлина",
-                "безвизовый",
-                "въезд",
-                "продление",
-                "гостиница",
-                "переезд",
-                "дактилоскопия",
-                "медосмотр",
-                "RU ID",
-                "Госуслуги",
-              ].includes(tag)
-            );
-          case "housing":
-            return guide.tags.some((tag) =>
-              [
-                "общежитие",
-                "регистрация",
-                "аренда",
-                "квартира",
-                "договор",
-              ].includes(tag)
-            );
-          case "transport":
-            return guide.tags.some((tag) =>
-              ["транспорт", "метро", "карты"].includes(tag)
-            );
-          case "health":
-            return guide.tags.some((tag) =>
-              [
-                "медицина",
-                "врач",
-                "здоровье",
-                "полис",
-                "ОМС",
-                "страховка",
-                "запись",
-                "приём",
-                "стоматология",
-                "зубы",
-                "лечение",
-                "аптека",
-                "лекарства",
-                "рецепт",
-                "скорая",
-                "экстренная",
-                "помощь",
-                "анализы",
-                "лаборатория",
-                "исследования",
-                "дактилоскопия",
-                "медосмотр",
-                "ДМС",
-              ].includes(tag)
-            );
-          case "services":
-            return guide.tags.some((tag) =>
-              [
-                "банк",
-                "карта",
-                "платежи",
-                "расходы",
-                "госпошлина",
-                "SIM",
-                "связь",
-                "телефон",
-                "услуги",
-                "быт",
-                "магазины",
-                "адаптация",
-                "общение",
-                "работа",
-                "трудоустройство",
-                "безопасность",
-                "полиция",
-                "бюджет",
-                "Госуслуги",
-                "RU ID",
-                "МФЦ",
-                "СНИЛС",
-              ].includes(tag)
-            );
-          default:
-            return true;
-        }
-      });
-    }
-
-    return filtered;
+    return lifeGuides.filter((guide) => {
+      if (!guide.isPublished) return false;
+      if (searchQuery.trim() && !guideMatchesQuery(guide, searchQuery)) return false;
+      return guideInLifeCategory(guide, selectedCategory);
+    });
   }, [searchQuery, selectedCategory]);
 
   return (
@@ -385,22 +268,48 @@ export function LifeGuideContent() {
                   </h3>
                 </div>
                 <div className="grid grid-cols-1 sm:grid-cols-2 lg:grid-cols-4 gap-2">
-                  {phase.steps.map((step) => (
-                    <button
-                      key={step.id}
-                      type="button"
-                      onClick={() => openArrivalStep(step)}
-                      className="group flex min-w-0 items-center justify-between gap-2 rounded-xl border border-slate-200 bg-slate-50/80 px-3.5 py-3 text-left text-sm font-medium text-slate-800 hover:border-emerald-300 hover:bg-emerald-50 transition-all"
-                    >
-                      <span className="min-w-0 flex-1 break-words leading-snug">
-                        {t(step.labelKey)}
-                      </span>
-                      <ChevronRight
-                        className="h-4 w-4 flex-shrink-0 text-slate-400 group-hover:text-emerald-600"
-                        aria-hidden
-                      />
-                    </button>
-                  ))}
+                  {phase.steps.map((step) => {
+                    const publishedGuide = step.guideId
+                      ? lifeGuides.find((g) => g.id === step.guideId && g.isPublished)
+                      : undefined;
+                    const className =
+                      "group flex min-w-0 items-center justify-between gap-2 rounded-xl border border-slate-200 bg-slate-50/80 px-3.5 py-3 text-left text-sm font-medium text-slate-800 hover:border-emerald-300 hover:bg-emerald-50 transition-all";
+                    const label = (
+                      <>
+                        <span className="min-w-0 flex-1 break-words leading-snug">
+                          {t(step.labelKey)}
+                        </span>
+                        <ChevronRight
+                          className="h-4 w-4 flex-shrink-0 text-slate-400 group-hover:text-emerald-600"
+                          aria-hidden
+                        />
+                      </>
+                    );
+
+                    if (publishedGuide) {
+                      return (
+                        <Link
+                          key={step.id}
+                          href={lifeGuidePath(publishedGuide.id)}
+                          onClick={() => markAsRead(publishedGuide.id)}
+                          className={className}
+                        >
+                          {label}
+                        </Link>
+                      );
+                    }
+
+                    return (
+                      <button
+                        key={step.id}
+                        type="button"
+                        onClick={() => openArrivalStep(step)}
+                        className={className}
+                      >
+                        {label}
+                      </button>
+                    );
+                  })}
                 </div>
               </div>
             ))}
@@ -536,15 +445,6 @@ export function LifeGuideContent() {
             </div>
           )}
         </section>
-
-        <GuideDetailModal
-          guide={activeGuide}
-          isOpen={!!activeGuide}
-          onClose={() => {
-            if (activeGuide) handleMarkRead(activeGuide.id);
-            setActiveGuide(null);
-          }}
-        />
       </div>
     </Layout>
   );

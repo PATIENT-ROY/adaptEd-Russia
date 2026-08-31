@@ -1,6 +1,6 @@
 "use client";
 
-import { useState, useCallback } from "react";
+import { useState, useCallback, useEffect } from "react";
 import { Layout } from "@/components/layout/layout";
 import { ProtectedRoute } from "@/components/auth/ProtectedRoute";
 import { FeaturePreviewGate } from "@/components/auth/FeaturePreviewGate";
@@ -42,11 +42,11 @@ import {
 } from "lucide-react";
 import Link from "next/link";
 import ReactMarkdown from "react-markdown";
+import { UsageBar, LimitOverlay } from "@/components/ai/AiUsage";
+import type { ChatUsage } from "@/types";
 
 interface TemplateField {
   id: string;
-  label: string;
-  placeholder: string;
   type: "text" | "textarea" | "select";
   options?: string[];
   required?: boolean;
@@ -54,8 +54,6 @@ interface TemplateField {
 
 interface Template {
   id: string;
-  name: string;
-  description: string;
   icon: React.ComponentType<{ className?: string }>;
   color: string;
   bgColor: string;
@@ -68,33 +66,29 @@ type TemplateCategory = "text" | "presentation" | "tasks" | "topic" | "exams" | 
 
 const TEMPLATE_CATEGORIES: Array<{
   id: TemplateCategory;
-  name: string;
-  description: string;
   icon: React.ComponentType<{ className?: string }>;
   gradient: string;
 }> = [
-  { id: "text", name: "Текстовая работа", description: "Эссе, письма и документы", icon: FileText, gradient: "from-blue-500 to-blue-700" },
-  { id: "presentation", name: "Презентация", description: "План слайдов и выступления", icon: Presentation, gradient: "from-orange-500 to-red-500" },
-  { id: "tasks", name: "Решение задач", description: "Разбор с объяснением", icon: Puzzle, gradient: "from-pink-400 to-pink-600" },
-  { id: "topic", name: "Изучение темы", description: "План и понятный конспект", icon: GraduationCap, gradient: "from-red-500 to-rose-600" },
-  { id: "exams", name: "Экзамены", description: "Подготовка и самопроверка", icon: ClipboardCheck, gradient: "from-emerald-400 to-teal-500" },
-  { id: "transcript", name: "Транскрибатор", description: "Очистка записи в конспект", icon: Mic2, gradient: "from-fuchsia-500 to-purple-600" },
+  { id: "text", icon: FileText, gradient: "from-blue-500 to-blue-700" },
+  { id: "presentation", icon: Presentation, gradient: "from-orange-500 to-red-500" },
+  { id: "tasks", icon: Puzzle, gradient: "from-pink-400 to-pink-600" },
+  { id: "topic", icon: GraduationCap, gradient: "from-red-500 to-rose-600" },
+  { id: "exams", icon: ClipboardCheck, gradient: "from-emerald-400 to-teal-500" },
+  { id: "transcript", icon: Mic2, gradient: "from-fuchsia-500 to-purple-600" },
 ];
 
 const TEMPLATES: Template[] = [
   {
     id: "coursework-plan",
-    name: "План курсовой работы",
-    description: "Структурированный план с главами и разделами",
     icon: BookOpen,
     color: "text-blue-600",
     bgColor: "bg-blue-50",
     category: "topic",
     fields: [
-      { id: "topic", label: "Тема работы", placeholder: "Например: Влияние социальных сетей на молодёжь", type: "text", required: true },
-      { id: "subject", label: "Предмет/дисциплина", placeholder: "Например: Социология", type: "text", required: true },
-      { id: "pages", label: "Объём (страниц)", placeholder: "Например: 30", type: "text" },
-      { id: "requirements", label: "Дополнительные требования", placeholder: "Особые требования преподавателя", type: "textarea" },
+      { id: "topic", type: "text", required: true },
+      { id: "subject", type: "text", required: true },
+      { id: "pages", type: "text" },
+      { id: "requirements", type: "textarea" },
     ],
     promptBuilder: (values) => `Создай подробный план курсовой работы:
 
@@ -113,19 +107,17 @@ ${values.requirements ? `Требования: ${values.requirements}` : ""}
   },
   {
     id: "resume",
-    name: "Резюме на русском",
-    description: "Профессиональное резюме для работы в России",
     icon: Briefcase,
     color: "text-green-600",
     bgColor: "bg-green-50",
     category: "text",
     fields: [
-      { id: "name", label: "ФИО", placeholder: "Иванов Иван Иванович", type: "text", required: true },
-      { id: "position", label: "Желаемая должность", placeholder: "Например: Junior разработчик", type: "text", required: true },
-      { id: "education", label: "Образование", placeholder: "Университет, специальность, год окончания", type: "textarea", required: true },
-      { id: "experience", label: "Опыт работы (если есть)", placeholder: "Компании, должности, обязанности", type: "textarea" },
-      { id: "skills", label: "Навыки", placeholder: "Языки программирования, soft skills и т.д.", type: "textarea", required: true },
-      { id: "languages", label: "Языки", placeholder: "Русский (B2), Английский (C1)", type: "text" },
+      { id: "name", type: "text", required: true },
+      { id: "position", type: "text", required: true },
+      { id: "education", type: "textarea", required: true },
+      { id: "experience", type: "textarea" },
+      { id: "skills", type: "textarea", required: true },
+      { id: "languages", type: "text" },
     ],
     promptBuilder: (values) => `Создай профессиональное резюме на русском языке:
 
@@ -140,19 +132,17 @@ ${values.languages ? `Языки: ${values.languages}` : ""}
   },
   {
     id: "teacher-email",
-    name: "Письмо преподавателю",
-    description: "Официальное письмо с просьбой или вопросом",
     icon: Mail,
     color: "text-purple-600",
     bgColor: "bg-purple-50",
     category: "text",
     fields: [
-      { id: "teacher_name", label: "ФИО преподавателя", placeholder: "Иванов Иван Иванович", type: "text", required: true },
-      { id: "subject", label: "Предмет", placeholder: "Название дисциплины", type: "text" },
-      { id: "purpose", label: "Цель письма", placeholder: "Например: Просьба о пересдаче экзамена", type: "text", required: true },
-      { id: "details", label: "Подробности", placeholder: "Опишите ситуацию подробнее", type: "textarea", required: true },
-      { id: "your_name", label: "Ваше ФИО", placeholder: "Ваше полное имя", type: "text", required: true },
-      { id: "group", label: "Группа", placeholder: "Номер группы", type: "text" },
+      { id: "teacher_name", type: "text", required: true },
+      { id: "subject", type: "text" },
+      { id: "purpose", type: "text", required: true },
+      { id: "details", type: "textarea", required: true },
+      { id: "your_name", type: "text", required: true },
+      { id: "group", type: "text" },
     ],
     promptBuilder: (values) => `Напиши официальное письмо преподавателю:
 
@@ -167,18 +157,16 @@ ${values.group ? `Группа: ${values.group}` : ""}
   },
   {
     id: "essay",
-    name: "Эссе",
-    description: "Структурированное эссе на заданную тему",
     icon: PenTool,
     color: "text-orange-600",
     bgColor: "bg-orange-50",
     category: "text",
     fields: [
-      { id: "topic", label: "Тема эссе", placeholder: "Введите тему эссе", type: "text", required: true },
-      { id: "subject", label: "Предмет", placeholder: "Для какого предмета", type: "text" },
-      { id: "length", label: "Объём (слов)", placeholder: "Например: 500", type: "text" },
-      { id: "style", label: "Стиль", placeholder: "Академический, публицистический...", type: "text" },
-      { id: "thesis", label: "Ваш тезис/мнение (опционально)", placeholder: "Ваша позиция по теме", type: "textarea" },
+      { id: "topic", type: "text", required: true },
+      { id: "subject", type: "text" },
+      { id: "length", type: "text" },
+      { id: "style", type: "text" },
+      { id: "thesis", type: "textarea" },
     ],
     promptBuilder: (values) => `Напиши эссе:
 
@@ -192,20 +180,18 @@ ${values.thesis ? `Тезис автора: ${values.thesis}` : ""}
   },
   {
     id: "application",
-    name: "Заявление",
-    description: "Официальное заявление в деканат или администрацию",
     icon: FileCheck,
     color: "text-red-600",
     bgColor: "bg-red-50",
     category: "text",
     fields: [
-      { id: "recipient", label: "Кому (должность)", placeholder: "Декану факультета...", type: "text", required: true },
-      { id: "recipient_name", label: "ФИО получателя", placeholder: "Иванов И.И.", type: "text" },
-      { id: "purpose", label: "Цель заявления", placeholder: "Прошу предоставить академический отпуск...", type: "textarea", required: true },
-      { id: "reason", label: "Причина/основание", placeholder: "По причине...", type: "textarea" },
-      { id: "your_name", label: "Ваше ФИО", placeholder: "Полное имя", type: "text", required: true },
-      { id: "faculty", label: "Факультет", placeholder: "Название факультета", type: "text" },
-      { id: "group", label: "Группа/курс", placeholder: "Номер группы, курс", type: "text" },
+      { id: "recipient", type: "text", required: true },
+      { id: "recipient_name", type: "text" },
+      { id: "purpose", type: "textarea", required: true },
+      { id: "reason", type: "textarea" },
+      { id: "your_name", type: "text", required: true },
+      { id: "faculty", type: "text" },
+      { id: "group", type: "text" },
     ],
     promptBuilder: (values) => `Напиши официальное заявление:
 
@@ -220,17 +206,15 @@ ${values.group ? `Группа/курс: ${values.group}` : ""}
   },
   {
     id: "translation",
-    name: "Перевод текста",
-    description: "Качественный перевод на русский язык",
     icon: Languages,
     color: "text-teal-600",
     bgColor: "bg-teal-50",
     category: "transcript",
     fields: [
-      { id: "source_lang", label: "Исходный язык", placeholder: "Английский, французский...", type: "text", required: true },
-      { id: "text", label: "Текст для перевода", placeholder: "Вставьте текст", type: "textarea", required: true },
-      { id: "style", label: "Стиль перевода", placeholder: "Официальный, разговорный, академический", type: "text" },
-      { id: "context", label: "Контекст (опционально)", placeholder: "Для чего этот перевод", type: "text" },
+      { id: "source_lang", type: "text", required: true },
+      { id: "text", type: "textarea", required: true },
+      { id: "style", type: "text" },
+      { id: "context", type: "text" },
     ],
     promptBuilder: (values) => `Переведи текст на русский язык:
 
@@ -245,18 +229,16 @@ ${values.text}
   },
   {
     id: "presentation-outline",
-    name: "План презентации",
-    description: "Структура презентации со слайдами",
     icon: GraduationCap,
     color: "text-indigo-600",
     bgColor: "bg-indigo-50",
     category: "presentation",
     fields: [
-      { id: "topic", label: "Тема презентации", placeholder: "О чём презентация", type: "text", required: true },
-      { id: "subject", label: "Предмет/курс", placeholder: "Для какого предмета", type: "text" },
-      { id: "slides", label: "Количество слайдов", placeholder: "Например: 10", type: "text" },
-      { id: "duration", label: "Длительность (минут)", placeholder: "Например: 15", type: "text" },
-      { id: "audience", label: "Аудитория", placeholder: "Студенты, преподаватели...", type: "text" },
+      { id: "topic", type: "text", required: true },
+      { id: "subject", type: "text" },
+      { id: "slides", type: "text" },
+      { id: "duration", type: "text" },
+      { id: "audience", type: "text" },
     ],
     promptBuilder: (values) => `Создай план презентации:
 
@@ -273,42 +255,42 @@ ${values.audience ? `Аудитория: ${values.audience}` : ""}
 4. Примерным текстом для спикера`,
   },
   {
-    id: "solve-task", name: "Разобрать задачу", description: "Решение по шагам с объяснением логики", icon: Puzzle,
+    id: "solve-task", icon: Puzzle,
     color: "text-pink-600", bgColor: "bg-pink-50", category: "tasks",
     fields: [
-      { id: "subject", label: "Предмет", placeholder: "Математика, физика, экономика…", type: "text", required: true },
-      { id: "task", label: "Условие задачи", placeholder: "Вставьте полное условие", type: "textarea", required: true },
-      { id: "level", label: "Ваш уровень", placeholder: "1 курс, бакалавриат…", type: "text" },
+      { id: "subject", type: "text", required: true },
+      { id: "task", type: "textarea", required: true },
+      { id: "level", type: "text" },
     ],
     promptBuilder: (v) => `Реши задачу по предмету «${v.subject}».\n\nУсловие: ${v.task}\n${v.level ? `Уровень: ${v.level}` : ""}\n\nОбъясни каждый шаг простыми словами, проверь ответ и в конце дай краткий алгоритм решения подобных задач.`,
   },
   {
-    id: "study-topic", name: "Изучить тему", description: "Понятный конспект и план изучения", icon: GraduationCap,
+    id: "study-topic", icon: GraduationCap,
     color: "text-rose-600", bgColor: "bg-rose-50", category: "topic",
     fields: [
-      { id: "topic", label: "Тема", placeholder: "Например: производные функций", type: "text", required: true },
-      { id: "level", label: "Текущий уровень", placeholder: "Не знаком / знаю основы", type: "text" },
-      { id: "goal", label: "Цель", placeholder: "Понять к семинару, подготовиться к тесту…", type: "text" },
+      { id: "topic", type: "text", required: true },
+      { id: "level", type: "text" },
+      { id: "goal", type: "text" },
     ],
     promptBuilder: (v) => `Помоги изучить тему «${v.topic}». ${v.level ? `Мой уровень: ${v.level}.` : ""} ${v.goal ? `Цель: ${v.goal}.` : ""}\n\nОбъясни от простого к сложному, приведи примеры, составь краткий конспект и 5 вопросов для самопроверки.`,
   },
   {
-    id: "exam-prep", name: "Подготовка к экзамену", description: "План подготовки, билеты и проверка знаний", icon: ClipboardCheck,
+    id: "exam-prep", icon: ClipboardCheck,
     color: "text-emerald-600", bgColor: "bg-emerald-50", category: "exams",
     fields: [
-      { id: "subject", label: "Предмет", placeholder: "Название дисциплины", type: "text", required: true },
-      { id: "topics", label: "Темы или билеты", placeholder: "Перечислите темы экзамена", type: "textarea", required: true },
-      { id: "days", label: "Дней до экзамена", placeholder: "Например: 7", type: "text" },
+      { id: "subject", type: "text", required: true },
+      { id: "topics", type: "textarea", required: true },
+      { id: "days", type: "text" },
     ],
     promptBuilder: (v) => `Подготовь меня к экзамену по предмету «${v.subject}».\nТемы: ${v.topics}\n${v.days ? `До экзамена: ${v.days} дней.` : ""}\n\nСоставь реалистичный план, краткую шпаргалку по темам и тренировочный тест с ответами.`,
   },
   {
-    id: "lecture-transcript", name: "Конспект из расшифровки", description: "Превращает сырой текст записи в конспект", icon: Mic2,
+    id: "lecture-transcript", icon: Mic2,
     color: "text-fuchsia-600", bgColor: "bg-fuchsia-50", category: "transcript",
     fields: [
-      { id: "title", label: "Тема лекции", placeholder: "Название темы", type: "text" },
-      { id: "text", label: "Расшифровка", placeholder: "Вставьте текст аудио или лекции", type: "textarea", required: true },
-      { id: "format", label: "Формат результата", placeholder: "Подробный конспект / краткие тезисы", type: "text" },
+      { id: "title", type: "text" },
+      { id: "text", type: "textarea", required: true },
+      { id: "format", type: "text" },
     ],
     promptBuilder: (v) => `Обработай расшифровку ${v.title ? `лекции «${v.title}»` : "лекции"}.\n\n${v.text}\n\nУдали повторы и слова-паразиты, исправь явные ошибки распознавания и оформи ${v.format || "структурированный конспект"}. Не добавляй факты, которых нет в исходном тексте.`,
   },
@@ -360,6 +342,12 @@ function StepIndicator({ current, t }: { current: Step; t: (key: string) => stri
 export default function AiToolsExperience() {
   const { user } = useAuth();
   const { t } = useTranslation();
+  const tmplName = (id: string) => t(`templates.item.${id}.name`);
+  const tmplDesc = (id: string) => t(`templates.item.${id}.desc`);
+  const fieldLabel = (tmplId: string, fieldId: string) =>
+    t(`templates.item.${tmplId}.field.${fieldId}`);
+  const fieldPh = (tmplId: string, fieldId: string) =>
+    t(`templates.item.${tmplId}.field.${fieldId}.ph`);
   const [selectedTemplate, setSelectedTemplate] = useState<Template | null>(null);
   const [formValues, setFormValues] = useState<Record<string, string>>({});
   const [generatedContent, setGeneratedContent] = useState<string | null>(null);
@@ -369,13 +357,30 @@ export default function AiToolsExperience() {
   const [toastMessage, setToastMessage] = useState<string | null>(null);
   const [toastType, setToastType] = useState<"success" | "error">("success");
   const [activeCategory, setActiveCategory] = useState<TemplateCategory | null>(null);
+  const [usage, setUsage] = useState<ChatUsage | null>(null);
+  const [limitError, setLimitError] = useState<string | null>(null);
+  const isAtLimit = Boolean(usage && usage.used >= usage.limit);
   const unauthFallback = (
     <FeaturePreviewGate
-      featureName="AI-инструменты"
-      previewTitle="Готовый AI-инструмент"
-      previewText='После входа выберите задачу и получите готовый результат, например: "Письмо преподавателю о переносе дедлайна".'
+      featureName={t("templates.page.title")}
+      previewTitle={t("aiLanding.tools.title")}
+      previewText={t("aiLanding.tools.desc")}
     />
   );
+
+  useEffect(() => {
+    if (!user) return;
+    let cancelled = false;
+    apiClient
+      .getChatHistory()
+      .then((result) => {
+        if (!cancelled && result.usage) setUsage(result.usage);
+      })
+      .catch(() => {});
+    return () => {
+      cancelled = true;
+    };
+  }, [user]);
 
   const showToast = useCallback((msg: string, type: "success" | "error" = "success") => {
     setToastMessage(msg);
@@ -384,6 +389,10 @@ export default function AiToolsExperience() {
   }, []);
 
   const currentStep: Step = !selectedTemplate ? "choose" : !generatedContent ? "fill" : "result";
+
+  useEffect(() => {
+    window.scrollTo({ top: 0, left: 0, behavior: "instant" });
+  }, [currentStep, selectedTemplate?.id]);
 
   const handleSelectTemplate = useCallback((template: Template) => {
     setSelectedTemplate(template);
@@ -414,32 +423,39 @@ export default function AiToolsExperience() {
       return;
     }
 
+    if (isAtLimit) {
+      setLimitError(usage?.plan === "PREMIUM" ? "PREMIUM" : "FREEMIUM");
+      return;
+    }
+
     setFieldErrors(new Set());
     setIsGenerating(true);
+    setLimitError(null);
     try {
       const prompt = selectedTemplate.promptBuilder(formValues);
       const response = await apiClient.sendMessage(prompt, "generator");
 
-      interface ChatResponse {
-        aiMessage?: { content: string };
-        content?: string;
-      }
+      if (response.usage) setUsage(response.usage);
 
-      if (response) {
-        const chatResponse = response as ChatResponse;
-        if (chatResponse.aiMessage?.content) {
-          setGeneratedContent(chatResponse.aiMessage.content);
-        } else if (chatResponse.content) {
-          setGeneratedContent(chatResponse.content);
-        }
+      if (response.aiMessage?.content) {
+        setGeneratedContent(response.aiMessage.content);
       }
     } catch (error) {
+      const msg = error instanceof Error ? error.message : "";
+      if (msg.includes("LIMIT_PREMIUM")) {
+        setLimitError("PREMIUM");
+        return;
+      }
+      if (msg.includes("LIMIT_FREEMIUM")) {
+        setLimitError("FREEMIUM");
+        return;
+      }
       console.error("Error generating content:", error);
       showToast(t("templates.generateError"), "error");
     } finally {
       setIsGenerating(false);
     }
-  }, [selectedTemplate, formValues, showToast, t]);
+  }, [selectedTemplate, formValues, showToast, t, isAtLimit, usage?.plan]);
 
   const handleCopy = useCallback(async () => {
     if (!generatedContent) return;
@@ -491,7 +507,7 @@ export default function AiToolsExperience() {
           {/* Header */}
           <div className="bg-white rounded-2xl sm:rounded-3xl p-4 sm:p-6 shadow-sm space-y-4">
             <BackButton
-              label={selectedTemplate || generatedContent ? t("templates.back") : "Все AI-возможности"}
+              label={selectedTemplate || generatedContent ? t("templates.back") : t("templates.backToHub")}
               href={selectedTemplate || generatedContent ? undefined : "/ai-helper"}
               onClick={selectedTemplate || generatedContent ? handleBack : undefined}
             />
@@ -503,11 +519,11 @@ export default function AiToolsExperience() {
                   </div>
                   <div>
                     <h1 className="text-xl sm:text-2xl font-bold text-gray-900">
-                      {selectedTemplate ? selectedTemplate.name : t("templates.page.title")}
+                      {selectedTemplate ? tmplName(selectedTemplate.id) : t("templates.page.title")}
                     </h1>
                     <p className="text-sm sm:text-base text-gray-600">
                       {selectedTemplate
-                        ? selectedTemplate.description
+                        ? tmplDesc(selectedTemplate.id)
                         : t("templates.page.subtitle")}
                     </p>
                   </div>
@@ -526,6 +542,14 @@ export default function AiToolsExperience() {
             {selectedTemplate && (
               <StepIndicator current={currentStep} t={t} />
             )}
+            {usage && (
+              <UsageBar
+                used={usage.used}
+                limit={usage.limit}
+                plan={usage.plan}
+                t={t}
+              />
+            )}
           </div>
 
           {/* Content */}
@@ -534,10 +558,10 @@ export default function AiToolsExperience() {
               <section className="overflow-hidden rounded-3xl border border-slate-100 bg-white p-4 shadow-sm sm:p-6">
                 <div className="mb-5 flex items-end justify-between gap-4">
                   <div>
-                    <p className="text-xs font-bold uppercase tracking-[0.18em] text-purple-600">Быстрый старт</p>
-                    <h2 className="mt-1 text-xl font-bold text-slate-900 sm:text-2xl">Что хотите создать?</h2>
+                    <p className="text-xs font-bold uppercase tracking-[0.18em] text-purple-600">{t("templates.quickStart")}</p>
+                    <h2 className="mt-1 text-xl font-bold text-slate-900 sm:text-2xl">{t("templates.whatToCreate")}</h2>
                   </div>
-                  {activeCategory && <button onClick={() => setActiveCategory(null)} className="text-sm font-medium text-slate-500 hover:text-purple-600">Показать все</button>}
+                  {activeCategory && <button onClick={() => setActiveCategory(null)} className="text-sm font-medium text-slate-500 hover:text-purple-600">{t("templates.showAll")}</button>}
                 </div>
                 <div className="grid grid-cols-2 gap-3 md:grid-cols-3 xl:grid-cols-6">
                   {TEMPLATE_CATEGORIES.map((category) => {
@@ -545,18 +569,18 @@ export default function AiToolsExperience() {
                     const active = activeCategory === category.id;
                     return <button key={category.id} onClick={() => setActiveCategory(active ? null : category.id)} className={`group rounded-2xl border p-3 text-left transition-all hover:-translate-y-1 hover:shadow-lg ${active ? "border-purple-400 bg-purple-50 ring-2 ring-purple-100" : "border-slate-100 bg-white"}`}>
                       <div className={`mb-3 flex h-14 w-14 items-center justify-center rounded-2xl bg-gradient-to-br ${category.gradient} text-white shadow-lg transition-transform group-hover:scale-105`}><Icon className="h-7 w-7" /></div>
-                      <div className="font-bold leading-tight text-slate-900">{category.name}</div>
-                      <div className="mt-1 hidden text-xs leading-snug text-slate-500 sm:block">{category.description}</div>
+                      <div className="font-bold leading-tight text-slate-900">{t(`templates.cat.${category.id}`)}</div>
+                      <div className="mt-1 hidden text-xs leading-snug text-slate-500 sm:block">{t(`templates.cat.${category.id}.desc`)}</div>
                     </button>;
                   })}
                 </div>
               </section>
               <div className="flex items-center justify-between">
-                <h2 className="text-lg font-bold text-slate-900">{activeCategory ? TEMPLATE_CATEGORIES.find(c => c.id === activeCategory)?.name : "Все AI-инструменты"}</h2>
-                <span className="text-sm text-slate-500">{TEMPLATES.filter(t => !activeCategory || t.category === activeCategory).length} вариантов</span>
+                <h2 className="text-lg font-bold text-slate-900">{activeCategory ? t(`templates.cat.${activeCategory}`) : t("templates.allTools")}</h2>
+                <span className="text-sm text-slate-500">{TEMPLATES.filter(tpl => !activeCategory || tpl.category === activeCategory).length} {t("templates.variants")}</span>
               </div>
               <div className="grid grid-cols-1 sm:grid-cols-2 lg:grid-cols-3 gap-4 sm:gap-6">
-              {TEMPLATES.filter(t => !activeCategory || t.category === activeCategory).map((template) => {
+              {TEMPLATES.filter(tpl => !activeCategory || tpl.category === activeCategory).map((template) => {
                 const Icon = template.icon;
                 return (
                   <button
@@ -571,9 +595,9 @@ export default function AiToolsExperience() {
                           <Icon className={`h-6 w-6 ${template.color}`} />
                         </div>
                         <CardTitle className={`text-lg ${template.color}`}>
-                          {template.name}
+                          {tmplName(template.id)}
                         </CardTitle>
-                        <CardDescription className="line-clamp-2">{template.description}</CardDescription>
+                        <CardDescription className="line-clamp-2">{tmplDesc(template.id)}</CardDescription>
                       </CardHeader>
                       <CardContent className="pt-0">
                         <div className="flex items-center justify-between text-sm text-gray-500">
@@ -591,14 +615,21 @@ export default function AiToolsExperience() {
             </div>
           ) : !generatedContent ? (
             /* Form */
-            <Card className="max-w-2xl mx-auto">
+            <Card className="max-w-2xl mx-auto relative">
+                {limitError && (
+                  <LimitOverlay
+                    plan={limitError}
+                    onDismiss={() => setLimitError(null)}
+                    t={t}
+                  />
+                )}
               <CardHeader>
                 <div className="flex items-center space-x-3">
                   <div className={`w-10 h-10 rounded-lg ${selectedTemplate.bgColor} flex items-center justify-center`}>
                     <selectedTemplate.icon className={`h-5 w-5 ${selectedTemplate.color}`} />
                   </div>
                   <div>
-                    <CardTitle>{selectedTemplate.name}</CardTitle>
+                    <CardTitle>{tmplName(selectedTemplate.id)}</CardTitle>
                     <CardDescription>{t("templates.fillFields")}</CardDescription>
                   </div>
                 </div>
@@ -611,7 +642,7 @@ export default function AiToolsExperience() {
                     return (
                       <div key={field.id} className="space-y-1.5 mb-4 last:mb-0">
                         <label htmlFor={fieldId} className="text-sm font-medium text-gray-700">
-                          {field.label}
+                          {fieldLabel(selectedTemplate.id, field.id)}
                           {field.required && <span className="text-red-500 ml-1">*</span>}
                         </label>
                         {field.type === "textarea" ? (
@@ -622,14 +653,14 @@ export default function AiToolsExperience() {
                                 ? "border-red-500 focus-visible:ring-red-500"
                                 : "border-input"
                             }`}
-                            placeholder={field.placeholder}
+                            placeholder={fieldPh(selectedTemplate.id, field.id)}
                             value={formValues[field.id] || ""}
                             onChange={(e) => handleFieldChange(field.id, e.target.value)}
                           />
                         ) : (
                           <Input
                             id={fieldId}
-                            placeholder={field.placeholder}
+                            placeholder={fieldPh(selectedTemplate.id, field.id)}
                             value={formValues[field.id] || ""}
                             onChange={(e) => handleFieldChange(field.id, e.target.value)}
                             className={hasError ? "border-red-500 focus-visible:ring-red-500" : ""}
@@ -637,7 +668,7 @@ export default function AiToolsExperience() {
                         )}
                         {hasError && (
                           <p className="text-xs text-red-500" role="alert">
-                            {field.label} — обязательное поле
+                            {t("templates.requiredField")}
                           </p>
                         )}
                       </div>
@@ -648,7 +679,7 @@ export default function AiToolsExperience() {
                 <div className="pt-2">
                   <Button
                     onClick={handleGenerate}
-                    disabled={isGenerating}
+                    disabled={isGenerating || isAtLimit}
                     className="w-full bg-gradient-to-r from-purple-500 to-pink-500 hover:from-purple-600 hover:to-pink-600"
                   >
                     {isGenerating ? (
@@ -677,7 +708,7 @@ export default function AiToolsExperience() {
                     </div>
                     <div>
                       <CardTitle>{t("templates.result.title")}</CardTitle>
-                      <CardDescription>{selectedTemplate.name}</CardDescription>
+                      <CardDescription>{tmplName(selectedTemplate.id)}</CardDescription>
                     </div>
                   </div>
                   <div className="flex flex-wrap gap-2">
@@ -711,7 +742,7 @@ export default function AiToolsExperience() {
                       variant="outline"
                       size="sm"
                       onClick={handleRegenerate}
-                      disabled={isGenerating}
+                      disabled={isGenerating || isAtLimit}
                     >
                       <RefreshCw className={`h-4 w-4 mr-2 ${isGenerating ? "animate-spin" : ""}`} />
                       {t("templates.regenerate")}

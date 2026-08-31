@@ -84,8 +84,6 @@ router.get('/payment/:paymentId', authMiddleware, async (req, res) => {
     const { paymentId } = req.params;
     const userId = (req as any).user.userId;
 
-    console.log('Getting payment:', { paymentId, userId });
-
     // Сначала пытаемся найти по id (UUID из базы данных)
     let payment = await prisma.payment.findFirst({
       where: { id: paymentId, userId },
@@ -93,29 +91,20 @@ router.get('/payment/:paymentId', authMiddleware, async (req, res) => {
 
     // Если не найдено по id, пытаемся найти по yooKassaPaymentId
     if (!payment) {
-      console.log('Payment not found by id, trying yooKassaPaymentId:', paymentId);
       payment = await prisma.payment.findFirst({
         where: { yooKassaPaymentId: paymentId, userId },
       });
     }
 
     if (!payment) {
-      console.log('Payment not found:', paymentId);
       return res.status(404).json({ error: 'Payment not found' });
     }
-
-    console.log('Payment found:', { id: payment.id, yooKassaPaymentId: payment.yooKassaPaymentId, status: payment.status });
 
     // Получаем актуальный статус из YooKassa (или mock)
     let statusNormalized = (payment.status || '').toUpperCase();
     if (payment.yooKassaPaymentId) {
       try {
         const yooKassaStatus = await checkPaymentStatus(payment.yooKassaPaymentId);
-        
-        console.log('YooKassa status:', { 
-          current: payment.status, 
-          yooKassa: yooKassaStatus.status 
-        });
         
         statusNormalized = (yooKassaStatus.status || '').toUpperCase();
         
@@ -127,7 +116,6 @@ router.get('/payment/:paymentId', authMiddleware, async (req, res) => {
           });
           
           payment.status = statusNormalized;
-          console.log('Payment status updated:', payment.status);
         }
 
         // При успешной оплате — применяем подписку и обновляем план (fallback если webhook не сработал)
@@ -167,7 +155,6 @@ router.get('/payment/:paymentId', authMiddleware, async (req, res) => {
                   where: { id: payment.userId },
                   data: { plan: 'PREMIUM' },
                 });
-                console.log('Subscription and user plan applied for payment:', payment.id);
               }
             } catch (applyErr) {
               console.error('Error applying subscription on payment check:', applyErr);
@@ -405,7 +392,6 @@ router.post('/fix-my-plan', authMiddleware, async (req, res) => {
       data: { plan: 'PREMIUM' },
     });
 
-    console.log('fix-my-plan: Premium applied for user', userId);
     res.json({ success: true, message: 'Premium применён' });
   } catch (error) {
     console.error('fix-my-plan error:', error);
@@ -473,7 +459,6 @@ router.post('/apply-premium/:paymentId', authMiddleware, async (req, res) => {
       data: { status: 'SUCCEEDED' },
     });
 
-    console.log('Premium applied manually for payment:', paymentId);
     res.json({ success: true, message: 'Premium applied' });
   } catch (error) {
     console.error('Apply premium error:', error);

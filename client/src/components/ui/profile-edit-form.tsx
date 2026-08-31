@@ -25,6 +25,7 @@ import {
 import type { User as UserType } from "@/types";
 import { RUSSIAN_CITIES } from "@/constants/russianCities";
 import { RUSSIAN_UNIVERSITIES } from "@/constants/universities";
+import { useTranslation } from "@/hooks/useTranslation";
 
 
 const POPULAR_RUSSIAN_UNIVERSITIES = [
@@ -61,6 +62,7 @@ export function ProfileEditForm({
   isVisible,
 }: ProfileEditFormProps) {
   useBodyScrollLock(isVisible);
+  const { t } = useTranslation();
   const [formData, setFormData] = useState({
     name: user.name || "",
     university: user.university || "",
@@ -206,10 +208,10 @@ export function ProfileEditForm({
       if (success) {
         onCancel();
       } else {
-        setError("Ошибка при сохранении профиля");
+        setError(t("profile.edit.saveError"));
       }
     } catch {
-      setError("Произошла ошибка при сохранении");
+      setError(t("profile.edit.saveFailed"));
     } finally {
       setIsLoading(false);
     }
@@ -234,10 +236,10 @@ export function ProfileEditForm({
             <User className="h-8 w-8 text-white" />
           </div>
           <CardTitle className="text-2xl font-bold text-slate-900">
-            Редактировать профиль
+            {t("profile.personalInfo.edit")}
           </CardTitle>
           <CardDescription className="text-slate-600">
-            Добавьте информацию об университете
+            {t("profile.edit.subtitle")}
           </CardDescription>
         </CardHeader>
 
@@ -249,7 +251,7 @@ export function ProfileEditForm({
                 htmlFor="name"
                 className="text-sm font-medium text-slate-700"
               >
-                Имя
+                {t("profile.edit.name")}
               </label>
               <div className="relative">
                 <User className="absolute left-3 top-1/2 transform -translate-y-1/2 h-4 w-4 text-slate-400" />
@@ -257,7 +259,7 @@ export function ProfileEditForm({
                   id="name"
                   name="name"
                   type="text"
-                  placeholder="Ваше имя"
+                  placeholder={t("profile.edit.namePlaceholder")}
                   value={formData.name}
                   onChange={handleChange}
                   maxLength={50}
@@ -272,7 +274,7 @@ export function ProfileEditForm({
                 htmlFor="university"
                 className="text-sm font-medium text-slate-700"
               >
-                Университет
+                {t("profile.edit.university")}
               </label>
               <div className="relative" ref={universityFieldRef}>
                 <GraduationCap className="absolute left-3 top-1/2 transform -translate-y-1/2 h-4 w-4 text-slate-400" />
@@ -280,7 +282,7 @@ export function ProfileEditForm({
                   id="university"
                   name="university"
                   type="text"
-                  placeholder="Название университета"
+                  placeholder={t("profile.edit.universityPlaceholder")}
                   value={formData.university}
                   onChange={(e) => {
                     handleChange(e);
@@ -319,7 +321,7 @@ export function ProfileEditForm({
                 />
                 <button
                   type="button"
-                  aria-label="Показать университеты"
+                  aria-label={t("profile.edit.universityAria")}
                   onClick={() => setShowUniversitySuggestions((prev) => !prev)}
                   className="absolute right-3 top-1/2 -translate-y-1/2 text-slate-500 hover:text-slate-700"
                 >
@@ -353,7 +355,7 @@ export function ProfileEditForm({
                 {shouldShowUniversitySuggestions &&
                   universitySuggestions.length === 0 && (
                     <div className="absolute left-0 right-0 top-full z-50 mt-1 rounded-lg border border-slate-200 bg-white shadow-lg px-3 py-2 text-sm text-slate-500">
-                      Университет не найден
+                      {t("profile.edit.universityEmpty")}
                     </div>
                   )}
               </div>
@@ -365,7 +367,7 @@ export function ProfileEditForm({
                 htmlFor="phone"
                 className="text-sm font-medium text-slate-700"
               >
-                Телефон
+                {t("profile.personalInfo.phone")}
               </label>
               <div className="relative">
                 <Phone className="absolute left-3 top-1/2 transform -translate-y-1/2 h-4 w-4 text-slate-400" />
@@ -373,7 +375,7 @@ export function ProfileEditForm({
                   id="phone"
                   name="phone"
                   type="tel"
-                  placeholder="+7 (999) 123-45-67"
+                  placeholder={t("profile.edit.phonePlaceholder")}
                   value={formData.phone}
                   onChange={handleChange}
                   className="pl-10 h-12 border-slate-200 focus:border-blue-500 focus:ring-blue-500"
@@ -387,7 +389,7 @@ export function ProfileEditForm({
                 htmlFor="city"
                 className="text-sm font-medium text-slate-700"
               >
-                Город
+                {t("profile.edit.city")}
               </label>
               <div className="relative" ref={cityFieldRef}>
                 <MapPin className="absolute left-3 top-1/2 transform -translate-y-1/2 h-4 w-4 text-slate-400" />
@@ -395,7 +397,7 @@ export function ProfileEditForm({
                   id="city"
                   name="city"
                   type="text"
-                  placeholder="Москва, Санкт-Петербург..."
+                  placeholder={t("profile.edit.cityPlaceholder")}
                   value={formData.city}
                   onChange={(e) => {
                     handleChange(e);
@@ -428,7 +430,7 @@ export function ProfileEditForm({
                 />
                 <button
                   type="button"
-                  aria-label="Показать города"
+                  aria-label={t("profile.edit.cityAria")}
                   onClick={() => setShowCitySuggestions((prev) => !prev)}
                   className="absolute right-3 top-1/2 -translate-y-1/2 text-slate-500 hover:text-slate-700"
                 >
@@ -460,7 +462,7 @@ export function ProfileEditForm({
                 )}
                 {shouldShowCitySuggestions && citySuggestions.length === 0 && (
                   <div className="absolute left-0 right-0 top-full z-50 mt-1 rounded-lg border border-slate-200 bg-white shadow-lg px-3 py-2 text-sm text-slate-500">
-                    Город не найден
+                    {t("profile.edit.cityEmpty")}
                   </div>
                 )}
               </div>
@@ -472,7 +474,7 @@ export function ProfileEditForm({
                 htmlFor="gender"
                 className="text-sm font-medium text-slate-700"
               >
-                Пол
+                {t("profile.personalInfo.gender")}
               </label>
               <div className="relative">
                 <User className="absolute left-3 top-1/2 transform -translate-y-1/2 h-4 w-4 text-slate-400" />
@@ -483,9 +485,9 @@ export function ProfileEditForm({
                   onChange={handleChange}
                   className="w-full pl-10 pr-4 h-12 border border-slate-200 rounded-lg focus:border-blue-500 focus:ring-blue-500 bg-white appearance-none"
                 >
-                  <option value="">Выберите пол</option>
-                  <option value="male">Мужской</option>
-                  <option value="female">Женский</option>
+                  <option value="">{t("profile.edit.genderPlaceholder")}</option>
+                  <option value="male">{t("profile.personalInfo.gender.male")}</option>
+                  <option value="female">{t("profile.personalInfo.gender.female")}</option>
                 </select>
                 <div className="absolute right-3 top-1/2 transform -translate-y-1/2 pointer-events-none">
                   <svg
@@ -511,7 +513,7 @@ export function ProfileEditForm({
                 htmlFor="faculty"
                 className="text-sm font-medium text-slate-700"
               >
-                Факультет
+                {t("profile.edit.faculty")}
               </label>
               <div className="relative">
                 <GraduationCap className="absolute left-3 top-1/2 transform -translate-y-1/2 h-4 w-4 text-slate-400" />
@@ -519,7 +521,7 @@ export function ProfileEditForm({
                   id="faculty"
                   name="faculty"
                   type="text"
-                  placeholder="Название факультета"
+                  placeholder={t("profile.edit.facultyPlaceholder")}
                   value={formData.faculty}
                   onChange={handleChange}
                   className="pl-10 h-12 border-slate-200 focus:border-blue-500 focus:ring-blue-500"
@@ -533,7 +535,7 @@ export function ProfileEditForm({
                 htmlFor="year"
                 className="text-sm font-medium text-slate-700"
               >
-                Курс
+                {t("profile.edit.year")}
               </label>
               <div className="relative">
                 <Calendar className="absolute left-3 top-1/2 transform -translate-y-1/2 h-4 w-4 text-slate-400" />
@@ -541,7 +543,7 @@ export function ProfileEditForm({
                   id="year"
                   name="year"
                   type="text"
-                  placeholder="Например: 1 курс, 2 курс"
+                  placeholder={t("profile.edit.yearPlaceholder")}
                   value={formData.year}
                   onChange={handleChange}
                   className="pl-10 h-12 border-slate-200 focus:border-blue-500 focus:ring-blue-500"
@@ -565,7 +567,7 @@ export function ProfileEditForm({
                 onClick={onCancel}
                 className="flex-1 h-12"
               >
-                Отмена
+                {t("common.cancel")}
               </Button>
               <Button
                 type="submit"
@@ -575,12 +577,12 @@ export function ProfileEditForm({
                 {isLoading ? (
                   <>
                     <Loader2 className="mr-2 h-4 w-4 animate-spin" />
-                    Сохранение...
+                    {t("profile.edit.saving")}
                   </>
                 ) : (
                   <>
                     <Save className="mr-2 h-4 w-4" />
-                    Сохранить
+                    {t("common.save")}
                   </>
                 )}
               </Button>

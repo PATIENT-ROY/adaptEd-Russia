@@ -1,19 +1,20 @@
 "use client";
 
-import { useState, useMemo, useCallback } from "react";
+import { useState, useMemo, useCallback, useEffect } from "react";
 import { Layout } from "@/components/layout/layout";
 import { Button } from "@/components/ui/button";
 import { Card, CardContent } from "@/components/ui/card";
 import { Input } from "@/components/ui/input";
 import { useAuth } from "@/contexts/AuthContext";
 import { ProtectedRoute } from "@/components/auth/ProtectedRoute";
+import { FeaturePreviewGate } from "@/components/auth/FeaturePreviewGate";
 import { useReminders } from "@/hooks/useReminders";
 import { useNotes } from "@/hooks/useNotes";
 import { useTranslation } from "@/hooks/useTranslation";
 import {
-  Bell,
   Plus,
   Calendar,
+  CalendarClock,
   Clock,
   AlertCircle,
   CheckCircle,
@@ -28,6 +29,8 @@ import {
   Loader2,
   Trash2,
   StickyNote,
+  Pencil,
+  RotateCcw,
 } from "lucide-react";
 import {
   Reminder,
@@ -53,8 +56,10 @@ const getStatusIcon = (status: Reminder["status"]) => {
   }
 };
 
-const getPriorityColor = (priority: Reminder["priority"]) => {
-  switch (priority) {
+const getPriorityColor = (priority: Reminder["priority"] | string) => {
+  switch (String(priority).toUpperCase()) {
+    case ReminderPriority.URGENT:
+      return "bg-red-200 text-red-800";
     case ReminderPriority.HIGH:
       return "bg-red-100 text-red-700";
     case ReminderPriority.MEDIUM:
@@ -64,6 +69,61 @@ const getPriorityColor = (priority: Reminder["priority"]) => {
     default:
       return "bg-gray-100 text-gray-700";
   }
+};
+
+const getPriorityLabel = (
+  priority: Reminder["priority"] | string,
+  t: (key: string) => string,
+): string => {
+  switch (String(priority).toUpperCase()) {
+    case ReminderPriority.URGENT:
+      return t("reminders.priorityLabels.critical");
+    case ReminderPriority.HIGH:
+      return t("reminders.priorityLabels.urgent");
+    case ReminderPriority.MEDIUM:
+      return t("reminders.priorityLabels.important");
+    default:
+      return t("reminders.priorityLabels.normal");
+  }
+};
+
+const isPendingStatus = (status: unknown) => {
+  const s = String(status ?? "").toUpperCase();
+  return s === "PENDING" || s === ReminderStatus.PENDING;
+};
+
+const isCompletedStatus = (status: unknown) => {
+  const s = String(status ?? "").toUpperCase();
+  return s === "COMPLETED" || s === ReminderStatus.COMPLETED;
+};
+
+const isOverdue = (dueDate: unknown, status: unknown): boolean => {
+  if (isCompletedStatus(status)) return false;
+  if (!dueDate || dueDate === "null" || dueDate === "undefined") return false;
+  const date = new Date(String(dueDate));
+  return !isNaN(date.getTime()) && date.getTime() < Date.now();
+};
+
+const pad2 = (n: number) => String(n).padStart(2, "0");
+
+const splitDueDate = (dueDate: unknown): { date: string; time: string } => {
+  if (!dueDate) return { date: "", time: "09:00" };
+  const d = new Date(String(dueDate));
+  if (isNaN(d.getTime())) return { date: "", time: "09:00" };
+  return {
+    date: `${d.getFullYear()}-${pad2(d.getMonth() + 1)}-${pad2(d.getDate())}`,
+    time: `${pad2(d.getHours())}:${pad2(d.getMinutes())}`,
+  };
+};
+
+const emptyReminderForm = {
+  title: "",
+  description: "",
+  date: "",
+  time: "09:00",
+  category: ReminderCategory.OTHER,
+  priority: ReminderPriority.MEDIUM,
+  notificationMethod: "email" as "email" | "telegram" | "vk",
 };
 
 const getTypeColor = (category: Reminder["category"]) => {
@@ -155,10 +215,12 @@ function formatDueDate(
     }
 
     if (isNaN(date.getTime())) return fallback;
-    return date.toLocaleDateString(locale, {
+    return date.toLocaleString(locale, {
       year: "numeric",
       month: "long",
       day: "numeric",
+      hour: "2-digit",
+      minute: "2-digit",
     });
   } catch {
     return fallback;
@@ -167,7 +229,19 @@ function formatDueDate(
 
 // ── Calendar sub-component ──────────────────────────────────────────
 
-const CalendarView = ({ reminders }: { reminders: Reminder[] }) => {
+const CalendarView = ({
+  reminders,
+  onEdit,
+  onComplete,
+  onDelete,
+  deletingId,
+}: {
+  reminders: Reminder[];
+  onEdit: (reminder: Reminder) => void;
+  onComplete: (id: string) => void;
+  onDelete: (id: string) => void;
+  deletingId: string | null;
+}) => {
   const { t, currentLanguage } = useTranslation();
   const locale = getLocaleByLanguage(currentLanguage);
   const [currentDate, setCurrentDate] = useState(new Date());
@@ -179,7 +253,7 @@ const CalendarView = ({ reminders }: { reminders: Reminder[] }) => {
   const firstDay = new Date(year, month, 1);
   const lastDay = new Date(year, month + 1, 0);
   const daysInMonth = lastDay.getDate();
-  const startingDayOfWeek = firstDay.getDay();
+  const startingDayOfWeek = (firstDay.getDay() + 6) % 7;
 
   const remindersByDate = useMemo(() => {
     const map = new Map<string, Reminder[]>();
@@ -208,9 +282,9 @@ const CalendarView = ({ reminders }: { reminders: Reminder[] }) => {
 
   const weekDays = useMemo(() => {
     const fmt = new Intl.DateTimeFormat(locale, { weekday: "short" });
-    const base = new Date(2021, 7, 1);
+    const monday = new Date(2021, 7, 2);
     return Array.from({ length: 7 }, (_, i) =>
-      fmt.format(new Date(base.getFullYear(), base.getMonth(), base.getDate() + i)),
+      fmt.format(new Date(monday.getFullYear(), monday.getMonth(), monday.getDate() + i)),
     );
   }, [locale]);
 
@@ -235,14 +309,14 @@ const CalendarView = ({ reminders }: { reminders: Reminder[] }) => {
 
   return (
     <div>
-      <div className="flex items-center justify-between mb-4">
+      <div className="flex items-center justify-between mb-3">
         <button
           onClick={() => navigateMonth("prev")}
           className="p-2 hover:bg-gray-100 rounded-lg transition-colors"
         >
           <ChevronLeft className="h-5 w-5 text-gray-600" />
         </button>
-        <h3 className="text-lg font-semibold text-gray-900">
+        <h3 className="text-base sm:text-lg font-semibold text-gray-900">
           {new Intl.DateTimeFormat(locale, { month: "long" }).format(new Date(year, month, 1))}{" "}
           {year}
         </h3>
@@ -254,9 +328,9 @@ const CalendarView = ({ reminders }: { reminders: Reminder[] }) => {
         </button>
       </div>
 
-      <div className="grid grid-cols-7 gap-1 mb-2">
+      <div className="grid grid-cols-7 gap-1 mb-1.5">
         {weekDays.map((day) => (
-          <div key={day} className="text-center text-xs font-medium text-gray-500 py-2">
+          <div key={day} className="text-center text-xs font-medium text-gray-500 py-1">
             {day}
           </div>
         ))}
@@ -264,7 +338,7 @@ const CalendarView = ({ reminders }: { reminders: Reminder[] }) => {
 
       <div className="grid grid-cols-7 gap-1">
         {Array.from({ length: startingDayOfWeek }).map((_, i) => (
-          <div key={`empty-${i}`} className="aspect-square" />
+          <div key={`empty-${i}`} className="h-11 sm:h-12" />
         ))}
 
         {Array.from({ length: daysInMonth }).map((_, idx) => {
@@ -278,11 +352,11 @@ const CalendarView = ({ reminders }: { reminders: Reminder[] }) => {
             <button
               key={day}
               onClick={() => setSelectedDate(new Date(year, month, day))}
-              className={`aspect-square p-1 rounded-lg transition-all ${
+              className={`h-11 sm:h-12 px-0.5 rounded-lg transition-all flex flex-col items-center justify-center ${
                 selected
                   ? "bg-purple-600 text-white"
                   : today && hasReminders
-                    ? "border-2 border-purple-400 bg-purple-50 text-purple-900 font-semibold"
+                    ? "border border-purple-400 bg-purple-50 text-purple-900 font-semibold"
                     : today
                       ? "border border-gray-300 bg-gray-50 text-gray-700"
                       : hasReminders
@@ -290,7 +364,7 @@ const CalendarView = ({ reminders }: { reminders: Reminder[] }) => {
                         : "hover:bg-gray-100 text-gray-700"
               }`}
             >
-              <div className="text-xs font-medium">{day}</div>
+              <div className="text-sm font-medium leading-none">{day}</div>
               {hasReminders && (
                 <div className="flex justify-center gap-0.5 mt-0.5">
                   {dayReminders.slice(0, 3).map((r, i) => (
@@ -299,11 +373,16 @@ const CalendarView = ({ reminders }: { reminders: Reminder[] }) => {
                       className={`w-1 h-1 rounded-full ${
                         selected
                           ? "bg-white"
-                          : r.priority === ReminderPriority.HIGH
-                            ? "bg-red-500"
-                            : r.priority === ReminderPriority.MEDIUM
-                              ? "bg-yellow-500"
-                              : "bg-green-500"
+                          : isCompletedStatus(r.status)
+                            ? "bg-gray-400"
+                            : isOverdue(r.dueDate, r.status)
+                              ? "bg-red-600"
+                              : String(r.priority).toUpperCase() === ReminderPriority.URGENT ||
+                                  String(r.priority).toUpperCase() === ReminderPriority.HIGH
+                                ? "bg-red-500"
+                                : r.priority === ReminderPriority.MEDIUM
+                                  ? "bg-yellow-500"
+                                  : "bg-green-500"
                       }`}
                     />
                   ))}
@@ -316,8 +395,8 @@ const CalendarView = ({ reminders }: { reminders: Reminder[] }) => {
       </div>
 
       {selectedDate && selectedDateReminders.length > 0 && (
-        <div className="mt-6 pt-4 border-t border-gray-200">
-          <h4 className="text-sm font-semibold text-gray-900 mb-3">
+        <div className="mt-3 pt-3 border-t border-gray-200">
+          <h4 className="text-sm font-semibold text-gray-900 mb-2">
             {t("reminders.calendar.remindersOn").replace(
               "{date}",
               selectedDate.toLocaleDateString(locale, {
@@ -328,20 +407,57 @@ const CalendarView = ({ reminders }: { reminders: Reminder[] }) => {
             )}
           </h4>
           <div className="space-y-2">
-            {selectedDateReminders.map((reminder) => (
-              <div key={reminder.id} className="p-2 bg-gray-50 rounded-lg text-sm">
-                <div className="font-medium text-gray-900">{reminder.title}</div>
-                {reminder.description && (
-                  <div className="text-xs text-gray-500 mt-1">{reminder.description}</div>
-                )}
-              </div>
-            ))}
+            {selectedDateReminders.map((reminder) => {
+              const overdue = isOverdue(reminder.dueDate, reminder.status);
+              return (
+                <div key={reminder.id} className={`p-2 rounded-lg text-sm ${overdue ? "bg-red-50" : "bg-gray-50"}`}>
+                  <div className="flex items-start justify-between gap-2">
+                    <div className="min-w-0">
+                      <div className={`font-medium text-gray-900 ${isCompletedStatus(reminder.status) ? "line-through" : ""}`}>
+                        {reminder.title}
+                      </div>
+                      {reminder.description && (
+                        <div className="text-xs text-gray-500 mt-1">{reminder.description}</div>
+                      )}
+                      <div className="text-xs text-gray-500 mt-1">
+                        {formatDueDate(reminder.dueDate, locale, t("reminders.dateNotSpecified"))}
+                      </div>
+                      {overdue && (
+                        <span className="inline-block mt-1 px-1.5 py-0.5 rounded text-[10px] font-semibold bg-red-100 text-red-700">
+                          {t("reminders.overdue")}
+                        </span>
+                      )}
+                    </div>
+                    <div className="flex flex-shrink-0 gap-1">
+                      {isPendingStatus(reminder.status) && (
+                        <>
+                          <Button variant="outline" size="sm" onClick={() => onEdit(reminder)}>
+                            <Pencil className="h-3 w-3" />
+                          </Button>
+                          <Button variant="outline" size="sm" onClick={() => onComplete(reminder.id)}>
+                            <CheckCircle className="h-3 w-3" />
+                          </Button>
+                        </>
+                      )}
+                      <Button
+                        variant="outline"
+                        size="sm"
+                        onClick={() => onDelete(reminder.id)}
+                        className={deletingId === reminder.id ? "border-red-300 text-red-600" : ""}
+                      >
+                        <X className="h-3 w-3" />
+                      </Button>
+                    </div>
+                  </div>
+                </div>
+              );
+            })}
           </div>
         </div>
       )}
 
       {selectedDate && selectedDateReminders.length === 0 && (
-        <div className="mt-6 pt-4 border-t border-gray-200 text-sm text-gray-500 text-center">
+        <div className="mt-3 pt-3 border-t border-gray-200 text-sm text-gray-500 text-center">
           {t("reminders.calendar.noRemindersOnDate").replace(
             "{date}",
             selectedDate.toLocaleDateString(locale, {
@@ -474,17 +590,22 @@ const TabButton = ({
 
 function RemindersContent() {
   const { user } = useAuth();
-  const { reminders, loading, createReminder, updateReminder, deleteReminder, refreshReminders } =
+  const { reminders, quota, loading, error, createReminder, updateReminder, deleteReminder, refreshReminders } =
     useReminders(user?.id || "");
-  const { notes, parsing, parseNote, deleteNote } = useNotes(user?.id || "");
+  const { notes, loading: notesLoading, error: notesError, parsing, parseNote, createNote, deleteNote } =
+    useNotes(user?.id || "");
   const { t, currentLanguage } = useTranslation();
   const locale = getLocaleByLanguage(currentLanguage);
 
   const [activeTab, setActiveTab] = useState<TabId>("notes");
   const [noteText, setNoteText] = useState("");
   const [showAddForm, setShowAddForm] = useState(false);
+  const [editingId, setEditingId] = useState<string | null>(null);
   const [searchTerm, setSearchTerm] = useState("");
+  const [categoryFilter, setCategoryFilter] = useState<ReminderCategory | "ALL">("ALL");
+  const [overdueOnly, setOverdueOnly] = useState(false);
   const [isSubmitting, setIsSubmitting] = useState(false);
+  const [isSavingNote, setIsSavingNote] = useState(false);
   const [deletingId, setDeletingId] = useState<string | null>(null);
   const [deletingNoteId, setDeletingNoteId] = useState<string | null>(null);
   const [toastMessage, setToastMessage] = useState("");
@@ -495,14 +616,7 @@ function RemindersContent() {
     count: number;
   } | null>(null);
   const [notificationMethod, setNotificationMethod] = useState<"email" | "telegram" | "vk">("email");
-  const [newReminder, setNewReminder] = useState({
-    title: "",
-    description: "",
-    date: "",
-    category: ReminderCategory.OTHER,
-    priority: ReminderPriority.MEDIUM,
-    notificationMethod: "email" as "email" | "telegram" | "vk",
-  });
+  const [newReminder, setNewReminder] = useState(emptyReminderForm);
 
   const showToast = useCallback((msg: string, type: "success" | "error" = "success") => {
     setToastMessage(msg);
@@ -510,32 +624,58 @@ function RemindersContent() {
     setTimeout(() => setToastMessage(""), 3000);
   }, []);
 
+  const resetForm = useCallback(() => {
+    setNewReminder(emptyReminderForm);
+    setFieldErrors({});
+    setEditingId(null);
+    setShowAddForm(false);
+  }, []);
+
   const filteredReminders = useMemo(() => {
-    if (!searchTerm) return reminders;
     const q = searchTerm.toLowerCase();
-    return reminders.filter(
-      (r) =>
-        r.title.toLowerCase().includes(q) || r.description?.toLowerCase().includes(q),
-    );
-  }, [reminders, searchTerm]);
+    return reminders.filter((r) => {
+      if (q && !r.title.toLowerCase().includes(q) && !r.description?.toLowerCase().includes(q)) {
+        return false;
+      }
+      if (categoryFilter !== "ALL" && parseCategoryEnum(r.category) !== categoryFilter) {
+        return false;
+      }
+      if (overdueOnly && !isOverdue(r.dueDate, r.status)) {
+        return false;
+      }
+      return true;
+    });
+  }, [reminders, searchTerm, categoryFilter, overdueOnly]);
 
   const pendingReminders = useMemo(
-    () =>
-      filteredReminders.filter((r) => {
-        const s = String(r.status ?? "").toUpperCase();
-        return s === "PENDING" || s === ReminderStatus.PENDING;
-      }),
+    () => filteredReminders.filter((r) => isPendingStatus(r.status)),
     [filteredReminders],
   );
 
   const completedReminders = useMemo(
-    () =>
-      filteredReminders.filter((r) => {
-        const s = String(r.status ?? "").toUpperCase();
-        return s === "COMPLETED" || s === ReminderStatus.COMPLETED;
-      }),
+    () => filteredReminders.filter((r) => isCompletedStatus(r.status)),
     [filteredReminders],
   );
+
+  const overdueCount = useMemo(
+    () => reminders.filter((r) => isOverdue(r.dueDate, r.status)).length,
+    [reminders],
+  );
+
+  const urgentCount = useMemo(
+    () =>
+      reminders.filter((r) => {
+        const p = String(r.priority ?? "").toUpperCase();
+        return isPendingStatus(r.status) && (p === ReminderPriority.HIGH || p === ReminderPriority.URGENT);
+      }).length,
+    [reminders],
+  );
+
+  useEffect(() => {
+    if (showAddForm) {
+      window.scrollTo({ top: 0, left: 0, behavior: "instant" });
+    }
+  }, [showAddForm, editingId]);
 
   const handleFieldChange = useCallback(
     (field: string, value: string) => {
@@ -551,7 +691,7 @@ function RemindersContent() {
     [fieldErrors],
   );
 
-  const handleAddReminder = useCallback(
+  const handleSubmitReminder = useCallback(
     async (e: React.FormEvent) => {
       e.preventDefault();
       if (isSubmitting) return;
@@ -562,6 +702,11 @@ function RemindersContent() {
       if (!Object.values(ReminderCategory).includes(newReminder.category))
         errors.category = t("reminders.validation.invalidCategory");
 
+      const due = new Date(`${newReminder.date}T${newReminder.time || "09:00"}:00`);
+      if (newReminder.date && isNaN(due.getTime())) {
+        errors.date = t("reminders.validation.invalidDate");
+      }
+
       if (Object.keys(errors).length > 0) {
         setFieldErrors(errors);
         showToast(t("reminders.validation.requiredFields"), "error");
@@ -570,37 +715,59 @@ function RemindersContent() {
 
       setIsSubmitting(true);
       try {
-        const dateWithTime = `${newReminder.date}T00:00:00.000Z`;
-        await createReminder({
+        const payload = {
           title: newReminder.title,
           description: newReminder.description || undefined,
-          dueDate: dateWithTime,
+          dueDate: due.toISOString(),
           category: newReminder.category,
           priority: newReminder.priority,
-          status: ReminderStatus.PENDING,
           notificationMethod: newReminder.notificationMethod || "email",
-        });
+        };
 
-        setNewReminder({
-          title: "",
-          description: "",
-          date: "",
-          category: ReminderCategory.OTHER,
-          priority: ReminderPriority.MEDIUM,
-          notificationMethod: "email",
-        });
-        setFieldErrors({});
-        setShowAddForm(false);
-        showToast(t("reminders.toast.created"));
-      } catch (error) {
-        console.error("Error creating reminder:", error);
-        showToast(t("reminders.validation.createError"), "error");
+        if (editingId) {
+          await updateReminder(editingId, payload);
+          showToast(t("reminders.toast.updated"));
+        } else {
+          await createReminder({
+            ...payload,
+            status: ReminderStatus.PENDING,
+          });
+          showToast(t("reminders.toast.created"));
+        }
+
+        resetForm();
+      } catch (err) {
+        console.error("Error saving reminder:", err);
+        showToast(
+          editingId ? t("reminders.toast.error") : t("reminders.validation.createError"),
+          "error",
+        );
       } finally {
         setIsSubmitting(false);
       }
     },
-    [newReminder, isSubmitting, createReminder, showToast, t],
+    [newReminder, isSubmitting, editingId, createReminder, updateReminder, resetForm, showToast, t],
   );
+
+  const handleEditReminder = useCallback((reminder: Reminder) => {
+    const { date, time } = splitDueDate(reminder.dueDate);
+    setNewReminder({
+      title: reminder.title,
+      description: reminder.description || "",
+      date,
+      time,
+      category: parseCategoryEnum(reminder.category),
+      priority: (String(reminder.priority).toUpperCase() as ReminderPriority) || ReminderPriority.MEDIUM,
+      notificationMethod:
+        reminder.notificationMethod === "telegram" || reminder.notificationMethod === "vk"
+          ? reminder.notificationMethod
+          : "email",
+    });
+    setEditingId(reminder.id);
+    setFieldErrors({});
+    setShowAddForm(true);
+    setActiveTab("reminders");
+  }, []);
 
   const handleMarkCompleted = useCallback(
     async (reminderId: string) => {
@@ -632,6 +799,19 @@ function RemindersContent() {
       }
     },
     [deletingId, deleteReminder, showToast, t],
+  );
+
+  const handleRestoreReminder = useCallback(
+    async (reminderId: string) => {
+      try {
+        await updateReminder(reminderId, { status: ReminderStatus.PENDING });
+        showToast(t("reminders.toast.restored"));
+      } catch (err) {
+        console.error("Error restoring reminder:", err);
+        showToast(t("reminders.toast.error"), "error");
+      }
+    },
+    [updateReminder, showToast, t],
   );
 
   // ── Smart Notes handlers ──────────────────────────────────────────
@@ -681,7 +861,22 @@ function RemindersContent() {
     [deletingNoteId, deleteNote, showToast, t],
   );
 
-  if (loading) return <RemindersSkeleton />;
+  const handleSaveNote = useCallback(async () => {
+    if (!noteText.trim() || isSavingNote || parsing) return;
+    setIsSavingNote(true);
+    try {
+      await createNote({ content: noteText.trim() });
+      setNoteText("");
+      showToast(t("notes.toast.created"));
+    } catch (err) {
+      console.error("Error saving note:", err);
+      showToast(t("notes.toast.error"), "error");
+    } finally {
+      setIsSavingNote(false);
+    }
+  }, [noteText, isSavingNote, parsing, createNote, showToast, t]);
+
+  if (loading || notesLoading) return <RemindersSkeleton />;
 
   return (
     <Layout>
@@ -698,12 +893,35 @@ function RemindersContent() {
       )}
 
       <div className="space-y-6">
+        {(error || notesError) && (
+          <div className="rounded-xl border border-red-200 bg-red-50 px-4 py-3 text-sm text-red-700" role="alert">
+            {error || notesError}
+          </div>
+        )}
+        {quota && (
+          <div
+            className={`rounded-xl border px-4 py-3 text-sm ${
+              quota.limit !== null && quota.used >= quota.limit
+                ? "border-amber-200 bg-amber-50 text-amber-800"
+                : "border-slate-200 bg-white text-slate-600"
+            }`}
+          >
+            {quota.limit === null
+              ? t("reminders.quota.premium")
+              : quota.used >= quota.limit
+                ? t("reminders.quota.exhausted")
+                : t("reminders.quota.freemium")
+                    .replace("{used}", String(quota.used))
+                    .replace("{limit}", String(quota.limit))}
+          </div>
+        )}
+
         {/* Header */}
         <div className="bg-white rounded-2xl sm:rounded-3xl p-4 sm:p-6 shadow-sm">
           <div className="flex flex-col sm:flex-row sm:items-center justify-between space-y-4 sm:space-y-0">
             <div className="flex items-center space-x-3">
               <div className="rounded-lg bg-gradient-to-br from-purple-500 to-indigo-600 p-3">
-                <Sparkles className="h-6 w-6 text-white" />
+                <CalendarClock className="h-6 w-6 text-white" />
               </div>
               <div>
                 <h1 className="text-xl sm:text-2xl font-bold text-gray-900">
@@ -716,6 +934,9 @@ function RemindersContent() {
             </div>
             <Button
               onClick={() => {
+                setEditingId(null);
+                setNewReminder(emptyReminderForm);
+                setFieldErrors({});
                 setActiveTab("reminders");
                 setShowAddForm(true);
               }}
@@ -739,7 +960,7 @@ function RemindersContent() {
           <TabButton
             active={activeTab === "reminders"}
             onClick={() => setActiveTab("reminders")}
-            icon={<Bell className="h-4 w-4" />}
+            icon={<CalendarClock className="h-4 w-4" />}
             label={t("notes.tab.reminders")}
             count={pendingReminders.length}
           />
@@ -796,11 +1017,25 @@ function RemindersContent() {
                     </label>
                   ))}
                 </div>
+                <p className="mt-2 text-xs text-gray-400">{t("reminders.notification.fallback")}</p>
 
                 <div className="mt-4 flex flex-col sm:flex-row gap-3">
                   <Button
+                    variant="outline"
+                    onClick={handleSaveNote}
+                    disabled={!noteText.trim() || parsing || isSavingNote}
+                    className="flex items-center justify-center space-x-2"
+                  >
+                    {isSavingNote ? (
+                      <Loader2 className="h-4 w-4 animate-spin" />
+                    ) : (
+                      <Save className="h-4 w-4" />
+                    )}
+                    <span>{t("notes.actions.save")}</span>
+                  </Button>
+                  <Button
                     onClick={handleParseNote}
-                    disabled={!noteText.trim() || parsing}
+                    disabled={!noteText.trim() || parsing || isSavingNote}
                     className="flex items-center justify-center space-x-2 bg-gradient-to-r from-purple-600 to-indigo-600 hover:from-purple-700 hover:to-indigo-700 flex-1 sm:flex-initial"
                   >
                     {parsing ? (
@@ -891,9 +1126,19 @@ function RemindersContent() {
                                 <p className="text-xs text-purple-600">{note.aiSummary}</p>
                               </div>
                             )}
-                            <p className="text-xs text-gray-400 mt-2">
-                              {formatDueDate(note.createdAt, locale, "")}
-                            </p>
+                            <div className="mt-2 flex flex-wrap items-center gap-2">
+                              <p className="text-xs text-gray-400">
+                                {formatDueDate(note.createdAt, locale, "")}
+                              </p>
+                              {note.reminders && note.reminders.length > 0 && (
+                                <span className="px-2 py-0.5 rounded-full text-xs font-medium bg-purple-100 text-purple-700">
+                                  {t("notes.badge.remindersCount").replace(
+                                    "{count}",
+                                    String(note.reminders.length),
+                                  )}
+                                </span>
+                              )}
+                            </div>
                           </div>
                           <Button
                             variant="outline"
@@ -929,21 +1174,18 @@ function RemindersContent() {
                 <CardContent className="p-4 sm:p-6">
                   <div className="flex items-center justify-between mb-4">
                     <h3 className="text-lg font-semibold text-gray-900">
-                      {t("reminders.form.title")}
+                      {editingId ? t("reminders.form.titleEdit") : t("reminders.form.title")}
                     </h3>
                     <Button
                       variant="outline"
                       size="sm"
-                      onClick={() => {
-                        setShowAddForm(false);
-                        setFieldErrors({});
-                      }}
+                      onClick={resetForm}
                     >
                       <X className="h-4 w-4" />
                     </Button>
                   </div>
 
-                  <form onSubmit={handleAddReminder} className="space-y-4">
+                  <form onSubmit={handleSubmitReminder} className="space-y-4">
                     <fieldset disabled={isSubmitting} className="space-y-4">
                       <div>
                         <label htmlFor="reminder-title" className="block text-sm font-medium text-gray-700 mb-1">
@@ -976,7 +1218,7 @@ function RemindersContent() {
                         />
                       </div>
 
-                      <div className="grid grid-cols-1 sm:grid-cols-2 lg:grid-cols-3 gap-4">
+                      <div className="grid grid-cols-1 sm:grid-cols-2 lg:grid-cols-4 gap-4">
                         <div>
                           <label htmlFor="reminder-date" className="block text-sm font-medium text-gray-700 mb-1">
                             {t("reminders.form.fields.date")}
@@ -991,6 +1233,18 @@ function RemindersContent() {
                           {fieldErrors.date && (
                             <p className="text-xs text-red-500 mt-1" role="alert">{fieldErrors.date}</p>
                           )}
+                        </div>
+
+                        <div>
+                          <label htmlFor="reminder-time" className="block text-sm font-medium text-gray-700 mb-1">
+                            {t("reminders.form.fields.time")}
+                          </label>
+                          <Input
+                            id="reminder-time"
+                            type="time"
+                            value={newReminder.time}
+                            onChange={(e) => handleFieldChange("time", e.target.value)}
+                          />
                         </div>
 
                         <div>
@@ -1032,6 +1286,7 @@ function RemindersContent() {
                               <option value={ReminderPriority.LOW}>{t("reminders.priority.low")}</option>
                               <option value={ReminderPriority.MEDIUM}>{t("reminders.priority.medium")}</option>
                               <option value={ReminderPriority.HIGH}>{t("reminders.priority.high")}</option>
+                              <option value={ReminderPriority.URGENT}>{t("reminders.priority.urgent")}</option>
                             </select>
                             <div className="absolute right-3 top-1/2 -translate-y-1/2 pointer-events-none">
                               <svg className="h-4 w-4 text-gray-400" fill="none" stroke="currentColor" viewBox="0 0 24 24">
@@ -1061,6 +1316,7 @@ function RemindersContent() {
                             </label>
                           ))}
                         </div>
+                        <p className="mt-2 text-xs text-gray-400">{t("reminders.notification.fallback")}</p>
                       </div>
                     </fieldset>
 
@@ -1068,10 +1324,7 @@ function RemindersContent() {
                       <Button
                         type="button"
                         variant="outline"
-                        onClick={() => {
-                          setShowAddForm(false);
-                          setFieldErrors({});
-                        }}
+                        onClick={resetForm}
                         className="w-full sm:w-auto"
                       >
                         {t("reminders.actions.cancel")}
@@ -1091,7 +1344,7 @@ function RemindersContent() {
             )}
 
             {/* Search */}
-            <div className="bg-white rounded-2xl sm:rounded-3xl p-4 sm:p-6 shadow-sm">
+            <div className="bg-white rounded-2xl sm:rounded-3xl p-4 sm:p-6 shadow-sm space-y-3">
               <div className="relative">
                 <Search className="absolute left-3 top-1/2 -translate-y-1/2 h-4 w-4 text-gray-400" />
                 <Input
@@ -1102,10 +1355,77 @@ function RemindersContent() {
                   className="pl-10"
                 />
               </div>
+              <div className="flex flex-wrap items-center gap-2">
+                <span className="text-xs font-medium text-gray-500">{t("reminders.search.filters")}:</span>
+                <button
+                  type="button"
+                  onClick={() => {
+                    setCategoryFilter("ALL");
+                    setOverdueOnly(false);
+                  }}
+                  className={`px-2.5 py-1 rounded-full text-xs font-medium ${
+                    categoryFilter === "ALL" && !overdueOnly
+                      ? "bg-purple-600 text-white"
+                      : "bg-gray-100 text-gray-600 hover:bg-gray-200"
+                  }`}
+                >
+                  {t("reminders.filter.all")}
+                </button>
+                {(
+                  [
+                    ReminderCategory.EDUCATION,
+                    ReminderCategory.LIFE,
+                    ReminderCategory.DOCUMENTS,
+                    ReminderCategory.HEALTH,
+                    ReminderCategory.OTHER,
+                  ] as const
+                ).map((cat) => (
+                  <button
+                    key={cat}
+                    type="button"
+                    onClick={() => {
+                      setCategoryFilter(cat);
+                      setOverdueOnly(false);
+                    }}
+                    className={`px-2.5 py-1 rounded-full text-xs font-medium ${
+                      categoryFilter === cat && !overdueOnly
+                        ? "bg-purple-600 text-white"
+                        : "bg-gray-100 text-gray-600 hover:bg-gray-200"
+                    }`}
+                  >
+                    {t(
+                      cat === ReminderCategory.EDUCATION
+                        ? "reminders.category.education"
+                        : cat === ReminderCategory.LIFE
+                          ? "reminders.category.life"
+                          : cat === ReminderCategory.DOCUMENTS
+                            ? "reminders.category.documents"
+                            : cat === ReminderCategory.HEALTH
+                              ? "reminders.category.health"
+                              : "reminders.category.other",
+                    )}
+                  </button>
+                ))}
+                <button
+                  type="button"
+                  onClick={() => {
+                    setOverdueOnly((prev) => !prev);
+                    setCategoryFilter("ALL");
+                  }}
+                  className={`px-2.5 py-1 rounded-full text-xs font-medium ${
+                    overdueOnly
+                      ? "bg-red-600 text-white"
+                      : "bg-red-50 text-red-700 hover:bg-red-100"
+                  }`}
+                >
+                  {t("reminders.filter.overdue")}
+                  {overdueCount > 0 && ` (${overdueCount})`}
+                </button>
+              </div>
             </div>
 
             {/* Statistics */}
-            <div className="grid grid-cols-1 sm:grid-cols-2 lg:grid-cols-3 gap-4">
+            <div className="grid grid-cols-2 lg:grid-cols-4 gap-4">
               <Card>
                 <CardContent className="p-4 sm:p-6">
                   <div className="flex items-center space-x-3">
@@ -1113,12 +1433,22 @@ function RemindersContent() {
                       <AlertCircle className="h-5 w-5 sm:h-6 sm:w-6 text-red-600" />
                     </div>
                     <div>
+                      <p className="text-sm font-medium text-gray-600">{t("reminders.stats.overdue")}</p>
+                      <p className="text-xl sm:text-2xl font-bold text-gray-900">{overdueCount}</p>
+                    </div>
+                  </div>
+                </CardContent>
+              </Card>
+
+              <Card>
+                <CardContent className="p-4 sm:p-6">
+                  <div className="flex items-center space-x-3">
+                    <div className="rounded-lg bg-orange-50 p-3">
+                      <AlertCircle className="h-5 w-5 sm:h-6 sm:w-6 text-orange-600" />
+                    </div>
+                    <div>
                       <p className="text-sm font-medium text-gray-600">{t("reminders.stats.urgent")}</p>
-                      <p className="text-xl sm:text-2xl font-bold text-gray-900">
-                        {reminders.filter(
-                          (r) => r.priority === ReminderPriority.HIGH && r.status === ReminderStatus.PENDING,
-                        ).length}
-                      </p>
+                      <p className="text-xl sm:text-2xl font-bold text-gray-900">{urgentCount}</p>
                     </div>
                   </div>
                 </CardContent>
@@ -1168,7 +1498,7 @@ function RemindersContent() {
               {pendingReminders.length === 0 ? (
                 <Card>
                   <CardContent className="p-6 sm:p-8 text-center">
-                    <Bell className="h-12 w-12 text-gray-400 mx-auto mb-4" />
+                    <CalendarClock className="h-12 w-12 text-gray-400 mx-auto mb-4" />
                     <h3 className="text-lg font-medium text-gray-900 mb-2">
                       {t("reminders.empty.active.title")}
                     </h3>
@@ -1193,8 +1523,12 @@ function RemindersContent() {
                 <div className="space-y-3 sm:space-y-4">
                   {pendingReminders.map((reminder) => {
                     const catEnum = parseCategoryEnum(reminder.category);
+                    const overdue = isOverdue(reminder.dueDate, reminder.status);
                     return (
-                      <Card key={reminder.id} className={getTypeColor(reminder.category)}>
+                      <Card
+                        key={reminder.id}
+                        className={`${getTypeColor(reminder.category)} ${overdue ? "ring-1 ring-red-300 bg-red-50/40" : ""}`}
+                      >
                         <CardContent className="p-3 sm:p-4">
                           <div className="flex flex-col sm:flex-row sm:items-center justify-between space-y-3 sm:space-y-0">
                             <div className="flex items-start sm:items-center space-x-3">
@@ -1208,8 +1542,13 @@ function RemindersContent() {
                                     {reminder.description}
                                   </p>
                                 )}
-                                <p className="text-xs sm:text-sm text-gray-500 mt-1">
+                                <p className={`text-xs sm:text-sm mt-1 ${overdue ? "text-red-600 font-medium" : "text-gray-500"}`}>
                                   {formatDueDate(reminder.dueDate, locale, t("reminders.dateNotSpecified"))}
+                                  {overdue && (
+                                    <span className="ml-2 px-1.5 py-0.5 rounded text-[10px] font-semibold bg-red-100 text-red-700">
+                                      {t("reminders.overdue")}
+                                    </span>
+                                  )}
                                 </p>
                                 <div className="text-xs text-gray-400 mt-1 flex items-center space-x-2">
                                   <span>{t("reminders.notification.label")}</span>
@@ -1227,14 +1566,19 @@ function RemindersContent() {
                               <span className={`px-2 py-1 rounded-full text-xs font-medium ${getCategoryBadgeColor(catEnum)}`}>
                                 {getCategoryLabel(catEnum, t)}
                               </span>
-                              <span className={`px-2 py-1 rounded-full text-xs font-medium ${getPriorityColor(reminder.priority as Reminder["priority"])}`}>
-                                {reminder.priority === ReminderPriority.HIGH
-                                  ? t("reminders.priorityLabels.urgent")
-                                  : reminder.priority === ReminderPriority.MEDIUM
-                                    ? t("reminders.priorityLabels.important")
-                                    : t("reminders.priorityLabels.normal")}
+                              <span className={`px-2 py-1 rounded-full text-xs font-medium ${getPriorityColor(reminder.priority)}`}>
+                                {getPriorityLabel(reminder.priority, t)}
                               </span>
                               <div className="flex space-x-2">
+                                <Button
+                                  variant="outline"
+                                  size="sm"
+                                  onClick={() => handleEditReminder(reminder)}
+                                  className="text-xs sm:text-sm"
+                                >
+                                  <Pencil className="h-3 w-3 mr-1" />
+                                  {t("reminders.actions.edit")}
+                                </Button>
                                 <Button
                                   variant="outline"
                                   size="sm"
@@ -1315,6 +1659,15 @@ function RemindersContent() {
                               <Button
                                 variant="outline"
                                 size="sm"
+                                onClick={() => handleRestoreReminder(reminder.id)}
+                                className="text-xs sm:text-sm"
+                              >
+                                <RotateCcw className="h-3 w-3 mr-1" />
+                                {t("reminders.actions.restore")}
+                              </Button>
+                              <Button
+                                variant="outline"
+                                size="sm"
                                 onClick={() => handleDeleteReminder(reminder.id)}
                                 className={
                                   deletingId === reminder.id
@@ -1341,21 +1694,20 @@ function RemindersContent() {
 
         {/* ══════════ TAB: CALENDAR ══════════ */}
         {activeTab === "calendar" && (
-          <div>
+          <div className="max-w-xl mx-auto">
             <Card>
-              <CardContent className="p-4 sm:p-6">
-                {pendingReminders.length === 0 ? (
-                  <div className="flex flex-col items-center justify-center py-8 text-center">
-                    <Calendar className="h-12 w-12 text-gray-400 mb-4" />
-                    <h3 className="text-lg font-medium text-gray-900 mb-2">
-                      {t("reminders.empty.calendar.title")}
-                    </h3>
-                    <p className="text-gray-600 text-sm">
-                      {t("reminders.empty.calendar.description")}
-                    </p>
-                  </div>
-                ) : (
-                  <CalendarView reminders={pendingReminders} />
+              <CardContent className="p-4 sm:p-5">
+                <CalendarView
+                  reminders={reminders}
+                  onEdit={handleEditReminder}
+                  onComplete={handleMarkCompleted}
+                  onDelete={handleDeleteReminder}
+                  deletingId={deletingId}
+                />
+                {reminders.length === 0 && (
+                  <p className="mt-2 text-center text-sm text-gray-500">
+                    {t("reminders.empty.calendar.description")}
+                  </p>
                 )}
               </CardContent>
             </Card>
@@ -1367,8 +1719,17 @@ function RemindersContent() {
 }
 
 export default function RemindersPage() {
+  const { t } = useTranslation();
   return (
-    <ProtectedRoute>
+    <ProtectedRoute
+      fallback={
+        <FeaturePreviewGate
+          featureName={t("notes.header.title")}
+          previewTitle={t("reminders.preview.title")}
+          previewText={t("reminders.preview.text")}
+        />
+      }
+    >
       <RemindersContent />
     </ProtectedRoute>
   );

@@ -8,12 +8,11 @@ export function useTranslation() {
 
   const t = useCallback(
     (key: string): string => {
-      const translations = getTranslations(currentLanguage);
-      if (translations[key]) {
-        return translations[key];
+      const dict = getTranslations(currentLanguage);
+      if (dict[key]) {
+        return dict[key];
       }
-      const ruTranslations = getTranslations(Language.RU);
-      return ruTranslations[key] || key;
+      return getTranslations(Language.RU)[key] || key;
     },
     [currentLanguage]
   );

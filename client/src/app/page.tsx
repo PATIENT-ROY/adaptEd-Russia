@@ -12,24 +12,19 @@ import {
   BookOpen,
   MessageSquare,
   Sparkles,
+  CalendarClock,
   ArrowUp,
   Crown,
   CreditCard,
   Zap,
   Star,
   Users,
-  Shield,
   Rocket,
   ScanLine,
   ArrowRight,
   CheckCircle2,
   Quote,
-  Bot,
-  FileText,
-  Presentation,
-  Puzzle,
-  GraduationCap,
-  ClipboardCheck,
+  Home,
 } from "lucide-react";
 import Link from "next/link";
 import Image from "next/image";
@@ -49,16 +44,18 @@ import { LanguageMarquee } from "@/components/home/LanguageMarquee";
 import { ReviewCard } from "@/components/home/ReviewCard";
 import {
   TestimonialCardSkeleton,
-  ContentProofSkeleton,
+  TrustStatsSkeleton,
 } from "@/components/ui/skeleton";
 import { useAdaptationCta } from "@/hooks/useAdaptationCta";
+import { HomeFeatureCard } from "@/components/home/HomeFeatureCard";
 import { ScrollReveal } from "@/components/home/ScrollReveal";
 import { StaggerReveal, StaggerItem } from "@/components/home/StaggerReveal";
 import { HeroBackgroundImage } from "@/components/ui/hero-background-image";
 import { motion } from "framer-motion";
 import {
-  EDUCATION_GUIDES_COUNT,
   TOTAL_GUIDES_COUNT,
+  EDUCATION_GUIDES_COUNT,
+  LIFE_GUIDES_COUNT,
   SUPPORTED_LANGUAGES_COUNT,
 } from "@/constants/content-stats";
 import { formatCountedLabel } from "@/lib/pluralize";
@@ -178,44 +175,56 @@ export default function HomePage() {
   const features = useMemo(
     () => [
       {
-        id: "navigator",
+        id: "education",
         icon: BookOpen,
         title: t("home.features.navigator"),
         description: t("home.features.navigator.desc"),
-        gradient: "from-blue-500 to-blue-600",
-        stats: formatCountedLabel(
+        stat: formatCountedLabel(
           EDUCATION_GUIDES_COUNT,
           currentLanguage,
           t,
           "home.guidesCount",
         ),
+        iconClassName: "bg-gradient-to-br from-blue-500 to-blue-600",
         href: "/education-guide",
       },
       {
-        id: "reminders",
-        icon: Sparkles,
-        title: t("home.features.reminders"),
-        description: t("home.features.reminders.desc"),
-        gradient: "from-purple-500 to-indigo-600",
-        stats: t("home.section.features.stats.notifications"),
-        href: "/reminders",
+        id: "life",
+        icon: Home,
+        title: t("home.features.guide"),
+        description: t("home.features.guide.desc"),
+        stat: t("home.section.features.stats.instructions").replace(
+          "{count}",
+          String(LIFE_GUIDES_COUNT),
+        ),
+        iconClassName: "bg-gradient-to-br from-emerald-500 to-teal-600",
+        href: "/life-guide",
       },
       {
         id: "ai",
-        icon: MessageSquare,
-        title: "AdaptEd AI",
+        icon: Sparkles,
+        title: t("home.features.ai"),
         description: t("home.features.ai.desc"),
-        gradient: "from-orange-500 to-orange-600",
-        stats: t("home.section.features.stats.ai"),
+        stat: t("home.section.features.stats.ai"),
+        iconClassName: "bg-gradient-to-br from-violet-500 to-indigo-600",
         href: "/ai-helper",
+      },
+      {
+        id: "reminders",
+        icon: CalendarClock,
+        title: t("home.features.reminders"),
+        description: t("home.features.reminders.desc"),
+        stat: t("home.section.features.stats.notifications"),
+        iconClassName: "bg-gradient-to-br from-purple-500 to-indigo-600",
+        href: "/reminders",
       },
       {
         id: "docscan",
         icon: ScanLine,
         title: t("home.features.docscan"),
-        description: t("home.features.docscan.desc"),
-        gradient: "from-indigo-500 to-indigo-600",
-        stats: t("home.features.docscan.stats"),
+        description: t("home.features.docscan.card"),
+        stat: t("home.features.docscan.stats"),
+        iconClassName: "bg-gradient-to-br from-indigo-500 to-indigo-600",
         href: "/docscan",
       },
       {
@@ -223,19 +232,9 @@ export default function HomePage() {
         icon: Users,
         title: t("home.features.community"),
         description: t("home.features.community.desc"),
-        gradient: "from-pink-500 to-rose-600",
-        stats: t("home.section.features.stats.community"),
+        stat: t("home.section.features.stats.community"),
+        iconClassName: "bg-gradient-to-br from-pink-500 to-rose-600",
         href: "/community/questions",
-      },
-      {
-        id: "verified",
-        icon: Shield,
-        title: t("home.benefits.verified"),
-        description: t("home.benefits.verified.desc"),
-        gradient: "from-emerald-500 to-teal-600",
-        stats: t("home.section.features.stats.verified"),
-        href: "#home-about",
-        ctaLabel: t("home.features.verified.cta"),
       },
     ],
     [t, currentLanguage],
@@ -371,10 +370,10 @@ export default function HomePage() {
           <section
             aria-busy="true"
             aria-label={t("home.contentProof.title")}
-            className="py-5 sm:py-6 bg-white rounded-2xl sm:rounded-3xl mb-6 sm:mb-8 border border-slate-100"
+            className="py-8 sm:py-10 bg-white rounded-2xl sm:rounded-3xl mb-6 sm:mb-8"
           >
-            <div className="max-w-3xl mx-auto px-4 sm:px-6">
-              <ContentProofSkeleton />
+            <div className="max-w-4xl mx-auto px-4 sm:px-6">
+              <TrustStatsSkeleton />
             </div>
           </section>
         ) : showTrustBar && trustStats ? (
@@ -420,122 +419,6 @@ export default function HomePage() {
         {/* Multilingual ticker — mid-page break like edurussia marquees */}
         <LanguageMarquee />
 
-        {/* Dedicated AI showcase */}
-        <section hidden className="relative my-6 overflow-hidden rounded-3xl border border-indigo-100 bg-white px-4 py-10 shadow-sm sm:my-8 sm:px-8 sm:py-14 lg:px-12">
-          <div className="pointer-events-none absolute -right-24 -top-24 h-72 w-72 rounded-full bg-purple-100/70 blur-3xl" aria-hidden />
-          <div className="pointer-events-none absolute -bottom-32 -left-20 h-72 w-72 rounded-full bg-blue-100/70 blur-3xl" aria-hidden />
-
-          <div className="relative">
-            <ScrollReveal className="mx-auto mb-8 max-w-3xl text-center sm:mb-10">
-              <span className="inline-flex items-center gap-2 rounded-full bg-indigo-50 px-3 py-1.5 text-sm font-semibold text-indigo-700">
-                <Sparkles className="h-4 w-4" aria-hidden />
-                AdaptEd AI
-              </span>
-              <h2 className="mt-4 text-2xl font-bold tracking-tight text-slate-900 sm:text-3xl md:text-4xl">
-                {currentLanguage === "RU"
-                  ? "Помощь рядом — от вопроса до готового результата"
-                  : "Help is close — from a question to a finished result"}
-              </h2>
-              <p className="mx-auto mt-3 max-w-2xl text-base leading-relaxed text-slate-600 sm:text-lg">
-                {currentLanguage === "RU"
-                  ? "Поговорите с AI как с наставником или выберите готовый инструмент для конкретной учебной задачи."
-                  : "Talk to AI like a mentor or choose a ready-made tool for a specific study task."}
-              </p>
-            </ScrollReveal>
-
-            <div className="grid gap-5 lg:grid-cols-2">
-              <ScrollReveal>
-                <article className="flex h-full flex-col overflow-hidden rounded-3xl border border-blue-100 bg-gradient-to-b from-blue-50/80 to-white p-5 sm:p-7">
-                  <div className="flex items-center gap-3">
-                    <div className="flex h-12 w-12 items-center justify-center rounded-2xl bg-blue-600 text-white shadow-md shadow-blue-200">
-                      <Bot className="h-6 w-6" aria-hidden />
-                    </div>
-                    <div>
-                      <h3 className="text-xl font-bold text-slate-900">AI-помощник</h3>
-                      <p className="text-sm text-slate-500">Учёба · Жизнь в России · Генератор</p>
-                    </div>
-                  </div>
-
-                  <div className="my-6 space-y-3 rounded-2xl border border-blue-100 bg-white p-4 shadow-sm">
-                    <div className="ml-auto max-w-[88%] rounded-2xl rounded-br-md bg-blue-600 px-4 py-3 text-sm leading-relaxed text-white">
-                      {currentLanguage === "RU"
-                        ? "Объясни эту тему проще и помоги подготовиться к экзамену"
-                        : "Explain this topic simply and help me prepare for the exam"}
-                    </div>
-                    <div className="max-w-[92%] rounded-2xl rounded-bl-md bg-slate-100 px-4 py-3 text-sm leading-relaxed text-slate-700">
-                      {currentLanguage === "RU"
-                        ? "Конечно. Сначала разберём основу на простом примере, а затем я составлю план подготовки…"
-                        : "Of course. First, we’ll cover the basics with a simple example, then build a study plan…"}
-                    </div>
-                  </div>
-
-                  <p className="text-sm leading-relaxed text-slate-600 sm:text-base">
-                    {currentLanguage === "RU"
-                      ? "Не нужно подбирать специальные команды — просто опишите ситуацию своими словами."
-                      : "No special commands needed — just describe your situation in your own words."}
-                  </p>
-                  <Link href="/ai-helper/assistant" className="mt-6 inline-flex w-fit items-center gap-2 rounded-xl bg-blue-600 px-4 py-3 text-sm font-semibold text-white transition-all hover:bg-blue-700 hover:shadow-md">
-                    {currentLanguage === "RU" ? "Задать вопрос" : "Ask a question"}
-                    <ArrowRight className="h-4 w-4" aria-hidden />
-                  </Link>
-                </article>
-              </ScrollReveal>
-
-              <ScrollReveal>
-                <article className="flex h-full flex-col overflow-hidden rounded-3xl border border-purple-100 bg-gradient-to-b from-purple-50/80 to-white p-5 sm:p-7">
-                  <div className="flex items-center gap-3">
-                    <div className="flex h-12 w-12 items-center justify-center rounded-2xl bg-purple-600 text-white shadow-md shadow-purple-200">
-                      <Sparkles className="h-6 w-6" aria-hidden />
-                    </div>
-                    <div>
-                      <h3 className="text-xl font-bold text-slate-900">AI-инструменты</h3>
-                      <p className="text-sm text-slate-500">Выберите задачу — AI сделает остальное</p>
-                    </div>
-                  </div>
-
-                  <div className="my-6 grid grid-cols-2 gap-2.5 sm:grid-cols-3">
-                    {[
-                      { icon: FileText, label: "Тексты", color: "text-blue-600 bg-blue-50" },
-                      { icon: Presentation, label: "Презентации", color: "text-orange-600 bg-orange-50" },
-                      { icon: Puzzle, label: "Задачи", color: "text-pink-600 bg-pink-50" },
-                      { icon: GraduationCap, label: "Темы", color: "text-red-600 bg-red-50" },
-                      { icon: ClipboardCheck, label: "Экзамены", color: "text-emerald-600 bg-emerald-50" },
-                      { icon: MessageSquare, label: "Конспекты", color: "text-purple-600 bg-purple-50" },
-                    ].map((item) => {
-                      const Icon = item.icon;
-                      return (
-                        <div key={item.label} className="rounded-2xl border border-slate-100 bg-white p-3 shadow-sm">
-                          <div className={`mb-2 flex h-9 w-9 items-center justify-center rounded-xl ${item.color}`}>
-                            <Icon className="h-4.5 w-4.5" aria-hidden />
-                          </div>
-                          <p className="text-sm font-semibold text-slate-800">{item.label}</p>
-                        </div>
-                      );
-                    })}
-                  </div>
-
-                  <p className="text-sm leading-relaxed text-slate-600 sm:text-base">
-                    {currentLanguage === "RU"
-                      ? "Ответьте на несколько понятных вопросов и получите структурированный материал, который можно доработать."
-                      : "Answer a few simple questions and receive a structured result you can refine."}
-                  </p>
-                  <Link href="/ai-helper/tools" className="mt-6 inline-flex w-fit items-center gap-2 rounded-xl bg-purple-600 px-4 py-3 text-sm font-semibold text-white transition-all hover:bg-purple-700 hover:shadow-md">
-                    {currentLanguage === "RU" ? "Выбрать инструмент" : "Choose a tool"}
-                    <ArrowRight className="h-4 w-4" aria-hidden />
-                  </Link>
-                </article>
-              </ScrollReveal>
-            </div>
-
-            <div className="relative mt-7 text-center">
-              <Link href="/ai-helper" className="inline-flex items-center gap-2 text-sm font-semibold text-indigo-700 transition-colors hover:text-indigo-900 hover:underline">
-                {currentLanguage === "RU" ? "Посмотреть все возможности AdaptEd AI" : "Explore all AdaptEd AI features"}
-                <ArrowRight className="h-4 w-4" aria-hidden />
-              </Link>
-            </div>
-          </div>
-        </section>
-
         {/* How it works */}
         <section
           aria-label={t("home.section.howItWorks.title")}
@@ -551,7 +434,7 @@ export default function HomePage() {
               </p>
             </ScrollReveal>
 
-            <StaggerReveal className="home-how-it-works-grid grid grid-cols-1 lg:grid-cols-3 gap-5 sm:gap-6">
+            <StaggerReveal className="home-how-it-works-grid grid grid-cols-1 sm:grid-cols-2 gap-5 sm:gap-6">
               <StaggerItem>
                 <Card className="no-hover border border-slate-200 shadow-sm h-full bg-gradient-to-b from-white to-slate-50">
                   <CardContent className="p-5 h-full flex flex-col">
@@ -597,8 +480,64 @@ export default function HomePage() {
                   <CardContent className="p-5 h-full flex flex-col">
                     <HowItWorksStepHeader
                       step="02"
-                      title={t("educationGuide.header.title")}
+                      title={t("aiHelper.templates")}
                       caption={t("home.section.howItWorks.step2.caption")}
+                    />
+                    <div className="rounded-xl border border-slate-200 bg-slate-50 overflow-hidden flex-1">
+                      <div className="h-8 bg-slate-900 flex items-center px-3 gap-1.5">
+                        <span className="w-2 h-2 rounded-full bg-red-400" />
+                        <span className="w-2 h-2 rounded-full bg-yellow-400" />
+                        <span className="w-2 h-2 rounded-full bg-green-400" />
+                      </div>
+                      <div className="p-3 space-y-2">
+                        <div className="rounded-lg bg-white border border-slate-200 p-2">
+                          <p className="text-xs font-semibold text-slate-900">
+                            {t("aiHelper.templates")}
+                          </p>
+                          <p className="mt-0.5 text-xs text-slate-500">
+                            {t("aiHelper.quickQuestions.generator.desc")}
+                          </p>
+                        </div>
+                        <div className="grid grid-cols-2 gap-1.5">
+                          {[
+                            { label: t("home.mock.tools.text"), active: true },
+                            { label: t("home.mock.tools.slides") },
+                            { label: t("home.mock.tools.tasks") },
+                            { label: t("home.mock.tools.topics") },
+                            { label: t("home.mock.tools.exams") },
+                            { label: t("home.mock.tools.notes") },
+                          ].map((item) => (
+                            <div
+                              key={item.label}
+                              className={
+                                item.active
+                                  ? "rounded-md bg-blue-500 p-2"
+                                  : "rounded-md border border-slate-200 bg-white p-2"
+                              }
+                            >
+                              <p
+                                className={`text-xs font-medium ${
+                                  item.active ? "text-white" : "text-slate-800"
+                                }`}
+                              >
+                                {item.label}
+                              </p>
+                            </div>
+                          ))}
+                        </div>
+                      </div>
+                    </div>
+                  </CardContent>
+                </Card>
+              </StaggerItem>
+
+              <StaggerItem>
+                <Card className="no-hover border border-slate-200 shadow-sm h-full bg-gradient-to-b from-white to-slate-50">
+                  <CardContent className="p-5 h-full flex flex-col">
+                    <HowItWorksStepHeader
+                      step="03"
+                      title={t("educationGuide.header.title")}
+                      caption={t("home.section.howItWorks.step3.caption")}
                     />
                     <div className="rounded-xl border border-slate-200 bg-slate-50 overflow-hidden flex-1">
                       <div className="h-8 bg-slate-900 flex items-center px-3 gap-1.5">
@@ -649,9 +588,9 @@ export default function HomePage() {
                 <Card className="no-hover border border-slate-200 shadow-sm h-full bg-gradient-to-b from-white to-slate-50">
                   <CardContent className="p-5 h-full flex flex-col">
                     <HowItWorksStepHeader
-                      step="03"
+                      step="04"
                       title={t("home.features.community")}
-                      caption={t("home.section.howItWorks.step3.caption")}
+                      caption={t("home.section.howItWorks.step4.caption")}
                     />
                     <div className="rounded-xl border border-slate-200 bg-slate-50 overflow-hidden flex-1">
                       <div className="h-8 bg-slate-900 flex items-center px-3 gap-1.5">
@@ -698,7 +637,7 @@ export default function HomePage() {
           </div>
         </section>
 
-        {/* Features — single section */}
+        {/* Features — reference card layout */}
         <section
           aria-label={t("home.section.features.title")}
           className="home-features-section py-12 sm:py-16 md:py-20 bg-slate-50 rounded-2xl sm:rounded-3xl my-6 sm:my-8"
@@ -713,40 +652,20 @@ export default function HomePage() {
               </p>
             </ScrollReveal>
 
-            <StaggerReveal className="home-features-grid grid auto-rows-fr grid-cols-1 sm:grid-cols-2 lg:grid-cols-3 gap-4 sm:gap-6">
-              {features.map((feature) => {
-                const Icon = feature.icon;
-                return (
-                  <StaggerItem key={feature.id} className="h-full">
-                    <Link href={feature.href} className="group block h-full">
-                      <Card className="border border-slate-200 shadow-sm h-full bg-white transition-all duration-200 hover:shadow-md hover:border-blue-200">
-                        <CardContent className="p-5 sm:p-6 flex flex-col h-full">
-                          <div
-                            className={`w-14 h-14 rounded-2xl bg-gradient-to-br ${feature.gradient} flex items-center justify-center mb-5 shadow-lg shadow-slate-300/60 group-hover:scale-105 transition-transform`}
-                          >
-                            <Icon className="h-7 w-7 text-white" aria-hidden />
-                          </div>
-                          <h3 className="text-lg font-bold text-slate-900 mb-2">
-                            {feature.title}
-                          </h3>
-                          <p className="text-sm sm:text-base text-slate-600 leading-relaxed flex-grow">
-                            {feature.description}
-                          </p>
-                          <div className="mt-6 border-t border-slate-100 pt-4">
-                            <p className="mb-3 text-sm font-medium text-slate-500">
-                              {feature.stats}
-                            </p>
-                            <span className="inline-flex items-center gap-2 text-sm font-semibold text-blue-600 transition-colors group-hover:text-blue-700">
-                              {feature.ctaLabel ?? t("common.learnMore")}
-                              <ArrowRight className="h-4 w-4 transition-transform group-hover:translate-x-1" aria-hidden />
-                            </span>
-                          </div>
-                        </CardContent>
-                      </Card>
-                    </Link>
-                  </StaggerItem>
-                );
-              })}
+            <StaggerReveal className="home-features-grid grid grid-cols-1 gap-4 sm:grid-cols-2 sm:gap-5 lg:grid-cols-3">
+              {features.map((feature) => (
+                <StaggerItem key={feature.id} className="h-full">
+                  <HomeFeatureCard
+                    href={feature.href}
+                    title={feature.title}
+                    description={feature.description}
+                    stat={feature.stat}
+                    icon={feature.icon}
+                    iconClassName={feature.iconClassName}
+                    learnMore={t("common.learnMore")}
+                  />
+                </StaggerItem>
+              ))}
             </StaggerReveal>
           </div>
         </section>
@@ -922,11 +841,11 @@ export default function HomePage() {
                 <div className="flex flex-col gap-6 border-b border-slate-200 pb-8 sm:flex-row sm:items-center">
                   <div className="h-20 w-20 shrink-0 overflow-hidden rounded-full bg-slate-100 ring-4 ring-blue-50 sm:h-24 sm:w-24">
                     <Image
-                      src="/founder-avatar.png"
+                      src="/founder-imahe/IMG_0654.jpeg"
                       alt={t("home.about.avatarAlt")}
                       width={160}
                       height={160}
-                      className="h-full w-full object-cover object-top"
+                      className="h-full w-full scale-125 object-cover object-[center_30%]"
                     />
                   </div>
                   <div className="min-w-0 flex-1">

@@ -20,6 +20,7 @@ import reviewRoutes from './api/reviews.js';
 import noteRoutes from './api/notes.js';
 import guideProgressRoutes from './api/guide-progress.js';
 import adminRoutes from './api/admin.js';
+import { startReminderNotificationWorker } from './lib/reminder-notifications.js';
 
 // Загружаем переменные окружения
 dotenv.config();
@@ -286,6 +287,7 @@ app.listen(PORT, HOST, () => {
   console.log(`🚀 Сервер запущен на ${HOST}:${PORT}`);
   console.log(`📊 Health check: http://${HOST}:${PORT}/health`);
   console.log(`🔗 API Base URL: http://${HOST}:${PORT}/api`);
+  startReminderNotificationWorker();
 });
 
 export default app; 

@@ -21,6 +21,9 @@ export function CookieConsent() {
 
   const save = (value: "accepted" | "necessary") => {
     localStorage.setItem(STORAGE_KEY, value);
+    window.dispatchEvent(
+      new CustomEvent("cookie-consent-changed", { detail: value }),
+    );
     setShowConsent(false);
   };
 

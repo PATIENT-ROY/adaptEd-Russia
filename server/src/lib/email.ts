@@ -5,6 +5,13 @@ interface SendInviteEmailParams {
   expiresAtIso: string;
 }
 
+interface SendEmailParams {
+  to: string;
+  subject: string;
+  html: string;
+  idempotencyKey?: string;
+}
+
 interface SendInviteEmailResult {
   sent: boolean;
   provider: 'resend' | 'none';
@@ -57,7 +64,7 @@ function buildInviteHtml({
   `;
 }
 
-export async function sendInviteEmail(params: SendInviteEmailParams): Promise<SendInviteEmailResult> {
+export async function sendEmail(params: SendEmailParams): Promise<SendInviteEmailResult> {
   const resendApiKey = process.env.RESEND_API_KEY;
   const fromEmail = process.env.EMAIL_FROM;
   const replyTo = process.env.EMAIL_REPLY_TO;
@@ -87,15 +94,14 @@ export async function sendInviteEmail(params: SendInviteEmailParams): Promise<Se
         headers: {
           Authorization: `Bearer ${resendApiKey}`,
           'Content-Type': 'application/json',
-          // Helps avoid duplicate emails when retrying the same invitation.
-          'Idempotency-Key': `invite:${params.to}:${params.expiresAtIso}`,
+          ...(params.idempotencyKey ? { 'Idempotency-Key': params.idempotencyKey } : {}),
         },
         body: JSON.stringify({
           from: fromEmail,
           to: [params.to],
           ...(replyTo ? { reply_to: replyTo } : {}),
-          subject: 'Активация аккаунта AdaptEd Russia',
-          html: buildInviteHtml(params),
+          subject: params.subject,
+          html: params.html,
         }),
         signal: controller.signal,
       });
@@ -144,4 +150,64 @@ export async function sendInviteEmail(params: SendInviteEmailParams): Promise<Se
     attempts,
     error: lastError,
   };
+}
+
+export async function sendInviteEmail(params: SendInviteEmailParams): Promise<SendInviteEmailResult> {
+  return sendEmail({
+    to: params.to,
+    subject: 'Активация аккаунта AdaptEd Russia',
+    html: buildInviteHtml(params),
+    idempotencyKey: `invite:${params.to}:${params.expiresAtIso}`,
+  });
+}
+
+function escapeHtml(value: string) {
+  return value
+    .replace(/&/g, '&amp;')
+    .replace(/</g, '&lt;')
+    .replace(/>/g, '&gt;')
+    .replace(/"/g, '&quot;');
+}
+
+export async function sendReminderEmail(params: {
+  to: string;
+  name: string;
+  title: string;
+  description?: string | null;
+  dueDate: Date;
+  reminderId: string;
+}): Promise<SendInviteEmailResult> {
+  const appUrl = process.env.CLIENT_URL || process.env.APP_BASE_URL || 'https://adaptedrussia.ru';
+  const dueLabel = params.dueDate.toLocaleString('ru-RU', {
+    year: 'numeric',
+    month: 'long',
+    day: 'numeric',
+    hour: '2-digit',
+    minute: '2-digit',
+  });
+  const title = escapeHtml(params.title);
+  const name = escapeHtml(params.name || 'студент');
+  const description = params.description
+    ? `<p style="margin:0 0 16px 0;color:#4b5563">${escapeHtml(params.description)}</p>`
+    : '';
+
+  return sendEmail({
+    to: params.to,
+    subject: `Напоминание: ${params.title}`,
+    html: `
+      <div style="font-family:Arial,sans-serif;max-width:560px;margin:0 auto;padding:24px;color:#1f2937">
+        <h2 style="margin:0 0 12px 0;">Напоминание AdaptEd Russia</h2>
+        <p style="margin:0 0 12px 0;">Здравствуйте, ${name}.</p>
+        <p style="margin:0 0 8px 0;font-size:18px;font-weight:700">${title}</p>
+        <p style="margin:0 0 16px 0;color:#6b7280">Срок: ${escapeHtml(dueLabel)}</p>
+        ${description}
+        <p style="margin:0 0 20px 0;">
+          <a href="${appUrl}/reminders" style="display:inline-block;background:#7c3aed;color:#fff;text-decoration:none;padding:12px 18px;border-radius:8px;">
+            Открыть напоминания
+          </a>
+        </p>
+      </div>
+    `,
+    idempotencyKey: `reminder:${params.reminderId}:${params.dueDate.toISOString()}`,
+  });
 }
