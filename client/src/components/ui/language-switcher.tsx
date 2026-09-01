@@ -11,6 +11,7 @@ interface LanguageSwitcherProps {
   onLanguageChange: (language: Language) => void;
   className?: string;
   enableFirstVisitHint?: boolean;
+  variant?: "dropdown" | "panel";
 }
 
 const languages: { code: Language; name: string; flag: string }[] = [
@@ -26,6 +27,7 @@ export function LanguageSwitcher({
   onLanguageChange,
   className,
   enableFirstVisitHint = false,
+  variant = "dropdown",
 }: LanguageSwitcherProps) {
   const [isOpen, setIsOpen] = useState(false);
   const [showHint, setShowHint] = useState(false);
@@ -108,6 +110,28 @@ export function LanguageSwitcher({
       }
     };
   }, [showHint]);
+
+  if (variant === "panel") {
+    return (
+      <div className={cn("space-y-1", className)}>
+        {languages.map((language) => (
+          <button
+            key={language.code}
+            type="button"
+            onClick={() => onLanguageChange(language.code)}
+            className={cn(
+              "flex w-full items-center gap-3 rounded-lg p-3 text-left text-slate-600 transition-colors hover:bg-slate-100 hover:text-slate-900",
+              currentLanguage === language.code &&
+                "bg-blue-50 font-medium text-blue-700",
+            )}
+          >
+            <span>{language.flag}</span>
+            <span>{language.name}</span>
+          </button>
+        ))}
+      </div>
+    );
+  }
 
   return (
     <div ref={containerRef} className={cn("relative inline-flex", className)}>

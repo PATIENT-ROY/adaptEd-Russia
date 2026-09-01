@@ -109,6 +109,13 @@ export function LifeGuideContent() {
   const [selectedCategory, setSelectedCategory] = useState("all");
   const [guidesVisibleCount, setGuidesVisibleCount] = useState(12);
 
+  useEffect(() => {
+    const cat = new URLSearchParams(window.location.search).get("cat");
+    if (cat && categoriesConfig.some((category) => category.id === cat)) {
+      setSelectedCategory(cat);
+    }
+  }, []);
+
   const { isRead, markAsRead } = useGuideProgress("life", lifeGuides.length);
   const handleMarkRead = useCallback((guideId: string) => {
     markAsRead(guideId);
@@ -292,6 +299,22 @@ export function LifeGuideContent() {
                           key={step.id}
                           href={lifeGuidePath(publishedGuide.id)}
                           onClick={() => markAsRead(publishedGuide.id)}
+                          className={className}
+                        >
+                          {label}
+                        </Link>
+                      );
+                    }
+
+                    if (step.categoryId) {
+                      return (
+                        <Link
+                          key={step.id}
+                          href={`/life-guide?cat=${encodeURIComponent(step.categoryId)}#life-guide-guides`}
+                          onClick={() => {
+                            setSelectedCategory(step.categoryId!);
+                            setSearchQuery("");
+                          }}
                           className={className}
                         >
                           {label}

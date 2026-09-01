@@ -16,7 +16,6 @@ import {
   UsersRound,
 } from "lucide-react";
 import { useMemo, useState } from "react";
-import { useRouter } from "next/navigation";
 import { useTranslation } from "@/hooks/useTranslation";
 import {
   fetchSchedule,
@@ -43,7 +42,6 @@ function groupByDate(items: ScheduleItem[]): Array<[string, ScheduleItem[]]> {
 
 export default function SchedulePage() {
   const { t, currentLanguage } = useTranslation();
-  const router = useRouter();
   const [isLoading, setIsLoading] = useState(false);
   const [result, setResult] = useState<ScheduleResult | null>(null);
   const [error, setError] = useState<string | null>(null);
@@ -83,9 +81,9 @@ export default function SchedulePage() {
       <div className="min-h-screen bg-gradient-to-br from-blue-50 via-white to-purple-50 py-8">
         <div className="max-w-6xl mx-auto px-4 sm:px-6 lg:px-8">
           <BackButton
+            href="/education-guide"
             label={t("schedulePage.back")}
             className="mb-6"
-            onClick={() => router.push("/education-guide")}
           />
 
           <div className="text-center mb-12">
@@ -212,22 +210,22 @@ export default function SchedulePage() {
                                 )}
                               </div>
                               <dl className="mt-3 grid gap-2 text-sm text-gray-600 md:grid-cols-2">
-                                {lesson.teachers.length > 0 && (
+                                {(lesson.teachers?.length ?? 0) > 0 && (
                                   <div className="flex gap-2">
                                     <UserRound className="mt-0.5 h-4 w-4 shrink-0" />
-                                    <span>{lesson.teachers.join(", ")}</span>
+                                    <span>{(lesson.teachers ?? []).join(", ")}</span>
                                   </div>
                                 )}
-                                {lesson.rooms.length > 0 && (
+                                {(lesson.rooms?.length ?? 0) > 0 && (
                                   <div className="flex gap-2">
                                     <MapPin className="mt-0.5 h-4 w-4 shrink-0" />
-                                    <span>{lesson.rooms.join(", ")}</span>
+                                    <span>{(lesson.rooms ?? []).join(", ")}</span>
                                   </div>
                                 )}
-                                {lesson.groups.length > 0 && (
+                                {(lesson.groups?.length ?? 0) > 0 && (
                                   <div className="flex gap-2 md:col-span-2">
                                     <UsersRound className="mt-0.5 h-4 w-4 shrink-0" />
-                                    <span>{lesson.groups.join(", ")}</span>
+                                    <span>{(lesson.groups ?? []).join(", ")}</span>
                                   </div>
                                 )}
                               </dl>

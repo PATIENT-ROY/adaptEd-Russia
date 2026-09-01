@@ -184,7 +184,13 @@ class ApiClient {
         let serverMessage: string | undefined;
         try {
           const parsed = text ? JSON.parse(text) : {};
-          serverMessage = parsed.error || parsed.message;
+          const details = Array.isArray(parsed.details)
+            ? parsed.details
+            : Array.isArray(parsed.issues)
+              ? parsed.issues
+              : [];
+          const firstDetail = details[0]?.message;
+          serverMessage = firstDetail || parsed.error || parsed.message;
           
           if (response.status === 401 || serverMessage?.includes('токен') || serverMessage?.includes('token')) {
             this.handleUnauthorized();

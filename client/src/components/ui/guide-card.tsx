@@ -7,6 +7,7 @@ import { formatDate } from "@/lib/date-utils";
 import { GuideCardBase } from "./guide-card-base";
 import { useTranslation } from "@/hooks/useTranslation";
 import { guideArticlePath } from "@/lib/guide-routes";
+import { localizedGuideFields } from "@/data/guide-copy";
 
 interface GuideCardProps {
   guide: Guide;
@@ -87,9 +88,10 @@ function getGuidePreview(content: string, maxLen = PREVIEW_MAX_LEN): string {
 }
 
 export function GuideCard({ guide, onClick, className, isRead, onRead }: GuideCardProps) {
-  const { t } = useTranslation();
+  const { t, currentLanguage } = useTranslation();
   const Icon = categoryIcons[guide.category];
   const href = guideArticlePath(guide);
+  const copy = localizedGuideFields(guide, currentLanguage);
 
   const handleOpen = () => {
     onClick?.();
@@ -97,7 +99,9 @@ export function GuideCard({ guide, onClick, className, isRead, onRead }: GuideCa
   };
 
   const previewText =
-    getGuidePreview(guide.content) || t("guideCard.previewFallback");
+    copy.excerpt ||
+    getGuidePreview(guide.content) ||
+    t("guideCard.previewFallback");
 
   return (
     <Link href={href} onClick={handleOpen} className="block h-full">
@@ -125,7 +129,7 @@ export function GuideCard({ guide, onClick, className, isRead, onRead }: GuideCa
             )}
           </div>
         }
-        title={guide.title}
+        title={copy.title}
         subtitle={t(CATEGORY_I18N[guide.category] ?? "guideCard.category.other")}
         description={previewText}
         footerActions={

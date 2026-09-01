@@ -356,16 +356,6 @@ export default function LoginPage() {
               )}
             </AnimatePresence>
 
-            {/* Divider */}
-            <div className="relative">
-              <div className="absolute inset-0 flex items-center">
-                <div className="w-full border-t border-slate-200" />
-              </div>
-              <div className="relative flex justify-center text-sm">
-                <span className="px-2 bg-white text-slate-500">{t("login.or")}</span>
-              </div>
-            </div>
-
             {/* Register Link */}
             <div className="text-center">
               <p className="text-slate-600">
@@ -383,18 +373,27 @@ export default function LoginPage() {
 
         {/* Features */}
         <div className="mt-6 sm:mt-8 grid grid-cols-3 gap-3 sm:gap-4">
-          <div className="text-center p-4 rounded-xl bg-white/50 backdrop-blur-sm border border-white/20">
+          <Link
+            href="/education-guide"
+            className="text-center p-4 rounded-xl bg-white/50 backdrop-blur-sm border border-white/20 transition-colors hover:bg-white/80"
+          >
             <BookOpen className="h-6 w-6 text-blue-600 mx-auto mb-2" />
             <p className="text-xs text-slate-600">{t("login.feature.education")}</p>
-          </div>
-          <div className="text-center p-4 rounded-xl bg-white/50 backdrop-blur-sm border border-white/20">
+          </Link>
+          <Link
+            href="/life-guide"
+            className="text-center p-4 rounded-xl bg-white/50 backdrop-blur-sm border border-white/20 transition-colors hover:bg-white/80"
+          >
             <Globe className="h-6 w-6 text-green-600 mx-auto mb-2" />
             <p className="text-xs text-slate-600">{t("login.feature.life")}</p>
-          </div>
-          <div className="text-center p-4 rounded-xl bg-white/50 backdrop-blur-sm border border-white/20">
+          </Link>
+          <Link
+            href="/community/questions"
+            className="text-center p-4 rounded-xl bg-white/50 backdrop-blur-sm border border-white/20 transition-colors hover:bg-white/80"
+          >
             <Users className="h-6 w-6 text-purple-600 mx-auto mb-2" />
             <p className="text-xs text-slate-600">{t("login.feature.community")}</p>
-          </div>
+          </Link>
         </div>
       </div>
     </div>

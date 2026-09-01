@@ -1,15 +1,18 @@
 import type { Metadata } from "next";
-import type { Guide } from "@/types";
+import { getGuideCopy } from "@/data/guide-copy";
+import { GuideCategory, Language, type Guide } from "@/types";
 
 export const SITE_URL = "https://adaptedrussia.ru";
 
 export function guideDescription(guide: Guide, maxLength = 158): string {
-  const text = guide.content
-    .replace(/https?:\/\/\S+/g, "")
-    .replace(/[#*_`|>•▪]/g, " ")
+  const section =
+    guide.category === GuideCategory.EDUCATION ? "education" : "life";
+  const excerpt = getGuideCopy(section, guide.id, Language.RU)?.excerpt;
+  const text = (excerpt || "")
     .replace(/\s+/g, " ")
     .trim();
 
+  if (!text) return "";
   if (text.length <= maxLength) return text;
   const shortened = text.slice(0, maxLength - 1);
   const lastSpace = shortened.lastIndexOf(" ");

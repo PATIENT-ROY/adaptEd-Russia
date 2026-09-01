@@ -10,7 +10,6 @@ import {
   GraduationCap,
   FileText,
   Clock,
-  Languages,
   AlertTriangle,
   ArrowRight,
   Building2,
@@ -41,7 +40,7 @@ const categoriesConfig: Omit<Category, "name">[] = [
 ];
 
 type ToolCard = {
-  id: "schedule" | "dictionary" | "translation-centers";
+  id: "schedule" | "dictionary";
   name: string;
   description: string;
   icon: React.ComponentType<{ className?: string }>;
@@ -117,13 +116,6 @@ export function EducationGuideContent() {
       description: t("educationGuide.tools.dictionaryDescription"),
       icon: BookOpen,
       href: "/education/student-slang",
-    },
-    {
-      id: "translation-centers",
-      name: t("educationGuide.categories.translation-centers"),
-      description: t("educationGuide.tools.translationCentersDescription"),
-      icon: Languages,
-      href: "/education/translation-centers",
     },
   ];
   const safeSelectedCategory = ENABLED_CATEGORY_IDS.has(selectedCategory)

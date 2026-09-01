@@ -32,6 +32,13 @@ import { countrySuggestions } from "@/constants/countries";
 
 const STEP_TRANSITION_DURATION = 0.35; // seconds
 const STEP_TRANSITION_MS = STEP_TRANSITION_DURATION * 1000;
+const PASSWORD_POLICY = /^(?=.*[a-z])(?=.*[A-Z])(?=.*\d).{8,}$/;
+
+function isDuplicateEmailError(message: string) {
+  return /уже существует|already exists|déjà (utilis|exist)|already been taken|مسجل|已存在/i.test(
+    message,
+  );
+}
 
 export default function RegisterPage() {
   const [formData, setFormData] = useState({
@@ -115,13 +122,8 @@ export default function RegisterPage() {
       return;
     }
 
-    if (formData.password.length < 6) {
+    if (!PASSWORD_POLICY.test(formData.password)) {
       setError(t("register.error.passwordTooShort"));
-      setFormData((prev) => ({
-        ...prev,
-        password: "",
-        confirmPassword: "",
-      }));
       return;
     }
 
@@ -141,29 +143,22 @@ export default function RegisterPage() {
       if (success) {
         setSubmitFeedback({
           type: "success",
-          message: "✔ Аккаунт успешно создан",
+          message: t("register.success"),
         });
         setTimeout(() => router.push("/dashboard"), 900);
-      } else {
-        setError(t("register.error.emailExists"));
-        setSubmitFeedback({
-          type: "error",
-          message: "❌ Ошибка регистрации",
-        });
+        return;
       }
+
+      setError(t("register.error.generic"));
     } catch (err) {
-      if (
-        err instanceof Error &&
-        err.message.toLowerCase().includes("network")
-      ) {
+      const message = err instanceof Error ? err.message : "";
+      if (isDuplicateEmailError(message)) {
+        setError(t("register.error.emailExists"));
+      } else if (message.toLowerCase().includes("network") || message.toLowerCase().includes("fetch")) {
         setError(t("register.error.networkError"));
       } else {
-        setError(t("register.error.generic"));
+        setError(message || t("register.error.generic"));
       }
-      setSubmitFeedback({
-        type: "error",
-        message: "❌ Ошибка регистрации",
-      });
     } finally {
       setIsLoading(false);
     }

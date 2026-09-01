@@ -128,8 +128,8 @@ export function AuthProvider({ children }: { children: React.ReactNode }) {
           return true;
         }
         return false;
-      } catch {
-        return false;
+      } catch (error) {
+        throw error instanceof Error ? error : new Error("Register failed");
       } finally {
         setIsLoading(false);
       }

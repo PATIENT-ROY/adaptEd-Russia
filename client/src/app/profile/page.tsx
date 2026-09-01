@@ -70,11 +70,12 @@ import {
   Language,
 } from "@/types";
 import { useReview } from "@/hooks/useReview";
+import { AppToast } from "@/components/ui/app-toast";
 import { ProfileAccountSettings } from "@/components/ui/profile-account-settings";
 import { ProfileEditForm } from "@/components/ui/profile-edit-form";
 import { ReviewModal } from "@/components/ReviewModal";
 import { localizePaymentDescription } from "@/lib/payment-i18n";
-import { guideArticlePath } from "@/lib/guide-routes";
+import { guideArticlePath, guidePathBySection } from "@/lib/guide-routes";
 import { educationGuides } from "@/data/education-guides";
 import { lifeGuides } from "@/data/life-guides";
 
@@ -320,7 +321,7 @@ function activityGuideHref(activity: ProfileActivityItem): string {
   const guide = resolveGuideFromActivity(activity);
   if (guide) return guideArticlePath(guide);
   if ((type === "life" || type === "education") && typeof id === "string") {
-    return `/guides/${type}/${encodeURIComponent(id)}`;
+    return guidePathBySection(type, id);
   }
   return type === "life" ? "/life-guide" : "/education-guide";
 }
@@ -1666,18 +1667,11 @@ function ProfileContent() {
           </div>
         )}
 
-        {/* Toast */}
         {toastMessage && (
-          <div className="fixed left-1/2 top-20 z-[110] flex max-w-[calc(100vw-2rem)] -translate-x-1/2 animate-in items-center gap-2 rounded-xl bg-slate-900 px-6 py-3 text-sm text-white shadow-2xl slide-in-from-top-4 duration-300">
-            <CheckCircle className="h-4 w-4 text-green-400 flex-shrink-0" />
-            {toastMessage}
-            <button
-              onClick={() => setToastMessage(null)}
-              className="ml-2 text-white/60 hover:text-white"
-            >
-              <X className="h-3.5 w-3.5" />
-            </button>
-          </div>
+          <AppToast
+            message={toastMessage}
+            onClose={() => setToastMessage(null)}
+          />
         )}
       </div>
     </Layout>
