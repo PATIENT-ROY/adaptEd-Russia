@@ -143,12 +143,14 @@ export default function SchedulePage() {
                         {result.universityName}
                       </p>
                       <h2 className="mt-1 text-xl font-bold text-gray-950">
-                        {result.query.resolvedValue}
+                        {result.query?.resolvedValue ||
+                          result.query?.value ||
+                          ""}
                       </h2>
                       <p className="mt-1 text-sm text-gray-600">
                         {t("schedulePage.resultsCount").replace(
                           "{count}",
-                          String(result.items.length),
+                          String(result.items?.length ?? 0),
                         )}
                       </p>
                     </div>

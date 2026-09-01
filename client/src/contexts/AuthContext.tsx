@@ -12,6 +12,8 @@ import type { User, UpdateProfileRequest } from "@/types";
 import { apiClient, AUTH_INVALID_EVENT } from "@/lib/api";
 import { clearApiCache } from "@/hooks/useApiCache";
 
+export const LOGOUT_NOTIFICATION_EVENT = "auth:logout-notification";
+
 interface AuthContextType {
   user: User | null;
   login: (email: string, password: string) => Promise<boolean>;
@@ -136,34 +138,26 @@ export function AuthProvider({ children }: { children: React.ReactNode }) {
   );
 
   const logout = useCallback(async () => {
-    // Сохраняем информацию о выходе для показа уведомления
-    const userName = user?.name.split(" ")[0] || "Пользователь";
-    localStorage.setItem(
-      "logoutNotification",
-      JSON.stringify({
-        userName,
-        timestamp: Date.now(),
-      })
+    const userName = user?.name?.split(" ")[0] || "Пользователь";
+    const payload = { userName, timestamp: Date.now() };
+    localStorage.setItem("logoutNotification", JSON.stringify(payload));
+    window.dispatchEvent(
+      new CustomEvent(LOGOUT_NOTIFICATION_EVENT, { detail: payload }),
     );
 
-    // Вызываем logout на API клиенте
     try {
       apiClient.logout();
     } catch (error) {
       console.error("Logout error:", error);
     }
 
-    // Очищаем данные пользователя и токен
     setUser(null);
     setIsNewUser(false);
     localStorage.removeItem("user");
     localStorage.removeItem("isNewUser");
     localStorage.removeItem("token");
-    
-    // Очищаем кэш API
-    clearApiCache();
 
-    // Используем router.push вместо window.location (без перезагрузки)
+    clearApiCache();
     router.push("/");
   }, [user, router]);
 

@@ -16,6 +16,8 @@ import {
   ScanLine,
   Users,
   Home,
+  ChevronRight,
+  ArrowRight,
 } from "lucide-react";
 import Link from "next/link";
 import { useAuth } from "@/contexts/AuthContext";
@@ -391,14 +393,19 @@ function DashboardContent() {
           {upcomingHoliday && (
             <Link
               href={lifeGuidePath(RUSSIAN_HOLIDAYS_GUIDE_ID)}
-              className="block"
+              className="group block rounded-2xl focus-visible:outline-none focus-visible:ring-2 focus-visible:ring-rose-500 focus-visible:ring-offset-2"
+              aria-label={`${t(
+                upcomingHoliday.isCurrent
+                  ? "dashboard.holiday.now"
+                  : "dashboard.holiday.next",
+              )}: ${t(upcomingHoliday.nameKey)}`}
             >
               <Card
-                className={`${dashboardCardClass} hover:shadow-2xl transition-all duration-300 hover:-translate-y-0.5 cursor-pointer`}
+                className={`${dashboardCardClass} border border-rose-100 transition-all duration-300 hover:shadow-2xl hover:-translate-y-0.5 active:scale-[0.99]`}
                 style={dashboardCardStyle}
               >
                 <CardContent className="p-4 sm:p-5">
-                  <div className="flex items-start gap-3.5 sm:gap-4">
+                  <div className="flex items-start gap-3 sm:gap-4">
                     <div className="w-11 h-11 sm:w-12 sm:h-12 rounded-xl bg-gradient-to-br from-rose-500 to-red-600 flex items-center justify-center shadow-md shrink-0">
                       <Calendar className="h-5 w-5 sm:h-6 sm:w-6 text-white" />
                     </div>
@@ -423,14 +430,16 @@ function DashboardContent() {
                           ),
                         )}
                       </p>
-                      <p className="text-sm text-slate-600 mt-1">
+                      <p className="text-sm text-slate-600 mt-1 leading-relaxed">
                         {t("dashboard.holiday.closes")}
                       </p>
-                      <p className="text-sm font-medium text-blue-700 mt-2">
-                        {t("dashboard.holiday.cta")}
-                      </p>
                     </div>
+                    <ChevronRight className="mt-1 h-5 w-5 shrink-0 text-slate-400 transition-colors group-hover:text-rose-600" />
                   </div>
+                  <span className="mt-3 inline-flex min-h-11 w-full items-center justify-center gap-1.5 rounded-xl bg-rose-50 px-3 py-2 text-sm font-semibold text-rose-700 sm:w-auto sm:justify-start">
+                    {t("dashboard.holiday.cta")}
+                    <ArrowRight className="h-4 w-4" />
+                  </span>
                 </CardContent>
               </Card>
             </Link>
@@ -561,8 +570,8 @@ function DashboardContent() {
                     }}
                   >
                     <CardContent className="p-4">
-                      <div className="flex items-center justify-between gap-4">
-                        <div className="flex items-center gap-3.5 min-w-0">
+                      <div className="flex flex-col gap-3 sm:flex-row sm:items-center sm:justify-between sm:gap-4">
+                        <div className="flex min-w-0 items-center gap-3.5">
                           <div
                             className={`w-11 h-11 rounded-xl flex items-center justify-center shrink-0 ${reminderPriorityClass(reminder.priority)}`}
                           >
@@ -579,8 +588,8 @@ function DashboardContent() {
                             </p>
                           </div>
                         </div>
-                        <Link href="/reminders" className="shrink-0">
-                          <Button variant="outline" size="sm">
+                        <Link href="/reminders" className="w-full sm:w-auto sm:shrink-0">
+                          <Button variant="outline" size="sm" className="min-h-11 w-full sm:w-auto">
                             {t("dashboard.upcomingReminders.details")}
                           </Button>
                         </Link>
@@ -592,18 +601,20 @@ function DashboardContent() {
             ) : (
               <Card className={dashboardCardClass} style={dashboardCardStyle}>
                 <CardContent className="p-4">
-                  <div className="flex items-center gap-4">
-                    <CalendarClock className="h-10 w-10 text-gray-400 shrink-0" />
-                    <div className="min-w-0 flex-1">
-                      <h3 className="text-base font-medium text-gray-900">
-                        {t("dashboard.upcomingReminders.empty.title")}
-                      </h3>
-                      <p className="text-sm text-gray-600 mt-0.5">
-                        {t("dashboard.upcomingReminders.empty.description")}
-                      </p>
+                  <div className="flex flex-col gap-4 sm:flex-row sm:items-center">
+                    <div className="flex min-w-0 items-start gap-3.5">
+                      <CalendarClock className="h-10 w-10 shrink-0 text-gray-400" />
+                      <div className="min-w-0 flex-1">
+                        <h3 className="text-base font-medium text-gray-900">
+                          {t("dashboard.upcomingReminders.empty.title")}
+                        </h3>
+                        <p className="mt-0.5 text-sm leading-relaxed text-gray-600">
+                          {t("dashboard.upcomingReminders.empty.description")}
+                        </p>
+                      </div>
                     </div>
-                    <Link href="/reminders" className="shrink-0">
-                      <Button size="sm">
+                    <Link href="/reminders" className="w-full sm:w-auto sm:shrink-0">
+                      <Button size="sm" className="min-h-11 w-full sm:w-auto">
                         {t("dashboard.upcomingReminders.empty.cta")}
                       </Button>
                     </Link>

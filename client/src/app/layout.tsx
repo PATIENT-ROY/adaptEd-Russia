@@ -1,4 +1,4 @@
-import type { Metadata } from "next";
+import type { Metadata, Viewport } from "next";
 import "./globals.css";
 import { AuthProvider } from "@/contexts/AuthContext";
 import { LanguageProvider } from "@/contexts/LanguageContext";
@@ -8,6 +8,14 @@ import { HtmlLang } from "@/components/language/html-lang";
 import { CookieConsent } from "@/components/ui/cookie-consent";
 import { ErrorBoundary } from "@/components/auth/ErrorBoundary";
 import { YandexMetrika } from "@/components/analytics/yandex-metrika";
+
+export const viewport: Viewport = {
+  width: "device-width",
+  initialScale: 1,
+  viewportFit: "cover",
+  // Keyboard overlays the page instead of shrinking layout (Android Chrome).
+  interactiveWidget: "overlays-content",
+};
 
 export const metadata: Metadata = {
   title: {
@@ -85,6 +93,15 @@ export default function RootLayout({
         <meta name="msapplication-TileColor" content="#2563eb" />
       </head>
       <body>
+        <noscript>
+          <img
+            src="https://mc.yandex.ru/watch/112088911"
+            alt=""
+            width={1}
+            height={1}
+            style={{ position: "absolute", left: -9999 }}
+          />
+        </noscript>
         <ErrorBoundary>
           <AuthProvider>
             <LanguageProvider>

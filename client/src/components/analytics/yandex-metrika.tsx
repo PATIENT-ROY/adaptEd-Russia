@@ -2,9 +2,9 @@
 
 import Script from "next/script";
 import { usePathname, useSearchParams } from "next/navigation";
-import { Suspense, useCallback, useEffect, useRef, useState } from "react";
+import { Suspense, useEffect, useRef, useState } from "react";
 
-const COUNTER_ID = 112088911;
+export const YANDEX_METRIKA_ID = 112088911;
 const COOKIE_CONSENT_KEY = "cookie-consent";
 const COOKIE_CONSENT_EVENT = "cookie-consent-changed";
 
@@ -24,15 +24,17 @@ function YandexMetrikaInner() {
   const pathname = usePathname();
   const searchParams = useSearchParams();
   const [enabled, setEnabled] = useState(false);
-  const [ready, setReady] = useState(false);
   const previousUrl = useRef<string | null>(null);
 
   useEffect(() => {
     const updateConsent = () => {
-      setEnabled(
-        isProductionDomain() &&
-          localStorage.getItem(COOKIE_CONSENT_KEY) === "accepted",
-      );
+      if (!isProductionDomain()) {
+        setEnabled(false);
+        return;
+      }
+      // Track unless the visitor explicitly chose necessary-only.
+      // Waiting for "accept" left the counter dead: banner ignored → 0 visits.
+      setEnabled(localStorage.getItem(COOKIE_CONSENT_KEY) !== "necessary");
     };
 
     updateConsent();
@@ -40,43 +42,43 @@ function YandexMetrikaInner() {
     return () => window.removeEventListener(COOKIE_CONSENT_EVENT, updateConsent);
   }, []);
 
-  const trackPageView = useCallback(() => {
-    if (!window.ym) return;
+  useEffect(() => {
+    if (!enabled || typeof window.ym !== "function") return;
 
     const url = window.location.href;
+    if (previousUrl.current === null) {
+      previousUrl.current = url;
+      return;
+    }
     if (previousUrl.current === url) return;
 
-    window.ym(COUNTER_ID, "hit", url, {
-      referer: previousUrl.current ?? document.referrer,
+    window.ym(YANDEX_METRIKA_ID, "hit", url, {
+      referer: previousUrl.current,
       title: document.title,
     });
     previousUrl.current = url;
-  }, []);
-
-  useEffect(() => {
-    if (!enabled || !ready) return;
-    trackPageView();
-  }, [enabled, pathname, ready, searchParams, trackPageView]);
+  }, [enabled, pathname, searchParams]);
 
   if (!enabled) return null;
 
   return (
-    <Script
-      id="yandex-metrika"
-      src={`https://mc.yandex.ru/metrika/tag.js?id=${COUNTER_ID}`}
-      strategy="afterInteractive"
-      onLoad={() => {
-        window.ym?.(COUNTER_ID, "init", {
-          defer: true,
-          ssr: true,
-          accurateTrackBounce: true,
-          webvisor: false,
-          clickmap: false,
-          trackLinks: false,
-        });
-        setReady(true);
-      }}
-    />
+    <Script id="yandex-metrika" strategy="afterInteractive">
+      {`
+(function(m,e,t,r,i,k,a){
+  m[i]=m[i]||function(){(m[i].a=m[i].a||[]).push(arguments)};
+  m[i].l=1*new Date();
+  for (var j = 0; j < document.scripts.length; j++) { if (document.scripts[j].src === r) { return; } }
+  k=e.createElement(t),a=e.getElementsByTagName(t)[0],k.async=1,k.src=r,a.parentNode.insertBefore(k,a)
+})(window, document, "script", "https://mc.yandex.ru/metrika/tag.js?id=${YANDEX_METRIKA_ID}", "ym");
+ym(${YANDEX_METRIKA_ID}, "init", {
+  ssr: true,
+  webvisor: false,
+  clickmap: false,
+  accurateTrackBounce: true,
+  trackLinks: true
+});
+      `}
+    </Script>
   );
 }
 

@@ -1,22 +1,34 @@
 "use client";
 
-import { useAuth } from "@/contexts/AuthContext";
+import { LOGOUT_NOTIFICATION_EVENT, useAuth } from "@/contexts/AuthContext";
 import { WelcomeNotification } from "./welcome-notification";
 import { LogoutNotification } from "./logout-notification";
-import { useState, useEffect } from "react";
+import { useState, useEffect, useCallback } from "react";
 
 interface NotificationsWrapperProps {
   children: React.ReactNode;
 }
 
+type LogoutInfo = {
+  userName: string;
+  timestamp: number;
+};
+
 export function NotificationsWrapper({ children }: NotificationsWrapperProps) {
   const { user, isNewUser, clearNewUserFlag } = useAuth();
-  const [logoutInfo, setLogoutInfo] = useState<{
-    userName: string;
-    timestamp: number;
-  } | null>(null);
+  const [logoutInfo, setLogoutInfo] = useState<LogoutInfo | null>(null);
   const [showLogoutNotification, setShowLogoutNotification] = useState(false);
   const [isClient, setIsClient] = useState(false);
+
+  const showLogout = useCallback((info: LogoutInfo) => {
+    if (Date.now() - info.timestamp >= 10000) {
+      localStorage.removeItem("logoutNotification");
+      return;
+    }
+    setLogoutInfo(info);
+    setShowLogoutNotification(true);
+    localStorage.removeItem("logoutNotification");
+  }, []);
 
   useEffect(() => {
     setIsClient(true);
@@ -25,31 +37,30 @@ export function NotificationsWrapper({ children }: NotificationsWrapperProps) {
   useEffect(() => {
     if (!isClient) return;
 
-    // Проверяем, есть ли информация о выходе
-    const savedLogoutInfo = localStorage.getItem("logoutNotification");
-    if (savedLogoutInfo) {
+    const saved = localStorage.getItem("logoutNotification");
+    if (saved) {
       try {
-        const parsedInfo = JSON.parse(savedLogoutInfo);
-        // Проверяем, что уведомление не старше 10 секунд
-        if (Date.now() - parsedInfo.timestamp < 10000) {
-          setLogoutInfo(parsedInfo);
-          setShowLogoutNotification(true);
-          // Удаляем информацию о выходе
-          localStorage.removeItem("logoutNotification");
-        } else {
-          localStorage.removeItem("logoutNotification");
-        }
+        showLogout(JSON.parse(saved) as LogoutInfo);
       } catch {
         localStorage.removeItem("logoutNotification");
       }
     }
-  }, [isClient]);
+
+    const onLogout = (event: Event) => {
+      const detail = (event as CustomEvent<LogoutInfo>).detail;
+      if (detail?.userName && detail.timestamp) {
+        showLogout(detail);
+      }
+    };
+
+    window.addEventListener(LOGOUT_NOTIFICATION_EVENT, onLogout);
+    return () => window.removeEventListener(LOGOUT_NOTIFICATION_EVENT, onLogout);
+  }, [isClient, showLogout]);
 
   return (
     <>
       {children}
 
-      {/* Welcome Notification for new users */}
       {isClient && user && (
         <WelcomeNotification
           userName={user.name.split(" ")[0]}
@@ -58,7 +69,6 @@ export function NotificationsWrapper({ children }: NotificationsWrapperProps) {
         />
       )}
 
-      {/* Logout Notification */}
       {isClient && logoutInfo && (
         <LogoutNotification
           userName={logoutInfo.userName}
