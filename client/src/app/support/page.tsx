@@ -1,6 +1,6 @@
 "use client";
 
-import { useState, useEffect, useCallback } from "react";
+import { useState, useEffect, useCallback, useMemo } from "react";
 import Link from "next/link";
 import {
   Card,
@@ -17,7 +17,6 @@ import { useSupport } from "@/hooks/useSupport";
 import { useAuth } from "@/contexts/AuthContext";
 import { useTranslation } from "@/hooks/useTranslation";
 import { API_BASE_URL } from "@/lib/api";
-import type { FAQItem } from "@/types";
 import { Badge } from "@/components/ui/badge";
 import { Layout } from "@/components/layout/layout";
 import {
@@ -56,7 +55,7 @@ interface SupportTicket {
 export default function SupportPage() {
   const { t } = useTranslation();
   const { user } = useAuth();
-  const { submitSupportForm, getFAQ } = useSupport();
+  const { submitSupportForm } = useSupport();
   const [formData, setFormData] = useState({
     name: "",
     email: "",
@@ -66,9 +65,7 @@ export default function SupportPage() {
   const [isSubmitting, setIsSubmitting] = useState(false);
   const [isSubmitted, setIsSubmitted] = useState(false);
   const [submitError, setSubmitError] = useState<string | null>(null);
-  const [faqItems, setFaqItems] = useState<FAQItem[]>([]);
   const [privacyConsent, setPrivacyConsent] = useState(false);
-  const [isInitialLoading, setIsInitialLoading] = useState(true);
   const [myTickets, setMyTickets] = useState<SupportTicket[]>([]);
   const [expandedTicketId, setExpandedTicketId] = useState<string | null>(null);
 
@@ -166,6 +163,17 @@ export default function SupportPage() {
     }
   };
 
+  const faqItems = useMemo(
+    () =>
+      (["login", "language", "reminders", "ai", "guides", "password"] as const).map(
+        (id) => ({
+          question: t(`support.faq.q.${id}`),
+          answer: t(`support.faq.a.${id}`),
+        }),
+      ),
+    [t],
+  );
+
   const handleInputChange = (
     e: React.ChangeEvent<HTMLInputElement | HTMLTextAreaElement>
   ) => {
@@ -174,55 +182,6 @@ export default function SupportPage() {
       [e.target.name]: e.target.value,
     });
   };
-
-  useEffect(() => {
-    const loadData = async () => {
-      try {
-        const faqData = await getFAQ();
-        setFaqItems(faqData);
-      } catch (err) {
-        console.error("Error loading FAQ:", err);
-      } finally {
-        setIsInitialLoading(false);
-      }
-    };
-
-    loadData();
-    // eslint-disable-next-line react-hooks/exhaustive-deps
-  }, []);
-
-  const fallbackFaqItems = [
-    {
-      question: "Как зарегистрироваться в системе?",
-      answer:
-        "Нажмите кнопку 'Регистрация' в правом верхнем углу, заполните форму и подтвердите email.",
-    },
-    {
-      question: "Как изменить язык интерфейса?",
-      answer:
-        "Используйте переключатель языка в навигационной панели для выбора предпочитаемого языка.",
-    },
-    {
-      question: "Как создать напоминание?",
-      answer:
-        "Перейдите в раздел 'Напоминания', нажмите 'Добавить' и заполните необходимые поля.",
-    },
-    {
-      question: "Как работает AI-помощник?",
-      answer:
-        "В AdaptEd AI есть два способа работы: задайте вопрос AI-помощнику своими словами или выберите готовый AI-инструмент для текстов, презентаций, решения задач, изучения тем, экзаменов и конспектов.",
-    },
-    {
-      question: "Как получить доступ к образовательным гайдам?",
-      answer:
-        "Все гайды доступны в разделах 'Учёба' и 'Быт' после регистрации в системе.",
-    },
-    {
-      question: "Что делать, если забыл пароль?",
-      answer:
-        "На странице входа нажмите 'Забыли пароль?' и следуйте инструкциям для восстановления.",
-    },
-  ];
 
   const contactMethods = [
     {
@@ -233,71 +192,6 @@ export default function SupportPage() {
       href: `mailto:${SUPPORT_EMAIL}`,
     },
   ];
-
-  if (isInitialLoading) {
-    return (
-      <Layout>
-      <div className="min-h-screen bg-gradient-to-br from-blue-50 via-white to-purple-50 py-8">
-        <h1 className="sr-only">Поддержка иностранных студентов</h1>
-        <div className="max-w-6xl mx-auto px-4 sm:px-6 lg:px-8">
-          {/* Back Button Skeleton */}
-          <div className="h-10 w-24 bg-gray-200 rounded animate-pulse mb-6"></div>
-
-          {/* Header Skeleton */}
-          <div className="text-center mb-12">
-            <div className="h-10 w-64 bg-gray-200 rounded animate-pulse mx-auto mb-4"></div>
-            <div className="h-6 w-96 bg-gray-200 rounded animate-pulse mx-auto"></div>
-          </div>
-
-          {/* Contact Methods Skeleton */}
-          <div className="grid grid-cols-1 md:grid-cols-3 gap-6 mb-12">
-            {[1, 2, 3].map((i) => (
-              <div
-                key={i}
-                className="bg-white rounded-2xl sm:rounded-3xl p-6 shadow-sm"
-              >
-                <div className="w-12 h-12 bg-gray-200 rounded-lg animate-pulse mb-4"></div>
-                <div className="h-6 w-40 bg-gray-200 rounded animate-pulse mb-2"></div>
-                <div className="h-4 w-48 bg-gray-200 rounded animate-pulse mb-2"></div>
-                <div className="h-4 w-32 bg-gray-200 rounded animate-pulse"></div>
-              </div>
-            ))}
-          </div>
-
-          {/* Form and FAQ Skeleton */}
-          <div className="grid grid-cols-1 lg:grid-cols-2 gap-8">
-            {/* Form Skeleton */}
-            <div className="bg-white rounded-2xl sm:rounded-3xl p-6 shadow-sm">
-              <div className="h-6 w-48 bg-gray-200 rounded animate-pulse mb-4"></div>
-              <div className="space-y-4">
-                <div className="grid grid-cols-2 gap-4">
-                  <div className="h-10 bg-gray-200 rounded animate-pulse"></div>
-                  <div className="h-10 bg-gray-200 rounded animate-pulse"></div>
-                </div>
-                <div className="h-10 bg-gray-200 rounded animate-pulse"></div>
-                <div className="h-32 bg-gray-200 rounded animate-pulse"></div>
-                <div className="h-10 bg-gray-200 rounded animate-pulse"></div>
-              </div>
-            </div>
-
-            {/* FAQ Skeleton */}
-            <div className="bg-white rounded-2xl sm:rounded-3xl p-6 shadow-sm">
-              <div className="h-6 w-32 bg-gray-200 rounded animate-pulse mb-4"></div>
-              <div className="space-y-4">
-                {[1, 2, 3, 4].map((i) => (
-                  <div key={i} className="border-b border-gray-200 pb-4">
-                    <div className="h-5 w-full bg-gray-200 rounded animate-pulse mb-2"></div>
-                    <div className="h-4 w-5/6 bg-gray-200 rounded animate-pulse"></div>
-                  </div>
-                ))}
-              </div>
-            </div>
-          </div>
-        </div>
-      </div>
-      </Layout>
-    );
-  }
 
   return (
     <Layout>
@@ -321,7 +215,7 @@ export default function SupportPage() {
         ) : (
           <>
             {/* Back Button */}
-            <BackButton label={t("support.back")} className="mb-6" />
+            <BackButton href="/" label={t("support.back")} className="mb-6" />
 
             {/* Header */}
             <div className="text-center mb-12">
@@ -696,8 +590,7 @@ export default function SupportPage() {
               </div>
 
               <div className="grid md:grid-cols-2 gap-6">
-                {(faqItems.length > 0 ? faqItems : fallbackFaqItems).map(
-                  (item) => (
+                {faqItems.map((item) => (
                     <Card
                       key={item.question}
                       className="hover:shadow-lg transition-shadow"

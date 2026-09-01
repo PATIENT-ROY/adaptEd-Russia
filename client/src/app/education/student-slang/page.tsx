@@ -4,7 +4,6 @@ import { Layout } from "@/components/layout/layout";
 import { Card, CardContent, CardHeader, CardTitle } from "@/components/ui/card";
 import { Input } from "@/components/ui/input";
 import { useState, useMemo } from "react";
-import { useRouter } from "next/navigation";
 import {
   Search,
   BookOpen,
@@ -29,7 +28,6 @@ export default function StudentSlangPage() {
   >("all");
   const { currentLanguage } = useLanguage();
   const { t } = useTranslation();
-  const router = useRouter();
 
   const filteredTerms = useMemo(() => {
     const query = searchTerm.trim().toLowerCase();
@@ -79,9 +77,9 @@ export default function StudentSlangPage() {
       <div className="min-h-screen bg-gradient-to-br from-blue-50 via-white to-purple-50 py-8">
         <div className="max-w-6xl mx-auto px-4 sm:px-6 lg:px-8">
           <BackButton
+            href="/education-guide"
             label={t("studentSlang.back")}
             className="mb-6"
-            onClick={() => router.push("/education-guide")}
           />
 
           <div className="text-center mb-12">

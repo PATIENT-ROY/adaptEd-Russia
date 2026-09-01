@@ -30,7 +30,7 @@ export const educationGuides: Guide[] = [
   },
   {
     id: "0",
-    title: "Разница между экзамен и зачёт",
+    title: "Разница между экзаменом и зачётом",
     category: GuideCategory.EDUCATION,
     content: `# Экзамен и зачёт — в чём разница
 

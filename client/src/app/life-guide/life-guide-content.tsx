@@ -47,7 +47,7 @@ const arrivalPhases: ArrivalPhase[] = [
     steps: [
       { id: "migration-card", labelKey: "lifeGuide.arrival.steps.migrationCard", guideId: "migration-card" },
       { id: "contact-uni", labelKey: "lifeGuide.arrival.steps.contactUniversity", guideId: "contact-university" },
-      { id: "housing", labelKey: "lifeGuide.arrival.steps.housing", categoryId: "housing" },
+      { id: "housing", labelKey: "lifeGuide.arrival.steps.housing", guideId: "1" },
     ],
   },
   {
@@ -73,7 +73,7 @@ const arrivalPhases: ArrivalPhase[] = [
     id: "firstMonth",
     titleKey: "lifeGuide.arrival.phases.firstMonth",
     steps: [
-      { id: "docs", labelKey: "lifeGuide.arrival.steps.documents", categoryId: "documents" },
+      { id: "docs", labelKey: "lifeGuide.arrival.steps.documents", guideId: "2" },
       { id: "university", labelKey: "lifeGuide.arrival.steps.university", href: "/education-guide" },
       { id: "daily", labelKey: "lifeGuide.arrival.steps.dailyLife", guideId: "daily-life" },
       { id: "social", labelKey: "lifeGuide.arrival.steps.social", guideId: "social-adapt" },

@@ -74,7 +74,7 @@ import { ProfileAccountSettings } from "@/components/ui/profile-account-settings
 import { ProfileEditForm } from "@/components/ui/profile-edit-form";
 import { ReviewModal } from "@/components/ReviewModal";
 import { localizePaymentDescription } from "@/lib/payment-i18n";
-import { guideArticlePath } from "@/lib/guide-routes";
+import { guideArticlePath, guidePathBySection } from "@/lib/guide-routes";
 import { educationGuides } from "@/data/education-guides";
 import { lifeGuides } from "@/data/life-guides";
 
@@ -320,7 +320,7 @@ function activityGuideHref(activity: ProfileActivityItem): string {
   const guide = resolveGuideFromActivity(activity);
   if (guide) return guideArticlePath(guide);
   if ((type === "life" || type === "education") && typeof id === "string") {
-    return `/guides/${type}/${encodeURIComponent(id)}`;
+    return guidePathBySection(type, id);
   }
   return type === "life" ? "/life-guide" : "/education-guide";
 }

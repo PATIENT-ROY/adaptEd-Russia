@@ -148,6 +148,13 @@ function normalizeScheduleResult(
   data: ScheduleResult | ScheduleItem[] | Partial<ScheduleResult>,
   filters: ScheduleSearchParams,
 ): ScheduleResult {
+  const rawItems = Array.isArray(data)
+    ? data
+    : Array.isArray(data.items)
+      ? data.items
+      : [];
+  const items = rawItems.map(normalizeScheduleItem);
+
   if (Array.isArray(data)) {
     return {
       university: filters.university,
@@ -158,7 +165,7 @@ function normalizeScheduleResult(
         value: filters.value.trim(),
         resolvedValue: filters.value.trim(),
       },
-      items: data,
+      items,
     };
   }
 
@@ -174,6 +181,31 @@ function normalizeScheduleResult(
         data.query?.value ||
         filters.value.trim(),
     },
-    items: Array.isArray(data.items) ? data.items : [],
+    items,
+  };
+}
+
+function asStringArray(value: unknown): string[] {
+  if (Array.isArray(value)) {
+    return value.filter((item): item is string => typeof item === "string" && item.length > 0);
+  }
+  if (typeof value === "string" && value.trim()) return [value.trim()];
+  return [];
+}
+
+function normalizeScheduleItem(
+  item: Partial<ScheduleItem>,
+  index: number,
+): ScheduleItem {
+  return {
+    id: item.id || `${item.date || "day"}-${index}`,
+    date: item.date || "",
+    timeStart: item.timeStart || "",
+    timeEnd: item.timeEnd || "",
+    subject: item.subject || "",
+    teachers: asStringArray(item.teachers),
+    rooms: asStringArray(item.rooms),
+    lessonType: item.lessonType || "",
+    groups: asStringArray(item.groups),
   };
 }

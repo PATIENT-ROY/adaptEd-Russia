@@ -41,8 +41,16 @@ export function Footer() {
   };
 
   const socialLinks = [
-    { href: "#", type: "telegram" as const, labelKey: "footer.social.telegram" },
-    { href: "#", type: "vk" as const, labelKey: "footer.social.vk" },
+    {
+      href: "https://web.telegram.org/a/",
+      type: "telegram" as const,
+      labelKey: "footer.social.telegram",
+    },
+    {
+      href: "https://vk.ru/",
+      type: "vk" as const,
+      labelKey: "footer.social.vk",
+    },
   ];
 
   return (
@@ -102,6 +110,8 @@ export function Footer() {
                   <a
                     key={social.type}
                     href={social.href}
+                    target="_blank"
+                    rel="noopener noreferrer"
                     className="group inline-flex items-center rounded-lg p-0.5 text-slate-300 transition-colors duration-300 hover:text-white"
                     aria-label={label}
                     title={label}
@@ -191,10 +201,10 @@ export function Footer() {
               <div className="flex items-center space-x-2 sm:space-x-3 text-slate-300 text-xs sm:text-sm">
                 <Phone className="h-3 w-3 sm:h-4 sm:w-4 text-blue-400 flex-shrink-0" />
                 <a
-                  href="tel:+74951234567"
+                  href="tel:+73432059021"
                   className="min-h-0 transition-colors hover:text-blue-400"
                 >
-                  +7 (495) 123-45-67
+                  +7 (343) 205-90-21
                 </a>
               </div>
               <div className="flex items-center space-x-2 sm:space-x-3 text-slate-300 text-xs sm:text-sm">

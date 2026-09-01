@@ -250,8 +250,8 @@ export default function AiAssistantPage() {
 
   const defaultRelatedGuides = useMemo(
     () => [
-      { title: t("aiHelper.guides.default.1"), url: "/guides/life/1", category: "life" },
-      { title: t("aiHelper.guides.default.2"), url: "/guides/life/7", category: "life" },
+      { title: t("aiHelper.guides.default.1"), url: "/guides/life/dorm", category: "life" },
+      { title: t("aiHelper.guides.default.2"), url: "/guides/life/migration-registration", category: "life" },
       { title: t("aiHelper.guides.default.3"), url: "/guides/life/insurance-dms", category: "life" },
     ],
     [t],

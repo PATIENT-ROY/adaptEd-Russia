@@ -61,6 +61,15 @@ function createPasswordSetupToken() {
   return { rawToken, tokenHash };
 }
 
+function zodPayload(error: z.ZodError) {
+  const issues = error.issues?.length ? error.issues : error.errors;
+  return {
+    success: false as const,
+    error: issues[0]?.message || 'Ошибка валидации',
+    details: issues,
+  };
+}
+
 // Регистрация
 router.post('/register', async (req: Request, res: Response) => {
   try {
@@ -131,11 +140,7 @@ router.post('/register', async (req: Request, res: Response) => {
 
   } catch (error) {
     if (error instanceof z.ZodError) {
-      return res.status(400).json({
-        success: false,
-        error: 'Ошибка валидации',
-        details: error.errors
-      } as ApiResponse);
+      return res.status(400).json(zodPayload(error) as ApiResponse);
     }
 
     console.error('Registration error:', error);
