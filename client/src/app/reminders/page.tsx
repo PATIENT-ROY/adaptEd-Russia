@@ -1218,14 +1218,15 @@ function RemindersContent() {
                         />
                       </div>
 
-                      <div className="grid grid-cols-1 sm:grid-cols-2 lg:grid-cols-4 gap-4">
-                        <div>
+                      <div className="grid min-w-0 grid-cols-1 gap-4 sm:grid-cols-2 lg:grid-cols-4">
+                        <div className="min-w-0">
                           <label htmlFor="reminder-date" className="block text-sm font-medium text-gray-700 mb-1">
                             {t("reminders.form.fields.date")}
                           </label>
                           <Input
                             id="reminder-date"
                             type="date"
+                            lang="en-CA"
                             value={newReminder.date}
                             onChange={(e) => handleFieldChange("date", e.target.value)}
                             className={fieldErrors.date ? "border-red-500" : ""}
@@ -1235,13 +1236,14 @@ function RemindersContent() {
                           )}
                         </div>
 
-                        <div>
+                        <div className="min-w-0">
                           <label htmlFor="reminder-time" className="block text-sm font-medium text-gray-700 mb-1">
                             {t("reminders.form.fields.time")}
                           </label>
                           <Input
                             id="reminder-time"
                             type="time"
+                            lang="en-CA"
                             value={newReminder.time}
                             onChange={(e) => handleFieldChange("time", e.target.value)}
                           />

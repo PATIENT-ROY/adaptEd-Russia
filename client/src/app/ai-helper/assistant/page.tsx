@@ -569,21 +569,7 @@ export default function AiAssistantPage() {
                     {currentModeConfig.description}
                   </p>
                 </div>
-                <Link
-                  href="/ai-helper/tools"
-                  className="hidden sm:inline-flex items-center px-4 py-2 bg-gradient-to-r from-purple-500 to-pink-500 text-white rounded-lg hover:from-purple-600 hover:to-pink-600 transition-all text-sm font-medium shrink-0"
-                >
-                  <FileText className="h-4 w-4 mr-2" />
-                  {t("aiHelper.templates")}
-                </Link>
               </div>
-              <Link
-                href="/ai-helper/tools"
-                className="sm:hidden inline-flex items-center justify-center px-4 py-2.5 bg-gradient-to-r from-purple-500 to-pink-500 text-white rounded-xl text-sm font-medium"
-              >
-                <FileText className="h-4 w-4 mr-2" />
-                {t("aiHelper.templates")}
-              </Link>
 
               {/* Mode switcher */}
               <div className="flex flex-wrap gap-2" role="tablist" aria-label={t("aiHelper.header.title")}>

@@ -6,7 +6,6 @@ import { Input } from "./input";
 import { Card, CardContent, CardHeader, CardTitle } from "./card";
 import {
   Building2,
-  Calendar,
   Clock,
   Search,
   ChevronDown,
@@ -108,7 +107,7 @@ export function ScheduleFilter({
   };
 
   return (
-    <Card className="w-full">
+    <Card className="w-full min-w-0 overflow-hidden">
       {!hideTitle && (
         <CardHeader>
           <CardTitle className="flex items-center space-x-2">
@@ -117,18 +116,18 @@ export function ScheduleFilter({
           </CardTitle>
         </CardHeader>
       )}
-      <CardContent className="space-y-4">
-        <div className="grid grid-cols-1 gap-4 md:grid-cols-2">
-          <div className="space-y-2">
+      <CardContent className="min-w-0 space-y-4 overflow-hidden">
+        <div className="grid min-w-0 grid-cols-1 gap-4 md:grid-cols-2">
+          <div className="min-w-0 space-y-2">
             <label className="text-sm font-medium text-gray-700">
               {t("schedulePage.city")}
             </label>
-            <div className="relative">
+            <div className="relative min-w-0">
               <Building2 className="pointer-events-none absolute left-3 top-1/2 h-4 w-4 -translate-y-1/2 text-blue-600" />
               <select
                 value={filters.city}
                 onChange={(event) => handleCityChange(event.target.value)}
-                className="min-h-11 w-full appearance-none rounded-md border border-blue-200 bg-blue-50 py-2 pl-10 pr-9 text-sm font-medium text-blue-950 focus:border-blue-500 focus:outline-none focus:ring-2 focus:ring-blue-500/20"
+                className="min-h-11 w-full min-w-0 appearance-none rounded-md border border-blue-200 bg-blue-50 py-2 pl-10 pr-9 font-medium text-blue-950 focus:border-blue-500 focus:outline-none focus:ring-2 focus:ring-blue-500/20"
               >
                 {SCHEDULE_CITIES.map((city) => (
                   <option key={city.id} value={city.id}>{city.name}</option>
@@ -137,15 +136,15 @@ export function ScheduleFilter({
               <ChevronDown className="pointer-events-none absolute right-3 top-1/2 h-4 w-4 -translate-y-1/2 text-blue-600" />
             </div>
           </div>
-          <div className="space-y-2">
+          <div className="min-w-0 space-y-2">
             <label className="text-sm font-medium text-gray-700">
               {t("schedulePage.university")}
             </label>
-            <div className="relative">
+            <div className="relative min-w-0">
               <select
                 value={filters.university}
                 onChange={(event) => handleUniversityChange(event.target.value as ScheduleUniversityId)}
-                className="min-h-11 w-full appearance-none rounded-md border border-blue-200 bg-blue-50 py-2 pl-3 pr-9 text-sm font-medium text-blue-950 focus:border-blue-500 focus:outline-none focus:ring-2 focus:ring-blue-500/20"
+                className="min-h-11 w-full min-w-0 appearance-none rounded-md border border-blue-200 bg-blue-50 py-2 pl-3 pr-9 font-medium text-blue-950 focus:border-blue-500 focus:outline-none focus:ring-2 focus:ring-blue-500/20"
               >
                 {selectedCity.universities.map((university) => (
                   <option key={university.id} value={university.id}>{university.name}</option>
@@ -157,44 +156,38 @@ export function ScheduleFilter({
         </div>
 
         {/* Date Range */}
-        <div className="grid grid-cols-1 sm:grid-cols-2 gap-4">
-          <div className="space-y-2">
+        <div className="grid min-w-0 grid-cols-1 gap-4 sm:grid-cols-2">
+          <div className="min-w-0 space-y-2">
             <label className="text-sm font-medium text-gray-700">
               {t("schedulePage.from")}
             </label>
-            <div className="relative">
-              <Calendar className="absolute left-3 top-1/2 transform -translate-y-1/2 h-4 w-4 text-gray-400" />
-              <Input
-                type="date"
-                value={filters.dateFrom}
-                onChange={(e) => handleInputChange("dateFrom", e.target.value)}
-                className="pl-10"
-              />
-            </div>
+            <Input
+              type="date"
+              lang="en-CA"
+              value={filters.dateFrom}
+              onChange={(e) => handleInputChange("dateFrom", e.target.value)}
+            />
           </div>
-          <div className="space-y-2">
+          <div className="min-w-0 space-y-2">
             <label className="text-sm font-medium text-gray-700">
               {t("schedulePage.to")}
             </label>
-            <div className="relative">
-              <Calendar className="absolute left-3 top-1/2 transform -translate-y-1/2 h-4 w-4 text-gray-400" />
-              <Input
-                type="date"
-                value={filters.dateTo}
-                onChange={(e) => handleInputChange("dateTo", e.target.value)}
-                className="pl-10"
-              />
-            </div>
+            <Input
+              type="date"
+              lang="en-CA"
+              value={filters.dateTo}
+              onChange={(e) => handleInputChange("dateTo", e.target.value)}
+            />
           </div>
         </div>
 
         {/* Type and Value */}
-        <div className="grid grid-cols-1 sm:grid-cols-3 gap-4">
-          <div className="space-y-2">
+        <div className="grid min-w-0 grid-cols-1 gap-4 sm:grid-cols-3">
+          <div className="min-w-0 space-y-2">
             <label className="text-sm font-medium text-gray-700">
               {t("schedulePage.kind")}
             </label>
-            <div className="relative">
+            <div className="relative min-w-0">
               <select
                 value={filters.type}
                 onChange={(e) =>
@@ -203,7 +196,7 @@ export function ScheduleFilter({
                     e.target.value as ScheduleSearchType,
                   )
                 }
-                className="w-full p-2 pr-8 border border-gray-300 rounded-md focus:ring-2 focus:ring-blue-500 focus:border-transparent appearance-none"
+                className="min-h-11 w-full min-w-0 appearance-none rounded-md border border-gray-300 p-2 pr-8 focus:border-transparent focus:ring-2 focus:ring-blue-500"
               >
                 <option value="group" disabled={!selectedUniversity.searchTypes.includes("group")}>{t("schedulePage.kind.group")}</option>
                 <option value="teacher" disabled={!selectedUniversity.searchTypes.includes("teacher")}>
@@ -214,11 +207,11 @@ export function ScheduleFilter({
               <ChevronDown className="absolute right-2 top-1/2 transform -translate-y-1/2 h-4 w-4 text-gray-500 pointer-events-none" />
             </div>
           </div>
-          <div className="sm:col-span-2 space-y-2">
+          <div className="min-w-0 space-y-2 sm:col-span-2">
             <label className="text-sm font-medium text-gray-700">
               {typeLabel}
             </label>
-            <div className="relative">
+            <div className="relative min-w-0">
               <Search className="absolute left-3 top-1/2 transform -translate-y-1/2 h-4 w-4 text-gray-400" />
               <Input
                 placeholder={getPlaceholder()}

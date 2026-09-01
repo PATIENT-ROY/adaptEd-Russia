@@ -118,7 +118,7 @@ export interface ScheduleResult {
 
 interface ScheduleApiResponse {
   success: boolean;
-  data?: ScheduleResult;
+  data?: ScheduleResult | ScheduleItem[] | Partial<ScheduleResult>;
   error?: string;
 }
 
@@ -141,5 +141,39 @@ export async function fetchSchedule(
     throw new Error(payload.error || "SCHEDULE_REQUEST_FAILED");
   }
 
-  return payload.data;
+  return normalizeScheduleResult(payload.data, filters);
+}
+
+function normalizeScheduleResult(
+  data: ScheduleResult | ScheduleItem[] | Partial<ScheduleResult>,
+  filters: ScheduleSearchParams,
+): ScheduleResult {
+  if (Array.isArray(data)) {
+    return {
+      university: filters.university,
+      universityName: "",
+      sourceUrl: "",
+      query: {
+        type: filters.type,
+        value: filters.value.trim(),
+        resolvedValue: filters.value.trim(),
+      },
+      items: data,
+    };
+  }
+
+  return {
+    university: data.university ?? filters.university,
+    universityName: data.universityName ?? "",
+    sourceUrl: data.sourceUrl ?? "",
+    query: {
+      type: data.query?.type ?? filters.type,
+      value: data.query?.value ?? filters.value.trim(),
+      resolvedValue:
+        data.query?.resolvedValue ||
+        data.query?.value ||
+        filters.value.trim(),
+    },
+    items: Array.isArray(data.items) ? data.items : [],
+  };
 }
