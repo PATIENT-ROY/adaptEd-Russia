@@ -47,7 +47,7 @@ const arrivalPhases: ArrivalPhase[] = [
     steps: [
       { id: "migration-card", labelKey: "lifeGuide.arrival.steps.migrationCard", guideId: "migration-card" },
       { id: "contact-uni", labelKey: "lifeGuide.arrival.steps.contactUniversity", guideId: "contact-university" },
-      { id: "housing", labelKey: "lifeGuide.arrival.steps.housing", guideId: "1" },
+      { id: "housing", labelKey: "lifeGuide.arrival.steps.housing", categoryId: "housing" },
     ],
   },
   {
@@ -73,7 +73,7 @@ const arrivalPhases: ArrivalPhase[] = [
     id: "firstMonth",
     titleKey: "lifeGuide.arrival.phases.firstMonth",
     steps: [
-      { id: "docs", labelKey: "lifeGuide.arrival.steps.documents", guideId: "2" },
+      { id: "docs", labelKey: "lifeGuide.arrival.steps.documents", categoryId: "documents" },
       { id: "university", labelKey: "lifeGuide.arrival.steps.university", href: "/education-guide" },
       { id: "daily", labelKey: "lifeGuide.arrival.steps.dailyLife", guideId: "daily-life" },
       { id: "social", labelKey: "lifeGuide.arrival.steps.social", guideId: "social-adapt" },
@@ -108,6 +108,13 @@ export function LifeGuideContent() {
   }, []);
   const [selectedCategory, setSelectedCategory] = useState("all");
   const [guidesVisibleCount, setGuidesVisibleCount] = useState(12);
+
+  useEffect(() => {
+    const cat = new URLSearchParams(window.location.search).get("cat");
+    if (cat && categoriesConfig.some((category) => category.id === cat)) {
+      setSelectedCategory(cat);
+    }
+  }, []);
 
   const { isRead, markAsRead } = useGuideProgress("life", lifeGuides.length);
   const handleMarkRead = useCallback((guideId: string) => {
@@ -292,6 +299,22 @@ export function LifeGuideContent() {
                           key={step.id}
                           href={lifeGuidePath(publishedGuide.id)}
                           onClick={() => markAsRead(publishedGuide.id)}
+                          className={className}
+                        >
+                          {label}
+                        </Link>
+                      );
+                    }
+
+                    if (step.categoryId) {
+                      return (
+                        <Link
+                          key={step.id}
+                          href={`/life-guide?cat=${encodeURIComponent(step.categoryId)}#life-guide-guides`}
+                          onClick={() => {
+                            setSelectedCategory(step.categoryId!);
+                            setSearchQuery("");
+                          }}
                           className={className}
                         >
                           {label}

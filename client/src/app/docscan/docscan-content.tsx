@@ -3,6 +3,7 @@
 import { Layout } from "@/components/layout/layout";
 import { ProtectedRoute } from "@/components/auth/ProtectedRoute";
 import { FeaturePreviewGate } from "@/components/auth/FeaturePreviewGate";
+import { AppToast } from "@/components/ui/app-toast";
 import { useTranslation } from "@/hooks/useTranslation";
 import { Button } from "@/components/ui/button";
 import { Card, CardContent } from "@/components/ui/card";
@@ -14,7 +15,6 @@ import {
   Download,
   Loader2,
   Languages,
-  CheckCircle,
 } from "lucide-react";
 import { useState, useCallback, useEffect, useRef } from "react";
 import { useBodyScrollLock } from "@/hooks/useBodyScrollLock";
@@ -790,18 +790,11 @@ export function DocScanContent() {
         </div>
       )}
 
-      {/* Toast */}
       {toastMessage && (
-        <div className="fixed left-1/2 top-20 z-[110] flex max-w-[calc(100vw-2rem)] -translate-x-1/2 animate-in items-center gap-2 rounded-xl bg-slate-900 px-6 py-3 text-sm text-white shadow-2xl slide-in-from-top-4 duration-300">
-          <CheckCircle className="h-4 w-4 text-green-400 flex-shrink-0" />
-          {toastMessage}
-          <button
-            onClick={() => setToastMessage(null)}
-            className="ml-2 text-white/60 hover:text-white"
-          >
-            <X className="h-3.5 w-3.5" />
-          </button>
-        </div>
+        <AppToast
+          message={toastMessage}
+          onClose={() => setToastMessage(null)}
+        />
       )}
     </ProtectedRoute>
   );

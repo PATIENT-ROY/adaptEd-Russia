@@ -4,6 +4,7 @@ import { useState, useCallback, useEffect } from "react";
 import { Layout } from "@/components/layout/layout";
 import { ProtectedRoute } from "@/components/auth/ProtectedRoute";
 import { FeaturePreviewGate } from "@/components/auth/FeaturePreviewGate";
+import { AppToast } from "@/components/ui/app-toast";
 import { useAuth } from "@/contexts/AuthContext";
 import { useTranslation } from "@/hooks/useTranslation";
 import { apiClient } from "@/lib/api";
@@ -785,26 +786,12 @@ export default function AiToolsExperience() {
           )}
         </div>
 
-        {/* Toast */}
         {toastMessage && (
-          <div className={`fixed left-1/2 top-20 z-[110] flex max-w-[calc(100vw-2rem)] -translate-x-1/2 animate-in items-center gap-2 rounded-xl px-6 py-3 text-sm shadow-2xl slide-in-from-top-4 duration-300 ${
-            toastType === "error"
-              ? "bg-red-600 text-white"
-              : "bg-slate-900 text-white"
-          }`}>
-            {toastType === "error" ? (
-              <X className="h-4 w-4 text-red-200 flex-shrink-0" />
-            ) : (
-              <CheckCircle className="h-4 w-4 text-green-400 flex-shrink-0" />
-            )}
-            {toastMessage}
-            <button
-              onClick={() => setToastMessage(null)}
-              className="ml-2 text-white/60 hover:text-white"
-            >
-              <X className="h-3.5 w-3.5" />
-            </button>
-          </div>
+          <AppToast
+            message={toastMessage}
+            onClose={() => setToastMessage(null)}
+            variant={toastType}
+          />
         )}
       </Layout>
     </ProtectedRoute>
