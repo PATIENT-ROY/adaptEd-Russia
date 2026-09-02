@@ -4,7 +4,7 @@ import { useEffect, useState } from "react";
 import ReactMarkdown from "react-markdown";
 import remarkGfm from "remark-gfm";
 import Link from "next/link";
-import { BookOpen } from "lucide-react";
+import { BookOpen, Flag } from "lucide-react";
 import { Language, type Guide } from "@/types";
 import { StructuredData } from "@/components/seo/structured-data";
 import { SITE_URL, guideDescription } from "@/lib/seo";
@@ -31,6 +31,13 @@ export function GuideArticle({
   const copy = localizedGuideFields(guide, displayLanguage, section);
   const catalogUrl = section === "life" ? "/life-guide" : "/education-guide";
   const articleUrl = `${SITE_URL}/guides/${section}/${guideSlug(guide)}`;
+  const articlePath = `/guides/${section}/${guideSlug(guide)}`;
+  const supportParams = new URLSearchParams({
+    category: "content-error",
+    guide: copy.title,
+    source: articlePath,
+  });
+  const supportUrl = `/support?${supportParams.toString()}`;
   const sectionLabel =
     section === "life"
       ? t("lifeGuide.header.title", displayLanguage)
@@ -131,6 +138,16 @@ export function GuideArticle({
             {guide.content}
           </ReactMarkdown>
         </div>
+
+        <footer className="mt-10 border-t border-slate-200 pt-5">
+          <Link
+            href={supportUrl}
+            className="inline-flex min-h-11 items-center gap-2 rounded-lg px-2 py-2 text-sm font-medium text-slate-500 transition-colors hover:bg-slate-50 hover:text-blue-700 focus-visible:outline-none focus-visible:ring-2 focus-visible:ring-blue-500 focus-visible:ring-offset-2"
+          >
+            <Flag className="h-4 w-4 shrink-0" aria-hidden />
+            {t("guide.article.reportInaccuracy", displayLanguage)}
+          </Link>
+        </footer>
       </article>
     </Layout>
   );

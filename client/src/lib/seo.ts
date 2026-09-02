@@ -21,7 +21,9 @@ export function guideDescription(guide: Guide, maxLength = 158): string {
 
 
 export const SOCIAL_IMAGE = {
-  url: "/og-image.png",
+  url: "/og-image-v2.jpg",
+  secureUrl: "https://adaptedrussia.ru/og-image-v2.jpg",
+  type: "image/jpeg",
   width: 1200,
   height: 630,
   alt: "AdaptEd Russia — помощь иностранным студентам в России",

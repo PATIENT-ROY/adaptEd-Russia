@@ -15,6 +15,7 @@ const router = Router();
 const supportFormSchema = z.object({
   name: z.string().min(2, "Имя должно содержать минимум 2 символа"),
   email: z.string().email("Некорректный email"),
+  category: z.enum(["GENERAL", "CONTENT_ERROR"]).default("GENERAL"),
   subject: z.string().min(5, "Тема должна содержать минимум 5 символов"),
   message: z.string().min(10, "Сообщение должно содержать минимум 10 символов"),
 });
@@ -53,7 +54,7 @@ router.post("/contact", async (req: AuthenticatedRequest, res) => {
         userId: req.user?.userId, // Если пользователь авторизован
         status: "OPEN",
         priority: "MEDIUM",
-        category: "GENERAL",
+        category: validatedData.category,
       },
     });
     

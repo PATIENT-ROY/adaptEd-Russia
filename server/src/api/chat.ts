@@ -3,7 +3,11 @@ import { z } from 'zod';
 import { prisma } from '../lib/database';
 import { authMiddleware } from '../lib/auth';
 import { ApiResponse } from '../types/index.js';
-import { getNextApiKey, markKeyAsFailed, resetKey } from '../lib/deepseek-keys';
+import {
+  DEEPSEEK_API_URL,
+  DeepSeekConfigurationError,
+  getDeepSeekApiKey,
+} from '../lib/deepseek';
 
 const router = Router();
 
@@ -365,6 +369,14 @@ router.post('/messages', authMiddleware, async (req: Request, res: Response) => 
         details: error.errors,
       } as ApiResponse);
     }
+    if (error instanceof DeepSeekConfigurationError) {
+      console.error('[AI] DeepSeek is not configured on the server');
+      return res.status(503).json({
+        success: false,
+        error: 'AI_SERVICE_NOT_CONFIGURED',
+        message: 'DeepSeek API is not configured on the server',
+      } as ApiResponse);
+    }
     console.error('Send message error:', error);
     res.status(500).json({ success: false, error: 'Внутренняя ошибка сервера' } as ApiResponse);
   }
@@ -394,8 +406,8 @@ interface AIOptions {
 }
 
 async function generateAIResponse(options: AIOptions): Promise<string> {
-  const DEEPSEEK_API_URL = 'https://api.deepseek.com/v1/chat/completions';
   const MAX_RETRIES = 3;
+  const apiKey = getDeepSeekApiKey();
 
   let lastError: Error | null = null;
 
@@ -406,12 +418,6 @@ async function generateAIResponse(options: AIOptions): Promise<string> {
   ];
 
   for (let attempt = 0; attempt < MAX_RETRIES; attempt++) {
-    const apiKey = getNextApiKey();
-    if (!apiKey) {
-      console.error('[AI] No available DeepSeek API keys');
-      break;
-    }
-
     try {
       const response = await fetch(DEEPSEEK_API_URL, {
         method: 'POST',
@@ -431,15 +437,13 @@ async function generateAIResponse(options: AIOptions): Promise<string> {
         const status = response.status;
 
         if (status === 401 || status === 403) {
-          markKeyAsFailed(apiKey);
           lastError = new Error(`Auth error (${status})`);
-          continue;
+          break;
         }
         if (status === 402 || status === 429) {
           lastError = new Error(`Rate/payment error (${status})`);
           continue;
         }
-        markKeyAsFailed(apiKey);
         lastError = new Error(`API error (${status})`);
         continue;
       }
@@ -447,8 +451,6 @@ async function generateAIResponse(options: AIOptions): Promise<string> {
       const data = await response.json() as {
         choices?: Array<{ message?: { content?: string } }>;
       };
-
-      resetKey(apiKey);
 
       const aiResponse = data.choices?.[0]?.message?.content;
       if (!aiResponse) {
@@ -458,9 +460,6 @@ async function generateAIResponse(options: AIOptions): Promise<string> {
       return aiResponse;
     } catch (error) {
       lastError = error instanceof Error ? error : new Error(String(error));
-      if (error instanceof Error && !error.message.includes('fetch')) {
-        markKeyAsFailed(apiKey);
-      }
       console.warn(`[AI] Attempt ${attempt + 1}/${MAX_RETRIES} failed:`, error);
     }
   }

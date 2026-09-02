@@ -3,7 +3,11 @@ import { z } from 'zod';
 import { prisma } from '../lib/database';
 import { authMiddleware } from '../lib/auth';
 import { ApiResponse } from '../types/index.js';
-import { getNextApiKey, markKeyAsFailed, resetKey } from '../lib/deepseek-keys';
+import {
+  DEEPSEEK_API_URL,
+  DeepSeekConfigurationError,
+  getDeepSeekApiKey,
+} from '../lib/deepseek';
 import { dispatchDueReminders } from '../lib/reminder-notifications';
 
 const router = Router();
@@ -235,6 +239,14 @@ router.post('/parse', authMiddleware, async (req: Request, res: Response) => {
     if (error instanceof z.ZodError) {
       return res.status(400).json({ success: false, error: 'Ошибка валидации', details: error.errors } as ApiResponse);
     }
+    if (error instanceof DeepSeekConfigurationError) {
+      console.error('[Notes AI] DeepSeek is not configured on the server');
+      return res.status(503).json({
+        success: false,
+        error: 'AI_SERVICE_NOT_CONFIGURED',
+        message: 'DeepSeek API is not configured on the server',
+      } as ApiResponse);
+    }
     console.error('Parse note error:', error);
     res.status(500).json({ success: false, error: 'Ошибка при обработке заметки' } as ApiResponse);
   }
@@ -252,8 +264,8 @@ interface AIParseResult {
 }
 
 async function parseNoteWithAI(noteContent: string, today: string): Promise<AIParseResult> {
-  const DEEPSEEK_API_URL = 'https://api.deepseek.com/v1/chat/completions';
   const MAX_RETRIES = 3;
+  const apiKey = getDeepSeekApiKey();
 
   const systemPrompt = `Ты AI-ассистент, который анализирует текст заметки студента и извлекает из него задачи, дедлайны и напоминания.
 
@@ -286,9 +298,6 @@ async function parseNoteWithAI(noteContent: string, today: string): Promise<AIPa
   let lastError: Error | null = null;
 
   for (let attempt = 0; attempt < MAX_RETRIES; attempt++) {
-    const apiKey = getNextApiKey();
-    if (!apiKey) break;
-
     try {
       const response = await fetch(DEEPSEEK_API_URL, {
         method: 'POST',
@@ -310,19 +319,20 @@ async function parseNoteWithAI(noteContent: string, today: string): Promise<AIPa
       if (!response.ok) {
         const status = response.status;
         if (status === 401 || status === 403) {
-          markKeyAsFailed(apiKey);
+          lastError = new Error(`Auth error (${status})`);
+          break;
+        }
+        if (status === 402 || status === 429) {
+          lastError = new Error(`Rate/payment error (${status})`);
           continue;
         }
-        if (status === 402 || status === 429) continue;
-        markKeyAsFailed(apiKey);
+        lastError = new Error(`API error (${status})`);
         continue;
       }
 
       const data = await response.json() as {
         choices?: Array<{ message?: { content?: string } }>;
       };
-
-      resetKey(apiKey);
 
       const raw = data.choices?.[0]?.message?.content || '';
 

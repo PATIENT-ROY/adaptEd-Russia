@@ -50,7 +50,7 @@ export function GuideCardBase({
               </div>
             )}
             <div className="flex-1 min-w-0">
-            <CardTitle className="text-base sm:text-lg font-bold leading-tight mb-1 line-clamp-2 break-words">
+            <CardTitle className="mb-1 h-10 overflow-hidden text-base font-bold leading-5 line-clamp-2 break-words sm:h-11 sm:text-lg sm:leading-[1.375rem]">
               {title}
             </CardTitle>
             {subtitle && (
@@ -121,4 +121,3 @@ export function GuideCardBase({
     </Card>
   );
 }
-

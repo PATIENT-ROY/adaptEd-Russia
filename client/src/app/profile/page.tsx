@@ -1439,24 +1439,27 @@ function ProfileContent() {
 
               {/* Achievements */}
               <Card className={profileCardClass} style={profileCardStyle}>
-                <CardHeader className="relative z-10">
-                  <CardTitle className="flex items-center justify-between gap-3">
+                <CardHeader className="relative z-10 p-4 sm:p-6">
+                  <CardTitle className="grid grid-cols-[minmax(0,1fr)_auto] items-center gap-2 sm:gap-3">
                     <Link
                       href="/achievements"
-                      className="flex items-center space-x-3 group"
+                      className="group flex min-w-0 items-center gap-3"
                     >
-                      <div className="w-10 h-10 rounded-2xl bg-gradient-to-br from-yellow-400 to-orange-500 flex items-center justify-center shadow-lg">
+                      <div className="flex h-10 w-10 shrink-0 items-center justify-center rounded-2xl bg-gradient-to-br from-yellow-400 to-orange-500 shadow-lg">
                         <Award className="h-5 w-5 text-white" />
                       </div>
-                      <span className="text-xl font-bold group-hover:text-amber-700 transition-colors">
+                      <span className="min-w-0 truncate text-lg font-bold transition-colors group-hover:text-amber-700 sm:text-xl">
                         {t("profile.achievements.title")}
                       </span>
                     </Link>
                     <Link
                       href="/achievements"
-                      className="inline-flex items-center gap-1 text-sm font-medium text-amber-700 hover:text-amber-800"
+                      aria-label={t("profile.achievements.viewAll")}
+                      className="inline-flex min-h-10 shrink-0 items-center justify-center gap-1 rounded-lg px-2 text-sm font-medium text-amber-700 hover:bg-amber-50 hover:text-amber-800 sm:px-1"
                     >
-                      {t("profile.achievements.viewAll")}
+                      <span className="hidden min-[400px]:inline">
+                        {t("profile.achievements.viewAll")}
+                      </span>
                       <ChevronRight className="h-4 w-4" />
                     </Link>
                   </CardTitle>
