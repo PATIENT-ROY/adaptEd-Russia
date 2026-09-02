@@ -129,7 +129,7 @@
             padding-right: 1rem;
         }
         /* Оптимизация для touch устройств */
-        button,
+        button:not([role="switch"]),
         a {
             min-height: 44px;
             min-width: 44px;

@@ -1,6 +1,6 @@
 "use client";
 
-import { useState, useEffect, useCallback, useMemo } from "react";
+import { useState, useEffect, useCallback, useMemo, useRef } from "react";
 import Link from "next/link";
 import {
   Card,
@@ -37,6 +37,7 @@ import {
 } from "lucide-react";
 
 const SUPPORT_EMAIL = "support@adaptedrussia.ru";
+type SupportCategory = "GENERAL" | "CONTENT_ERROR";
 
 interface SupportTicket {
   id: string;
@@ -59,6 +60,7 @@ export default function SupportPage() {
   const [formData, setFormData] = useState({
     name: "",
     email: "",
+    category: "GENERAL" as SupportCategory,
     subject: "",
     message: "",
   });
@@ -68,6 +70,44 @@ export default function SupportPage() {
   const [privacyConsent, setPrivacyConsent] = useState(false);
   const [myTickets, setMyTickets] = useState<SupportTicket[]>([]);
   const [expandedTicketId, setExpandedTicketId] = useState<string | null>(null);
+  const guideContextApplied = useRef(false);
+
+  useEffect(() => {
+    if (guideContextApplied.current) return;
+    guideContextApplied.current = true;
+
+    const params = new URLSearchParams(window.location.search);
+    if (params.get("category") !== "content-error") return;
+
+    const guide =
+      params
+        .get("guide")
+        ?.replace(/[\u0000-\u001F\u007F]/g, " ")
+        .replace(/\s+/g, " ")
+        .trim()
+        .slice(0, 160) ?? "";
+    const source = params.get("source")?.trim().slice(0, 240) ?? "";
+    const safeSource = /^\/guides\/(life|education)\/[a-zA-Z0-9-]+$/.test(source)
+      ? source
+      : "";
+    if (!guide || !safeSource) return;
+
+    const subjectTemplate = t("support.form.guideReport.subject");
+    const message = [
+      t("support.form.guideReport.intro"),
+      `${t("support.form.guideReport.guideLabel")}: ${guide}`,
+      `${t("support.form.guideReport.sourceLabel")}: ${safeSource}`,
+      "",
+      t("support.form.guideReport.detailsPrompt"),
+    ].join("\n");
+
+    setFormData((current) => ({
+      ...current,
+      category: "CONTENT_ERROR",
+      subject: subjectTemplate.replace("{guide}", guide),
+      message,
+    }));
+  }, [t]);
 
   const loadMyTickets = useCallback(async () => {
     if (!user) return;
@@ -150,6 +190,7 @@ export default function SupportPage() {
       setFormData({
         name: user?.name ?? "",
         email: user?.email ?? "",
+        category: "GENERAL",
         subject: "",
         message: "",
       });
@@ -175,7 +216,7 @@ export default function SupportPage() {
   );
 
   const handleInputChange = (
-    e: React.ChangeEvent<HTMLInputElement | HTMLTextAreaElement>
+    e: React.ChangeEvent<HTMLInputElement | HTMLTextAreaElement | HTMLSelectElement>
   ) => {
     setFormData({
       ...formData,
@@ -282,6 +323,35 @@ export default function SupportPage() {
                             aria-readonly={Boolean(user)}
                             className={user ? "bg-gray-50 cursor-not-allowed" : undefined}
                             placeholder="your@email.com"
+                          />
+                        </div>
+                      </div>
+
+                      <div>
+                        <label
+                          htmlFor="category"
+                          className="block text-sm font-medium text-gray-700 mb-1"
+                        >
+                          {t("support.form.category")}
+                        </label>
+                        <div className="relative">
+                          <select
+                            id="category"
+                            name="category"
+                            value={formData.category}
+                            onChange={handleInputChange}
+                            className="h-11 w-full appearance-none rounded-lg border border-gray-300 bg-white px-3 pr-10 text-base text-gray-900 focus:border-transparent focus:ring-2 focus:ring-blue-500"
+                          >
+                            <option value="GENERAL">
+                              {t("support.form.category.general")}
+                            </option>
+                            <option value="CONTENT_ERROR">
+                              {t("support.form.category.contentError")}
+                            </option>
+                          </select>
+                          <ChevronDown
+                            aria-hidden
+                            className="pointer-events-none absolute right-3 top-1/2 h-4 w-4 -translate-y-1/2 text-gray-500"
                           />
                         </div>
                       </div>

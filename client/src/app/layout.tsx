@@ -57,7 +57,9 @@ export const metadata: Metadata = {
     siteName: "AdaptEd Russia",
     images: [
       {
-        url: "/og-image.png",
+        url: "/og-image-v2.jpg",
+        secureUrl: "https://adaptedrussia.ru/og-image-v2.jpg",
+        type: "image/jpeg",
         width: 1200,
         height: 630,
         alt: "AdaptEd Russia - Помощь иностранным студентам",
@@ -69,7 +71,7 @@ export const metadata: Metadata = {
     title: "AdaptEd Russia - Помощь иностранным студентам в России",
     description:
       "Платформа для помощи иностранным студентам в адаптации к жизни и учёбе в российских вузах.",
-    images: ["/og-image.png"],
+    images: ["/og-image-v2.jpg"],
   },
   robots: {
     index: true,

@@ -5,7 +5,9 @@
 // Список API ключей DeepSeek
 // Замените эти ключи на реальные, полученные с https://platform.deepseek.com
 const DEEPSEEK_API_KEYS = [
-  'sk-f526651b868e40578052d36218688a94',
+  'YOUR_DEEPSEEK_API_KEY_1',
+  'YOUR_DEEPSEEK_API_KEY_2',
+  'YOUR_DEEPSEEK_API_KEY_3',
 ];
 
 // Трекер для отслеживания проблемных ключей
