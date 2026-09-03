@@ -19,6 +19,11 @@ export type PrismaPromise<T> = $Public.PrismaPromise<T>
  */
 export type User = $Result.DefaultSelection<Prisma.$UserPayload>
 /**
+ * Model BuddyApplication
+ * 
+ */
+export type BuddyApplication = $Result.DefaultSelection<Prisma.$BuddyApplicationPayload>
+/**
  * Model PasswordSetupToken
  * 
  */
@@ -113,6 +118,39 @@ export type GuideRead = $Result.DefaultSelection<Prisma.$GuideReadPayload>
  * 
  */
 export type Review = $Result.DefaultSelection<Prisma.$ReviewPayload>
+
+/**
+ * Enums
+ */
+export namespace $Enums {
+  export const BuddyApplicationType: {
+  STUDENT: 'STUDENT',
+  MENTOR: 'MENTOR'
+};
+
+export type BuddyApplicationType = (typeof BuddyApplicationType)[keyof typeof BuddyApplicationType]
+
+
+export const BuddyApplicationStatus: {
+  NEW: 'NEW',
+  UNDER_REVIEW: 'UNDER_REVIEW',
+  APPROVED: 'APPROVED',
+  MATCHED: 'MATCHED',
+  REJECTED: 'REJECTED',
+  CLOSED: 'CLOSED'
+};
+
+export type BuddyApplicationStatus = (typeof BuddyApplicationStatus)[keyof typeof BuddyApplicationStatus]
+
+}
+
+export type BuddyApplicationType = $Enums.BuddyApplicationType
+
+export const BuddyApplicationType: typeof $Enums.BuddyApplicationType
+
+export type BuddyApplicationStatus = $Enums.BuddyApplicationStatus
+
+export const BuddyApplicationStatus: typeof $Enums.BuddyApplicationStatus
 
 /**
  * ##  Prisma Client ʲˢ
@@ -246,6 +284,16 @@ export class PrismaClient<
     * ```
     */
   get user(): Prisma.UserDelegate<ExtArgs>;
+
+  /**
+   * `prisma.buddyApplication`: Exposes CRUD operations for the **BuddyApplication** model.
+    * Example usage:
+    * ```ts
+    * // Fetch zero or more BuddyApplications
+    * const buddyApplications = await prisma.buddyApplication.findMany()
+    * ```
+    */
+  get buddyApplication(): Prisma.BuddyApplicationDelegate<ExtArgs>;
 
   /**
    * `prisma.passwordSetupToken`: Exposes CRUD operations for the **PasswordSetupToken** model.
@@ -878,6 +926,7 @@ export namespace Prisma {
 
   export const ModelName: {
     User: 'User',
+    BuddyApplication: 'BuddyApplication',
     PasswordSetupToken: 'PasswordSetupToken',
     Profile: 'Profile',
     Note: 'Note',
@@ -912,7 +961,7 @@ export namespace Prisma {
 
   export type TypeMap<ExtArgs extends $Extensions.InternalArgs = $Extensions.DefaultArgs, ClientOptions = {}> = {
     meta: {
-      modelProps: "user" | "passwordSetupToken" | "profile" | "note" | "reminder" | "guide" | "chatMessage" | "supportTicket" | "supportResponse" | "admin" | "subscriptionPlan" | "payment" | "subscription" | "grant" | "userGrantApplication" | "question" | "answer" | "questionLike" | "guideRead" | "review"
+      modelProps: "user" | "buddyApplication" | "passwordSetupToken" | "profile" | "note" | "reminder" | "guide" | "chatMessage" | "supportTicket" | "supportResponse" | "admin" | "subscriptionPlan" | "payment" | "subscription" | "grant" | "userGrantApplication" | "question" | "answer" | "questionLike" | "guideRead" | "review"
       txIsolationLevel: Prisma.TransactionIsolationLevel
     }
     model: {
@@ -983,6 +1032,76 @@ export namespace Prisma {
           count: {
             args: Prisma.UserCountArgs<ExtArgs>
             result: $Utils.Optional<UserCountAggregateOutputType> | number
+          }
+        }
+      }
+      BuddyApplication: {
+        payload: Prisma.$BuddyApplicationPayload<ExtArgs>
+        fields: Prisma.BuddyApplicationFieldRefs
+        operations: {
+          findUnique: {
+            args: Prisma.BuddyApplicationFindUniqueArgs<ExtArgs>
+            result: $Utils.PayloadToResult<Prisma.$BuddyApplicationPayload> | null
+          }
+          findUniqueOrThrow: {
+            args: Prisma.BuddyApplicationFindUniqueOrThrowArgs<ExtArgs>
+            result: $Utils.PayloadToResult<Prisma.$BuddyApplicationPayload>
+          }
+          findFirst: {
+            args: Prisma.BuddyApplicationFindFirstArgs<ExtArgs>
+            result: $Utils.PayloadToResult<Prisma.$BuddyApplicationPayload> | null
+          }
+          findFirstOrThrow: {
+            args: Prisma.BuddyApplicationFindFirstOrThrowArgs<ExtArgs>
+            result: $Utils.PayloadToResult<Prisma.$BuddyApplicationPayload>
+          }
+          findMany: {
+            args: Prisma.BuddyApplicationFindManyArgs<ExtArgs>
+            result: $Utils.PayloadToResult<Prisma.$BuddyApplicationPayload>[]
+          }
+          create: {
+            args: Prisma.BuddyApplicationCreateArgs<ExtArgs>
+            result: $Utils.PayloadToResult<Prisma.$BuddyApplicationPayload>
+          }
+          createMany: {
+            args: Prisma.BuddyApplicationCreateManyArgs<ExtArgs>
+            result: BatchPayload
+          }
+          createManyAndReturn: {
+            args: Prisma.BuddyApplicationCreateManyAndReturnArgs<ExtArgs>
+            result: $Utils.PayloadToResult<Prisma.$BuddyApplicationPayload>[]
+          }
+          delete: {
+            args: Prisma.BuddyApplicationDeleteArgs<ExtArgs>
+            result: $Utils.PayloadToResult<Prisma.$BuddyApplicationPayload>
+          }
+          update: {
+            args: Prisma.BuddyApplicationUpdateArgs<ExtArgs>
+            result: $Utils.PayloadToResult<Prisma.$BuddyApplicationPayload>
+          }
+          deleteMany: {
+            args: Prisma.BuddyApplicationDeleteManyArgs<ExtArgs>
+            result: BatchPayload
+          }
+          updateMany: {
+            args: Prisma.BuddyApplicationUpdateManyArgs<ExtArgs>
+            result: BatchPayload
+          }
+          upsert: {
+            args: Prisma.BuddyApplicationUpsertArgs<ExtArgs>
+            result: $Utils.PayloadToResult<Prisma.$BuddyApplicationPayload>
+          }
+          aggregate: {
+            args: Prisma.BuddyApplicationAggregateArgs<ExtArgs>
+            result: $Utils.Optional<AggregateBuddyApplication>
+          }
+          groupBy: {
+            args: Prisma.BuddyApplicationGroupByArgs<ExtArgs>
+            result: $Utils.Optional<BuddyApplicationGroupByOutputType>[]
+          }
+          count: {
+            args: Prisma.BuddyApplicationCountArgs<ExtArgs>
+            result: $Utils.Optional<BuddyApplicationCountAggregateOutputType> | number
           }
         }
       }
@@ -2490,6 +2609,7 @@ export namespace Prisma {
     reviews: number
     guideReads: number
     passwordSetupTokens: number
+    buddyApplications: number
   }
 
   export type UserCountOutputTypeSelect<ExtArgs extends $Extensions.InternalArgs = $Extensions.DefaultArgs> = {
@@ -2506,6 +2626,7 @@ export namespace Prisma {
     reviews?: boolean | UserCountOutputTypeCountReviewsArgs
     guideReads?: boolean | UserCountOutputTypeCountGuideReadsArgs
     passwordSetupTokens?: boolean | UserCountOutputTypeCountPasswordSetupTokensArgs
+    buddyApplications?: boolean | UserCountOutputTypeCountBuddyApplicationsArgs
   }
 
   // Custom InputTypes
@@ -2608,6 +2729,13 @@ export namespace Prisma {
    */
   export type UserCountOutputTypeCountPasswordSetupTokensArgs<ExtArgs extends $Extensions.InternalArgs = $Extensions.DefaultArgs> = {
     where?: PasswordSetupTokenWhereInput
+  }
+
+  /**
+   * UserCountOutputType without action
+   */
+  export type UserCountOutputTypeCountBuddyApplicationsArgs<ExtArgs extends $Extensions.InternalArgs = $Extensions.DefaultArgs> = {
+    where?: BuddyApplicationWhereInput
   }
 
 
@@ -3149,6 +3277,7 @@ export namespace Prisma {
     reviews?: boolean | User$reviewsArgs<ExtArgs>
     guideReads?: boolean | User$guideReadsArgs<ExtArgs>
     passwordSetupTokens?: boolean | User$passwordSetupTokensArgs<ExtArgs>
+    buddyApplications?: boolean | User$buddyApplicationsArgs<ExtArgs>
     _count?: boolean | UserCountOutputTypeDefaultArgs<ExtArgs>
   }, ExtArgs["result"]["user"]>
 
@@ -3207,6 +3336,7 @@ export namespace Prisma {
     reviews?: boolean | User$reviewsArgs<ExtArgs>
     guideReads?: boolean | User$guideReadsArgs<ExtArgs>
     passwordSetupTokens?: boolean | User$passwordSetupTokensArgs<ExtArgs>
+    buddyApplications?: boolean | User$buddyApplicationsArgs<ExtArgs>
     _count?: boolean | UserCountOutputTypeDefaultArgs<ExtArgs>
   }
   export type UserIncludeCreateManyAndReturn<ExtArgs extends $Extensions.InternalArgs = $Extensions.DefaultArgs> = {}
@@ -3228,6 +3358,7 @@ export namespace Prisma {
       reviews: Prisma.$ReviewPayload<ExtArgs>[]
       guideReads: Prisma.$GuideReadPayload<ExtArgs>[]
       passwordSetupTokens: Prisma.$PasswordSetupTokenPayload<ExtArgs>[]
+      buddyApplications: Prisma.$BuddyApplicationPayload<ExtArgs>[]
     }
     scalars: $Extensions.GetPayloadResult<{
       id: string
@@ -3625,6 +3756,7 @@ export namespace Prisma {
     reviews<T extends User$reviewsArgs<ExtArgs> = {}>(args?: Subset<T, User$reviewsArgs<ExtArgs>>): Prisma.PrismaPromise<$Result.GetResult<Prisma.$ReviewPayload<ExtArgs>, T, "findMany"> | Null>
     guideReads<T extends User$guideReadsArgs<ExtArgs> = {}>(args?: Subset<T, User$guideReadsArgs<ExtArgs>>): Prisma.PrismaPromise<$Result.GetResult<Prisma.$GuideReadPayload<ExtArgs>, T, "findMany"> | Null>
     passwordSetupTokens<T extends User$passwordSetupTokensArgs<ExtArgs> = {}>(args?: Subset<T, User$passwordSetupTokensArgs<ExtArgs>>): Prisma.PrismaPromise<$Result.GetResult<Prisma.$PasswordSetupTokenPayload<ExtArgs>, T, "findMany"> | Null>
+    buddyApplications<T extends User$buddyApplicationsArgs<ExtArgs> = {}>(args?: Subset<T, User$buddyApplicationsArgs<ExtArgs>>): Prisma.PrismaPromise<$Result.GetResult<Prisma.$BuddyApplicationPayload<ExtArgs>, T, "findMany"> | Null>
     /**
      * Attaches callbacks for the resolution and/or rejection of the Promise.
      * @param onfulfilled The callback to execute when the Promise is resolved.
@@ -4260,6 +4392,26 @@ export namespace Prisma {
   }
 
   /**
+   * User.buddyApplications
+   */
+  export type User$buddyApplicationsArgs<ExtArgs extends $Extensions.InternalArgs = $Extensions.DefaultArgs> = {
+    /**
+     * Select specific fields to fetch from the BuddyApplication
+     */
+    select?: BuddyApplicationSelect<ExtArgs> | null
+    /**
+     * Choose, which related nodes to fetch as well
+     */
+    include?: BuddyApplicationInclude<ExtArgs> | null
+    where?: BuddyApplicationWhereInput
+    orderBy?: BuddyApplicationOrderByWithRelationInput | BuddyApplicationOrderByWithRelationInput[]
+    cursor?: BuddyApplicationWhereUniqueInput
+    take?: number
+    skip?: number
+    distinct?: BuddyApplicationScalarFieldEnum | BuddyApplicationScalarFieldEnum[]
+  }
+
+  /**
    * User without action
    */
   export type UserDefaultArgs<ExtArgs extends $Extensions.InternalArgs = $Extensions.DefaultArgs> = {
@@ -4271,6 +4423,1147 @@ export namespace Prisma {
      * Choose, which related nodes to fetch as well
      */
     include?: UserInclude<ExtArgs> | null
+  }
+
+
+  /**
+   * Model BuddyApplication
+   */
+
+  export type AggregateBuddyApplication = {
+    _count: BuddyApplicationCountAggregateOutputType | null
+    _min: BuddyApplicationMinAggregateOutputType | null
+    _max: BuddyApplicationMaxAggregateOutputType | null
+  }
+
+  export type BuddyApplicationMinAggregateOutputType = {
+    id: string | null
+    type: $Enums.BuddyApplicationType | null
+    status: $Enums.BuddyApplicationStatus | null
+    userId: string | null
+    name: string | null
+    isAdult: boolean | null
+    country: string | null
+    city: string | null
+    affiliation: string | null
+    participantStatus: string | null
+    interests: string | null
+    availability: string | null
+    contactMethod: string | null
+    contact: string | null
+    motivation: string | null
+    comment: string | null
+    agreedToRules: boolean | null
+    agreedToDataPolicy: boolean | null
+    internalNote: string | null
+    createdAt: Date | null
+    updatedAt: Date | null
+  }
+
+  export type BuddyApplicationMaxAggregateOutputType = {
+    id: string | null
+    type: $Enums.BuddyApplicationType | null
+    status: $Enums.BuddyApplicationStatus | null
+    userId: string | null
+    name: string | null
+    isAdult: boolean | null
+    country: string | null
+    city: string | null
+    affiliation: string | null
+    participantStatus: string | null
+    interests: string | null
+    availability: string | null
+    contactMethod: string | null
+    contact: string | null
+    motivation: string | null
+    comment: string | null
+    agreedToRules: boolean | null
+    agreedToDataPolicy: boolean | null
+    internalNote: string | null
+    createdAt: Date | null
+    updatedAt: Date | null
+  }
+
+  export type BuddyApplicationCountAggregateOutputType = {
+    id: number
+    type: number
+    status: number
+    userId: number
+    name: number
+    isAdult: number
+    country: number
+    city: number
+    affiliation: number
+    participantStatus: number
+    languages: number
+    helpTopics: number
+    interests: number
+    availability: number
+    contactMethod: number
+    contact: number
+    motivation: number
+    comment: number
+    agreedToRules: number
+    agreedToDataPolicy: number
+    internalNote: number
+    createdAt: number
+    updatedAt: number
+    _all: number
+  }
+
+
+  export type BuddyApplicationMinAggregateInputType = {
+    id?: true
+    type?: true
+    status?: true
+    userId?: true
+    name?: true
+    isAdult?: true
+    country?: true
+    city?: true
+    affiliation?: true
+    participantStatus?: true
+    interests?: true
+    availability?: true
+    contactMethod?: true
+    contact?: true
+    motivation?: true
+    comment?: true
+    agreedToRules?: true
+    agreedToDataPolicy?: true
+    internalNote?: true
+    createdAt?: true
+    updatedAt?: true
+  }
+
+  export type BuddyApplicationMaxAggregateInputType = {
+    id?: true
+    type?: true
+    status?: true
+    userId?: true
+    name?: true
+    isAdult?: true
+    country?: true
+    city?: true
+    affiliation?: true
+    participantStatus?: true
+    interests?: true
+    availability?: true
+    contactMethod?: true
+    contact?: true
+    motivation?: true
+    comment?: true
+    agreedToRules?: true
+    agreedToDataPolicy?: true
+    internalNote?: true
+    createdAt?: true
+    updatedAt?: true
+  }
+
+  export type BuddyApplicationCountAggregateInputType = {
+    id?: true
+    type?: true
+    status?: true
+    userId?: true
+    name?: true
+    isAdult?: true
+    country?: true
+    city?: true
+    affiliation?: true
+    participantStatus?: true
+    languages?: true
+    helpTopics?: true
+    interests?: true
+    availability?: true
+    contactMethod?: true
+    contact?: true
+    motivation?: true
+    comment?: true
+    agreedToRules?: true
+    agreedToDataPolicy?: true
+    internalNote?: true
+    createdAt?: true
+    updatedAt?: true
+    _all?: true
+  }
+
+  export type BuddyApplicationAggregateArgs<ExtArgs extends $Extensions.InternalArgs = $Extensions.DefaultArgs> = {
+    /**
+     * Filter which BuddyApplication to aggregate.
+     */
+    where?: BuddyApplicationWhereInput
+    /**
+     * {@link https://www.prisma.io/docs/concepts/components/prisma-client/sorting Sorting Docs}
+     * 
+     * Determine the order of BuddyApplications to fetch.
+     */
+    orderBy?: BuddyApplicationOrderByWithRelationInput | BuddyApplicationOrderByWithRelationInput[]
+    /**
+     * {@link https://www.prisma.io/docs/concepts/components/prisma-client/pagination#cursor-based-pagination Cursor Docs}
+     * 
+     * Sets the start position
+     */
+    cursor?: BuddyApplicationWhereUniqueInput
+    /**
+     * {@link https://www.prisma.io/docs/concepts/components/prisma-client/pagination Pagination Docs}
+     * 
+     * Take `±n` BuddyApplications from the position of the cursor.
+     */
+    take?: number
+    /**
+     * {@link https://www.prisma.io/docs/concepts/components/prisma-client/pagination Pagination Docs}
+     * 
+     * Skip the first `n` BuddyApplications.
+     */
+    skip?: number
+    /**
+     * {@link https://www.prisma.io/docs/concepts/components/prisma-client/aggregations Aggregation Docs}
+     * 
+     * Count returned BuddyApplications
+    **/
+    _count?: true | BuddyApplicationCountAggregateInputType
+    /**
+     * {@link https://www.prisma.io/docs/concepts/components/prisma-client/aggregations Aggregation Docs}
+     * 
+     * Select which fields to find the minimum value
+    **/
+    _min?: BuddyApplicationMinAggregateInputType
+    /**
+     * {@link https://www.prisma.io/docs/concepts/components/prisma-client/aggregations Aggregation Docs}
+     * 
+     * Select which fields to find the maximum value
+    **/
+    _max?: BuddyApplicationMaxAggregateInputType
+  }
+
+  export type GetBuddyApplicationAggregateType<T extends BuddyApplicationAggregateArgs> = {
+        [P in keyof T & keyof AggregateBuddyApplication]: P extends '_count' | 'count'
+      ? T[P] extends true
+        ? number
+        : GetScalarType<T[P], AggregateBuddyApplication[P]>
+      : GetScalarType<T[P], AggregateBuddyApplication[P]>
+  }
+
+
+
+
+  export type BuddyApplicationGroupByArgs<ExtArgs extends $Extensions.InternalArgs = $Extensions.DefaultArgs> = {
+    where?: BuddyApplicationWhereInput
+    orderBy?: BuddyApplicationOrderByWithAggregationInput | BuddyApplicationOrderByWithAggregationInput[]
+    by: BuddyApplicationScalarFieldEnum[] | BuddyApplicationScalarFieldEnum
+    having?: BuddyApplicationScalarWhereWithAggregatesInput
+    take?: number
+    skip?: number
+    _count?: BuddyApplicationCountAggregateInputType | true
+    _min?: BuddyApplicationMinAggregateInputType
+    _max?: BuddyApplicationMaxAggregateInputType
+  }
+
+  export type BuddyApplicationGroupByOutputType = {
+    id: string
+    type: $Enums.BuddyApplicationType
+    status: $Enums.BuddyApplicationStatus
+    userId: string
+    name: string
+    isAdult: boolean
+    country: string | null
+    city: string
+    affiliation: string | null
+    participantStatus: string | null
+    languages: string[]
+    helpTopics: string[]
+    interests: string | null
+    availability: string
+    contactMethod: string
+    contact: string
+    motivation: string | null
+    comment: string | null
+    agreedToRules: boolean
+    agreedToDataPolicy: boolean
+    internalNote: string | null
+    createdAt: Date
+    updatedAt: Date
+    _count: BuddyApplicationCountAggregateOutputType | null
+    _min: BuddyApplicationMinAggregateOutputType | null
+    _max: BuddyApplicationMaxAggregateOutputType | null
+  }
+
+  type GetBuddyApplicationGroupByPayload<T extends BuddyApplicationGroupByArgs> = Prisma.PrismaPromise<
+    Array<
+      PickEnumerable<BuddyApplicationGroupByOutputType, T['by']> &
+        {
+          [P in ((keyof T) & (keyof BuddyApplicationGroupByOutputType))]: P extends '_count'
+            ? T[P] extends boolean
+              ? number
+              : GetScalarType<T[P], BuddyApplicationGroupByOutputType[P]>
+            : GetScalarType<T[P], BuddyApplicationGroupByOutputType[P]>
+        }
+      >
+    >
+
+
+  export type BuddyApplicationSelect<ExtArgs extends $Extensions.InternalArgs = $Extensions.DefaultArgs> = $Extensions.GetSelect<{
+    id?: boolean
+    type?: boolean
+    status?: boolean
+    userId?: boolean
+    name?: boolean
+    isAdult?: boolean
+    country?: boolean
+    city?: boolean
+    affiliation?: boolean
+    participantStatus?: boolean
+    languages?: boolean
+    helpTopics?: boolean
+    interests?: boolean
+    availability?: boolean
+    contactMethod?: boolean
+    contact?: boolean
+    motivation?: boolean
+    comment?: boolean
+    agreedToRules?: boolean
+    agreedToDataPolicy?: boolean
+    internalNote?: boolean
+    createdAt?: boolean
+    updatedAt?: boolean
+    user?: boolean | UserDefaultArgs<ExtArgs>
+  }, ExtArgs["result"]["buddyApplication"]>
+
+  export type BuddyApplicationSelectCreateManyAndReturn<ExtArgs extends $Extensions.InternalArgs = $Extensions.DefaultArgs> = $Extensions.GetSelect<{
+    id?: boolean
+    type?: boolean
+    status?: boolean
+    userId?: boolean
+    name?: boolean
+    isAdult?: boolean
+    country?: boolean
+    city?: boolean
+    affiliation?: boolean
+    participantStatus?: boolean
+    languages?: boolean
+    helpTopics?: boolean
+    interests?: boolean
+    availability?: boolean
+    contactMethod?: boolean
+    contact?: boolean
+    motivation?: boolean
+    comment?: boolean
+    agreedToRules?: boolean
+    agreedToDataPolicy?: boolean
+    internalNote?: boolean
+    createdAt?: boolean
+    updatedAt?: boolean
+    user?: boolean | UserDefaultArgs<ExtArgs>
+  }, ExtArgs["result"]["buddyApplication"]>
+
+  export type BuddyApplicationSelectScalar = {
+    id?: boolean
+    type?: boolean
+    status?: boolean
+    userId?: boolean
+    name?: boolean
+    isAdult?: boolean
+    country?: boolean
+    city?: boolean
+    affiliation?: boolean
+    participantStatus?: boolean
+    languages?: boolean
+    helpTopics?: boolean
+    interests?: boolean
+    availability?: boolean
+    contactMethod?: boolean
+    contact?: boolean
+    motivation?: boolean
+    comment?: boolean
+    agreedToRules?: boolean
+    agreedToDataPolicy?: boolean
+    internalNote?: boolean
+    createdAt?: boolean
+    updatedAt?: boolean
+  }
+
+  export type BuddyApplicationInclude<ExtArgs extends $Extensions.InternalArgs = $Extensions.DefaultArgs> = {
+    user?: boolean | UserDefaultArgs<ExtArgs>
+  }
+  export type BuddyApplicationIncludeCreateManyAndReturn<ExtArgs extends $Extensions.InternalArgs = $Extensions.DefaultArgs> = {
+    user?: boolean | UserDefaultArgs<ExtArgs>
+  }
+
+  export type $BuddyApplicationPayload<ExtArgs extends $Extensions.InternalArgs = $Extensions.DefaultArgs> = {
+    name: "BuddyApplication"
+    objects: {
+      user: Prisma.$UserPayload<ExtArgs>
+    }
+    scalars: $Extensions.GetPayloadResult<{
+      id: string
+      type: $Enums.BuddyApplicationType
+      status: $Enums.BuddyApplicationStatus
+      userId: string
+      name: string
+      isAdult: boolean
+      country: string | null
+      city: string
+      affiliation: string | null
+      participantStatus: string | null
+      languages: string[]
+      helpTopics: string[]
+      interests: string | null
+      availability: string
+      contactMethod: string
+      contact: string
+      motivation: string | null
+      comment: string | null
+      agreedToRules: boolean
+      agreedToDataPolicy: boolean
+      internalNote: string | null
+      createdAt: Date
+      updatedAt: Date
+    }, ExtArgs["result"]["buddyApplication"]>
+    composites: {}
+  }
+
+  type BuddyApplicationGetPayload<S extends boolean | null | undefined | BuddyApplicationDefaultArgs> = $Result.GetResult<Prisma.$BuddyApplicationPayload, S>
+
+  type BuddyApplicationCountArgs<ExtArgs extends $Extensions.InternalArgs = $Extensions.DefaultArgs> = 
+    Omit<BuddyApplicationFindManyArgs, 'select' | 'include' | 'distinct'> & {
+      select?: BuddyApplicationCountAggregateInputType | true
+    }
+
+  export interface BuddyApplicationDelegate<ExtArgs extends $Extensions.InternalArgs = $Extensions.DefaultArgs> {
+    [K: symbol]: { types: Prisma.TypeMap<ExtArgs>['model']['BuddyApplication'], meta: { name: 'BuddyApplication' } }
+    /**
+     * Find zero or one BuddyApplication that matches the filter.
+     * @param {BuddyApplicationFindUniqueArgs} args - Arguments to find a BuddyApplication
+     * @example
+     * // Get one BuddyApplication
+     * const buddyApplication = await prisma.buddyApplication.findUnique({
+     *   where: {
+     *     // ... provide filter here
+     *   }
+     * })
+     */
+    findUnique<T extends BuddyApplicationFindUniqueArgs>(args: SelectSubset<T, BuddyApplicationFindUniqueArgs<ExtArgs>>): Prisma__BuddyApplicationClient<$Result.GetResult<Prisma.$BuddyApplicationPayload<ExtArgs>, T, "findUnique"> | null, null, ExtArgs>
+
+    /**
+     * Find one BuddyApplication that matches the filter or throw an error with `error.code='P2025'` 
+     * if no matches were found.
+     * @param {BuddyApplicationFindUniqueOrThrowArgs} args - Arguments to find a BuddyApplication
+     * @example
+     * // Get one BuddyApplication
+     * const buddyApplication = await prisma.buddyApplication.findUniqueOrThrow({
+     *   where: {
+     *     // ... provide filter here
+     *   }
+     * })
+     */
+    findUniqueOrThrow<T extends BuddyApplicationFindUniqueOrThrowArgs>(args: SelectSubset<T, BuddyApplicationFindUniqueOrThrowArgs<ExtArgs>>): Prisma__BuddyApplicationClient<$Result.GetResult<Prisma.$BuddyApplicationPayload<ExtArgs>, T, "findUniqueOrThrow">, never, ExtArgs>
+
+    /**
+     * Find the first BuddyApplication that matches the filter.
+     * Note, that providing `undefined` is treated as the value not being there.
+     * Read more here: https://pris.ly/d/null-undefined
+     * @param {BuddyApplicationFindFirstArgs} args - Arguments to find a BuddyApplication
+     * @example
+     * // Get one BuddyApplication
+     * const buddyApplication = await prisma.buddyApplication.findFirst({
+     *   where: {
+     *     // ... provide filter here
+     *   }
+     * })
+     */
+    findFirst<T extends BuddyApplicationFindFirstArgs>(args?: SelectSubset<T, BuddyApplicationFindFirstArgs<ExtArgs>>): Prisma__BuddyApplicationClient<$Result.GetResult<Prisma.$BuddyApplicationPayload<ExtArgs>, T, "findFirst"> | null, null, ExtArgs>
+
+    /**
+     * Find the first BuddyApplication that matches the filter or
+     * throw `PrismaKnownClientError` with `P2025` code if no matches were found.
+     * Note, that providing `undefined` is treated as the value not being there.
+     * Read more here: https://pris.ly/d/null-undefined
+     * @param {BuddyApplicationFindFirstOrThrowArgs} args - Arguments to find a BuddyApplication
+     * @example
+     * // Get one BuddyApplication
+     * const buddyApplication = await prisma.buddyApplication.findFirstOrThrow({
+     *   where: {
+     *     // ... provide filter here
+     *   }
+     * })
+     */
+    findFirstOrThrow<T extends BuddyApplicationFindFirstOrThrowArgs>(args?: SelectSubset<T, BuddyApplicationFindFirstOrThrowArgs<ExtArgs>>): Prisma__BuddyApplicationClient<$Result.GetResult<Prisma.$BuddyApplicationPayload<ExtArgs>, T, "findFirstOrThrow">, never, ExtArgs>
+
+    /**
+     * Find zero or more BuddyApplications that matches the filter.
+     * Note, that providing `undefined` is treated as the value not being there.
+     * Read more here: https://pris.ly/d/null-undefined
+     * @param {BuddyApplicationFindManyArgs} args - Arguments to filter and select certain fields only.
+     * @example
+     * // Get all BuddyApplications
+     * const buddyApplications = await prisma.buddyApplication.findMany()
+     * 
+     * // Get first 10 BuddyApplications
+     * const buddyApplications = await prisma.buddyApplication.findMany({ take: 10 })
+     * 
+     * // Only select the `id`
+     * const buddyApplicationWithIdOnly = await prisma.buddyApplication.findMany({ select: { id: true } })
+     * 
+     */
+    findMany<T extends BuddyApplicationFindManyArgs>(args?: SelectSubset<T, BuddyApplicationFindManyArgs<ExtArgs>>): Prisma.PrismaPromise<$Result.GetResult<Prisma.$BuddyApplicationPayload<ExtArgs>, T, "findMany">>
+
+    /**
+     * Create a BuddyApplication.
+     * @param {BuddyApplicationCreateArgs} args - Arguments to create a BuddyApplication.
+     * @example
+     * // Create one BuddyApplication
+     * const BuddyApplication = await prisma.buddyApplication.create({
+     *   data: {
+     *     // ... data to create a BuddyApplication
+     *   }
+     * })
+     * 
+     */
+    create<T extends BuddyApplicationCreateArgs>(args: SelectSubset<T, BuddyApplicationCreateArgs<ExtArgs>>): Prisma__BuddyApplicationClient<$Result.GetResult<Prisma.$BuddyApplicationPayload<ExtArgs>, T, "create">, never, ExtArgs>
+
+    /**
+     * Create many BuddyApplications.
+     * @param {BuddyApplicationCreateManyArgs} args - Arguments to create many BuddyApplications.
+     * @example
+     * // Create many BuddyApplications
+     * const buddyApplication = await prisma.buddyApplication.createMany({
+     *   data: [
+     *     // ... provide data here
+     *   ]
+     * })
+     *     
+     */
+    createMany<T extends BuddyApplicationCreateManyArgs>(args?: SelectSubset<T, BuddyApplicationCreateManyArgs<ExtArgs>>): Prisma.PrismaPromise<BatchPayload>
+
+    /**
+     * Create many BuddyApplications and returns the data saved in the database.
+     * @param {BuddyApplicationCreateManyAndReturnArgs} args - Arguments to create many BuddyApplications.
+     * @example
+     * // Create many BuddyApplications
+     * const buddyApplication = await prisma.buddyApplication.createManyAndReturn({
+     *   data: [
+     *     // ... provide data here
+     *   ]
+     * })
+     * 
+     * // Create many BuddyApplications and only return the `id`
+     * const buddyApplicationWithIdOnly = await prisma.buddyApplication.createManyAndReturn({ 
+     *   select: { id: true },
+     *   data: [
+     *     // ... provide data here
+     *   ]
+     * })
+     * Note, that providing `undefined` is treated as the value not being there.
+     * Read more here: https://pris.ly/d/null-undefined
+     * 
+     */
+    createManyAndReturn<T extends BuddyApplicationCreateManyAndReturnArgs>(args?: SelectSubset<T, BuddyApplicationCreateManyAndReturnArgs<ExtArgs>>): Prisma.PrismaPromise<$Result.GetResult<Prisma.$BuddyApplicationPayload<ExtArgs>, T, "createManyAndReturn">>
+
+    /**
+     * Delete a BuddyApplication.
+     * @param {BuddyApplicationDeleteArgs} args - Arguments to delete one BuddyApplication.
+     * @example
+     * // Delete one BuddyApplication
+     * const BuddyApplication = await prisma.buddyApplication.delete({
+     *   where: {
+     *     // ... filter to delete one BuddyApplication
+     *   }
+     * })
+     * 
+     */
+    delete<T extends BuddyApplicationDeleteArgs>(args: SelectSubset<T, BuddyApplicationDeleteArgs<ExtArgs>>): Prisma__BuddyApplicationClient<$Result.GetResult<Prisma.$BuddyApplicationPayload<ExtArgs>, T, "delete">, never, ExtArgs>
+
+    /**
+     * Update one BuddyApplication.
+     * @param {BuddyApplicationUpdateArgs} args - Arguments to update one BuddyApplication.
+     * @example
+     * // Update one BuddyApplication
+     * const buddyApplication = await prisma.buddyApplication.update({
+     *   where: {
+     *     // ... provide filter here
+     *   },
+     *   data: {
+     *     // ... provide data here
+     *   }
+     * })
+     * 
+     */
+    update<T extends BuddyApplicationUpdateArgs>(args: SelectSubset<T, BuddyApplicationUpdateArgs<ExtArgs>>): Prisma__BuddyApplicationClient<$Result.GetResult<Prisma.$BuddyApplicationPayload<ExtArgs>, T, "update">, never, ExtArgs>
+
+    /**
+     * Delete zero or more BuddyApplications.
+     * @param {BuddyApplicationDeleteManyArgs} args - Arguments to filter BuddyApplications to delete.
+     * @example
+     * // Delete a few BuddyApplications
+     * const { count } = await prisma.buddyApplication.deleteMany({
+     *   where: {
+     *     // ... provide filter here
+     *   }
+     * })
+     * 
+     */
+    deleteMany<T extends BuddyApplicationDeleteManyArgs>(args?: SelectSubset<T, BuddyApplicationDeleteManyArgs<ExtArgs>>): Prisma.PrismaPromise<BatchPayload>
+
+    /**
+     * Update zero or more BuddyApplications.
+     * Note, that providing `undefined` is treated as the value not being there.
+     * Read more here: https://pris.ly/d/null-undefined
+     * @param {BuddyApplicationUpdateManyArgs} args - Arguments to update one or more rows.
+     * @example
+     * // Update many BuddyApplications
+     * const buddyApplication = await prisma.buddyApplication.updateMany({
+     *   where: {
+     *     // ... provide filter here
+     *   },
+     *   data: {
+     *     // ... provide data here
+     *   }
+     * })
+     * 
+     */
+    updateMany<T extends BuddyApplicationUpdateManyArgs>(args: SelectSubset<T, BuddyApplicationUpdateManyArgs<ExtArgs>>): Prisma.PrismaPromise<BatchPayload>
+
+    /**
+     * Create or update one BuddyApplication.
+     * @param {BuddyApplicationUpsertArgs} args - Arguments to update or create a BuddyApplication.
+     * @example
+     * // Update or create a BuddyApplication
+     * const buddyApplication = await prisma.buddyApplication.upsert({
+     *   create: {
+     *     // ... data to create a BuddyApplication
+     *   },
+     *   update: {
+     *     // ... in case it already exists, update
+     *   },
+     *   where: {
+     *     // ... the filter for the BuddyApplication we want to update
+     *   }
+     * })
+     */
+    upsert<T extends BuddyApplicationUpsertArgs>(args: SelectSubset<T, BuddyApplicationUpsertArgs<ExtArgs>>): Prisma__BuddyApplicationClient<$Result.GetResult<Prisma.$BuddyApplicationPayload<ExtArgs>, T, "upsert">, never, ExtArgs>
+
+
+    /**
+     * Count the number of BuddyApplications.
+     * Note, that providing `undefined` is treated as the value not being there.
+     * Read more here: https://pris.ly/d/null-undefined
+     * @param {BuddyApplicationCountArgs} args - Arguments to filter BuddyApplications to count.
+     * @example
+     * // Count the number of BuddyApplications
+     * const count = await prisma.buddyApplication.count({
+     *   where: {
+     *     // ... the filter for the BuddyApplications we want to count
+     *   }
+     * })
+    **/
+    count<T extends BuddyApplicationCountArgs>(
+      args?: Subset<T, BuddyApplicationCountArgs>,
+    ): Prisma.PrismaPromise<
+      T extends $Utils.Record<'select', any>
+        ? T['select'] extends true
+          ? number
+          : GetScalarType<T['select'], BuddyApplicationCountAggregateOutputType>
+        : number
+    >
+
+    /**
+     * Allows you to perform aggregations operations on a BuddyApplication.
+     * Note, that providing `undefined` is treated as the value not being there.
+     * Read more here: https://pris.ly/d/null-undefined
+     * @param {BuddyApplicationAggregateArgs} args - Select which aggregations you would like to apply and on what fields.
+     * @example
+     * // Ordered by age ascending
+     * // Where email contains prisma.io
+     * // Limited to the 10 users
+     * const aggregations = await prisma.user.aggregate({
+     *   _avg: {
+     *     age: true,
+     *   },
+     *   where: {
+     *     email: {
+     *       contains: "prisma.io",
+     *     },
+     *   },
+     *   orderBy: {
+     *     age: "asc",
+     *   },
+     *   take: 10,
+     * })
+    **/
+    aggregate<T extends BuddyApplicationAggregateArgs>(args: Subset<T, BuddyApplicationAggregateArgs>): Prisma.PrismaPromise<GetBuddyApplicationAggregateType<T>>
+
+    /**
+     * Group by BuddyApplication.
+     * Note, that providing `undefined` is treated as the value not being there.
+     * Read more here: https://pris.ly/d/null-undefined
+     * @param {BuddyApplicationGroupByArgs} args - Group by arguments.
+     * @example
+     * // Group by city, order by createdAt, get count
+     * const result = await prisma.user.groupBy({
+     *   by: ['city', 'createdAt'],
+     *   orderBy: {
+     *     createdAt: true
+     *   },
+     *   _count: {
+     *     _all: true
+     *   },
+     * })
+     * 
+    **/
+    groupBy<
+      T extends BuddyApplicationGroupByArgs,
+      HasSelectOrTake extends Or<
+        Extends<'skip', Keys<T>>,
+        Extends<'take', Keys<T>>
+      >,
+      OrderByArg extends True extends HasSelectOrTake
+        ? { orderBy: BuddyApplicationGroupByArgs['orderBy'] }
+        : { orderBy?: BuddyApplicationGroupByArgs['orderBy'] },
+      OrderFields extends ExcludeUnderscoreKeys<Keys<MaybeTupleToUnion<T['orderBy']>>>,
+      ByFields extends MaybeTupleToUnion<T['by']>,
+      ByValid extends Has<ByFields, OrderFields>,
+      HavingFields extends GetHavingFields<T['having']>,
+      HavingValid extends Has<ByFields, HavingFields>,
+      ByEmpty extends T['by'] extends never[] ? True : False,
+      InputErrors extends ByEmpty extends True
+      ? `Error: "by" must not be empty.`
+      : HavingValid extends False
+      ? {
+          [P in HavingFields]: P extends ByFields
+            ? never
+            : P extends string
+            ? `Error: Field "${P}" used in "having" needs to be provided in "by".`
+            : [
+                Error,
+                'Field ',
+                P,
+                ` in "having" needs to be provided in "by"`,
+              ]
+        }[HavingFields]
+      : 'take' extends Keys<T>
+      ? 'orderBy' extends Keys<T>
+        ? ByValid extends True
+          ? {}
+          : {
+              [P in OrderFields]: P extends ByFields
+                ? never
+                : `Error: Field "${P}" in "orderBy" needs to be provided in "by"`
+            }[OrderFields]
+        : 'Error: If you provide "take", you also need to provide "orderBy"'
+      : 'skip' extends Keys<T>
+      ? 'orderBy' extends Keys<T>
+        ? ByValid extends True
+          ? {}
+          : {
+              [P in OrderFields]: P extends ByFields
+                ? never
+                : `Error: Field "${P}" in "orderBy" needs to be provided in "by"`
+            }[OrderFields]
+        : 'Error: If you provide "skip", you also need to provide "orderBy"'
+      : ByValid extends True
+      ? {}
+      : {
+          [P in OrderFields]: P extends ByFields
+            ? never
+            : `Error: Field "${P}" in "orderBy" needs to be provided in "by"`
+        }[OrderFields]
+    >(args: SubsetIntersection<T, BuddyApplicationGroupByArgs, OrderByArg> & InputErrors): {} extends InputErrors ? GetBuddyApplicationGroupByPayload<T> : Prisma.PrismaPromise<InputErrors>
+  /**
+   * Fields of the BuddyApplication model
+   */
+  readonly fields: BuddyApplicationFieldRefs;
+  }
+
+  /**
+   * The delegate class that acts as a "Promise-like" for BuddyApplication.
+   * Why is this prefixed with `Prisma__`?
+   * Because we want to prevent naming conflicts as mentioned in
+   * https://github.com/prisma/prisma-client-js/issues/707
+   */
+  export interface Prisma__BuddyApplicationClient<T, Null = never, ExtArgs extends $Extensions.InternalArgs = $Extensions.DefaultArgs> extends Prisma.PrismaPromise<T> {
+    readonly [Symbol.toStringTag]: "PrismaPromise"
+    user<T extends UserDefaultArgs<ExtArgs> = {}>(args?: Subset<T, UserDefaultArgs<ExtArgs>>): Prisma__UserClient<$Result.GetResult<Prisma.$UserPayload<ExtArgs>, T, "findUniqueOrThrow"> | Null, Null, ExtArgs>
+    /**
+     * Attaches callbacks for the resolution and/or rejection of the Promise.
+     * @param onfulfilled The callback to execute when the Promise is resolved.
+     * @param onrejected The callback to execute when the Promise is rejected.
+     * @returns A Promise for the completion of which ever callback is executed.
+     */
+    then<TResult1 = T, TResult2 = never>(onfulfilled?: ((value: T) => TResult1 | PromiseLike<TResult1>) | undefined | null, onrejected?: ((reason: any) => TResult2 | PromiseLike<TResult2>) | undefined | null): $Utils.JsPromise<TResult1 | TResult2>
+    /**
+     * Attaches a callback for only the rejection of the Promise.
+     * @param onrejected The callback to execute when the Promise is rejected.
+     * @returns A Promise for the completion of the callback.
+     */
+    catch<TResult = never>(onrejected?: ((reason: any) => TResult | PromiseLike<TResult>) | undefined | null): $Utils.JsPromise<T | TResult>
+    /**
+     * Attaches a callback that is invoked when the Promise is settled (fulfilled or rejected). The
+     * resolved value cannot be modified from the callback.
+     * @param onfinally The callback to execute when the Promise is settled (fulfilled or rejected).
+     * @returns A Promise for the completion of the callback.
+     */
+    finally(onfinally?: (() => void) | undefined | null): $Utils.JsPromise<T>
+  }
+
+
+
+
+  /**
+   * Fields of the BuddyApplication model
+   */ 
+  interface BuddyApplicationFieldRefs {
+    readonly id: FieldRef<"BuddyApplication", 'String'>
+    readonly type: FieldRef<"BuddyApplication", 'BuddyApplicationType'>
+    readonly status: FieldRef<"BuddyApplication", 'BuddyApplicationStatus'>
+    readonly userId: FieldRef<"BuddyApplication", 'String'>
+    readonly name: FieldRef<"BuddyApplication", 'String'>
+    readonly isAdult: FieldRef<"BuddyApplication", 'Boolean'>
+    readonly country: FieldRef<"BuddyApplication", 'String'>
+    readonly city: FieldRef<"BuddyApplication", 'String'>
+    readonly affiliation: FieldRef<"BuddyApplication", 'String'>
+    readonly participantStatus: FieldRef<"BuddyApplication", 'String'>
+    readonly languages: FieldRef<"BuddyApplication", 'String[]'>
+    readonly helpTopics: FieldRef<"BuddyApplication", 'String[]'>
+    readonly interests: FieldRef<"BuddyApplication", 'String'>
+    readonly availability: FieldRef<"BuddyApplication", 'String'>
+    readonly contactMethod: FieldRef<"BuddyApplication", 'String'>
+    readonly contact: FieldRef<"BuddyApplication", 'String'>
+    readonly motivation: FieldRef<"BuddyApplication", 'String'>
+    readonly comment: FieldRef<"BuddyApplication", 'String'>
+    readonly agreedToRules: FieldRef<"BuddyApplication", 'Boolean'>
+    readonly agreedToDataPolicy: FieldRef<"BuddyApplication", 'Boolean'>
+    readonly internalNote: FieldRef<"BuddyApplication", 'String'>
+    readonly createdAt: FieldRef<"BuddyApplication", 'DateTime'>
+    readonly updatedAt: FieldRef<"BuddyApplication", 'DateTime'>
+  }
+    
+
+  // Custom InputTypes
+  /**
+   * BuddyApplication findUnique
+   */
+  export type BuddyApplicationFindUniqueArgs<ExtArgs extends $Extensions.InternalArgs = $Extensions.DefaultArgs> = {
+    /**
+     * Select specific fields to fetch from the BuddyApplication
+     */
+    select?: BuddyApplicationSelect<ExtArgs> | null
+    /**
+     * Choose, which related nodes to fetch as well
+     */
+    include?: BuddyApplicationInclude<ExtArgs> | null
+    /**
+     * Filter, which BuddyApplication to fetch.
+     */
+    where: BuddyApplicationWhereUniqueInput
+  }
+
+  /**
+   * BuddyApplication findUniqueOrThrow
+   */
+  export type BuddyApplicationFindUniqueOrThrowArgs<ExtArgs extends $Extensions.InternalArgs = $Extensions.DefaultArgs> = {
+    /**
+     * Select specific fields to fetch from the BuddyApplication
+     */
+    select?: BuddyApplicationSelect<ExtArgs> | null
+    /**
+     * Choose, which related nodes to fetch as well
+     */
+    include?: BuddyApplicationInclude<ExtArgs> | null
+    /**
+     * Filter, which BuddyApplication to fetch.
+     */
+    where: BuddyApplicationWhereUniqueInput
+  }
+
+  /**
+   * BuddyApplication findFirst
+   */
+  export type BuddyApplicationFindFirstArgs<ExtArgs extends $Extensions.InternalArgs = $Extensions.DefaultArgs> = {
+    /**
+     * Select specific fields to fetch from the BuddyApplication
+     */
+    select?: BuddyApplicationSelect<ExtArgs> | null
+    /**
+     * Choose, which related nodes to fetch as well
+     */
+    include?: BuddyApplicationInclude<ExtArgs> | null
+    /**
+     * Filter, which BuddyApplication to fetch.
+     */
+    where?: BuddyApplicationWhereInput
+    /**
+     * {@link https://www.prisma.io/docs/concepts/components/prisma-client/sorting Sorting Docs}
+     * 
+     * Determine the order of BuddyApplications to fetch.
+     */
+    orderBy?: BuddyApplicationOrderByWithRelationInput | BuddyApplicationOrderByWithRelationInput[]
+    /**
+     * {@link https://www.prisma.io/docs/concepts/components/prisma-client/pagination#cursor-based-pagination Cursor Docs}
+     * 
+     * Sets the position for searching for BuddyApplications.
+     */
+    cursor?: BuddyApplicationWhereUniqueInput
+    /**
+     * {@link https://www.prisma.io/docs/concepts/components/prisma-client/pagination Pagination Docs}
+     * 
+     * Take `±n` BuddyApplications from the position of the cursor.
+     */
+    take?: number
+    /**
+     * {@link https://www.prisma.io/docs/concepts/components/prisma-client/pagination Pagination Docs}
+     * 
+     * Skip the first `n` BuddyApplications.
+     */
+    skip?: number
+    /**
+     * {@link https://www.prisma.io/docs/concepts/components/prisma-client/distinct Distinct Docs}
+     * 
+     * Filter by unique combinations of BuddyApplications.
+     */
+    distinct?: BuddyApplicationScalarFieldEnum | BuddyApplicationScalarFieldEnum[]
+  }
+
+  /**
+   * BuddyApplication findFirstOrThrow
+   */
+  export type BuddyApplicationFindFirstOrThrowArgs<ExtArgs extends $Extensions.InternalArgs = $Extensions.DefaultArgs> = {
+    /**
+     * Select specific fields to fetch from the BuddyApplication
+     */
+    select?: BuddyApplicationSelect<ExtArgs> | null
+    /**
+     * Choose, which related nodes to fetch as well
+     */
+    include?: BuddyApplicationInclude<ExtArgs> | null
+    /**
+     * Filter, which BuddyApplication to fetch.
+     */
+    where?: BuddyApplicationWhereInput
+    /**
+     * {@link https://www.prisma.io/docs/concepts/components/prisma-client/sorting Sorting Docs}
+     * 
+     * Determine the order of BuddyApplications to fetch.
+     */
+    orderBy?: BuddyApplicationOrderByWithRelationInput | BuddyApplicationOrderByWithRelationInput[]
+    /**
+     * {@link https://www.prisma.io/docs/concepts/components/prisma-client/pagination#cursor-based-pagination Cursor Docs}
+     * 
+     * Sets the position for searching for BuddyApplications.
+     */
+    cursor?: BuddyApplicationWhereUniqueInput
+    /**
+     * {@link https://www.prisma.io/docs/concepts/components/prisma-client/pagination Pagination Docs}
+     * 
+     * Take `±n` BuddyApplications from the position of the cursor.
+     */
+    take?: number
+    /**
+     * {@link https://www.prisma.io/docs/concepts/components/prisma-client/pagination Pagination Docs}
+     * 
+     * Skip the first `n` BuddyApplications.
+     */
+    skip?: number
+    /**
+     * {@link https://www.prisma.io/docs/concepts/components/prisma-client/distinct Distinct Docs}
+     * 
+     * Filter by unique combinations of BuddyApplications.
+     */
+    distinct?: BuddyApplicationScalarFieldEnum | BuddyApplicationScalarFieldEnum[]
+  }
+
+  /**
+   * BuddyApplication findMany
+   */
+  export type BuddyApplicationFindManyArgs<ExtArgs extends $Extensions.InternalArgs = $Extensions.DefaultArgs> = {
+    /**
+     * Select specific fields to fetch from the BuddyApplication
+     */
+    select?: BuddyApplicationSelect<ExtArgs> | null
+    /**
+     * Choose, which related nodes to fetch as well
+     */
+    include?: BuddyApplicationInclude<ExtArgs> | null
+    /**
+     * Filter, which BuddyApplications to fetch.
+     */
+    where?: BuddyApplicationWhereInput
+    /**
+     * {@link https://www.prisma.io/docs/concepts/components/prisma-client/sorting Sorting Docs}
+     * 
+     * Determine the order of BuddyApplications to fetch.
+     */
+    orderBy?: BuddyApplicationOrderByWithRelationInput | BuddyApplicationOrderByWithRelationInput[]
+    /**
+     * {@link https://www.prisma.io/docs/concepts/components/prisma-client/pagination#cursor-based-pagination Cursor Docs}
+     * 
+     * Sets the position for listing BuddyApplications.
+     */
+    cursor?: BuddyApplicationWhereUniqueInput
+    /**
+     * {@link https://www.prisma.io/docs/concepts/components/prisma-client/pagination Pagination Docs}
+     * 
+     * Take `±n` BuddyApplications from the position of the cursor.
+     */
+    take?: number
+    /**
+     * {@link https://www.prisma.io/docs/concepts/components/prisma-client/pagination Pagination Docs}
+     * 
+     * Skip the first `n` BuddyApplications.
+     */
+    skip?: number
+    distinct?: BuddyApplicationScalarFieldEnum | BuddyApplicationScalarFieldEnum[]
+  }
+
+  /**
+   * BuddyApplication create
+   */
+  export type BuddyApplicationCreateArgs<ExtArgs extends $Extensions.InternalArgs = $Extensions.DefaultArgs> = {
+    /**
+     * Select specific fields to fetch from the BuddyApplication
+     */
+    select?: BuddyApplicationSelect<ExtArgs> | null
+    /**
+     * Choose, which related nodes to fetch as well
+     */
+    include?: BuddyApplicationInclude<ExtArgs> | null
+    /**
+     * The data needed to create a BuddyApplication.
+     */
+    data: XOR<BuddyApplicationCreateInput, BuddyApplicationUncheckedCreateInput>
+  }
+
+  /**
+   * BuddyApplication createMany
+   */
+  export type BuddyApplicationCreateManyArgs<ExtArgs extends $Extensions.InternalArgs = $Extensions.DefaultArgs> = {
+    /**
+     * The data used to create many BuddyApplications.
+     */
+    data: BuddyApplicationCreateManyInput | BuddyApplicationCreateManyInput[]
+    skipDuplicates?: boolean
+  }
+
+  /**
+   * BuddyApplication createManyAndReturn
+   */
+  export type BuddyApplicationCreateManyAndReturnArgs<ExtArgs extends $Extensions.InternalArgs = $Extensions.DefaultArgs> = {
+    /**
+     * Select specific fields to fetch from the BuddyApplication
+     */
+    select?: BuddyApplicationSelectCreateManyAndReturn<ExtArgs> | null
+    /**
+     * The data used to create many BuddyApplications.
+     */
+    data: BuddyApplicationCreateManyInput | BuddyApplicationCreateManyInput[]
+    skipDuplicates?: boolean
+    /**
+     * Choose, which related nodes to fetch as well
+     */
+    include?: BuddyApplicationIncludeCreateManyAndReturn<ExtArgs> | null
+  }
+
+  /**
+   * BuddyApplication update
+   */
+  export type BuddyApplicationUpdateArgs<ExtArgs extends $Extensions.InternalArgs = $Extensions.DefaultArgs> = {
+    /**
+     * Select specific fields to fetch from the BuddyApplication
+     */
+    select?: BuddyApplicationSelect<ExtArgs> | null
+    /**
+     * Choose, which related nodes to fetch as well
+     */
+    include?: BuddyApplicationInclude<ExtArgs> | null
+    /**
+     * The data needed to update a BuddyApplication.
+     */
+    data: XOR<BuddyApplicationUpdateInput, BuddyApplicationUncheckedUpdateInput>
+    /**
+     * Choose, which BuddyApplication to update.
+     */
+    where: BuddyApplicationWhereUniqueInput
+  }
+
+  /**
+   * BuddyApplication updateMany
+   */
+  export type BuddyApplicationUpdateManyArgs<ExtArgs extends $Extensions.InternalArgs = $Extensions.DefaultArgs> = {
+    /**
+     * The data used to update BuddyApplications.
+     */
+    data: XOR<BuddyApplicationUpdateManyMutationInput, BuddyApplicationUncheckedUpdateManyInput>
+    /**
+     * Filter which BuddyApplications to update
+     */
+    where?: BuddyApplicationWhereInput
+  }
+
+  /**
+   * BuddyApplication upsert
+   */
+  export type BuddyApplicationUpsertArgs<ExtArgs extends $Extensions.InternalArgs = $Extensions.DefaultArgs> = {
+    /**
+     * Select specific fields to fetch from the BuddyApplication
+     */
+    select?: BuddyApplicationSelect<ExtArgs> | null
+    /**
+     * Choose, which related nodes to fetch as well
+     */
+    include?: BuddyApplicationInclude<ExtArgs> | null
+    /**
+     * The filter to search for the BuddyApplication to update in case it exists.
+     */
+    where: BuddyApplicationWhereUniqueInput
+    /**
+     * In case the BuddyApplication found by the `where` argument doesn't exist, create a new BuddyApplication with this data.
+     */
+    create: XOR<BuddyApplicationCreateInput, BuddyApplicationUncheckedCreateInput>
+    /**
+     * In case the BuddyApplication was found with the provided `where` argument, update it with this data.
+     */
+    update: XOR<BuddyApplicationUpdateInput, BuddyApplicationUncheckedUpdateInput>
+  }
+
+  /**
+   * BuddyApplication delete
+   */
+  export type BuddyApplicationDeleteArgs<ExtArgs extends $Extensions.InternalArgs = $Extensions.DefaultArgs> = {
+    /**
+     * Select specific fields to fetch from the BuddyApplication
+     */
+    select?: BuddyApplicationSelect<ExtArgs> | null
+    /**
+     * Choose, which related nodes to fetch as well
+     */
+    include?: BuddyApplicationInclude<ExtArgs> | null
+    /**
+     * Filter which BuddyApplication to delete.
+     */
+    where: BuddyApplicationWhereUniqueInput
+  }
+
+  /**
+   * BuddyApplication deleteMany
+   */
+  export type BuddyApplicationDeleteManyArgs<ExtArgs extends $Extensions.InternalArgs = $Extensions.DefaultArgs> = {
+    /**
+     * Filter which BuddyApplications to delete
+     */
+    where?: BuddyApplicationWhereInput
+  }
+
+  /**
+   * BuddyApplication without action
+   */
+  export type BuddyApplicationDefaultArgs<ExtArgs extends $Extensions.InternalArgs = $Extensions.DefaultArgs> = {
+    /**
+     * Select specific fields to fetch from the BuddyApplication
+     */
+    select?: BuddyApplicationSelect<ExtArgs> | null
+    /**
+     * Choose, which related nodes to fetch as well
+     */
+    include?: BuddyApplicationInclude<ExtArgs> | null
   }
 
 
@@ -23308,6 +24601,35 @@ export namespace Prisma {
   export type UserScalarFieldEnum = (typeof UserScalarFieldEnum)[keyof typeof UserScalarFieldEnum]
 
 
+  export const BuddyApplicationScalarFieldEnum: {
+    id: 'id',
+    type: 'type',
+    status: 'status',
+    userId: 'userId',
+    name: 'name',
+    isAdult: 'isAdult',
+    country: 'country',
+    city: 'city',
+    affiliation: 'affiliation',
+    participantStatus: 'participantStatus',
+    languages: 'languages',
+    helpTopics: 'helpTopics',
+    interests: 'interests',
+    availability: 'availability',
+    contactMethod: 'contactMethod',
+    contact: 'contact',
+    motivation: 'motivation',
+    comment: 'comment',
+    agreedToRules: 'agreedToRules',
+    agreedToDataPolicy: 'agreedToDataPolicy',
+    internalNote: 'internalNote',
+    createdAt: 'createdAt',
+    updatedAt: 'updatedAt'
+  };
+
+  export type BuddyApplicationScalarFieldEnum = (typeof BuddyApplicationScalarFieldEnum)[keyof typeof BuddyApplicationScalarFieldEnum]
+
+
   export const PasswordSetupTokenScalarFieldEnum: {
     id: 'id',
     userId: 'userId',
@@ -23669,6 +24991,34 @@ export namespace Prisma {
 
 
   /**
+   * Reference to a field of type 'BuddyApplicationType'
+   */
+  export type EnumBuddyApplicationTypeFieldRefInput<$PrismaModel> = FieldRefInputType<$PrismaModel, 'BuddyApplicationType'>
+    
+
+
+  /**
+   * Reference to a field of type 'BuddyApplicationType[]'
+   */
+  export type ListEnumBuddyApplicationTypeFieldRefInput<$PrismaModel> = FieldRefInputType<$PrismaModel, 'BuddyApplicationType[]'>
+    
+
+
+  /**
+   * Reference to a field of type 'BuddyApplicationStatus'
+   */
+  export type EnumBuddyApplicationStatusFieldRefInput<$PrismaModel> = FieldRefInputType<$PrismaModel, 'BuddyApplicationStatus'>
+    
+
+
+  /**
+   * Reference to a field of type 'BuddyApplicationStatus[]'
+   */
+  export type ListEnumBuddyApplicationStatusFieldRefInput<$PrismaModel> = FieldRefInputType<$PrismaModel, 'BuddyApplicationStatus[]'>
+    
+
+
+  /**
    * Reference to a field of type 'Float'
    */
   export type FloatFieldRefInput<$PrismaModel> = FieldRefInputType<$PrismaModel, 'Float'>
@@ -23720,6 +25070,7 @@ export namespace Prisma {
     reviews?: ReviewListRelationFilter
     guideReads?: GuideReadListRelationFilter
     passwordSetupTokens?: PasswordSetupTokenListRelationFilter
+    buddyApplications?: BuddyApplicationListRelationFilter
   }
 
   export type UserOrderByWithRelationInput = {
@@ -23754,6 +25105,7 @@ export namespace Prisma {
     reviews?: ReviewOrderByRelationAggregateInput
     guideReads?: GuideReadOrderByRelationAggregateInput
     passwordSetupTokens?: PasswordSetupTokenOrderByRelationAggregateInput
+    buddyApplications?: BuddyApplicationOrderByRelationAggregateInput
   }
 
   export type UserWhereUniqueInput = Prisma.AtLeast<{
@@ -23791,6 +25143,7 @@ export namespace Prisma {
     reviews?: ReviewListRelationFilter
     guideReads?: GuideReadListRelationFilter
     passwordSetupTokens?: PasswordSetupTokenListRelationFilter
+    buddyApplications?: BuddyApplicationListRelationFilter
   }, "id" | "email">
 
   export type UserOrderByWithAggregationInput = {
@@ -23839,6 +25192,151 @@ export namespace Prisma {
     emailNotifications?: BoolWithAggregatesFilter<"User"> | boolean
     timezone?: StringWithAggregatesFilter<"User"> | string
     tokenVersion?: IntWithAggregatesFilter<"User"> | number
+  }
+
+  export type BuddyApplicationWhereInput = {
+    AND?: BuddyApplicationWhereInput | BuddyApplicationWhereInput[]
+    OR?: BuddyApplicationWhereInput[]
+    NOT?: BuddyApplicationWhereInput | BuddyApplicationWhereInput[]
+    id?: StringFilter<"BuddyApplication"> | string
+    type?: EnumBuddyApplicationTypeFilter<"BuddyApplication"> | $Enums.BuddyApplicationType
+    status?: EnumBuddyApplicationStatusFilter<"BuddyApplication"> | $Enums.BuddyApplicationStatus
+    userId?: StringFilter<"BuddyApplication"> | string
+    name?: StringFilter<"BuddyApplication"> | string
+    isAdult?: BoolFilter<"BuddyApplication"> | boolean
+    country?: StringNullableFilter<"BuddyApplication"> | string | null
+    city?: StringFilter<"BuddyApplication"> | string
+    affiliation?: StringNullableFilter<"BuddyApplication"> | string | null
+    participantStatus?: StringNullableFilter<"BuddyApplication"> | string | null
+    languages?: StringNullableListFilter<"BuddyApplication">
+    helpTopics?: StringNullableListFilter<"BuddyApplication">
+    interests?: StringNullableFilter<"BuddyApplication"> | string | null
+    availability?: StringFilter<"BuddyApplication"> | string
+    contactMethod?: StringFilter<"BuddyApplication"> | string
+    contact?: StringFilter<"BuddyApplication"> | string
+    motivation?: StringNullableFilter<"BuddyApplication"> | string | null
+    comment?: StringNullableFilter<"BuddyApplication"> | string | null
+    agreedToRules?: BoolFilter<"BuddyApplication"> | boolean
+    agreedToDataPolicy?: BoolFilter<"BuddyApplication"> | boolean
+    internalNote?: StringNullableFilter<"BuddyApplication"> | string | null
+    createdAt?: DateTimeFilter<"BuddyApplication"> | Date | string
+    updatedAt?: DateTimeFilter<"BuddyApplication"> | Date | string
+    user?: XOR<UserRelationFilter, UserWhereInput>
+  }
+
+  export type BuddyApplicationOrderByWithRelationInput = {
+    id?: SortOrder
+    type?: SortOrder
+    status?: SortOrder
+    userId?: SortOrder
+    name?: SortOrder
+    isAdult?: SortOrder
+    country?: SortOrderInput | SortOrder
+    city?: SortOrder
+    affiliation?: SortOrderInput | SortOrder
+    participantStatus?: SortOrderInput | SortOrder
+    languages?: SortOrder
+    helpTopics?: SortOrder
+    interests?: SortOrderInput | SortOrder
+    availability?: SortOrder
+    contactMethod?: SortOrder
+    contact?: SortOrder
+    motivation?: SortOrderInput | SortOrder
+    comment?: SortOrderInput | SortOrder
+    agreedToRules?: SortOrder
+    agreedToDataPolicy?: SortOrder
+    internalNote?: SortOrderInput | SortOrder
+    createdAt?: SortOrder
+    updatedAt?: SortOrder
+    user?: UserOrderByWithRelationInput
+  }
+
+  export type BuddyApplicationWhereUniqueInput = Prisma.AtLeast<{
+    id?: string
+    AND?: BuddyApplicationWhereInput | BuddyApplicationWhereInput[]
+    OR?: BuddyApplicationWhereInput[]
+    NOT?: BuddyApplicationWhereInput | BuddyApplicationWhereInput[]
+    type?: EnumBuddyApplicationTypeFilter<"BuddyApplication"> | $Enums.BuddyApplicationType
+    status?: EnumBuddyApplicationStatusFilter<"BuddyApplication"> | $Enums.BuddyApplicationStatus
+    userId?: StringFilter<"BuddyApplication"> | string
+    name?: StringFilter<"BuddyApplication"> | string
+    isAdult?: BoolFilter<"BuddyApplication"> | boolean
+    country?: StringNullableFilter<"BuddyApplication"> | string | null
+    city?: StringFilter<"BuddyApplication"> | string
+    affiliation?: StringNullableFilter<"BuddyApplication"> | string | null
+    participantStatus?: StringNullableFilter<"BuddyApplication"> | string | null
+    languages?: StringNullableListFilter<"BuddyApplication">
+    helpTopics?: StringNullableListFilter<"BuddyApplication">
+    interests?: StringNullableFilter<"BuddyApplication"> | string | null
+    availability?: StringFilter<"BuddyApplication"> | string
+    contactMethod?: StringFilter<"BuddyApplication"> | string
+    contact?: StringFilter<"BuddyApplication"> | string
+    motivation?: StringNullableFilter<"BuddyApplication"> | string | null
+    comment?: StringNullableFilter<"BuddyApplication"> | string | null
+    agreedToRules?: BoolFilter<"BuddyApplication"> | boolean
+    agreedToDataPolicy?: BoolFilter<"BuddyApplication"> | boolean
+    internalNote?: StringNullableFilter<"BuddyApplication"> | string | null
+    createdAt?: DateTimeFilter<"BuddyApplication"> | Date | string
+    updatedAt?: DateTimeFilter<"BuddyApplication"> | Date | string
+    user?: XOR<UserRelationFilter, UserWhereInput>
+  }, "id">
+
+  export type BuddyApplicationOrderByWithAggregationInput = {
+    id?: SortOrder
+    type?: SortOrder
+    status?: SortOrder
+    userId?: SortOrder
+    name?: SortOrder
+    isAdult?: SortOrder
+    country?: SortOrderInput | SortOrder
+    city?: SortOrder
+    affiliation?: SortOrderInput | SortOrder
+    participantStatus?: SortOrderInput | SortOrder
+    languages?: SortOrder
+    helpTopics?: SortOrder
+    interests?: SortOrderInput | SortOrder
+    availability?: SortOrder
+    contactMethod?: SortOrder
+    contact?: SortOrder
+    motivation?: SortOrderInput | SortOrder
+    comment?: SortOrderInput | SortOrder
+    agreedToRules?: SortOrder
+    agreedToDataPolicy?: SortOrder
+    internalNote?: SortOrderInput | SortOrder
+    createdAt?: SortOrder
+    updatedAt?: SortOrder
+    _count?: BuddyApplicationCountOrderByAggregateInput
+    _max?: BuddyApplicationMaxOrderByAggregateInput
+    _min?: BuddyApplicationMinOrderByAggregateInput
+  }
+
+  export type BuddyApplicationScalarWhereWithAggregatesInput = {
+    AND?: BuddyApplicationScalarWhereWithAggregatesInput | BuddyApplicationScalarWhereWithAggregatesInput[]
+    OR?: BuddyApplicationScalarWhereWithAggregatesInput[]
+    NOT?: BuddyApplicationScalarWhereWithAggregatesInput | BuddyApplicationScalarWhereWithAggregatesInput[]
+    id?: StringWithAggregatesFilter<"BuddyApplication"> | string
+    type?: EnumBuddyApplicationTypeWithAggregatesFilter<"BuddyApplication"> | $Enums.BuddyApplicationType
+    status?: EnumBuddyApplicationStatusWithAggregatesFilter<"BuddyApplication"> | $Enums.BuddyApplicationStatus
+    userId?: StringWithAggregatesFilter<"BuddyApplication"> | string
+    name?: StringWithAggregatesFilter<"BuddyApplication"> | string
+    isAdult?: BoolWithAggregatesFilter<"BuddyApplication"> | boolean
+    country?: StringNullableWithAggregatesFilter<"BuddyApplication"> | string | null
+    city?: StringWithAggregatesFilter<"BuddyApplication"> | string
+    affiliation?: StringNullableWithAggregatesFilter<"BuddyApplication"> | string | null
+    participantStatus?: StringNullableWithAggregatesFilter<"BuddyApplication"> | string | null
+    languages?: StringNullableListFilter<"BuddyApplication">
+    helpTopics?: StringNullableListFilter<"BuddyApplication">
+    interests?: StringNullableWithAggregatesFilter<"BuddyApplication"> | string | null
+    availability?: StringWithAggregatesFilter<"BuddyApplication"> | string
+    contactMethod?: StringWithAggregatesFilter<"BuddyApplication"> | string
+    contact?: StringWithAggregatesFilter<"BuddyApplication"> | string
+    motivation?: StringNullableWithAggregatesFilter<"BuddyApplication"> | string | null
+    comment?: StringNullableWithAggregatesFilter<"BuddyApplication"> | string | null
+    agreedToRules?: BoolWithAggregatesFilter<"BuddyApplication"> | boolean
+    agreedToDataPolicy?: BoolWithAggregatesFilter<"BuddyApplication"> | boolean
+    internalNote?: StringNullableWithAggregatesFilter<"BuddyApplication"> | string | null
+    createdAt?: DateTimeWithAggregatesFilter<"BuddyApplication"> | Date | string
+    updatedAt?: DateTimeWithAggregatesFilter<"BuddyApplication"> | Date | string
   }
 
   export type PasswordSetupTokenWhereInput = {
@@ -25328,6 +26826,7 @@ export namespace Prisma {
     reviews?: ReviewCreateNestedManyWithoutUserInput
     guideReads?: GuideReadCreateNestedManyWithoutUserInput
     passwordSetupTokens?: PasswordSetupTokenCreateNestedManyWithoutUserInput
+    buddyApplications?: BuddyApplicationCreateNestedManyWithoutUserInput
   }
 
   export type UserUncheckedCreateInput = {
@@ -25362,6 +26861,7 @@ export namespace Prisma {
     reviews?: ReviewUncheckedCreateNestedManyWithoutUserInput
     guideReads?: GuideReadUncheckedCreateNestedManyWithoutUserInput
     passwordSetupTokens?: PasswordSetupTokenUncheckedCreateNestedManyWithoutUserInput
+    buddyApplications?: BuddyApplicationUncheckedCreateNestedManyWithoutUserInput
   }
 
   export type UserUpdateInput = {
@@ -25396,6 +26896,7 @@ export namespace Prisma {
     reviews?: ReviewUpdateManyWithoutUserNestedInput
     guideReads?: GuideReadUpdateManyWithoutUserNestedInput
     passwordSetupTokens?: PasswordSetupTokenUpdateManyWithoutUserNestedInput
+    buddyApplications?: BuddyApplicationUpdateManyWithoutUserNestedInput
   }
 
   export type UserUncheckedUpdateInput = {
@@ -25430,6 +26931,7 @@ export namespace Prisma {
     reviews?: ReviewUncheckedUpdateManyWithoutUserNestedInput
     guideReads?: GuideReadUncheckedUpdateManyWithoutUserNestedInput
     passwordSetupTokens?: PasswordSetupTokenUncheckedUpdateManyWithoutUserNestedInput
+    buddyApplications?: BuddyApplicationUncheckedUpdateManyWithoutUserNestedInput
   }
 
   export type UserCreateManyInput = {
@@ -25490,6 +26992,187 @@ export namespace Prisma {
     emailNotifications?: BoolFieldUpdateOperationsInput | boolean
     timezone?: StringFieldUpdateOperationsInput | string
     tokenVersion?: IntFieldUpdateOperationsInput | number
+  }
+
+  export type BuddyApplicationCreateInput = {
+    id?: string
+    type: $Enums.BuddyApplicationType
+    status?: $Enums.BuddyApplicationStatus
+    name: string
+    isAdult: boolean
+    country?: string | null
+    city: string
+    affiliation?: string | null
+    participantStatus?: string | null
+    languages?: BuddyApplicationCreatelanguagesInput | string[]
+    helpTopics?: BuddyApplicationCreatehelpTopicsInput | string[]
+    interests?: string | null
+    availability: string
+    contactMethod: string
+    contact: string
+    motivation?: string | null
+    comment?: string | null
+    agreedToRules: boolean
+    agreedToDataPolicy: boolean
+    internalNote?: string | null
+    createdAt?: Date | string
+    updatedAt?: Date | string
+    user: UserCreateNestedOneWithoutBuddyApplicationsInput
+  }
+
+  export type BuddyApplicationUncheckedCreateInput = {
+    id?: string
+    type: $Enums.BuddyApplicationType
+    status?: $Enums.BuddyApplicationStatus
+    userId: string
+    name: string
+    isAdult: boolean
+    country?: string | null
+    city: string
+    affiliation?: string | null
+    participantStatus?: string | null
+    languages?: BuddyApplicationCreatelanguagesInput | string[]
+    helpTopics?: BuddyApplicationCreatehelpTopicsInput | string[]
+    interests?: string | null
+    availability: string
+    contactMethod: string
+    contact: string
+    motivation?: string | null
+    comment?: string | null
+    agreedToRules: boolean
+    agreedToDataPolicy: boolean
+    internalNote?: string | null
+    createdAt?: Date | string
+    updatedAt?: Date | string
+  }
+
+  export type BuddyApplicationUpdateInput = {
+    id?: StringFieldUpdateOperationsInput | string
+    type?: EnumBuddyApplicationTypeFieldUpdateOperationsInput | $Enums.BuddyApplicationType
+    status?: EnumBuddyApplicationStatusFieldUpdateOperationsInput | $Enums.BuddyApplicationStatus
+    name?: StringFieldUpdateOperationsInput | string
+    isAdult?: BoolFieldUpdateOperationsInput | boolean
+    country?: NullableStringFieldUpdateOperationsInput | string | null
+    city?: StringFieldUpdateOperationsInput | string
+    affiliation?: NullableStringFieldUpdateOperationsInput | string | null
+    participantStatus?: NullableStringFieldUpdateOperationsInput | string | null
+    languages?: BuddyApplicationUpdatelanguagesInput | string[]
+    helpTopics?: BuddyApplicationUpdatehelpTopicsInput | string[]
+    interests?: NullableStringFieldUpdateOperationsInput | string | null
+    availability?: StringFieldUpdateOperationsInput | string
+    contactMethod?: StringFieldUpdateOperationsInput | string
+    contact?: StringFieldUpdateOperationsInput | string
+    motivation?: NullableStringFieldUpdateOperationsInput | string | null
+    comment?: NullableStringFieldUpdateOperationsInput | string | null
+    agreedToRules?: BoolFieldUpdateOperationsInput | boolean
+    agreedToDataPolicy?: BoolFieldUpdateOperationsInput | boolean
+    internalNote?: NullableStringFieldUpdateOperationsInput | string | null
+    createdAt?: DateTimeFieldUpdateOperationsInput | Date | string
+    updatedAt?: DateTimeFieldUpdateOperationsInput | Date | string
+    user?: UserUpdateOneRequiredWithoutBuddyApplicationsNestedInput
+  }
+
+  export type BuddyApplicationUncheckedUpdateInput = {
+    id?: StringFieldUpdateOperationsInput | string
+    type?: EnumBuddyApplicationTypeFieldUpdateOperationsInput | $Enums.BuddyApplicationType
+    status?: EnumBuddyApplicationStatusFieldUpdateOperationsInput | $Enums.BuddyApplicationStatus
+    userId?: StringFieldUpdateOperationsInput | string
+    name?: StringFieldUpdateOperationsInput | string
+    isAdult?: BoolFieldUpdateOperationsInput | boolean
+    country?: NullableStringFieldUpdateOperationsInput | string | null
+    city?: StringFieldUpdateOperationsInput | string
+    affiliation?: NullableStringFieldUpdateOperationsInput | string | null
+    participantStatus?: NullableStringFieldUpdateOperationsInput | string | null
+    languages?: BuddyApplicationUpdatelanguagesInput | string[]
+    helpTopics?: BuddyApplicationUpdatehelpTopicsInput | string[]
+    interests?: NullableStringFieldUpdateOperationsInput | string | null
+    availability?: StringFieldUpdateOperationsInput | string
+    contactMethod?: StringFieldUpdateOperationsInput | string
+    contact?: StringFieldUpdateOperationsInput | string
+    motivation?: NullableStringFieldUpdateOperationsInput | string | null
+    comment?: NullableStringFieldUpdateOperationsInput | string | null
+    agreedToRules?: BoolFieldUpdateOperationsInput | boolean
+    agreedToDataPolicy?: BoolFieldUpdateOperationsInput | boolean
+    internalNote?: NullableStringFieldUpdateOperationsInput | string | null
+    createdAt?: DateTimeFieldUpdateOperationsInput | Date | string
+    updatedAt?: DateTimeFieldUpdateOperationsInput | Date | string
+  }
+
+  export type BuddyApplicationCreateManyInput = {
+    id?: string
+    type: $Enums.BuddyApplicationType
+    status?: $Enums.BuddyApplicationStatus
+    userId: string
+    name: string
+    isAdult: boolean
+    country?: string | null
+    city: string
+    affiliation?: string | null
+    participantStatus?: string | null
+    languages?: BuddyApplicationCreatelanguagesInput | string[]
+    helpTopics?: BuddyApplicationCreatehelpTopicsInput | string[]
+    interests?: string | null
+    availability: string
+    contactMethod: string
+    contact: string
+    motivation?: string | null
+    comment?: string | null
+    agreedToRules: boolean
+    agreedToDataPolicy: boolean
+    internalNote?: string | null
+    createdAt?: Date | string
+    updatedAt?: Date | string
+  }
+
+  export type BuddyApplicationUpdateManyMutationInput = {
+    id?: StringFieldUpdateOperationsInput | string
+    type?: EnumBuddyApplicationTypeFieldUpdateOperationsInput | $Enums.BuddyApplicationType
+    status?: EnumBuddyApplicationStatusFieldUpdateOperationsInput | $Enums.BuddyApplicationStatus
+    name?: StringFieldUpdateOperationsInput | string
+    isAdult?: BoolFieldUpdateOperationsInput | boolean
+    country?: NullableStringFieldUpdateOperationsInput | string | null
+    city?: StringFieldUpdateOperationsInput | string
+    affiliation?: NullableStringFieldUpdateOperationsInput | string | null
+    participantStatus?: NullableStringFieldUpdateOperationsInput | string | null
+    languages?: BuddyApplicationUpdatelanguagesInput | string[]
+    helpTopics?: BuddyApplicationUpdatehelpTopicsInput | string[]
+    interests?: NullableStringFieldUpdateOperationsInput | string | null
+    availability?: StringFieldUpdateOperationsInput | string
+    contactMethod?: StringFieldUpdateOperationsInput | string
+    contact?: StringFieldUpdateOperationsInput | string
+    motivation?: NullableStringFieldUpdateOperationsInput | string | null
+    comment?: NullableStringFieldUpdateOperationsInput | string | null
+    agreedToRules?: BoolFieldUpdateOperationsInput | boolean
+    agreedToDataPolicy?: BoolFieldUpdateOperationsInput | boolean
+    internalNote?: NullableStringFieldUpdateOperationsInput | string | null
+    createdAt?: DateTimeFieldUpdateOperationsInput | Date | string
+    updatedAt?: DateTimeFieldUpdateOperationsInput | Date | string
+  }
+
+  export type BuddyApplicationUncheckedUpdateManyInput = {
+    id?: StringFieldUpdateOperationsInput | string
+    type?: EnumBuddyApplicationTypeFieldUpdateOperationsInput | $Enums.BuddyApplicationType
+    status?: EnumBuddyApplicationStatusFieldUpdateOperationsInput | $Enums.BuddyApplicationStatus
+    userId?: StringFieldUpdateOperationsInput | string
+    name?: StringFieldUpdateOperationsInput | string
+    isAdult?: BoolFieldUpdateOperationsInput | boolean
+    country?: NullableStringFieldUpdateOperationsInput | string | null
+    city?: StringFieldUpdateOperationsInput | string
+    affiliation?: NullableStringFieldUpdateOperationsInput | string | null
+    participantStatus?: NullableStringFieldUpdateOperationsInput | string | null
+    languages?: BuddyApplicationUpdatelanguagesInput | string[]
+    helpTopics?: BuddyApplicationUpdatehelpTopicsInput | string[]
+    interests?: NullableStringFieldUpdateOperationsInput | string | null
+    availability?: StringFieldUpdateOperationsInput | string
+    contactMethod?: StringFieldUpdateOperationsInput | string
+    contact?: StringFieldUpdateOperationsInput | string
+    motivation?: NullableStringFieldUpdateOperationsInput | string | null
+    comment?: NullableStringFieldUpdateOperationsInput | string | null
+    agreedToRules?: BoolFieldUpdateOperationsInput | boolean
+    agreedToDataPolicy?: BoolFieldUpdateOperationsInput | boolean
+    internalNote?: NullableStringFieldUpdateOperationsInput | string | null
+    createdAt?: DateTimeFieldUpdateOperationsInput | Date | string
+    updatedAt?: DateTimeFieldUpdateOperationsInput | Date | string
   }
 
   export type PasswordSetupTokenCreateInput = {
@@ -27217,6 +28900,12 @@ export namespace Prisma {
     none?: PasswordSetupTokenWhereInput
   }
 
+  export type BuddyApplicationListRelationFilter = {
+    every?: BuddyApplicationWhereInput
+    some?: BuddyApplicationWhereInput
+    none?: BuddyApplicationWhereInput
+  }
+
   export type SortOrderInput = {
     sort: SortOrder
     nulls?: NullsOrder
@@ -27271,6 +28960,10 @@ export namespace Prisma {
   }
 
   export type PasswordSetupTokenOrderByRelationAggregateInput = {
+    _count?: SortOrder
+  }
+
+  export type BuddyApplicationOrderByRelationAggregateInput = {
     _count?: SortOrder
   }
 
@@ -27416,6 +29109,127 @@ export namespace Prisma {
     _max?: NestedIntFilter<$PrismaModel>
   }
 
+  export type EnumBuddyApplicationTypeFilter<$PrismaModel = never> = {
+    equals?: $Enums.BuddyApplicationType | EnumBuddyApplicationTypeFieldRefInput<$PrismaModel>
+    in?: $Enums.BuddyApplicationType[] | ListEnumBuddyApplicationTypeFieldRefInput<$PrismaModel>
+    notIn?: $Enums.BuddyApplicationType[] | ListEnumBuddyApplicationTypeFieldRefInput<$PrismaModel>
+    not?: NestedEnumBuddyApplicationTypeFilter<$PrismaModel> | $Enums.BuddyApplicationType
+  }
+
+  export type EnumBuddyApplicationStatusFilter<$PrismaModel = never> = {
+    equals?: $Enums.BuddyApplicationStatus | EnumBuddyApplicationStatusFieldRefInput<$PrismaModel>
+    in?: $Enums.BuddyApplicationStatus[] | ListEnumBuddyApplicationStatusFieldRefInput<$PrismaModel>
+    notIn?: $Enums.BuddyApplicationStatus[] | ListEnumBuddyApplicationStatusFieldRefInput<$PrismaModel>
+    not?: NestedEnumBuddyApplicationStatusFilter<$PrismaModel> | $Enums.BuddyApplicationStatus
+  }
+
+  export type StringNullableListFilter<$PrismaModel = never> = {
+    equals?: string[] | ListStringFieldRefInput<$PrismaModel> | null
+    has?: string | StringFieldRefInput<$PrismaModel> | null
+    hasEvery?: string[] | ListStringFieldRefInput<$PrismaModel>
+    hasSome?: string[] | ListStringFieldRefInput<$PrismaModel>
+    isEmpty?: boolean
+  }
+
+  export type UserRelationFilter = {
+    is?: UserWhereInput
+    isNot?: UserWhereInput
+  }
+
+  export type BuddyApplicationCountOrderByAggregateInput = {
+    id?: SortOrder
+    type?: SortOrder
+    status?: SortOrder
+    userId?: SortOrder
+    name?: SortOrder
+    isAdult?: SortOrder
+    country?: SortOrder
+    city?: SortOrder
+    affiliation?: SortOrder
+    participantStatus?: SortOrder
+    languages?: SortOrder
+    helpTopics?: SortOrder
+    interests?: SortOrder
+    availability?: SortOrder
+    contactMethod?: SortOrder
+    contact?: SortOrder
+    motivation?: SortOrder
+    comment?: SortOrder
+    agreedToRules?: SortOrder
+    agreedToDataPolicy?: SortOrder
+    internalNote?: SortOrder
+    createdAt?: SortOrder
+    updatedAt?: SortOrder
+  }
+
+  export type BuddyApplicationMaxOrderByAggregateInput = {
+    id?: SortOrder
+    type?: SortOrder
+    status?: SortOrder
+    userId?: SortOrder
+    name?: SortOrder
+    isAdult?: SortOrder
+    country?: SortOrder
+    city?: SortOrder
+    affiliation?: SortOrder
+    participantStatus?: SortOrder
+    interests?: SortOrder
+    availability?: SortOrder
+    contactMethod?: SortOrder
+    contact?: SortOrder
+    motivation?: SortOrder
+    comment?: SortOrder
+    agreedToRules?: SortOrder
+    agreedToDataPolicy?: SortOrder
+    internalNote?: SortOrder
+    createdAt?: SortOrder
+    updatedAt?: SortOrder
+  }
+
+  export type BuddyApplicationMinOrderByAggregateInput = {
+    id?: SortOrder
+    type?: SortOrder
+    status?: SortOrder
+    userId?: SortOrder
+    name?: SortOrder
+    isAdult?: SortOrder
+    country?: SortOrder
+    city?: SortOrder
+    affiliation?: SortOrder
+    participantStatus?: SortOrder
+    interests?: SortOrder
+    availability?: SortOrder
+    contactMethod?: SortOrder
+    contact?: SortOrder
+    motivation?: SortOrder
+    comment?: SortOrder
+    agreedToRules?: SortOrder
+    agreedToDataPolicy?: SortOrder
+    internalNote?: SortOrder
+    createdAt?: SortOrder
+    updatedAt?: SortOrder
+  }
+
+  export type EnumBuddyApplicationTypeWithAggregatesFilter<$PrismaModel = never> = {
+    equals?: $Enums.BuddyApplicationType | EnumBuddyApplicationTypeFieldRefInput<$PrismaModel>
+    in?: $Enums.BuddyApplicationType[] | ListEnumBuddyApplicationTypeFieldRefInput<$PrismaModel>
+    notIn?: $Enums.BuddyApplicationType[] | ListEnumBuddyApplicationTypeFieldRefInput<$PrismaModel>
+    not?: NestedEnumBuddyApplicationTypeWithAggregatesFilter<$PrismaModel> | $Enums.BuddyApplicationType
+    _count?: NestedIntFilter<$PrismaModel>
+    _min?: NestedEnumBuddyApplicationTypeFilter<$PrismaModel>
+    _max?: NestedEnumBuddyApplicationTypeFilter<$PrismaModel>
+  }
+
+  export type EnumBuddyApplicationStatusWithAggregatesFilter<$PrismaModel = never> = {
+    equals?: $Enums.BuddyApplicationStatus | EnumBuddyApplicationStatusFieldRefInput<$PrismaModel>
+    in?: $Enums.BuddyApplicationStatus[] | ListEnumBuddyApplicationStatusFieldRefInput<$PrismaModel>
+    notIn?: $Enums.BuddyApplicationStatus[] | ListEnumBuddyApplicationStatusFieldRefInput<$PrismaModel>
+    not?: NestedEnumBuddyApplicationStatusWithAggregatesFilter<$PrismaModel> | $Enums.BuddyApplicationStatus
+    _count?: NestedIntFilter<$PrismaModel>
+    _min?: NestedEnumBuddyApplicationStatusFilter<$PrismaModel>
+    _max?: NestedEnumBuddyApplicationStatusFilter<$PrismaModel>
+  }
+
   export type DateTimeNullableFilter<$PrismaModel = never> = {
     equals?: Date | string | DateTimeFieldRefInput<$PrismaModel> | null
     in?: Date[] | string[] | ListDateTimeFieldRefInput<$PrismaModel> | null
@@ -27425,11 +29239,6 @@ export namespace Prisma {
     gt?: Date | string | DateTimeFieldRefInput<$PrismaModel>
     gte?: Date | string | DateTimeFieldRefInput<$PrismaModel>
     not?: NestedDateTimeNullableFilter<$PrismaModel> | Date | string | null
-  }
-
-  export type UserRelationFilter = {
-    is?: UserWhereInput
-    isNot?: UserWhereInput
   }
 
   export type PasswordSetupTokenCountOrderByAggregateInput = {
@@ -28348,6 +30157,13 @@ export namespace Prisma {
     connect?: PasswordSetupTokenWhereUniqueInput | PasswordSetupTokenWhereUniqueInput[]
   }
 
+  export type BuddyApplicationCreateNestedManyWithoutUserInput = {
+    create?: XOR<BuddyApplicationCreateWithoutUserInput, BuddyApplicationUncheckedCreateWithoutUserInput> | BuddyApplicationCreateWithoutUserInput[] | BuddyApplicationUncheckedCreateWithoutUserInput[]
+    connectOrCreate?: BuddyApplicationCreateOrConnectWithoutUserInput | BuddyApplicationCreateOrConnectWithoutUserInput[]
+    createMany?: BuddyApplicationCreateManyUserInputEnvelope
+    connect?: BuddyApplicationWhereUniqueInput | BuddyApplicationWhereUniqueInput[]
+  }
+
   export type ReminderUncheckedCreateNestedManyWithoutUserInput = {
     create?: XOR<ReminderCreateWithoutUserInput, ReminderUncheckedCreateWithoutUserInput> | ReminderCreateWithoutUserInput[] | ReminderUncheckedCreateWithoutUserInput[]
     connectOrCreate?: ReminderCreateOrConnectWithoutUserInput | ReminderCreateOrConnectWithoutUserInput[]
@@ -28443,6 +30259,13 @@ export namespace Prisma {
     connectOrCreate?: PasswordSetupTokenCreateOrConnectWithoutUserInput | PasswordSetupTokenCreateOrConnectWithoutUserInput[]
     createMany?: PasswordSetupTokenCreateManyUserInputEnvelope
     connect?: PasswordSetupTokenWhereUniqueInput | PasswordSetupTokenWhereUniqueInput[]
+  }
+
+  export type BuddyApplicationUncheckedCreateNestedManyWithoutUserInput = {
+    create?: XOR<BuddyApplicationCreateWithoutUserInput, BuddyApplicationUncheckedCreateWithoutUserInput> | BuddyApplicationCreateWithoutUserInput[] | BuddyApplicationUncheckedCreateWithoutUserInput[]
+    connectOrCreate?: BuddyApplicationCreateOrConnectWithoutUserInput | BuddyApplicationCreateOrConnectWithoutUserInput[]
+    createMany?: BuddyApplicationCreateManyUserInputEnvelope
+    connect?: BuddyApplicationWhereUniqueInput | BuddyApplicationWhereUniqueInput[]
   }
 
   export type StringFieldUpdateOperationsInput = {
@@ -28661,6 +30484,20 @@ export namespace Prisma {
     deleteMany?: PasswordSetupTokenScalarWhereInput | PasswordSetupTokenScalarWhereInput[]
   }
 
+  export type BuddyApplicationUpdateManyWithoutUserNestedInput = {
+    create?: XOR<BuddyApplicationCreateWithoutUserInput, BuddyApplicationUncheckedCreateWithoutUserInput> | BuddyApplicationCreateWithoutUserInput[] | BuddyApplicationUncheckedCreateWithoutUserInput[]
+    connectOrCreate?: BuddyApplicationCreateOrConnectWithoutUserInput | BuddyApplicationCreateOrConnectWithoutUserInput[]
+    upsert?: BuddyApplicationUpsertWithWhereUniqueWithoutUserInput | BuddyApplicationUpsertWithWhereUniqueWithoutUserInput[]
+    createMany?: BuddyApplicationCreateManyUserInputEnvelope
+    set?: BuddyApplicationWhereUniqueInput | BuddyApplicationWhereUniqueInput[]
+    disconnect?: BuddyApplicationWhereUniqueInput | BuddyApplicationWhereUniqueInput[]
+    delete?: BuddyApplicationWhereUniqueInput | BuddyApplicationWhereUniqueInput[]
+    connect?: BuddyApplicationWhereUniqueInput | BuddyApplicationWhereUniqueInput[]
+    update?: BuddyApplicationUpdateWithWhereUniqueWithoutUserInput | BuddyApplicationUpdateWithWhereUniqueWithoutUserInput[]
+    updateMany?: BuddyApplicationUpdateManyWithWhereWithoutUserInput | BuddyApplicationUpdateManyWithWhereWithoutUserInput[]
+    deleteMany?: BuddyApplicationScalarWhereInput | BuddyApplicationScalarWhereInput[]
+  }
+
   export type ReminderUncheckedUpdateManyWithoutUserNestedInput = {
     create?: XOR<ReminderCreateWithoutUserInput, ReminderUncheckedCreateWithoutUserInput> | ReminderCreateWithoutUserInput[] | ReminderUncheckedCreateWithoutUserInput[]
     connectOrCreate?: ReminderCreateOrConnectWithoutUserInput | ReminderCreateOrConnectWithoutUserInput[]
@@ -28851,6 +30688,60 @@ export namespace Prisma {
     update?: PasswordSetupTokenUpdateWithWhereUniqueWithoutUserInput | PasswordSetupTokenUpdateWithWhereUniqueWithoutUserInput[]
     updateMany?: PasswordSetupTokenUpdateManyWithWhereWithoutUserInput | PasswordSetupTokenUpdateManyWithWhereWithoutUserInput[]
     deleteMany?: PasswordSetupTokenScalarWhereInput | PasswordSetupTokenScalarWhereInput[]
+  }
+
+  export type BuddyApplicationUncheckedUpdateManyWithoutUserNestedInput = {
+    create?: XOR<BuddyApplicationCreateWithoutUserInput, BuddyApplicationUncheckedCreateWithoutUserInput> | BuddyApplicationCreateWithoutUserInput[] | BuddyApplicationUncheckedCreateWithoutUserInput[]
+    connectOrCreate?: BuddyApplicationCreateOrConnectWithoutUserInput | BuddyApplicationCreateOrConnectWithoutUserInput[]
+    upsert?: BuddyApplicationUpsertWithWhereUniqueWithoutUserInput | BuddyApplicationUpsertWithWhereUniqueWithoutUserInput[]
+    createMany?: BuddyApplicationCreateManyUserInputEnvelope
+    set?: BuddyApplicationWhereUniqueInput | BuddyApplicationWhereUniqueInput[]
+    disconnect?: BuddyApplicationWhereUniqueInput | BuddyApplicationWhereUniqueInput[]
+    delete?: BuddyApplicationWhereUniqueInput | BuddyApplicationWhereUniqueInput[]
+    connect?: BuddyApplicationWhereUniqueInput | BuddyApplicationWhereUniqueInput[]
+    update?: BuddyApplicationUpdateWithWhereUniqueWithoutUserInput | BuddyApplicationUpdateWithWhereUniqueWithoutUserInput[]
+    updateMany?: BuddyApplicationUpdateManyWithWhereWithoutUserInput | BuddyApplicationUpdateManyWithWhereWithoutUserInput[]
+    deleteMany?: BuddyApplicationScalarWhereInput | BuddyApplicationScalarWhereInput[]
+  }
+
+  export type BuddyApplicationCreatelanguagesInput = {
+    set: string[]
+  }
+
+  export type BuddyApplicationCreatehelpTopicsInput = {
+    set: string[]
+  }
+
+  export type UserCreateNestedOneWithoutBuddyApplicationsInput = {
+    create?: XOR<UserCreateWithoutBuddyApplicationsInput, UserUncheckedCreateWithoutBuddyApplicationsInput>
+    connectOrCreate?: UserCreateOrConnectWithoutBuddyApplicationsInput
+    connect?: UserWhereUniqueInput
+  }
+
+  export type EnumBuddyApplicationTypeFieldUpdateOperationsInput = {
+    set?: $Enums.BuddyApplicationType
+  }
+
+  export type EnumBuddyApplicationStatusFieldUpdateOperationsInput = {
+    set?: $Enums.BuddyApplicationStatus
+  }
+
+  export type BuddyApplicationUpdatelanguagesInput = {
+    set?: string[]
+    push?: string | string[]
+  }
+
+  export type BuddyApplicationUpdatehelpTopicsInput = {
+    set?: string[]
+    push?: string | string[]
+  }
+
+  export type UserUpdateOneRequiredWithoutBuddyApplicationsNestedInput = {
+    create?: XOR<UserCreateWithoutBuddyApplicationsInput, UserUncheckedCreateWithoutBuddyApplicationsInput>
+    connectOrCreate?: UserCreateOrConnectWithoutBuddyApplicationsInput
+    upsert?: UserUpsertWithoutBuddyApplicationsInput
+    connect?: UserWhereUniqueInput
+    update?: XOR<XOR<UserUpdateToOneWithWhereWithoutBuddyApplicationsInput, UserUpdateWithoutBuddyApplicationsInput>, UserUncheckedUpdateWithoutBuddyApplicationsInput>
   }
 
   export type UserCreateNestedOneWithoutPasswordSetupTokensInput = {
@@ -29666,6 +31557,40 @@ export namespace Prisma {
     not?: NestedFloatFilter<$PrismaModel> | number
   }
 
+  export type NestedEnumBuddyApplicationTypeFilter<$PrismaModel = never> = {
+    equals?: $Enums.BuddyApplicationType | EnumBuddyApplicationTypeFieldRefInput<$PrismaModel>
+    in?: $Enums.BuddyApplicationType[] | ListEnumBuddyApplicationTypeFieldRefInput<$PrismaModel>
+    notIn?: $Enums.BuddyApplicationType[] | ListEnumBuddyApplicationTypeFieldRefInput<$PrismaModel>
+    not?: NestedEnumBuddyApplicationTypeFilter<$PrismaModel> | $Enums.BuddyApplicationType
+  }
+
+  export type NestedEnumBuddyApplicationStatusFilter<$PrismaModel = never> = {
+    equals?: $Enums.BuddyApplicationStatus | EnumBuddyApplicationStatusFieldRefInput<$PrismaModel>
+    in?: $Enums.BuddyApplicationStatus[] | ListEnumBuddyApplicationStatusFieldRefInput<$PrismaModel>
+    notIn?: $Enums.BuddyApplicationStatus[] | ListEnumBuddyApplicationStatusFieldRefInput<$PrismaModel>
+    not?: NestedEnumBuddyApplicationStatusFilter<$PrismaModel> | $Enums.BuddyApplicationStatus
+  }
+
+  export type NestedEnumBuddyApplicationTypeWithAggregatesFilter<$PrismaModel = never> = {
+    equals?: $Enums.BuddyApplicationType | EnumBuddyApplicationTypeFieldRefInput<$PrismaModel>
+    in?: $Enums.BuddyApplicationType[] | ListEnumBuddyApplicationTypeFieldRefInput<$PrismaModel>
+    notIn?: $Enums.BuddyApplicationType[] | ListEnumBuddyApplicationTypeFieldRefInput<$PrismaModel>
+    not?: NestedEnumBuddyApplicationTypeWithAggregatesFilter<$PrismaModel> | $Enums.BuddyApplicationType
+    _count?: NestedIntFilter<$PrismaModel>
+    _min?: NestedEnumBuddyApplicationTypeFilter<$PrismaModel>
+    _max?: NestedEnumBuddyApplicationTypeFilter<$PrismaModel>
+  }
+
+  export type NestedEnumBuddyApplicationStatusWithAggregatesFilter<$PrismaModel = never> = {
+    equals?: $Enums.BuddyApplicationStatus | EnumBuddyApplicationStatusFieldRefInput<$PrismaModel>
+    in?: $Enums.BuddyApplicationStatus[] | ListEnumBuddyApplicationStatusFieldRefInput<$PrismaModel>
+    notIn?: $Enums.BuddyApplicationStatus[] | ListEnumBuddyApplicationStatusFieldRefInput<$PrismaModel>
+    not?: NestedEnumBuddyApplicationStatusWithAggregatesFilter<$PrismaModel> | $Enums.BuddyApplicationStatus
+    _count?: NestedIntFilter<$PrismaModel>
+    _min?: NestedEnumBuddyApplicationStatusFilter<$PrismaModel>
+    _max?: NestedEnumBuddyApplicationStatusFilter<$PrismaModel>
+  }
+
   export type NestedDateTimeNullableFilter<$PrismaModel = never> = {
     equals?: Date | string | DateTimeFieldRefInput<$PrismaModel> | null
     in?: Date[] | string[] | ListDateTimeFieldRefInput<$PrismaModel> | null
@@ -30134,6 +32059,66 @@ export namespace Prisma {
     skipDuplicates?: boolean
   }
 
+  export type BuddyApplicationCreateWithoutUserInput = {
+    id?: string
+    type: $Enums.BuddyApplicationType
+    status?: $Enums.BuddyApplicationStatus
+    name: string
+    isAdult: boolean
+    country?: string | null
+    city: string
+    affiliation?: string | null
+    participantStatus?: string | null
+    languages?: BuddyApplicationCreatelanguagesInput | string[]
+    helpTopics?: BuddyApplicationCreatehelpTopicsInput | string[]
+    interests?: string | null
+    availability: string
+    contactMethod: string
+    contact: string
+    motivation?: string | null
+    comment?: string | null
+    agreedToRules: boolean
+    agreedToDataPolicy: boolean
+    internalNote?: string | null
+    createdAt?: Date | string
+    updatedAt?: Date | string
+  }
+
+  export type BuddyApplicationUncheckedCreateWithoutUserInput = {
+    id?: string
+    type: $Enums.BuddyApplicationType
+    status?: $Enums.BuddyApplicationStatus
+    name: string
+    isAdult: boolean
+    country?: string | null
+    city: string
+    affiliation?: string | null
+    participantStatus?: string | null
+    languages?: BuddyApplicationCreatelanguagesInput | string[]
+    helpTopics?: BuddyApplicationCreatehelpTopicsInput | string[]
+    interests?: string | null
+    availability: string
+    contactMethod: string
+    contact: string
+    motivation?: string | null
+    comment?: string | null
+    agreedToRules: boolean
+    agreedToDataPolicy: boolean
+    internalNote?: string | null
+    createdAt?: Date | string
+    updatedAt?: Date | string
+  }
+
+  export type BuddyApplicationCreateOrConnectWithoutUserInput = {
+    where: BuddyApplicationWhereUniqueInput
+    create: XOR<BuddyApplicationCreateWithoutUserInput, BuddyApplicationUncheckedCreateWithoutUserInput>
+  }
+
+  export type BuddyApplicationCreateManyUserInputEnvelope = {
+    data: BuddyApplicationCreateManyUserInput | BuddyApplicationCreateManyUserInput[]
+    skipDuplicates?: boolean
+  }
+
   export type ReminderUpsertWithWhereUniqueWithoutUserInput = {
     where: ReminderWhereUniqueInput
     update: XOR<ReminderUpdateWithoutUserInput, ReminderUncheckedUpdateWithoutUserInput>
@@ -30556,6 +32541,203 @@ export namespace Prisma {
     createdAt?: DateTimeFilter<"PasswordSetupToken"> | Date | string
   }
 
+  export type BuddyApplicationUpsertWithWhereUniqueWithoutUserInput = {
+    where: BuddyApplicationWhereUniqueInput
+    update: XOR<BuddyApplicationUpdateWithoutUserInput, BuddyApplicationUncheckedUpdateWithoutUserInput>
+    create: XOR<BuddyApplicationCreateWithoutUserInput, BuddyApplicationUncheckedCreateWithoutUserInput>
+  }
+
+  export type BuddyApplicationUpdateWithWhereUniqueWithoutUserInput = {
+    where: BuddyApplicationWhereUniqueInput
+    data: XOR<BuddyApplicationUpdateWithoutUserInput, BuddyApplicationUncheckedUpdateWithoutUserInput>
+  }
+
+  export type BuddyApplicationUpdateManyWithWhereWithoutUserInput = {
+    where: BuddyApplicationScalarWhereInput
+    data: XOR<BuddyApplicationUpdateManyMutationInput, BuddyApplicationUncheckedUpdateManyWithoutUserInput>
+  }
+
+  export type BuddyApplicationScalarWhereInput = {
+    AND?: BuddyApplicationScalarWhereInput | BuddyApplicationScalarWhereInput[]
+    OR?: BuddyApplicationScalarWhereInput[]
+    NOT?: BuddyApplicationScalarWhereInput | BuddyApplicationScalarWhereInput[]
+    id?: StringFilter<"BuddyApplication"> | string
+    type?: EnumBuddyApplicationTypeFilter<"BuddyApplication"> | $Enums.BuddyApplicationType
+    status?: EnumBuddyApplicationStatusFilter<"BuddyApplication"> | $Enums.BuddyApplicationStatus
+    userId?: StringFilter<"BuddyApplication"> | string
+    name?: StringFilter<"BuddyApplication"> | string
+    isAdult?: BoolFilter<"BuddyApplication"> | boolean
+    country?: StringNullableFilter<"BuddyApplication"> | string | null
+    city?: StringFilter<"BuddyApplication"> | string
+    affiliation?: StringNullableFilter<"BuddyApplication"> | string | null
+    participantStatus?: StringNullableFilter<"BuddyApplication"> | string | null
+    languages?: StringNullableListFilter<"BuddyApplication">
+    helpTopics?: StringNullableListFilter<"BuddyApplication">
+    interests?: StringNullableFilter<"BuddyApplication"> | string | null
+    availability?: StringFilter<"BuddyApplication"> | string
+    contactMethod?: StringFilter<"BuddyApplication"> | string
+    contact?: StringFilter<"BuddyApplication"> | string
+    motivation?: StringNullableFilter<"BuddyApplication"> | string | null
+    comment?: StringNullableFilter<"BuddyApplication"> | string | null
+    agreedToRules?: BoolFilter<"BuddyApplication"> | boolean
+    agreedToDataPolicy?: BoolFilter<"BuddyApplication"> | boolean
+    internalNote?: StringNullableFilter<"BuddyApplication"> | string | null
+    createdAt?: DateTimeFilter<"BuddyApplication"> | Date | string
+    updatedAt?: DateTimeFilter<"BuddyApplication"> | Date | string
+  }
+
+  export type UserCreateWithoutBuddyApplicationsInput = {
+    id?: string
+    email: string
+    password: string
+    name: string
+    language?: string
+    country: string
+    role?: string
+    registeredAt?: Date | string
+    university?: string | null
+    faculty?: string | null
+    year?: string | null
+    plan?: string
+    phone?: string | null
+    gender?: string | null
+    emailNotifications?: boolean
+    timezone?: string
+    tokenVersion?: number
+    reminders?: ReminderCreateNestedManyWithoutUserInput
+    notes?: NoteCreateNestedManyWithoutUserInput
+    chatMessages?: ChatMessageCreateNestedManyWithoutUserInput
+    profile?: ProfileCreateNestedOneWithoutUserInput
+    supportTickets?: SupportTicketCreateNestedManyWithoutUserInput
+    payments?: PaymentCreateNestedManyWithoutUserInput
+    subscriptions?: SubscriptionCreateNestedManyWithoutUserInput
+    userGrantApplications?: UserGrantApplicationCreateNestedManyWithoutUserInput
+    questions?: QuestionCreateNestedManyWithoutAuthorInput
+    answers?: AnswerCreateNestedManyWithoutAuthorInput
+    questionLikes?: QuestionLikeCreateNestedManyWithoutUserInput
+    reviews?: ReviewCreateNestedManyWithoutUserInput
+    guideReads?: GuideReadCreateNestedManyWithoutUserInput
+    passwordSetupTokens?: PasswordSetupTokenCreateNestedManyWithoutUserInput
+  }
+
+  export type UserUncheckedCreateWithoutBuddyApplicationsInput = {
+    id?: string
+    email: string
+    password: string
+    name: string
+    language?: string
+    country: string
+    role?: string
+    registeredAt?: Date | string
+    university?: string | null
+    faculty?: string | null
+    year?: string | null
+    plan?: string
+    phone?: string | null
+    gender?: string | null
+    emailNotifications?: boolean
+    timezone?: string
+    tokenVersion?: number
+    reminders?: ReminderUncheckedCreateNestedManyWithoutUserInput
+    notes?: NoteUncheckedCreateNestedManyWithoutUserInput
+    chatMessages?: ChatMessageUncheckedCreateNestedManyWithoutUserInput
+    profile?: ProfileUncheckedCreateNestedOneWithoutUserInput
+    supportTickets?: SupportTicketUncheckedCreateNestedManyWithoutUserInput
+    payments?: PaymentUncheckedCreateNestedManyWithoutUserInput
+    subscriptions?: SubscriptionUncheckedCreateNestedManyWithoutUserInput
+    userGrantApplications?: UserGrantApplicationUncheckedCreateNestedManyWithoutUserInput
+    questions?: QuestionUncheckedCreateNestedManyWithoutAuthorInput
+    answers?: AnswerUncheckedCreateNestedManyWithoutAuthorInput
+    questionLikes?: QuestionLikeUncheckedCreateNestedManyWithoutUserInput
+    reviews?: ReviewUncheckedCreateNestedManyWithoutUserInput
+    guideReads?: GuideReadUncheckedCreateNestedManyWithoutUserInput
+    passwordSetupTokens?: PasswordSetupTokenUncheckedCreateNestedManyWithoutUserInput
+  }
+
+  export type UserCreateOrConnectWithoutBuddyApplicationsInput = {
+    where: UserWhereUniqueInput
+    create: XOR<UserCreateWithoutBuddyApplicationsInput, UserUncheckedCreateWithoutBuddyApplicationsInput>
+  }
+
+  export type UserUpsertWithoutBuddyApplicationsInput = {
+    update: XOR<UserUpdateWithoutBuddyApplicationsInput, UserUncheckedUpdateWithoutBuddyApplicationsInput>
+    create: XOR<UserCreateWithoutBuddyApplicationsInput, UserUncheckedCreateWithoutBuddyApplicationsInput>
+    where?: UserWhereInput
+  }
+
+  export type UserUpdateToOneWithWhereWithoutBuddyApplicationsInput = {
+    where?: UserWhereInput
+    data: XOR<UserUpdateWithoutBuddyApplicationsInput, UserUncheckedUpdateWithoutBuddyApplicationsInput>
+  }
+
+  export type UserUpdateWithoutBuddyApplicationsInput = {
+    id?: StringFieldUpdateOperationsInput | string
+    email?: StringFieldUpdateOperationsInput | string
+    password?: StringFieldUpdateOperationsInput | string
+    name?: StringFieldUpdateOperationsInput | string
+    language?: StringFieldUpdateOperationsInput | string
+    country?: StringFieldUpdateOperationsInput | string
+    role?: StringFieldUpdateOperationsInput | string
+    registeredAt?: DateTimeFieldUpdateOperationsInput | Date | string
+    university?: NullableStringFieldUpdateOperationsInput | string | null
+    faculty?: NullableStringFieldUpdateOperationsInput | string | null
+    year?: NullableStringFieldUpdateOperationsInput | string | null
+    plan?: StringFieldUpdateOperationsInput | string
+    phone?: NullableStringFieldUpdateOperationsInput | string | null
+    gender?: NullableStringFieldUpdateOperationsInput | string | null
+    emailNotifications?: BoolFieldUpdateOperationsInput | boolean
+    timezone?: StringFieldUpdateOperationsInput | string
+    tokenVersion?: IntFieldUpdateOperationsInput | number
+    reminders?: ReminderUpdateManyWithoutUserNestedInput
+    notes?: NoteUpdateManyWithoutUserNestedInput
+    chatMessages?: ChatMessageUpdateManyWithoutUserNestedInput
+    profile?: ProfileUpdateOneWithoutUserNestedInput
+    supportTickets?: SupportTicketUpdateManyWithoutUserNestedInput
+    payments?: PaymentUpdateManyWithoutUserNestedInput
+    subscriptions?: SubscriptionUpdateManyWithoutUserNestedInput
+    userGrantApplications?: UserGrantApplicationUpdateManyWithoutUserNestedInput
+    questions?: QuestionUpdateManyWithoutAuthorNestedInput
+    answers?: AnswerUpdateManyWithoutAuthorNestedInput
+    questionLikes?: QuestionLikeUpdateManyWithoutUserNestedInput
+    reviews?: ReviewUpdateManyWithoutUserNestedInput
+    guideReads?: GuideReadUpdateManyWithoutUserNestedInput
+    passwordSetupTokens?: PasswordSetupTokenUpdateManyWithoutUserNestedInput
+  }
+
+  export type UserUncheckedUpdateWithoutBuddyApplicationsInput = {
+    id?: StringFieldUpdateOperationsInput | string
+    email?: StringFieldUpdateOperationsInput | string
+    password?: StringFieldUpdateOperationsInput | string
+    name?: StringFieldUpdateOperationsInput | string
+    language?: StringFieldUpdateOperationsInput | string
+    country?: StringFieldUpdateOperationsInput | string
+    role?: StringFieldUpdateOperationsInput | string
+    registeredAt?: DateTimeFieldUpdateOperationsInput | Date | string
+    university?: NullableStringFieldUpdateOperationsInput | string | null
+    faculty?: NullableStringFieldUpdateOperationsInput | string | null
+    year?: NullableStringFieldUpdateOperationsInput | string | null
+    plan?: StringFieldUpdateOperationsInput | string
+    phone?: NullableStringFieldUpdateOperationsInput | string | null
+    gender?: NullableStringFieldUpdateOperationsInput | string | null
+    emailNotifications?: BoolFieldUpdateOperationsInput | boolean
+    timezone?: StringFieldUpdateOperationsInput | string
+    tokenVersion?: IntFieldUpdateOperationsInput | number
+    reminders?: ReminderUncheckedUpdateManyWithoutUserNestedInput
+    notes?: NoteUncheckedUpdateManyWithoutUserNestedInput
+    chatMessages?: ChatMessageUncheckedUpdateManyWithoutUserNestedInput
+    profile?: ProfileUncheckedUpdateOneWithoutUserNestedInput
+    supportTickets?: SupportTicketUncheckedUpdateManyWithoutUserNestedInput
+    payments?: PaymentUncheckedUpdateManyWithoutUserNestedInput
+    subscriptions?: SubscriptionUncheckedUpdateManyWithoutUserNestedInput
+    userGrantApplications?: UserGrantApplicationUncheckedUpdateManyWithoutUserNestedInput
+    questions?: QuestionUncheckedUpdateManyWithoutAuthorNestedInput
+    answers?: AnswerUncheckedUpdateManyWithoutAuthorNestedInput
+    questionLikes?: QuestionLikeUncheckedUpdateManyWithoutUserNestedInput
+    reviews?: ReviewUncheckedUpdateManyWithoutUserNestedInput
+    guideReads?: GuideReadUncheckedUpdateManyWithoutUserNestedInput
+    passwordSetupTokens?: PasswordSetupTokenUncheckedUpdateManyWithoutUserNestedInput
+  }
+
   export type UserCreateWithoutPasswordSetupTokensInput = {
     id?: string
     email: string
@@ -30587,6 +32769,7 @@ export namespace Prisma {
     questionLikes?: QuestionLikeCreateNestedManyWithoutUserInput
     reviews?: ReviewCreateNestedManyWithoutUserInput
     guideReads?: GuideReadCreateNestedManyWithoutUserInput
+    buddyApplications?: BuddyApplicationCreateNestedManyWithoutUserInput
   }
 
   export type UserUncheckedCreateWithoutPasswordSetupTokensInput = {
@@ -30620,6 +32803,7 @@ export namespace Prisma {
     questionLikes?: QuestionLikeUncheckedCreateNestedManyWithoutUserInput
     reviews?: ReviewUncheckedCreateNestedManyWithoutUserInput
     guideReads?: GuideReadUncheckedCreateNestedManyWithoutUserInput
+    buddyApplications?: BuddyApplicationUncheckedCreateNestedManyWithoutUserInput
   }
 
   export type UserCreateOrConnectWithoutPasswordSetupTokensInput = {
@@ -30669,6 +32853,7 @@ export namespace Prisma {
     questionLikes?: QuestionLikeUpdateManyWithoutUserNestedInput
     reviews?: ReviewUpdateManyWithoutUserNestedInput
     guideReads?: GuideReadUpdateManyWithoutUserNestedInput
+    buddyApplications?: BuddyApplicationUpdateManyWithoutUserNestedInput
   }
 
   export type UserUncheckedUpdateWithoutPasswordSetupTokensInput = {
@@ -30702,6 +32887,7 @@ export namespace Prisma {
     questionLikes?: QuestionLikeUncheckedUpdateManyWithoutUserNestedInput
     reviews?: ReviewUncheckedUpdateManyWithoutUserNestedInput
     guideReads?: GuideReadUncheckedUpdateManyWithoutUserNestedInput
+    buddyApplications?: BuddyApplicationUncheckedUpdateManyWithoutUserNestedInput
   }
 
   export type UserCreateWithoutProfileInput = {
@@ -30735,6 +32921,7 @@ export namespace Prisma {
     reviews?: ReviewCreateNestedManyWithoutUserInput
     guideReads?: GuideReadCreateNestedManyWithoutUserInput
     passwordSetupTokens?: PasswordSetupTokenCreateNestedManyWithoutUserInput
+    buddyApplications?: BuddyApplicationCreateNestedManyWithoutUserInput
   }
 
   export type UserUncheckedCreateWithoutProfileInput = {
@@ -30768,6 +32955,7 @@ export namespace Prisma {
     reviews?: ReviewUncheckedCreateNestedManyWithoutUserInput
     guideReads?: GuideReadUncheckedCreateNestedManyWithoutUserInput
     passwordSetupTokens?: PasswordSetupTokenUncheckedCreateNestedManyWithoutUserInput
+    buddyApplications?: BuddyApplicationUncheckedCreateNestedManyWithoutUserInput
   }
 
   export type UserCreateOrConnectWithoutProfileInput = {
@@ -30817,6 +33005,7 @@ export namespace Prisma {
     reviews?: ReviewUpdateManyWithoutUserNestedInput
     guideReads?: GuideReadUpdateManyWithoutUserNestedInput
     passwordSetupTokens?: PasswordSetupTokenUpdateManyWithoutUserNestedInput
+    buddyApplications?: BuddyApplicationUpdateManyWithoutUserNestedInput
   }
 
   export type UserUncheckedUpdateWithoutProfileInput = {
@@ -30850,6 +33039,7 @@ export namespace Prisma {
     reviews?: ReviewUncheckedUpdateManyWithoutUserNestedInput
     guideReads?: GuideReadUncheckedUpdateManyWithoutUserNestedInput
     passwordSetupTokens?: PasswordSetupTokenUncheckedUpdateManyWithoutUserNestedInput
+    buddyApplications?: BuddyApplicationUncheckedUpdateManyWithoutUserNestedInput
   }
 
   export type UserCreateWithoutNotesInput = {
@@ -30883,6 +33073,7 @@ export namespace Prisma {
     reviews?: ReviewCreateNestedManyWithoutUserInput
     guideReads?: GuideReadCreateNestedManyWithoutUserInput
     passwordSetupTokens?: PasswordSetupTokenCreateNestedManyWithoutUserInput
+    buddyApplications?: BuddyApplicationCreateNestedManyWithoutUserInput
   }
 
   export type UserUncheckedCreateWithoutNotesInput = {
@@ -30916,6 +33107,7 @@ export namespace Prisma {
     reviews?: ReviewUncheckedCreateNestedManyWithoutUserInput
     guideReads?: GuideReadUncheckedCreateNestedManyWithoutUserInput
     passwordSetupTokens?: PasswordSetupTokenUncheckedCreateNestedManyWithoutUserInput
+    buddyApplications?: BuddyApplicationUncheckedCreateNestedManyWithoutUserInput
   }
 
   export type UserCreateOrConnectWithoutNotesInput = {
@@ -31005,6 +33197,7 @@ export namespace Prisma {
     reviews?: ReviewUpdateManyWithoutUserNestedInput
     guideReads?: GuideReadUpdateManyWithoutUserNestedInput
     passwordSetupTokens?: PasswordSetupTokenUpdateManyWithoutUserNestedInput
+    buddyApplications?: BuddyApplicationUpdateManyWithoutUserNestedInput
   }
 
   export type UserUncheckedUpdateWithoutNotesInput = {
@@ -31038,6 +33231,7 @@ export namespace Prisma {
     reviews?: ReviewUncheckedUpdateManyWithoutUserNestedInput
     guideReads?: GuideReadUncheckedUpdateManyWithoutUserNestedInput
     passwordSetupTokens?: PasswordSetupTokenUncheckedUpdateManyWithoutUserNestedInput
+    buddyApplications?: BuddyApplicationUncheckedUpdateManyWithoutUserNestedInput
   }
 
   export type ReminderUpsertWithWhereUniqueWithoutNoteInput = {
@@ -31087,6 +33281,7 @@ export namespace Prisma {
     reviews?: ReviewCreateNestedManyWithoutUserInput
     guideReads?: GuideReadCreateNestedManyWithoutUserInput
     passwordSetupTokens?: PasswordSetupTokenCreateNestedManyWithoutUserInput
+    buddyApplications?: BuddyApplicationCreateNestedManyWithoutUserInput
   }
 
   export type UserUncheckedCreateWithoutRemindersInput = {
@@ -31120,6 +33315,7 @@ export namespace Prisma {
     reviews?: ReviewUncheckedCreateNestedManyWithoutUserInput
     guideReads?: GuideReadUncheckedCreateNestedManyWithoutUserInput
     passwordSetupTokens?: PasswordSetupTokenUncheckedCreateNestedManyWithoutUserInput
+    buddyApplications?: BuddyApplicationUncheckedCreateNestedManyWithoutUserInput
   }
 
   export type UserCreateOrConnectWithoutRemindersInput = {
@@ -31196,6 +33392,7 @@ export namespace Prisma {
     reviews?: ReviewUpdateManyWithoutUserNestedInput
     guideReads?: GuideReadUpdateManyWithoutUserNestedInput
     passwordSetupTokens?: PasswordSetupTokenUpdateManyWithoutUserNestedInput
+    buddyApplications?: BuddyApplicationUpdateManyWithoutUserNestedInput
   }
 
   export type UserUncheckedUpdateWithoutRemindersInput = {
@@ -31229,6 +33426,7 @@ export namespace Prisma {
     reviews?: ReviewUncheckedUpdateManyWithoutUserNestedInput
     guideReads?: GuideReadUncheckedUpdateManyWithoutUserNestedInput
     passwordSetupTokens?: PasswordSetupTokenUncheckedUpdateManyWithoutUserNestedInput
+    buddyApplications?: BuddyApplicationUncheckedUpdateManyWithoutUserNestedInput
   }
 
   export type NoteUpsertWithoutRemindersInput = {
@@ -31295,6 +33493,7 @@ export namespace Prisma {
     reviews?: ReviewCreateNestedManyWithoutUserInput
     guideReads?: GuideReadCreateNestedManyWithoutUserInput
     passwordSetupTokens?: PasswordSetupTokenCreateNestedManyWithoutUserInput
+    buddyApplications?: BuddyApplicationCreateNestedManyWithoutUserInput
   }
 
   export type UserUncheckedCreateWithoutChatMessagesInput = {
@@ -31328,6 +33527,7 @@ export namespace Prisma {
     reviews?: ReviewUncheckedCreateNestedManyWithoutUserInput
     guideReads?: GuideReadUncheckedCreateNestedManyWithoutUserInput
     passwordSetupTokens?: PasswordSetupTokenUncheckedCreateNestedManyWithoutUserInput
+    buddyApplications?: BuddyApplicationUncheckedCreateNestedManyWithoutUserInput
   }
 
   export type UserCreateOrConnectWithoutChatMessagesInput = {
@@ -31377,6 +33577,7 @@ export namespace Prisma {
     reviews?: ReviewUpdateManyWithoutUserNestedInput
     guideReads?: GuideReadUpdateManyWithoutUserNestedInput
     passwordSetupTokens?: PasswordSetupTokenUpdateManyWithoutUserNestedInput
+    buddyApplications?: BuddyApplicationUpdateManyWithoutUserNestedInput
   }
 
   export type UserUncheckedUpdateWithoutChatMessagesInput = {
@@ -31410,6 +33611,7 @@ export namespace Prisma {
     reviews?: ReviewUncheckedUpdateManyWithoutUserNestedInput
     guideReads?: GuideReadUncheckedUpdateManyWithoutUserNestedInput
     passwordSetupTokens?: PasswordSetupTokenUncheckedUpdateManyWithoutUserNestedInput
+    buddyApplications?: BuddyApplicationUncheckedUpdateManyWithoutUserNestedInput
   }
 
   export type UserCreateWithoutSupportTicketsInput = {
@@ -31443,6 +33645,7 @@ export namespace Prisma {
     reviews?: ReviewCreateNestedManyWithoutUserInput
     guideReads?: GuideReadCreateNestedManyWithoutUserInput
     passwordSetupTokens?: PasswordSetupTokenCreateNestedManyWithoutUserInput
+    buddyApplications?: BuddyApplicationCreateNestedManyWithoutUserInput
   }
 
   export type UserUncheckedCreateWithoutSupportTicketsInput = {
@@ -31476,6 +33679,7 @@ export namespace Prisma {
     reviews?: ReviewUncheckedCreateNestedManyWithoutUserInput
     guideReads?: GuideReadUncheckedCreateNestedManyWithoutUserInput
     passwordSetupTokens?: PasswordSetupTokenUncheckedCreateNestedManyWithoutUserInput
+    buddyApplications?: BuddyApplicationUncheckedCreateNestedManyWithoutUserInput
   }
 
   export type UserCreateOrConnectWithoutSupportTicketsInput = {
@@ -31551,6 +33755,7 @@ export namespace Prisma {
     reviews?: ReviewUpdateManyWithoutUserNestedInput
     guideReads?: GuideReadUpdateManyWithoutUserNestedInput
     passwordSetupTokens?: PasswordSetupTokenUpdateManyWithoutUserNestedInput
+    buddyApplications?: BuddyApplicationUpdateManyWithoutUserNestedInput
   }
 
   export type UserUncheckedUpdateWithoutSupportTicketsInput = {
@@ -31584,6 +33789,7 @@ export namespace Prisma {
     reviews?: ReviewUncheckedUpdateManyWithoutUserNestedInput
     guideReads?: GuideReadUncheckedUpdateManyWithoutUserNestedInput
     passwordSetupTokens?: PasswordSetupTokenUncheckedUpdateManyWithoutUserNestedInput
+    buddyApplications?: BuddyApplicationUncheckedUpdateManyWithoutUserNestedInput
   }
 
   export type SupportResponseUpsertWithWhereUniqueWithoutTicketInput = {
@@ -31869,6 +34075,7 @@ export namespace Prisma {
     reviews?: ReviewCreateNestedManyWithoutUserInput
     guideReads?: GuideReadCreateNestedManyWithoutUserInput
     passwordSetupTokens?: PasswordSetupTokenCreateNestedManyWithoutUserInput
+    buddyApplications?: BuddyApplicationCreateNestedManyWithoutUserInput
   }
 
   export type UserUncheckedCreateWithoutPaymentsInput = {
@@ -31902,6 +34109,7 @@ export namespace Prisma {
     reviews?: ReviewUncheckedCreateNestedManyWithoutUserInput
     guideReads?: GuideReadUncheckedCreateNestedManyWithoutUserInput
     passwordSetupTokens?: PasswordSetupTokenUncheckedCreateNestedManyWithoutUserInput
+    buddyApplications?: BuddyApplicationUncheckedCreateNestedManyWithoutUserInput
   }
 
   export type UserCreateOrConnectWithoutPaymentsInput = {
@@ -31985,6 +34193,7 @@ export namespace Prisma {
     reviews?: ReviewUpdateManyWithoutUserNestedInput
     guideReads?: GuideReadUpdateManyWithoutUserNestedInput
     passwordSetupTokens?: PasswordSetupTokenUpdateManyWithoutUserNestedInput
+    buddyApplications?: BuddyApplicationUpdateManyWithoutUserNestedInput
   }
 
   export type UserUncheckedUpdateWithoutPaymentsInput = {
@@ -32018,6 +34227,7 @@ export namespace Prisma {
     reviews?: ReviewUncheckedUpdateManyWithoutUserNestedInput
     guideReads?: GuideReadUncheckedUpdateManyWithoutUserNestedInput
     passwordSetupTokens?: PasswordSetupTokenUncheckedUpdateManyWithoutUserNestedInput
+    buddyApplications?: BuddyApplicationUncheckedUpdateManyWithoutUserNestedInput
   }
 
   export type SubscriptionUpsertWithWhereUniqueWithoutPaymentInput = {
@@ -32067,6 +34277,7 @@ export namespace Prisma {
     reviews?: ReviewCreateNestedManyWithoutUserInput
     guideReads?: GuideReadCreateNestedManyWithoutUserInput
     passwordSetupTokens?: PasswordSetupTokenCreateNestedManyWithoutUserInput
+    buddyApplications?: BuddyApplicationCreateNestedManyWithoutUserInput
   }
 
   export type UserUncheckedCreateWithoutSubscriptionsInput = {
@@ -32100,6 +34311,7 @@ export namespace Prisma {
     reviews?: ReviewUncheckedCreateNestedManyWithoutUserInput
     guideReads?: GuideReadUncheckedCreateNestedManyWithoutUserInput
     passwordSetupTokens?: PasswordSetupTokenUncheckedCreateNestedManyWithoutUserInput
+    buddyApplications?: BuddyApplicationUncheckedCreateNestedManyWithoutUserInput
   }
 
   export type UserCreateOrConnectWithoutSubscriptionsInput = {
@@ -32211,6 +34423,7 @@ export namespace Prisma {
     reviews?: ReviewUpdateManyWithoutUserNestedInput
     guideReads?: GuideReadUpdateManyWithoutUserNestedInput
     passwordSetupTokens?: PasswordSetupTokenUpdateManyWithoutUserNestedInput
+    buddyApplications?: BuddyApplicationUpdateManyWithoutUserNestedInput
   }
 
   export type UserUncheckedUpdateWithoutSubscriptionsInput = {
@@ -32244,6 +34457,7 @@ export namespace Prisma {
     reviews?: ReviewUncheckedUpdateManyWithoutUserNestedInput
     guideReads?: GuideReadUncheckedUpdateManyWithoutUserNestedInput
     passwordSetupTokens?: PasswordSetupTokenUncheckedUpdateManyWithoutUserNestedInput
+    buddyApplications?: BuddyApplicationUncheckedUpdateManyWithoutUserNestedInput
   }
 
   export type SubscriptionPlanUpsertWithoutSubscriptionsInput = {
@@ -32399,6 +34613,7 @@ export namespace Prisma {
     reviews?: ReviewCreateNestedManyWithoutUserInput
     guideReads?: GuideReadCreateNestedManyWithoutUserInput
     passwordSetupTokens?: PasswordSetupTokenCreateNestedManyWithoutUserInput
+    buddyApplications?: BuddyApplicationCreateNestedManyWithoutUserInput
   }
 
   export type UserUncheckedCreateWithoutUserGrantApplicationsInput = {
@@ -32432,6 +34647,7 @@ export namespace Prisma {
     reviews?: ReviewUncheckedCreateNestedManyWithoutUserInput
     guideReads?: GuideReadUncheckedCreateNestedManyWithoutUserInput
     passwordSetupTokens?: PasswordSetupTokenUncheckedCreateNestedManyWithoutUserInput
+    buddyApplications?: BuddyApplicationUncheckedCreateNestedManyWithoutUserInput
   }
 
   export type UserCreateOrConnectWithoutUserGrantApplicationsInput = {
@@ -32530,6 +34746,7 @@ export namespace Prisma {
     reviews?: ReviewUpdateManyWithoutUserNestedInput
     guideReads?: GuideReadUpdateManyWithoutUserNestedInput
     passwordSetupTokens?: PasswordSetupTokenUpdateManyWithoutUserNestedInput
+    buddyApplications?: BuddyApplicationUpdateManyWithoutUserNestedInput
   }
 
   export type UserUncheckedUpdateWithoutUserGrantApplicationsInput = {
@@ -32563,6 +34780,7 @@ export namespace Prisma {
     reviews?: ReviewUncheckedUpdateManyWithoutUserNestedInput
     guideReads?: GuideReadUncheckedUpdateManyWithoutUserNestedInput
     passwordSetupTokens?: PasswordSetupTokenUncheckedUpdateManyWithoutUserNestedInput
+    buddyApplications?: BuddyApplicationUncheckedUpdateManyWithoutUserNestedInput
   }
 
   export type GrantUpsertWithoutApplicationsInput = {
@@ -32651,6 +34869,7 @@ export namespace Prisma {
     reviews?: ReviewCreateNestedManyWithoutUserInput
     guideReads?: GuideReadCreateNestedManyWithoutUserInput
     passwordSetupTokens?: PasswordSetupTokenCreateNestedManyWithoutUserInput
+    buddyApplications?: BuddyApplicationCreateNestedManyWithoutUserInput
   }
 
   export type UserUncheckedCreateWithoutQuestionsInput = {
@@ -32684,6 +34903,7 @@ export namespace Prisma {
     reviews?: ReviewUncheckedCreateNestedManyWithoutUserInput
     guideReads?: GuideReadUncheckedCreateNestedManyWithoutUserInput
     passwordSetupTokens?: PasswordSetupTokenUncheckedCreateNestedManyWithoutUserInput
+    buddyApplications?: BuddyApplicationUncheckedCreateNestedManyWithoutUserInput
   }
 
   export type UserCreateOrConnectWithoutQuestionsInput = {
@@ -32781,6 +35001,7 @@ export namespace Prisma {
     reviews?: ReviewUpdateManyWithoutUserNestedInput
     guideReads?: GuideReadUpdateManyWithoutUserNestedInput
     passwordSetupTokens?: PasswordSetupTokenUpdateManyWithoutUserNestedInput
+    buddyApplications?: BuddyApplicationUpdateManyWithoutUserNestedInput
   }
 
   export type UserUncheckedUpdateWithoutQuestionsInput = {
@@ -32814,6 +35035,7 @@ export namespace Prisma {
     reviews?: ReviewUncheckedUpdateManyWithoutUserNestedInput
     guideReads?: GuideReadUncheckedUpdateManyWithoutUserNestedInput
     passwordSetupTokens?: PasswordSetupTokenUncheckedUpdateManyWithoutUserNestedInput
+    buddyApplications?: BuddyApplicationUncheckedUpdateManyWithoutUserNestedInput
   }
 
   export type AnswerUpsertWithWhereUniqueWithoutQuestionInput = {
@@ -32908,6 +35130,7 @@ export namespace Prisma {
     reviews?: ReviewCreateNestedManyWithoutUserInput
     guideReads?: GuideReadCreateNestedManyWithoutUserInput
     passwordSetupTokens?: PasswordSetupTokenCreateNestedManyWithoutUserInput
+    buddyApplications?: BuddyApplicationCreateNestedManyWithoutUserInput
   }
 
   export type UserUncheckedCreateWithoutAnswersInput = {
@@ -32941,6 +35164,7 @@ export namespace Prisma {
     reviews?: ReviewUncheckedCreateNestedManyWithoutUserInput
     guideReads?: GuideReadUncheckedCreateNestedManyWithoutUserInput
     passwordSetupTokens?: PasswordSetupTokenUncheckedCreateNestedManyWithoutUserInput
+    buddyApplications?: BuddyApplicationUncheckedCreateNestedManyWithoutUserInput
   }
 
   export type UserCreateOrConnectWithoutAnswersInput = {
@@ -33025,6 +35249,7 @@ export namespace Prisma {
     reviews?: ReviewUpdateManyWithoutUserNestedInput
     guideReads?: GuideReadUpdateManyWithoutUserNestedInput
     passwordSetupTokens?: PasswordSetupTokenUpdateManyWithoutUserNestedInput
+    buddyApplications?: BuddyApplicationUpdateManyWithoutUserNestedInput
   }
 
   export type UserUncheckedUpdateWithoutAnswersInput = {
@@ -33058,6 +35283,7 @@ export namespace Prisma {
     reviews?: ReviewUncheckedUpdateManyWithoutUserNestedInput
     guideReads?: GuideReadUncheckedUpdateManyWithoutUserNestedInput
     passwordSetupTokens?: PasswordSetupTokenUncheckedUpdateManyWithoutUserNestedInput
+    buddyApplications?: BuddyApplicationUncheckedUpdateManyWithoutUserNestedInput
   }
 
   export type QuestionCreateWithoutLikesInput = {
@@ -33120,6 +35346,7 @@ export namespace Prisma {
     reviews?: ReviewCreateNestedManyWithoutUserInput
     guideReads?: GuideReadCreateNestedManyWithoutUserInput
     passwordSetupTokens?: PasswordSetupTokenCreateNestedManyWithoutUserInput
+    buddyApplications?: BuddyApplicationCreateNestedManyWithoutUserInput
   }
 
   export type UserUncheckedCreateWithoutQuestionLikesInput = {
@@ -33153,6 +35380,7 @@ export namespace Prisma {
     reviews?: ReviewUncheckedCreateNestedManyWithoutUserInput
     guideReads?: GuideReadUncheckedCreateNestedManyWithoutUserInput
     passwordSetupTokens?: PasswordSetupTokenUncheckedCreateNestedManyWithoutUserInput
+    buddyApplications?: BuddyApplicationUncheckedCreateNestedManyWithoutUserInput
   }
 
   export type UserCreateOrConnectWithoutQuestionLikesInput = {
@@ -33237,6 +35465,7 @@ export namespace Prisma {
     reviews?: ReviewUpdateManyWithoutUserNestedInput
     guideReads?: GuideReadUpdateManyWithoutUserNestedInput
     passwordSetupTokens?: PasswordSetupTokenUpdateManyWithoutUserNestedInput
+    buddyApplications?: BuddyApplicationUpdateManyWithoutUserNestedInput
   }
 
   export type UserUncheckedUpdateWithoutQuestionLikesInput = {
@@ -33270,6 +35499,7 @@ export namespace Prisma {
     reviews?: ReviewUncheckedUpdateManyWithoutUserNestedInput
     guideReads?: GuideReadUncheckedUpdateManyWithoutUserNestedInput
     passwordSetupTokens?: PasswordSetupTokenUncheckedUpdateManyWithoutUserNestedInput
+    buddyApplications?: BuddyApplicationUncheckedUpdateManyWithoutUserNestedInput
   }
 
   export type UserCreateWithoutGuideReadsInput = {
@@ -33303,6 +35533,7 @@ export namespace Prisma {
     questionLikes?: QuestionLikeCreateNestedManyWithoutUserInput
     reviews?: ReviewCreateNestedManyWithoutUserInput
     passwordSetupTokens?: PasswordSetupTokenCreateNestedManyWithoutUserInput
+    buddyApplications?: BuddyApplicationCreateNestedManyWithoutUserInput
   }
 
   export type UserUncheckedCreateWithoutGuideReadsInput = {
@@ -33336,6 +35567,7 @@ export namespace Prisma {
     questionLikes?: QuestionLikeUncheckedCreateNestedManyWithoutUserInput
     reviews?: ReviewUncheckedCreateNestedManyWithoutUserInput
     passwordSetupTokens?: PasswordSetupTokenUncheckedCreateNestedManyWithoutUserInput
+    buddyApplications?: BuddyApplicationUncheckedCreateNestedManyWithoutUserInput
   }
 
   export type UserCreateOrConnectWithoutGuideReadsInput = {
@@ -33385,6 +35617,7 @@ export namespace Prisma {
     questionLikes?: QuestionLikeUpdateManyWithoutUserNestedInput
     reviews?: ReviewUpdateManyWithoutUserNestedInput
     passwordSetupTokens?: PasswordSetupTokenUpdateManyWithoutUserNestedInput
+    buddyApplications?: BuddyApplicationUpdateManyWithoutUserNestedInput
   }
 
   export type UserUncheckedUpdateWithoutGuideReadsInput = {
@@ -33418,6 +35651,7 @@ export namespace Prisma {
     questionLikes?: QuestionLikeUncheckedUpdateManyWithoutUserNestedInput
     reviews?: ReviewUncheckedUpdateManyWithoutUserNestedInput
     passwordSetupTokens?: PasswordSetupTokenUncheckedUpdateManyWithoutUserNestedInput
+    buddyApplications?: BuddyApplicationUncheckedUpdateManyWithoutUserNestedInput
   }
 
   export type UserCreateWithoutReviewsInput = {
@@ -33451,6 +35685,7 @@ export namespace Prisma {
     questionLikes?: QuestionLikeCreateNestedManyWithoutUserInput
     guideReads?: GuideReadCreateNestedManyWithoutUserInput
     passwordSetupTokens?: PasswordSetupTokenCreateNestedManyWithoutUserInput
+    buddyApplications?: BuddyApplicationCreateNestedManyWithoutUserInput
   }
 
   export type UserUncheckedCreateWithoutReviewsInput = {
@@ -33484,6 +35719,7 @@ export namespace Prisma {
     questionLikes?: QuestionLikeUncheckedCreateNestedManyWithoutUserInput
     guideReads?: GuideReadUncheckedCreateNestedManyWithoutUserInput
     passwordSetupTokens?: PasswordSetupTokenUncheckedCreateNestedManyWithoutUserInput
+    buddyApplications?: BuddyApplicationUncheckedCreateNestedManyWithoutUserInput
   }
 
   export type UserCreateOrConnectWithoutReviewsInput = {
@@ -33533,6 +35769,7 @@ export namespace Prisma {
     questionLikes?: QuestionLikeUpdateManyWithoutUserNestedInput
     guideReads?: GuideReadUpdateManyWithoutUserNestedInput
     passwordSetupTokens?: PasswordSetupTokenUpdateManyWithoutUserNestedInput
+    buddyApplications?: BuddyApplicationUpdateManyWithoutUserNestedInput
   }
 
   export type UserUncheckedUpdateWithoutReviewsInput = {
@@ -33566,6 +35803,7 @@ export namespace Prisma {
     questionLikes?: QuestionLikeUncheckedUpdateManyWithoutUserNestedInput
     guideReads?: GuideReadUncheckedUpdateManyWithoutUserNestedInput
     passwordSetupTokens?: PasswordSetupTokenUncheckedUpdateManyWithoutUserNestedInput
+    buddyApplications?: BuddyApplicationUncheckedUpdateManyWithoutUserNestedInput
   }
 
   export type ReminderCreateManyUserInput = {
@@ -33697,6 +35935,31 @@ export namespace Prisma {
     expiresAt: Date | string
     usedAt?: Date | string | null
     createdAt?: Date | string
+  }
+
+  export type BuddyApplicationCreateManyUserInput = {
+    id?: string
+    type: $Enums.BuddyApplicationType
+    status?: $Enums.BuddyApplicationStatus
+    name: string
+    isAdult: boolean
+    country?: string | null
+    city: string
+    affiliation?: string | null
+    participantStatus?: string | null
+    languages?: BuddyApplicationCreatelanguagesInput | string[]
+    helpTopics?: BuddyApplicationCreatehelpTopicsInput | string[]
+    interests?: string | null
+    availability: string
+    contactMethod: string
+    contact: string
+    motivation?: string | null
+    comment?: string | null
+    agreedToRules: boolean
+    agreedToDataPolicy: boolean
+    internalNote?: string | null
+    createdAt?: Date | string
+    updatedAt?: Date | string
   }
 
   export type ReminderUpdateWithoutUserInput = {
@@ -34102,6 +36365,81 @@ export namespace Prisma {
     createdAt?: DateTimeFieldUpdateOperationsInput | Date | string
   }
 
+  export type BuddyApplicationUpdateWithoutUserInput = {
+    id?: StringFieldUpdateOperationsInput | string
+    type?: EnumBuddyApplicationTypeFieldUpdateOperationsInput | $Enums.BuddyApplicationType
+    status?: EnumBuddyApplicationStatusFieldUpdateOperationsInput | $Enums.BuddyApplicationStatus
+    name?: StringFieldUpdateOperationsInput | string
+    isAdult?: BoolFieldUpdateOperationsInput | boolean
+    country?: NullableStringFieldUpdateOperationsInput | string | null
+    city?: StringFieldUpdateOperationsInput | string
+    affiliation?: NullableStringFieldUpdateOperationsInput | string | null
+    participantStatus?: NullableStringFieldUpdateOperationsInput | string | null
+    languages?: BuddyApplicationUpdatelanguagesInput | string[]
+    helpTopics?: BuddyApplicationUpdatehelpTopicsInput | string[]
+    interests?: NullableStringFieldUpdateOperationsInput | string | null
+    availability?: StringFieldUpdateOperationsInput | string
+    contactMethod?: StringFieldUpdateOperationsInput | string
+    contact?: StringFieldUpdateOperationsInput | string
+    motivation?: NullableStringFieldUpdateOperationsInput | string | null
+    comment?: NullableStringFieldUpdateOperationsInput | string | null
+    agreedToRules?: BoolFieldUpdateOperationsInput | boolean
+    agreedToDataPolicy?: BoolFieldUpdateOperationsInput | boolean
+    internalNote?: NullableStringFieldUpdateOperationsInput | string | null
+    createdAt?: DateTimeFieldUpdateOperationsInput | Date | string
+    updatedAt?: DateTimeFieldUpdateOperationsInput | Date | string
+  }
+
+  export type BuddyApplicationUncheckedUpdateWithoutUserInput = {
+    id?: StringFieldUpdateOperationsInput | string
+    type?: EnumBuddyApplicationTypeFieldUpdateOperationsInput | $Enums.BuddyApplicationType
+    status?: EnumBuddyApplicationStatusFieldUpdateOperationsInput | $Enums.BuddyApplicationStatus
+    name?: StringFieldUpdateOperationsInput | string
+    isAdult?: BoolFieldUpdateOperationsInput | boolean
+    country?: NullableStringFieldUpdateOperationsInput | string | null
+    city?: StringFieldUpdateOperationsInput | string
+    affiliation?: NullableStringFieldUpdateOperationsInput | string | null
+    participantStatus?: NullableStringFieldUpdateOperationsInput | string | null
+    languages?: BuddyApplicationUpdatelanguagesInput | string[]
+    helpTopics?: BuddyApplicationUpdatehelpTopicsInput | string[]
+    interests?: NullableStringFieldUpdateOperationsInput | string | null
+    availability?: StringFieldUpdateOperationsInput | string
+    contactMethod?: StringFieldUpdateOperationsInput | string
+    contact?: StringFieldUpdateOperationsInput | string
+    motivation?: NullableStringFieldUpdateOperationsInput | string | null
+    comment?: NullableStringFieldUpdateOperationsInput | string | null
+    agreedToRules?: BoolFieldUpdateOperationsInput | boolean
+    agreedToDataPolicy?: BoolFieldUpdateOperationsInput | boolean
+    internalNote?: NullableStringFieldUpdateOperationsInput | string | null
+    createdAt?: DateTimeFieldUpdateOperationsInput | Date | string
+    updatedAt?: DateTimeFieldUpdateOperationsInput | Date | string
+  }
+
+  export type BuddyApplicationUncheckedUpdateManyWithoutUserInput = {
+    id?: StringFieldUpdateOperationsInput | string
+    type?: EnumBuddyApplicationTypeFieldUpdateOperationsInput | $Enums.BuddyApplicationType
+    status?: EnumBuddyApplicationStatusFieldUpdateOperationsInput | $Enums.BuddyApplicationStatus
+    name?: StringFieldUpdateOperationsInput | string
+    isAdult?: BoolFieldUpdateOperationsInput | boolean
+    country?: NullableStringFieldUpdateOperationsInput | string | null
+    city?: StringFieldUpdateOperationsInput | string
+    affiliation?: NullableStringFieldUpdateOperationsInput | string | null
+    participantStatus?: NullableStringFieldUpdateOperationsInput | string | null
+    languages?: BuddyApplicationUpdatelanguagesInput | string[]
+    helpTopics?: BuddyApplicationUpdatehelpTopicsInput | string[]
+    interests?: NullableStringFieldUpdateOperationsInput | string | null
+    availability?: StringFieldUpdateOperationsInput | string
+    contactMethod?: StringFieldUpdateOperationsInput | string
+    contact?: StringFieldUpdateOperationsInput | string
+    motivation?: NullableStringFieldUpdateOperationsInput | string | null
+    comment?: NullableStringFieldUpdateOperationsInput | string | null
+    agreedToRules?: BoolFieldUpdateOperationsInput | boolean
+    agreedToDataPolicy?: BoolFieldUpdateOperationsInput | boolean
+    internalNote?: NullableStringFieldUpdateOperationsInput | string | null
+    createdAt?: DateTimeFieldUpdateOperationsInput | Date | string
+    updatedAt?: DateTimeFieldUpdateOperationsInput | Date | string
+  }
+
   export type ReminderCreateManyNoteInput = {
     id?: string
     userId: string
@@ -34463,6 +36801,10 @@ export namespace Prisma {
      * @deprecated Use UserDefaultArgs instead
      */
     export type UserArgs<ExtArgs extends $Extensions.InternalArgs = $Extensions.DefaultArgs> = UserDefaultArgs<ExtArgs>
+    /**
+     * @deprecated Use BuddyApplicationDefaultArgs instead
+     */
+    export type BuddyApplicationArgs<ExtArgs extends $Extensions.InternalArgs = $Extensions.DefaultArgs> = BuddyApplicationDefaultArgs<ExtArgs>
     /**
      * @deprecated Use PasswordSetupTokenDefaultArgs instead
      */

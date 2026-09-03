@@ -29,6 +29,7 @@ export default defineConfig({
         RATE_LIMIT: "false",
         NODE_ENV: "test",
         PORT: "3013",
+        CLIENT_URL: "http://localhost:3010",
       },
     },
     {

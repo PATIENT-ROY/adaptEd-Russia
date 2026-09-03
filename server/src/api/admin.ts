@@ -49,6 +49,7 @@ router.get('/dashboard', async (_req, res) => {
       guideReadsPrevWeek,
       openTickets,
       pendingReviews,
+      newBuddyApplications,
       recentUsers,
       recentGuides,
       guideReadGroups,
@@ -75,6 +76,7 @@ router.get('/dashboard', async (_req, res) => {
         where: { status: { in: ['OPEN', 'IN_PROGRESS'] } },
       }),
       prisma.review.count({ where: { status: 'PENDING' } }),
+      prisma.buddyApplication.count({ where: { status: 'NEW' } }),
       prisma.user.findMany({
         orderBy: { registeredAt: 'desc' },
         take: 5,
@@ -138,6 +140,7 @@ router.get('/dashboard', async (_req, res) => {
         ops: {
           openTickets,
           pendingReviews,
+          newBuddyApplications,
           guideReadsWeek: guideReadsLastWeek,
           aiMessagesWeek: aiMessagesLastWeek,
         },

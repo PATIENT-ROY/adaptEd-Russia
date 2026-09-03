@@ -20,6 +20,7 @@ import reviewRoutes from './api/reviews.js';
 import noteRoutes from './api/notes.js';
 import guideProgressRoutes from './api/guide-progress.js';
 import adminRoutes from './api/admin.js';
+import buddyRoutes from './api/buddy.js';
 import { startReminderNotificationWorker } from './lib/reminder-notifications.js';
 
 // Загружаем переменные окружения
@@ -40,6 +41,7 @@ app.use(helmet());
           'http://localhost:3002',
           'http://localhost:3007',
           'http://localhost:3008',
+          'http://localhost:3010',
           'http://192.168.0.101:3000',
           'http://192.168.0.101:3001',
           'http://192.168.0.101:3002',
@@ -263,6 +265,7 @@ app.use('/api/notes', noteRoutes);
 app.use('/api', reviewRoutes);
 app.use('/api/guide-progress', guideProgressRoutes);
 app.use('/api/admin', adminRoutes);
+app.use('/api/buddy', buddyRoutes);
 
 // 404 handler
 app.use('*', (req, res) => {

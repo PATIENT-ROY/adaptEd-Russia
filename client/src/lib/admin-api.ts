@@ -34,6 +34,7 @@ export type AdminDashboardData = {
   ops: {
     openTickets: number;
     pendingReviews: number;
+    newBuddyApplications: number;
     guideReadsWeek: number;
     aiMessagesWeek: number;
   };
@@ -87,6 +88,7 @@ function normalizeDashboard(raw: unknown): AdminDashboardData {
     ops: {
       openTickets: Number(ops.openTickets ?? 0),
       pendingReviews: Number(ops.pendingReviews ?? 0),
+      newBuddyApplications: Number(ops.newBuddyApplications ?? 0),
       guideReadsWeek: Number(ops.guideReadsWeek ?? 0),
       aiMessagesWeek: Number(ops.aiMessagesWeek ?? 0),
     },

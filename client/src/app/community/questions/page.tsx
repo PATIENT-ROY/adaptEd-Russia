@@ -15,6 +15,7 @@ import {
 } from "@/hooks/useQuestions";
 import { useAuth } from "@/contexts/AuthContext";
 import { useTranslation } from "@/hooks/useTranslation";
+import { buddyT } from "@/lib/buddy-i18n";
 import {
   Plus,
   MessageCircle,
@@ -28,6 +29,8 @@ import {
   X,
   Pin,
   UserRound,
+  HeartHandshake,
+  ArrowRight,
 } from "lucide-react";
 
 function SkeletonCard() {
@@ -50,6 +53,34 @@ function SkeletonCard() {
         </div>
       </div>
     </div>
+  );
+}
+
+function CommunityBuddyCard() {
+  const { currentLanguage } = useTranslation();
+
+  return (
+    <Link
+      href="/buddy"
+      data-testid="community-buddy-card"
+      className="group flex flex-col gap-4 rounded-2xl bg-gradient-to-br from-indigo-50 to-emerald-50 p-5 shadow-sm ring-1 ring-indigo-100 transition hover:-translate-y-0.5 hover:shadow-md focus:outline-none focus-visible:ring-2 focus-visible:ring-indigo-500 sm:flex-row sm:items-center sm:justify-between sm:p-6"
+    >
+      <div className="flex items-start gap-4">
+        <span className="flex h-11 w-11 shrink-0 items-center justify-center rounded-xl bg-gradient-to-br from-indigo-500 to-emerald-500 text-white shadow-sm">
+          <HeartHandshake className="h-6 w-6" />
+        </span>
+        <div>
+          <h2 className="font-bold text-slate-900">{buddyT(currentLanguage, "name")}</h2>
+          <p className="mt-1 text-sm leading-6 text-slate-600">
+            {buddyT(currentLanguage, "subtitle")} · {buddyT(currentLanguage, "free")}
+          </p>
+        </div>
+      </div>
+      <span className="inline-flex items-center gap-2 self-start text-sm font-semibold text-indigo-700 sm:self-auto">
+        {buddyT(currentLanguage, "openForm")}
+        <ArrowRight className="h-4 w-4 transition-transform group-hover:translate-x-1 rtl:rotate-180" />
+      </span>
+    </Link>
   );
 }
 
@@ -426,6 +457,8 @@ export default function CommunityQuestionsPage() {
               </div>
             </div>
           </div>
+
+          <CommunityBuddyCard />
 
           {/* Search + filters */}
           <div className="bg-white rounded-2xl sm:rounded-3xl p-4 sm:p-6 shadow-sm space-y-3 sm:space-y-4">
