@@ -71,42 +71,50 @@ export default function SupportPage() {
   const [myTickets, setMyTickets] = useState<SupportTicket[]>([]);
   const [expandedTicketId, setExpandedTicketId] = useState<string | null>(null);
   const guideContextApplied = useRef(false);
+  const successRef = useRef<HTMLDivElement>(null);
 
   useEffect(() => {
-    if (guideContextApplied.current) return;
-    guideContextApplied.current = true;
+    const timer = window.setTimeout(() => {
+      if (guideContextApplied.current) return;
+      guideContextApplied.current = true;
 
-    const params = new URLSearchParams(window.location.search);
-    if (params.get("category") !== "content-error") return;
+      const params = new URLSearchParams(window.location.search);
+      if (params.get("category") !== "content-error") return;
 
-    const guide =
-      params
-        .get("guide")
-        ?.replace(/[\u0000-\u001F\u007F]/g, " ")
+      const rawGuide = params.get("guide") ?? "";
+      const rawSource = params.get("source") ?? "";
+      const hasUnsafeMarkup =
+        /[<>]/.test(rawGuide) || /(?:javascript|data):/i.test(rawGuide);
+      if (hasUnsafeMarkup || rawGuide.length > 160 || rawSource.length > 240) return;
+
+      const guide = rawGuide
+        .replace(/[\u0000-\u001F\u007F]/g, " ")
         .replace(/\s+/g, " ")
-        .trim()
-        .slice(0, 160) ?? "";
-    const source = params.get("source")?.trim().slice(0, 240) ?? "";
-    const safeSource = /^\/guides\/(life|education)\/[a-zA-Z0-9-]+$/.test(source)
-      ? source
-      : "";
-    if (!guide || !safeSource) return;
+        .trim();
+      const source = rawSource.trim();
+      const safeSource = /^\/guides\/(life|education)\/[a-zA-Z0-9-]+$/.test(source)
+        ? source
+        : "";
+      if (!guide || !safeSource) return;
 
-    const subjectTemplate = t("support.form.guideReport.subject");
-    const message = [
-      t("support.form.guideReport.intro"),
-      `${t("support.form.guideReport.guideLabel")}: ${guide}`,
-      `${t("support.form.guideReport.sourceLabel")}: ${safeSource}`,
-      "",
-      t("support.form.guideReport.detailsPrompt"),
-    ].join("\n");
+      const subjectTemplate = t("support.form.guideReport.subject");
+      const message = [
+        t("support.form.guideReport.intro"),
+        `${t("support.form.guideReport.guideLabel")}: ${guide}`,
+        `${t("support.form.guideReport.sourceLabel")}: ${safeSource}`,
+        "",
+        t("support.form.guideReport.detailsPrompt"),
+      ].join("\n");
 
-    setFormData((current) => ({
-      ...current,
-      category: "CONTENT_ERROR",
-      subject: subjectTemplate.replace("{guide}", guide),
-      message,
-    }));
+      setFormData((current) => ({
+        ...current,
+        category: "CONTENT_ERROR",
+        subject: subjectTemplate.replace("{guide}", guide),
+        message,
+      }));
+    }, 0);
+
+    return () => window.clearTimeout(timer);
   }, [t]);
 
   const loadMyTickets = useCallback(async () => {
@@ -204,6 +212,12 @@ export default function SupportPage() {
     }
   };
 
+  useEffect(() => {
+    if (!isSubmitted) return;
+    window.scrollTo({ top: 0, left: 0, behavior: "auto" });
+    successRef.current?.scrollIntoView({ block: "start", behavior: "auto" });
+  }, [isSubmitted]);
+
   const faqItems = useMemo(
     () =>
       (["login", "language", "reminders", "ai", "guides", "password"] as const).map(
@@ -239,7 +253,7 @@ export default function SupportPage() {
     <div className="min-h-screen bg-gradient-to-br from-blue-50 via-white to-purple-50 py-8">
       <div className="max-w-6xl mx-auto px-4 sm:px-6 lg:px-8">
         {isSubmitted ? (
-          <div className="max-w-4xl mx-auto">
+          <div ref={successRef} className="max-w-4xl mx-auto scroll-mt-24">
             <Card className="text-center p-8">
               <CheckCircle className="h-16 w-16 text-green-500 mx-auto mb-4" />
               <CardTitle className="text-2xl mb-2">
