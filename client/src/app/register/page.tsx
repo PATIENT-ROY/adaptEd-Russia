@@ -29,6 +29,7 @@ import {
 } from "lucide-react";
 import { Role, Plan, Language } from "@/types";
 import { countrySuggestions } from "@/constants/countries";
+import { readSafeReturnTo } from "@/lib/safe-return-to";
 
 const STEP_TRANSITION_DURATION = 0.35; // seconds
 const STEP_TRANSITION_MS = STEP_TRANSITION_DURATION * 1000;
@@ -61,6 +62,7 @@ export default function RegisterPage() {
   const [step, setStep] = useState<"details" | "security">("details");
   const [isTransitioning, setIsTransitioning] = useState(false);
   const [privacyConsent, setPrivacyConsent] = useState(false);
+  const [loginHref, setLoginHref] = useState("/login");
   const stepTimeoutRef = useRef<NodeJS.Timeout | null>(null);
 
   const { register, user, isLoading: isAuthLoading } = useAuth();
@@ -68,8 +70,12 @@ export default function RegisterPage() {
   const { t } = useTranslation();
 
   useEffect(() => {
+    setLoginHref(`/login?returnTo=${encodeURIComponent(readSafeReturnTo())}`);
+  }, []);
+
+  useEffect(() => {
     if (!isAuthLoading && user) {
-      router.replace("/dashboard");
+      router.replace(readSafeReturnTo());
     }
   }, [user, isAuthLoading, router]);
 
@@ -145,7 +151,7 @@ export default function RegisterPage() {
           type: "success",
           message: t("register.success"),
         });
-        setTimeout(() => router.push("/dashboard"), 900);
+        setTimeout(() => router.push(readSafeReturnTo()), 900);
         return;
       }
 
@@ -598,7 +604,7 @@ export default function RegisterPage() {
               <p className="text-slate-600">
                 {t("register.hasAccount")}{" "}
                 <Link
-                  href="/login"
+                  href={loginHref}
                   className="text-blue-600 hover:text-blue-700 font-medium"
                 >
                   {t("register.login")}

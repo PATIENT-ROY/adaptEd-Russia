@@ -142,6 +142,32 @@ exports.Prisma.UserScalarFieldEnum = {
   tokenVersion: 'tokenVersion'
 };
 
+exports.Prisma.BuddyApplicationScalarFieldEnum = {
+  id: 'id',
+  type: 'type',
+  status: 'status',
+  userId: 'userId',
+  name: 'name',
+  isAdult: 'isAdult',
+  country: 'country',
+  city: 'city',
+  affiliation: 'affiliation',
+  participantStatus: 'participantStatus',
+  languages: 'languages',
+  helpTopics: 'helpTopics',
+  interests: 'interests',
+  availability: 'availability',
+  contactMethod: 'contactMethod',
+  contact: 'contact',
+  motivation: 'motivation',
+  comment: 'comment',
+  agreedToRules: 'agreedToRules',
+  agreedToDataPolicy: 'agreedToDataPolicy',
+  internalNote: 'internalNote',
+  createdAt: 'createdAt',
+  updatedAt: 'updatedAt'
+};
+
 exports.Prisma.PasswordSetupTokenScalarFieldEnum = {
   id: 'id',
   userId: 'userId',
@@ -381,10 +407,23 @@ exports.Prisma.NullsOrder = {
   first: 'first',
   last: 'last'
 };
+exports.BuddyApplicationType = exports.$Enums.BuddyApplicationType = {
+  STUDENT: 'STUDENT',
+  MENTOR: 'MENTOR'
+};
 
+exports.BuddyApplicationStatus = exports.$Enums.BuddyApplicationStatus = {
+  NEW: 'NEW',
+  UNDER_REVIEW: 'UNDER_REVIEW',
+  APPROVED: 'APPROVED',
+  MATCHED: 'MATCHED',
+  REJECTED: 'REJECTED',
+  CLOSED: 'CLOSED'
+};
 
 exports.Prisma.ModelName = {
   User: 'User',
+  BuddyApplication: 'BuddyApplication',
   PasswordSetupToken: 'PasswordSetupToken',
   Profile: 'Profile',
   Note: 'Note',

@@ -48,6 +48,7 @@ import {
 } from "@/components/ui/skeleton";
 import { useAdaptationCta } from "@/hooks/useAdaptationCta";
 import { HomeFeatureCard } from "@/components/home/HomeFeatureCard";
+import { BuddyProgramSection } from "@/components/home/BuddyProgramSection";
 import { ScrollReveal } from "@/components/home/ScrollReveal";
 import { StaggerReveal, StaggerItem } from "@/components/home/StaggerReveal";
 import { HeroBackgroundImage } from "@/components/ui/hero-background-image";
@@ -669,6 +670,8 @@ export default function HomePage() {
             </StaggerReveal>
           </div>
         </section>
+
+        <BuddyProgramSection />
 
         {/* Pricing — moved up for visibility */}
         <section

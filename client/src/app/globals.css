@@ -812,6 +812,7 @@ nextjs-portal:not(:has(> *)) {
 .home-adaptation-hero,
 .home-how-it-works,
 .home-features-section,
+.home-buddy-section,
 .home-mid-cta {
     content-visibility: visible;
     contain-intrinsic-size: none;

@@ -28,6 +28,7 @@ import {
   Users,
   ArrowLeft,
 } from "lucide-react";
+import { readSafeReturnTo } from "@/lib/safe-return-to";
 
 export default function LoginPage() {
   const [email, setEmail] = useState("");
@@ -40,13 +41,19 @@ export default function LoginPage() {
   const [isTransitioning, setIsTransitioning] = useState(false);
   const stepTimeoutRef = useRef<NodeJS.Timeout | null>(null);
 
+  const [registerHref, setRegisterHref] = useState("/register");
+
   const { login, user, isLoading: isAuthLoading } = useAuth();
   const { t } = useTranslation();
   const router = useRouter();
 
   useEffect(() => {
+    setRegisterHref(`/register?returnTo=${encodeURIComponent(readSafeReturnTo())}`);
+  }, []);
+
+  useEffect(() => {
     if (!isAuthLoading && user) {
-      router.replace("/dashboard");
+      router.replace(readSafeReturnTo());
     }
   }, [user, isAuthLoading, router]);
 
@@ -83,7 +90,7 @@ export default function LoginPage() {
     try {
       const success = await login(email, password);
       if (success) {
-        router.push("/dashboard");
+        router.push(readSafeReturnTo());
       } else {
         setError(t("login.error.invalidCredentials"));
         setPassword("");
@@ -361,7 +368,7 @@ export default function LoginPage() {
               <p className="text-slate-600">
                 {t("login.noAccount")}{" "}
                 <Link
-                  href="/register"
+                  href={registerHref}
                   className="text-blue-600 hover:text-blue-700 font-medium"
                 >
                   {t("login.register")}

@@ -13,6 +13,7 @@ import {
   Award,
   Star,
   ScanLine,
+  HeartHandshake,
 } from "lucide-react";
 import Link from "next/link";
 import { useAuth } from "@/contexts/AuthContext";
@@ -123,6 +124,12 @@ export function AdminContent() {
       tone: (ops?.pendingReviews ?? 0) > 0 ? "amber" : "green",
     },
     {
+      label: t("admin.dashboard.ops.newBuddyApplications"),
+      value: loading ? "…" : String(ops?.newBuddyApplications ?? 0),
+      href: "/admin/buddy",
+      tone: (ops?.newBuddyApplications ?? 0) > 0 ? "amber" : "green",
+    },
+    {
       label: t("admin.dashboard.ops.guideReadsWeek"),
       value: loading ? "…" : String(ops?.guideReadsWeek ?? 0),
       href: "/admin/docscan/analytics",
@@ -138,6 +145,7 @@ export function AdminContent() {
 
   const adminActions = [
     { title: t("admin.dashboard.actions.users"), description: t("admin.dashboard.actions.usersDesc"), icon: Users, href: "/admin/users", color: "from-blue-500 to-blue-600" },
+    { title: t("admin.dashboard.actions.buddy"), description: t("admin.dashboard.actions.buddyDesc"), icon: HeartHandshake, href: "/admin/buddy", color: "from-cyan-500 to-indigo-600" },
     { title: t("admin.dashboard.actions.guides"), description: t("admin.dashboard.actions.guidesDesc"), icon: BookOpen, href: "/admin/guides", color: "from-green-500 to-green-600" },
     { title: t("admin.dashboard.actions.support"), description: t("admin.dashboard.actions.supportDesc"), icon: Bell, href: "/admin/support", color: "from-red-500 to-red-600" },
     { title: t("admin.dashboard.actions.ai"), description: t("admin.dashboard.actions.aiDesc"), icon: Sparkles, href: "/admin/ai-analytics", color: "from-violet-500 to-indigo-600" },
@@ -338,7 +346,7 @@ export function AdminContent() {
             </CardTitle>
           </CardHeader>
           <CardContent>
-            <div className="grid grid-cols-1 sm:grid-cols-2 lg:grid-cols-4 gap-4">
+            <div className="grid grid-cols-1 sm:grid-cols-2 lg:grid-cols-5 gap-4">
               {opsItems.map((item) => (
                 <Link key={item.label} href={item.href} className="block">
                   <div
