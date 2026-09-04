@@ -171,7 +171,7 @@ export function LifeGuideContent() {
         {/* Hero — compact; crop so the person stays a bit visible on lg+ */}
         <section className="relative left-1/2 right-1/2 -ml-[50vw] -mr-[50vw] w-screen overflow-hidden mb-6 sm:mb-8 min-h-[340px] sm:min-h-[420px] lg:min-h-[460px] bg-slate-200">
           <HeroBackgroundImage
-            src="/image-banner/image-life-guide.png"
+            src="/image-banner/image-life-guide.webp"
             imageClassName="object-cover object-top lg:object-[70%_40%]"
           />
           <div className="absolute inset-0 bg-black/40 lg:bg-black/32" aria-hidden />

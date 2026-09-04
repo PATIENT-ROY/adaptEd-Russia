@@ -47,6 +47,8 @@ import {
   Home,
   Users,
   Trophy,
+  HeartHandshake,
+  Loader2,
 } from "lucide-react";
 import Link from "next/link";
 import Image from "next/image";
@@ -78,6 +80,12 @@ import { localizePaymentDescription } from "@/lib/payment-i18n";
 import { guideArticlePath, guidePathBySection } from "@/lib/guide-routes";
 import { educationGuides } from "@/data/education-guides";
 import { lifeGuides } from "@/data/life-guides";
+import { BuddyMineCards } from "@/components/buddy/BuddyMineCards";
+import { buddyT, type BuddyKey } from "@/lib/buddy-i18n";
+import {
+  fetchMyBuddyApplications,
+  type BuddyApplicationSummary,
+} from "@/lib/buddy-api";
 
 interface ExtendedUser extends UserType {
   university?: string;
@@ -160,6 +168,7 @@ const iconMap = {
   Activity,
   Edit,
   Star,
+  HeartHandshake,
 };
 
 const activityGradientMap: Record<string, string> = {
@@ -360,6 +369,10 @@ function ProfileContent() {
   const paymentSyncAttemptedRef = useRef(false);
   const { user, logout, updateProfile, syncUser } = useAuth();
   const { t, currentLanguage } = useTranslation();
+  const bt = useCallback((key: BuddyKey) => buddyT(currentLanguage, key), [currentLanguage]);
+  const [buddyApplications, setBuddyApplications] = useState<BuddyApplicationSummary[]>([]);
+  const [buddyMineLoading, setBuddyMineLoading] = useState(false);
+  const [buddyMineError, setBuddyMineError] = useState("");
   const {
     review,
     loading: reviewLoading,
@@ -436,6 +449,14 @@ function ProfileContent() {
         icon: "Users",
         color: "from-pink-500 to-rose-600",
         href: "/community/questions",
+      },
+      {
+        id: "buddy",
+        title: t("profile.quickAction.buddy.title"),
+        description: t("profile.quickAction.buddy.desc"),
+        icon: "HeartHandshake",
+        color: "from-indigo-500 to-emerald-600",
+        href: "/buddy",
       },
       {
         id: "support",
@@ -613,7 +634,7 @@ function ProfileContent() {
       }
     } catch (error) {
       console.error("Failed to load profile overview:", error);
-      setProfileError(t("profile.error.loadFailed"));
+      // User from auth is enough to render the page; overview is enrichment.
     } finally {
       setIsProfileLoading(false);
     }
@@ -622,6 +643,23 @@ function ProfileContent() {
   useEffect(() => {
     loadProfileOverview();
   }, [loadProfileOverview]);
+
+  const loadBuddyMine = useCallback(async () => {
+    if (!user) return;
+    setBuddyMineLoading(true);
+    setBuddyMineError("");
+    try {
+      setBuddyApplications(await fetchMyBuddyApplications());
+    } catch {
+      setBuddyMineError(bt("mine.loadError"));
+    } finally {
+      setBuddyMineLoading(false);
+    }
+  }, [bt, user]);
+
+  useEffect(() => {
+    void loadBuddyMine();
+  }, [loadBuddyMine]);
 
   const mergedUser = useMemo<ExtendedUser | null>(() => {
     if (!user) {
@@ -945,6 +983,33 @@ function ProfileContent() {
               </div>
             </div>
           )}
+
+          <section aria-labelledby="profile-buddy-heading" data-testid="profile-buddy-applications">
+            <Card className={profileCardClass} style={profileCardStyle}>
+              <CardHeader className="pb-3">
+                <CardTitle className="flex flex-wrap items-center justify-between gap-3">
+                  <span className="flex items-center gap-2 text-xl sm:text-2xl">
+                    <HeartHandshake className="h-5 w-5 text-indigo-600" />
+                    <span id="profile-buddy-heading">{bt("mine.title")}</span>
+                  </span>
+                  <Link href="/buddy" className="text-sm font-semibold text-indigo-700 underline underline-offset-2">
+                    {bt("openForm")}
+                  </Link>
+                </CardTitle>
+              </CardHeader>
+              <CardContent>
+                {buddyMineLoading ? (
+                  <Loader2 className="h-5 w-5 animate-spin text-indigo-600" />
+                ) : buddyMineError ? (
+                  <p role="alert" className="text-sm text-red-700">{buddyMineError}</p>
+                ) : buddyApplications.length === 0 ? (
+                  <p className="text-sm text-slate-600">{bt("mine.empty")}</p>
+                ) : (
+                  <BuddyMineCards applications={buddyApplications} locale={locale} bt={bt} />
+                )}
+              </CardContent>
+            </Card>
+          </section>
 
           {/* Quick Actions */}
           {reviewError && (

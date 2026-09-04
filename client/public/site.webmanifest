@@ -15,8 +15,14 @@
       "purpose": "any"
     },
     {
-      "src": "/AdaptEd.png",
-      "sizes": "1024x1024",
+      "src": "/AdaptEd-192.png",
+      "sizes": "192x192",
+      "type": "image/png",
+      "purpose": "any maskable"
+    },
+    {
+      "src": "/AdaptEd-512.png",
+      "sizes": "512x512",
       "type": "image/png",
       "purpose": "any maskable"
     }

@@ -32,9 +32,9 @@ export const organizationStructuredData = {
   url: "https://adaptedrussia.ru",
   logo: {
     "@type": "ImageObject",
-    url: "https://adaptedrussia.ru/AdaptEd.png",
-    width: 1024,
-    height: 1024,
+    url: "https://adaptedrussia.ru/AdaptEd-512.png",
+    width: 512,
+    height: 512,
   },
 };
 
