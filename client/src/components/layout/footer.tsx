@@ -84,7 +84,7 @@ export function Footer() {
             <div className="flex items-center space-x-2 sm:space-x-3 mb-3 sm:mb-4">
               <div className="relative h-8 w-8 lg:h-10 lg:w-10 rounded-xl overflow-hidden shadow-lg">
                 <Image
-                  src="/AdaptEd.png"
+                  src="/AdaptEd.webp"
                   alt="AdaptEd Russia Logo"
                   fill
                   className="object-contain"

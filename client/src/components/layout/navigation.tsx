@@ -83,7 +83,7 @@ export function Navigation({
             >
               <div className="relative h-8 w-8 sm:h-9 sm:w-9 lg:h-11 lg:w-11 rounded-lg sm:rounded-xl overflow-hidden shadow-lg group-hover:shadow-xl transition-all duration-300 group-hover:scale-105">
                 <Image
-                  src="/AdaptEd.png"
+                  src="/AdaptEd.webp"
                   alt="AdaptEd Russia Logo"
                   fill
                   className="object-contain"

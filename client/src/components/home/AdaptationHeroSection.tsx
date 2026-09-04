@@ -90,10 +90,10 @@ export function AdaptationHeroSection() {
           <FadeIn>
             <div className="overflow-hidden rounded-[28px] sm:rounded-[32px] border border-slate-100 bg-[#f4f1fa] shadow-sm">
               <Image
-                src="/images/illustration/adaptation-hero.png?v=20260826"
+                src="/images/illustration/adaptation-hero.webp"
                 alt={t("home.section.adaptation.title")}
-                width={1536}
-                height={1024}
+                width={1280}
+                height={853}
                 sizes="(max-width: 1024px) 92vw, 48vw"
                 className="w-full h-auto object-contain object-center"
               />

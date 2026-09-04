@@ -4,39 +4,51 @@ type TFunc = (key: string) => string;
 
 /** Map known RU feature strings (DB/API) → i18n keys */
 const FEATURE_KEYS: Record<string, string> = {
-  // Screenshot / shortened variants
-  "Все функции Freemium": "payment.plan.feature.allFreemium",
-  "Неограниченные уведомления": "payment.plan.feature.unlimitedNotifications",
-  "Приоритетный доступ к AI-чату": "payment.plan.feature.priorityAi",
-  "Все функции Премиум": "payment.plan.feature.allPremium",
+  "Все функции Freemium": "payment.plan.feature.includesFree",
+  "Неограниченные уведомления": "payment.plan.feature.unlimitedSends",
+  "Приоритетный доступ к AI-чату": "payment.plan.feature.aiDailyPremium",
+  "Все функции Премиум": "payment.plan.feature.includesFree",
   "Скидка 17% при оплате за год": "payment.plan.feature.yearDiscount",
-  "Приоритетная поддержка 24/7": "payment.plan.feature.prioritySupport",
-
-  // Seed / longer variants
+  "Приоритетная поддержка 24/7": "payment.plan.feature.formSupport",
   "Бесплатный доступ ко всем базовым гайдам": "payment.plan.feature.freeGuides",
-  "2 уведомления-напоминания в месяц": "payment.plan.feature.twoReminders",
-  "Базовые шаблоны документов": "payment.plan.feature.basicTemplates",
-  "Поддержка по email": "payment.plan.feature.emailSupport",
+  "2 уведомления-напоминания в месяц": "payment.plan.feature.twoSends",
+  "Базовые шаблоны документов": "payment.plan.feature.aiDailyFreemium",
+  "Поддержка по email": "payment.plan.feature.formSupport",
   "DocScan Light: сканирование до 3 документов в месяц":
-    "payment.plan.feature.docscanLightLimit",
-  "DocScan Light: только фото → PDF": "payment.plan.feature.docscanLightPhoto",
-  "Полный доступ ко всем функциям": "payment.plan.feature.fullAccess",
+    "payment.plan.feature.docscanBrowser",
+  "DocScan Light: только фото → PDF": "payment.plan.feature.docscanBrowser",
+  "Полный доступ ко всем функциям": "payment.plan.feature.includesFree",
   "Неограниченные уведомления-напоминания в месяц":
-    "payment.plan.feature.unlimitedReminders",
-  "Расширенные шаблоны документов": "payment.plan.feature.advancedTemplates",
-  "Персональный план адаптации": "payment.plan.feature.personalPlan",
-  "Эксклюзивные гайды и материалы": "payment.plan.feature.exclusiveGuides",
+    "payment.plan.feature.unlimitedSends",
+  "Расширенные шаблоны документов": "payment.plan.feature.aiDailyPremium",
+  "Персональный план адаптации": "payment.plan.feature.includesFree",
+  "Эксклюзивные гайды и материалы": "payment.plan.feature.freeGuides",
   "DocScan Pro: Неограниченное сканирование":
-    "payment.plan.feature.docscanProUnlimited",
-  "DocScan Pro: OCR из PDF и фото": "payment.plan.feature.docscanProOcr",
-  "DocScan Pro: Экспорт в Word, TXT, PDF": "payment.plan.feature.docscanProExport",
-  "DocScan Pro: Объединение страниц": "payment.plan.feature.docscanProMerge",
-  "DocScan Pro: Облачное хранение": "payment.plan.feature.docscanProCloud",
-  "DocScan Pro: Без водяных знаков": "payment.plan.feature.docscanProNoWatermark",
+    "payment.plan.feature.docscanBrowser",
+  "DocScan Pro: OCR из PDF и фото": "payment.plan.feature.docscanBrowser",
+  "DocScan Pro: Экспорт в Word, TXT, PDF": "payment.plan.feature.docscanBrowser",
+  "DocScan Pro: Объединение страниц": "payment.plan.feature.docscanBrowser",
+  "DocScan Pro: Облачное хранение": "payment.plan.feature.docscanBrowser",
+  "DocScan Pro: Без водяных знаков": "payment.plan.feature.docscanBrowser",
   "Скидка 17% при оплате за 6 месяцев": "payment.plan.feature.sixMonthDiscount",
-  "Доступ к закрытым вебинарам": "payment.plan.feature.webinars",
-  "Персональный ментор": "payment.plan.feature.mentor",
-  "Эксклюзивные мастер-классы": "payment.plan.feature.masterclasses",
+  "Доступ к закрытым вебинарам": "payment.plan.feature.includesFree",
+  "Персональный ментор": "payment.plan.feature.includesFree",
+  "Эксклюзивные мастер-классы": "payment.plan.feature.includesFree",
+  "Опубликованные гайды по учёбе и быту": "payment.plan.feature.freeGuides",
+  "Сообщество и AdaptEd Buddy": "payment.plan.feature.communityBuddy",
+  "DocScan в браузере: OCR фото и PDF, экспорт в TXT":
+    "payment.plan.feature.docscanBrowser",
+  "Неограниченное создание напоминаний": "payment.plan.feature.unlimitedCreate",
+  "2 отправки уведомлений в месяц (email или Telegram)":
+    "payment.plan.feature.twoSends",
+  "15 сообщений AI в день (чат и генераторы — общая квота)":
+    "payment.plan.feature.aiDailyFreemium",
+  "Обращения через форму поддержки": "payment.plan.feature.formSupport",
+  "Всё из бесплатного тарифа, плюс:": "payment.plan.feature.includesFree",
+  "200 сообщений AI в день (чат и генераторы — общая квота)":
+    "payment.plan.feature.aiDailyPremium",
+  "Неограниченные отправки уведомлений-напоминаний":
+    "payment.plan.feature.unlimitedSends",
 };
 
 function normalizePlanName(name: string): string {
@@ -56,7 +68,7 @@ export function localizePlanName(plan: SubscriptionPlan, t: TFunc): string {
   ) {
     return t("payment.plan.premiumYear");
   }
-  if (n.includes("6") || n.includes("шест")) {
+  if (n.includes("6") || n.includes("шест") || n.includes("six")) {
     return t("payment.plan.premiumSixMonths");
   }
   return t("payment.plan.premium");
@@ -65,6 +77,56 @@ export function localizePlanName(plan: SubscriptionPlan, t: TFunc): string {
 export function localizePlanFeature(feature: string, t: TFunc): string {
   const key = FEATURE_KEYS[feature.trim()];
   return key ? t(key) : feature;
+}
+
+function isFreePlan(plan: SubscriptionPlan): boolean {
+  const n = normalizePlanName(plan.name);
+  return plan.price === 0 || n.includes("freemium") || n.includes("бесплат");
+}
+
+function isYearlyPlan(plan: SubscriptionPlan): boolean {
+  const n = normalizePlanName(plan.name);
+  return (
+    plan.interval === "YEARLY" ||
+    n.includes("год") ||
+    n.includes("year") ||
+    n.includes("annual")
+  );
+}
+
+function isSixMonthPlan(plan: SubscriptionPlan): boolean {
+  const n = normalizePlanName(plan.name);
+  return n.includes("6") || n.includes("шест") || n.includes("six");
+}
+
+/** Honest feature lists from code, not stale DB JSON. */
+export function getCanonicalPlanFeatures(
+  plan: SubscriptionPlan,
+  t: TFunc,
+): string[] {
+  if (isFreePlan(plan)) {
+    return [
+      t("payment.plan.feature.freeGuides"),
+      t("payment.plan.feature.communityBuddy"),
+      t("payment.plan.feature.docscanBrowser"),
+      t("payment.plan.feature.unlimitedCreate"),
+      t("payment.plan.feature.twoSends"),
+      t("payment.plan.feature.aiDailyFreemium"),
+      t("payment.plan.feature.formSupport"),
+    ];
+  }
+
+  const features = [
+    t("payment.plan.feature.includesFree"),
+    t("payment.plan.feature.aiDailyPremium"),
+    t("payment.plan.feature.unlimitedSends"),
+  ];
+  if (isYearlyPlan(plan)) {
+    features.push(t("payment.plan.feature.yearDiscount"));
+  } else if (isSixMonthPlan(plan)) {
+    features.push(t("payment.plan.feature.sixMonthDiscount"));
+  }
+  return features;
 }
 
 export function localizePlanFeatures(

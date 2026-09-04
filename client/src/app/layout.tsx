@@ -88,8 +88,8 @@ export default function RootLayout({
     <html lang="ru" data-scroll-behavior="smooth">
       <head>
         <link rel="icon" type="image/svg+xml" href="/favicon.svg?v=2" />
-        <link rel="icon" type="image/png" sizes="1024x1024" href="/AdaptEd.png" />
-        <link rel="apple-touch-icon" sizes="1024x1024" href="/AdaptEd.png" />
+        <link rel="icon" type="image/png" sizes="192x192" href="/AdaptEd-192.png" />
+        <link rel="apple-touch-icon" sizes="180x180" href="/apple-touch-icon.png" />
         <link rel="manifest" href="/site.webmanifest" />
         <meta name="theme-color" content="#2563eb" />
         <meta name="msapplication-TileColor" content="#2563eb" />
