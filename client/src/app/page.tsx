@@ -250,11 +250,12 @@ export default function HomePage() {
         description: t("home.pricing.freemium.description"),
         features: [
           t("home.pricing.feature.free.guides"),
+          t("home.pricing.feature.free.community"),
+          t("home.pricing.feature.free.docscan"),
+          t("home.pricing.feature.free.remindersCreate"),
           t("home.pricing.feature.free.reminders"),
           t("home.pricing.feature.free.templates"),
           t("home.pricing.feature.free.email"),
-          t("home.pricing.feature.free.docscan"),
-          t("home.pricing.feature.free.docscan.photo"),
         ],
         popular: false,
         buttonText: t("home.pricing.button.freemium"),
@@ -267,18 +268,8 @@ export default function HomePage() {
         description: t("home.pricing.premium.description"),
         features: [
           t("home.pricing.feature.premium.all"),
-          t("home.pricing.feature.premium.unlimited"),
           t("home.pricing.feature.premium.ai"),
-          t("home.pricing.feature.premium.templates"),
-          t("home.pricing.feature.premium.support"),
-          t("home.pricing.feature.premium.plan"),
-          t("home.pricing.feature.premium.exclusive"),
-          t("home.pricing.feature.premium.docscan.unlimited"),
-          t("home.pricing.feature.premium.docscan.ocr"),
-          t("home.pricing.feature.premium.docscan.export"),
-          t("home.pricing.feature.premium.docscan.merge"),
-          t("home.pricing.feature.premium.docscan.cloud"),
-          t("home.pricing.feature.premium.docscan.noWatermark"),
+          t("home.pricing.feature.premium.unlimited"),
         ],
         popular: true,
         buttonText: t("home.pricing.button.premium"),
@@ -317,7 +308,7 @@ export default function HomePage() {
         {/* Hero */}
         <div className="relative mt-3 mb-5 overflow-hidden rounded-2xl bg-slate-200 pt-8 pb-14 sm:mt-6 sm:mb-8 sm:rounded-3xl sm:pt-14 sm:pb-20 md:pt-20 md:pb-24">
           <HeroBackgroundImage
-            src="/image-banner/image-Home-page.png"
+            src="/image-banner/image-Home-page.webp"
             imageClassName="object-cover object-center scale-105 blur-[3px]"
           />
           <div className="absolute inset-0 bg-black/35" aria-hidden />
@@ -801,7 +792,7 @@ export default function HomePage() {
           className="home-mid-cta relative overflow-hidden py-12 sm:py-16 rounded-2xl sm:rounded-3xl my-6 sm:my-8 bg-cover bg-center bg-no-repeat"
           style={{
             backgroundImage:
-              "linear-gradient(to bottom right, rgba(30, 64, 175, 0.72), rgba(109, 40, 217, 0.74)), url(/images/illustration/adaptation-cta-v2.png)",
+              "linear-gradient(to bottom right, rgba(30, 64, 175, 0.72), rgba(109, 40, 217, 0.74)), url(/images/illustration/adaptation-cta-v2.webp)",
           }}
         >
           <ScrollReveal className="relative z-10 max-w-2xl mx-auto px-4 sm:px-6 text-center">
@@ -844,7 +835,7 @@ export default function HomePage() {
                 <div className="flex flex-col gap-6 border-b border-slate-200 pb-8 sm:flex-row sm:items-center">
                   <div className="h-20 w-20 shrink-0 overflow-hidden rounded-full bg-slate-100 ring-4 ring-blue-50 sm:h-24 sm:w-24">
                     <Image
-                      src="/founder-image/IMG_0654.jpeg"
+                      src="/founder-image/IMG_0654.webp"
                       alt={t("home.about.avatarAlt")}
                       width={160}
                       height={160}

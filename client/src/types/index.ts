@@ -82,6 +82,18 @@ export interface AccountSettings {
   timezone: string;
 }
 
+export interface TelegramStatus {
+  linked: boolean;
+  username: string | null;
+  botUsername: string | null;
+  configured: boolean;
+}
+
+export interface TelegramLink {
+  url: string;
+  expiresAt: string;
+}
+
 export interface Profile {
   id: string;
   userId: string;

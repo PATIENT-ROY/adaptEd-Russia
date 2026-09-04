@@ -53,16 +53,16 @@ export function GuideArticle({
     dateModified: guide.updatedAt,
     inLanguage: "ru-RU",
     mainEntityOfPage: articleUrl,
-    image: [`${SITE_URL}/og-image.png`],
+    image: [`${SITE_URL}/og-image-v2.jpg`],
     author: { "@type": "Organization", name: "AdaptEd Russia" },
     publisher: {
       "@type": "Organization",
       name: "AdaptEd Russia",
       logo: {
         "@type": "ImageObject",
-        url: `${SITE_URL}/AdaptEd.png`,
-        width: 1024,
-        height: 1024,
+        url: `${SITE_URL}/AdaptEd-512.png`,
+        width: 512,
+        height: 512,
       },
     },
   };

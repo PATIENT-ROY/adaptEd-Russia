@@ -203,6 +203,7 @@ test.describe("AdaptEd Buddy", () => {
     await submit.focus();
     await page.keyboard.press("Enter");
     await expect(page.getByTestId("buddy-success")).toBeVisible();
+    await expect(page.getByTestId("buddy-success")).toBeInViewport();
     await expect(submit).toHaveCount(0);
     await context.close();
   });

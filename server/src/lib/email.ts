@@ -1,3 +1,23 @@
+import { renderDeadlineEmail, renderInviteEmail, renderWelcomeEmail } from './email-templates';
+
+const RESERVED_EMAIL_HOSTS = new Set([
+  'example.com',
+  'example.org',
+  'example.net',
+  'test.com',
+  'localhost',
+]);
+
+export const SKIP_RESERVED_EMAIL = 'SKIP_RESERVED_EMAIL';
+
+export function isDeliverableEmail(to: string): boolean {
+  const trimmed = to.trim();
+  const at = trimmed.lastIndexOf('@');
+  if (at <= 0 || at === trimmed.length - 1) return false;
+  const host = trimmed.slice(at + 1).toLowerCase();
+  return !RESERVED_EMAIL_HOSTS.has(host);
+}
+
 interface SendInviteEmailParams {
   to: string;
   recipientName: string;
@@ -36,35 +56,16 @@ function sleep(ms: number) {
   return new Promise((resolve) => setTimeout(resolve, ms));
 }
 
-function buildInviteHtml({
-  recipientName,
-  setupLink,
-  expiresAtIso,
-}: SendInviteEmailParams) {
-  return `
-    <div style="font-family:Arial,sans-serif;max-width:560px;margin:0 auto;padding:24px;color:#1f2937">
-      <h2 style="margin:0 0 12px 0;">Добро пожаловать в AdaptEd Russia</h2>
-      <p style="margin:0 0 12px 0;">Здравствуйте, ${recipientName || 'студент'}.</p>
-      <p style="margin:0 0 16px 0;">
-        Администратор создал для вас аккаунт. Нажмите кнопку ниже, чтобы установить пароль и завершить активацию.
-      </p>
-      <p style="margin:0 0 20px 0;">
-        <a href="${setupLink}" style="display:inline-block;background:#2563eb;color:#fff;text-decoration:none;padding:12px 18px;border-radius:8px;">
-          Установить пароль
-        </a>
-      </p>
-      <p style="margin:0 0 8px 0;color:#6b7280;font-size:14px;">
-        Ссылка действительна до: ${new Date(expiresAtIso).toLocaleString('ru-RU')}
-      </p>
-      <p style="margin:0;color:#6b7280;font-size:14px;">
-        Если кнопка не работает, используйте ссылку: <br />
-        <a href="${setupLink}">${setupLink}</a>
-      </p>
-    </div>
-  `;
-}
-
 export async function sendEmail(params: SendEmailParams): Promise<SendInviteEmailResult> {
+  if (!isDeliverableEmail(params.to)) {
+    return {
+      sent: false,
+      provider: 'none',
+      attempts: 0,
+      error: SKIP_RESERVED_EMAIL,
+    };
+  }
+
   const resendApiKey = process.env.RESEND_API_KEY;
   const fromEmail = process.env.EMAIL_FROM;
   const replyTo = process.env.EMAIL_REPLY_TO;
@@ -153,20 +154,32 @@ export async function sendEmail(params: SendEmailParams): Promise<SendInviteEmai
 }
 
 export async function sendInviteEmail(params: SendInviteEmailParams): Promise<SendInviteEmailResult> {
+  const rendered = renderInviteEmail(params);
   return sendEmail({
     to: params.to,
-    subject: 'Активация аккаунта AdaptEd Russia',
-    html: buildInviteHtml(params),
+    subject: rendered.subject,
+    html: rendered.html,
     idempotencyKey: `invite:${params.to}:${params.expiresAtIso}`,
   });
 }
 
-function escapeHtml(value: string) {
-  return value
-    .replace(/&/g, '&amp;')
-    .replace(/</g, '&lt;')
-    .replace(/>/g, '&gt;')
-    .replace(/"/g, '&quot;');
+export async function sendWelcomeEmail(params: {
+  to: string;
+  name: string;
+  language?: string;
+}): Promise<SendInviteEmailResult> {
+  const appUrl = process.env.CLIENT_URL || process.env.APP_BASE_URL || 'https://adaptedrussia.ru';
+  const rendered = renderWelcomeEmail({
+    name: params.name,
+    appUrl,
+    language: params.language,
+  });
+  return sendEmail({
+    to: params.to,
+    subject: rendered.subject,
+    html: rendered.html,
+    idempotencyKey: `welcome:${params.to}`,
+  });
 }
 
 export async function sendReminderEmail(params: {
@@ -178,36 +191,19 @@ export async function sendReminderEmail(params: {
   reminderId: string;
 }): Promise<SendInviteEmailResult> {
   const appUrl = process.env.CLIENT_URL || process.env.APP_BASE_URL || 'https://adaptedrussia.ru';
-  const dueLabel = params.dueDate.toLocaleString('ru-RU', {
-    year: 'numeric',
-    month: 'long',
-    day: 'numeric',
-    hour: '2-digit',
-    minute: '2-digit',
+  const rendered = renderDeadlineEmail({
+    name: params.name,
+    title: params.title,
+    description: params.description,
+    dueDate: params.dueDate,
+    appUrl,
+    upcoming: params.dueDate.getTime() > Date.now(),
   });
-  const title = escapeHtml(params.title);
-  const name = escapeHtml(params.name || 'студент');
-  const description = params.description
-    ? `<p style="margin:0 0 16px 0;color:#4b5563">${escapeHtml(params.description)}</p>`
-    : '';
 
   return sendEmail({
     to: params.to,
-    subject: `Напоминание: ${params.title}`,
-    html: `
-      <div style="font-family:Arial,sans-serif;max-width:560px;margin:0 auto;padding:24px;color:#1f2937">
-        <h2 style="margin:0 0 12px 0;">Напоминание AdaptEd Russia</h2>
-        <p style="margin:0 0 12px 0;">Здравствуйте, ${name}.</p>
-        <p style="margin:0 0 8px 0;font-size:18px;font-weight:700">${title}</p>
-        <p style="margin:0 0 16px 0;color:#6b7280">Срок: ${escapeHtml(dueLabel)}</p>
-        ${description}
-        <p style="margin:0 0 20px 0;">
-          <a href="${appUrl}/reminders" style="display:inline-block;background:#7c3aed;color:#fff;text-decoration:none;padding:12px 18px;border-radius:8px;">
-            Открыть напоминания
-          </a>
-        </p>
-      </div>
-    `,
+    subject: rendered.subject,
+    html: rendered.html,
     idempotencyKey: `reminder:${params.reminderId}:${params.dueDate.toISOString()}`,
   });
 }

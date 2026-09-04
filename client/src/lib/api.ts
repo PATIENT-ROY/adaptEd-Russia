@@ -25,6 +25,8 @@ import {
   DashboardOverview,
   AchievementsOverview,
   AccountSettings,
+  TelegramLink,
+  TelegramStatus,
 } from '@/types';
 
 export const API_BASE_URL =
@@ -335,6 +337,29 @@ class ApiClient {
       body: JSON.stringify(data),
     });
     return this.ensureData(response, 'Не удалось сохранить настройки');
+  }
+
+  async getTelegramStatus(): Promise<TelegramStatus> {
+    const response = await this.request<TelegramStatus>('/user/telegram');
+    return this.ensureData(response, 'Не удалось загрузить статус Telegram');
+  }
+
+  async createTelegramLink(): Promise<TelegramLink> {
+    const response = await this.request<TelegramLink>('/user/telegram/link', {
+      method: 'POST',
+    });
+    return this.ensureData(response, 'Не удалось создать ссылку Telegram');
+  }
+
+  async unlinkTelegram(): Promise<TelegramStatus> {
+    const response = await this.request<TelegramStatus>('/user/telegram', {
+      method: 'DELETE',
+    });
+    return this.ensureData(response, 'Не удалось отключить Telegram');
+  }
+
+  async sendTelegramTest(): Promise<void> {
+    await this.request('/user/telegram/test', { method: 'POST' });
   }
 
   async changePassword(currentPassword: string, newPassword: string): Promise<void> {

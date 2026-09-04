@@ -9,6 +9,16 @@ import {
   getDeepSeekApiKey,
 } from '../lib/deepseek';
 import { dispatchDueReminders } from '../lib/reminder-notifications';
+import { getEffectivePlan } from '../lib/effective-plan';
+import { NOTES_PARSE_TAG } from '../lib/plan-limits';
+import {
+  AiQuotaError,
+  accumulateProviderUsage,
+  assertNotesParseQuota,
+  logAiMeter,
+  parseDeepSeekUsage,
+  withUserDailyQuotaLock,
+} from '../lib/ai-meter';
 
 const router = Router();
 
@@ -154,19 +164,45 @@ router.post('/parse', authMiddleware, async (req: Request, res: Response) => {
   try {
     const user = (req as any).user;
     const { content, notificationMethod } = parseNoteSchema.parse(req.body);
+    getDeepSeekApiKey();
 
-    // 1. Сохраняем заметку
-    const note = await prisma.note.create({
-      data: {
-        userId: user.userId,
-        content,
-        title: content.substring(0, 60).trim() + (content.length > 60 ? '...' : ''),
-      },
-    });
+    const plan = await getEffectivePlan(user.userId);
+    let note;
+    try {
+      note = await withUserDailyQuotaLock(user.userId, async (tx) => {
+        await assertNotesParseQuota(user.userId, plan, tx);
+        return tx.note.create({
+          data: {
+            userId: user.userId,
+            content,
+            title: content.substring(0, 60).trim() + (content.length > 60 ? '...' : ''),
+            tags: NOTES_PARSE_TAG,
+          },
+        });
+      });
+    } catch (error) {
+      if (error instanceof AiQuotaError) {
+        return res.status(429).json({
+          success: false,
+          error: error.code,
+          usage: { used: error.used, limit: error.limit, plan: error.plan },
+        } as ApiResponse);
+      }
+      throw error;
+    }
 
     // 2. Отправляем в DeepSeek для парсинга
     const today = new Date().toISOString().split('T')[0];
     const aiResult = await parseNoteWithAI(content, today);
+    logAiMeter({
+      kind: 'notes_parse',
+      plan,
+      ok: !aiResult.fallback,
+      attempts: aiResult.attempts,
+      promptTokens: aiResult.usage.promptTokens,
+      completionTokens: aiResult.usage.completionTokens,
+      fallback: aiResult.fallback,
+    });
 
     // 3. Создаём напоминания из AI-результата
     const validPriorities = new Set(['LOW', 'MEDIUM', 'HIGH', 'URGENT']);
@@ -263,7 +299,11 @@ interface AIParseResult {
   summary: string;
 }
 
-async function parseNoteWithAI(noteContent: string, today: string): Promise<AIParseResult> {
+async function parseNoteWithAI(noteContent: string, today: string): Promise<AIParseResult & {
+  usage: { promptTokens?: number; completionTokens?: number };
+  attempts: number;
+  fallback: boolean;
+}> {
   const MAX_RETRIES = 3;
   const apiKey = getDeepSeekApiKey();
 
@@ -296,6 +336,7 @@ async function parseNoteWithAI(noteContent: string, today: string): Promise<AIPa
 - Если в тексте нет задач — верни пустой массив reminders и только summary`;
 
   let lastError: Error | null = null;
+  let usage = accumulateProviderUsage([]);
 
   for (let attempt = 0; attempt < MAX_RETRIES; attempt++) {
     try {
@@ -316,6 +357,17 @@ async function parseNoteWithAI(noteContent: string, today: string): Promise<AIPa
         }),
       });
 
+      let data: unknown = null;
+      try {
+        data = await response.json();
+      } catch {
+        data = null;
+      }
+
+      if (data) {
+        usage = accumulateProviderUsage([usage, parseDeepSeekUsage(data)]);
+      }
+
       if (!response.ok) {
         const status = response.status;
         if (status === 401 || status === 403) {
@@ -330,11 +382,9 @@ async function parseNoteWithAI(noteContent: string, today: string): Promise<AIPa
         continue;
       }
 
-      const data = await response.json() as {
+      const raw = (data as {
         choices?: Array<{ message?: { content?: string } }>;
-      };
-
-      const raw = data.choices?.[0]?.message?.content || '';
+      } | null)?.choices?.[0]?.message?.content || '';
 
       // Чистим от markdown-обёртки если есть
       const cleaned = raw.replace(/```json\n?/g, '').replace(/```\n?/g, '').trim();
@@ -344,9 +394,12 @@ async function parseNoteWithAI(noteContent: string, today: string): Promise<AIPa
         return {
           reminders: Array.isArray(parsed.reminders) ? parsed.reminders : [],
           summary: parsed.summary || '',
+          usage,
+          attempts: attempt + 1,
+          fallback: false,
         };
       } catch (parseErr) {
-        console.error('[Notes AI] JSON parse error:', parseErr, 'Raw:', cleaned.substring(0, 200));
+        console.error('[Notes AI] JSON parse error:', parseErr);
         lastError = new Error('Failed to parse AI response');
         continue;
       }
@@ -357,7 +410,7 @@ async function parseNoteWithAI(noteContent: string, today: string): Promise<AIPa
   }
 
   console.error('[Notes AI] All attempts failed:', lastError);
-  return fallbackParse(noteContent, today);
+  return { ...fallbackParse(noteContent, today), usage, attempts: MAX_RETRIES, fallback: true };
 }
 
 function fallbackParse(content: string, today: string): AIParseResult {

@@ -8,6 +8,7 @@ import { Input } from "@/components/ui/input";
 import { useAuth } from "@/contexts/AuthContext";
 import { ProtectedRoute } from "@/components/auth/ProtectedRoute";
 import { FeaturePreviewGate } from "@/components/auth/FeaturePreviewGate";
+import { TelegramConnect } from "@/components/telegram/TelegramConnect";
 import { useReminders } from "@/hooks/useReminders";
 import { useNotes } from "@/hooks/useNotes";
 import { useTranslation } from "@/hooks/useTranslation";
@@ -1018,6 +1019,11 @@ function RemindersContent() {
                   ))}
                 </div>
                 <p className="mt-2 text-xs text-gray-400">{t("reminders.notification.fallback")}</p>
+                {notificationMethod === "telegram" && (
+                  <div className="mt-3">
+                    <TelegramConnect t={t} compact />
+                  </div>
+                )}
 
                 <div className="mt-4 flex flex-col sm:flex-row gap-3">
                   <Button
@@ -1319,6 +1325,11 @@ function RemindersContent() {
                           ))}
                         </div>
                         <p className="mt-2 text-xs text-gray-400">{t("reminders.notification.fallback")}</p>
+                        {newReminder.notificationMethod === "telegram" && (
+                          <div className="mt-3">
+                            <TelegramConnect t={t} compact />
+                          </div>
+                        )}
                       </div>
                     </fieldset>
 

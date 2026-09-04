@@ -19,6 +19,7 @@ import {
 } from "lucide-react";
 import { apiClient } from "@/lib/api";
 import type { AccountSettings } from "@/types";
+import { TelegramConnect } from "@/components/telegram/TelegramConnect";
 import { Button } from "./button";
 import { Input } from "./input";
 import { Label } from "./label";
@@ -387,6 +388,8 @@ export function ProfileAccountSettings({
               }
             />
           </div>
+
+          <TelegramConnect t={t} />
 
           <div className="space-y-2">
             <Label

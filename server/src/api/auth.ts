@@ -2,7 +2,7 @@ import { Router, Request, Response } from 'express';
 import { z } from 'zod';
 import { prisma } from '../lib/database';
 import { hashPassword, comparePasswords, generateToken, authenticateUser, authMiddleware } from '../lib/auth';
-import { sendInviteEmail } from '../lib/email';
+import { SKIP_RESERVED_EMAIL, sendInviteEmail, sendWelcomeEmail } from '../lib/email';
 import { RegisterRequest, LoginRequest, AuthResponse, ApiResponse } from '../types/index.js';
 import crypto from 'crypto';
 
@@ -131,6 +131,18 @@ router.post('/register', async (req: Request, res: Response) => {
       token,
       message: 'Пользователь успешно зарегистрирован',
     };
+
+    void sendWelcomeEmail({
+      to: user.email,
+      name: user.name,
+      language: user.language,
+    }).then((result) => {
+      if (!result.sent && result.error !== SKIP_RESERVED_EMAIL) {
+        console.error('[register] welcome email failed:', result.error);
+      }
+    }).catch((error) => {
+      console.error('[register] welcome email failed:', error);
+    });
 
     res.status(201).json({
       success: true,

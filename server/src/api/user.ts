@@ -1,9 +1,16 @@
 import { Router, Request, Response } from 'express';
 import { z } from 'zod';
-import { v4 as uuidv4 } from 'uuid';
 import { prisma } from '../lib/database';
 import { authMiddleware, getUserById } from '../lib/auth';
+import { getEffectivePlan, overlayEffectivePlan, restoreMissedPaidSubscription } from '../lib/effective-plan';
 import { UpdateProfileRequest, ApiResponse } from '../types/index.js';
+import {
+  createTelegramLink,
+  getTelegramStatus,
+  sendTelegramMessage,
+  unlinkTelegram,
+  parseTelegramChatId,
+} from '../lib/telegram';
 
 interface ProfileStat {
   id: string;
@@ -531,6 +538,64 @@ router.put('/settings', authMiddleware, async (req: Request, res: Response) => {
   }
 });
 
+router.get('/telegram', authMiddleware, async (req: Request, res: Response) => {
+  try {
+    const authUser = (req as any).user;
+    const status = await getTelegramStatus(authUser.userId);
+    return res.json({ success: true, data: status });
+  } catch (error) {
+    console.error('Get telegram status error:', error);
+    return res.status(500).json({ success: false, error: 'Внутренняя ошибка сервера' } as ApiResponse);
+  }
+});
+
+router.post('/telegram/link', authMiddleware, async (req: Request, res: Response) => {
+  try {
+    const authUser = (req as any).user;
+    const data = await createTelegramLink(authUser.userId);
+    return res.json({ success: true, data });
+  } catch (error) {
+    if (error instanceof Error && error.message === 'TELEGRAM_NOT_CONFIGURED') {
+      return res.status(503).json({ success: false, error: 'TELEGRAM_NOT_CONFIGURED' } as ApiResponse);
+    }
+    console.error('Create telegram link error:', error);
+    return res.status(500).json({ success: false, error: 'Внутренняя ошибка сервера' } as ApiResponse);
+  }
+});
+
+router.delete('/telegram', authMiddleware, async (req: Request, res: Response) => {
+  try {
+    const authUser = (req as any).user;
+    await unlinkTelegram(authUser.userId);
+    return res.json({ success: true, data: await getTelegramStatus(authUser.userId) });
+  } catch (error) {
+    console.error('Unlink telegram error:', error);
+    return res.status(500).json({ success: false, error: 'Внутренняя ошибка сервера' } as ApiResponse);
+  }
+});
+
+router.post('/telegram/test', authMiddleware, async (req: Request, res: Response) => {
+  try {
+    const authUser = (req as any).user;
+    const profile = await prisma.profile.findUnique({
+      where: { userId: authUser.userId },
+      select: { socialLinks: true },
+    });
+    const chatId = parseTelegramChatId(profile?.socialLinks);
+    if (!chatId) {
+      return res.status(400).json({ success: false, error: 'TELEGRAM_NOT_LINKED' } as ApiResponse);
+    }
+    const sent = await sendTelegramMessage(chatId, 'AdaptEd: Telegram подключён. Тестовое сообщение.');
+    if (!sent) {
+      return res.status(502).json({ success: false, error: 'TELEGRAM_SEND_FAILED' } as ApiResponse);
+    }
+    return res.json({ success: true, data: { sent: true } });
+  } catch (error) {
+    console.error('Telegram test send error:', error);
+    return res.status(500).json({ success: false, error: 'Внутренняя ошибка сервера' } as ApiResponse);
+  }
+});
+
 // Загрузить/обновить аватар
 router.put('/profile/avatar', authMiddleware, async (req: Request, res: Response) => {
   try {
@@ -631,7 +696,7 @@ router.put('/profile', authMiddleware, async (req: Request, res: Response) => {
     const user = (req as any).user;
     const validatedData = updateProfileSchema.parse(req.body);
 
-    const updatedUser = await prisma.user.update({
+    const updatedUser = await overlayEffectivePlan(await prisma.user.update({
       where: { id: user.userId },
       data: validatedData,
       select: {
@@ -649,7 +714,7 @@ router.put('/profile', authMiddleware, async (req: Request, res: Response) => {
         gender: true,
         registeredAt: true,
       },
-    });
+    }));
 
     res.json({
       success: true,
@@ -946,61 +1011,8 @@ router.get('/profile/overview', authMiddleware, async (req: Request, res: Respon
       };
     });
 
-    // Если есть активная подписка или оплаченный платёж — показываем PREMIUM
-    let activeSubscription = await prisma.subscription.findFirst({
-      where: { userId: authUser.userId, status: 'ACTIVE' },
-    });
-
-    // Если подписки нет, но есть успешный платёж — создаём подписку (восстановление)
-    if (!activeSubscription) {
-      const succeededPayment = payments.find(
-        (p) => (p.status || '').toUpperCase() === 'SUCCEEDED'
-      );
-      if (succeededPayment) {
-        try {
-          const plan = succeededPayment.planId
-            ? await prisma.subscriptionPlan.findUnique({ where: { id: succeededPayment.planId } })
-            : await prisma.subscriptionPlan.findFirst({
-                where: { price: succeededPayment.amount, isActive: true },
-              }) || await prisma.subscriptionPlan.findFirst({
-                where: { isActive: true, price: { gt: 0 } },
-                orderBy: { price: 'asc' },
-              });
-          if (plan) {
-            const startDate = new Date();
-            const endDate = new Date();
-            endDate.setMonth(endDate.getMonth() + (plan.interval === 'MONTHLY' ? 1 : 12));
-            activeSubscription = await prisma.subscription.upsert({
-              where: { userId: authUser.userId },
-              update: { status: 'ACTIVE', startDate, endDate, paymentId: succeededPayment.id },
-              create: {
-                id: uuidv4(),
-                userId: authUser.userId,
-                planId: plan.id,
-                status: 'ACTIVE',
-                startDate,
-                endDate,
-                autoRenew: true,
-                paymentId: succeededPayment.id,
-              },
-            });
-            await prisma.user.update({
-              where: { id: authUser.userId },
-              data: { plan: 'PREMIUM' },
-            });
-          }
-        } catch (e) {
-          console.error('Auto-fix subscription:', e);
-        }
-      }
-    } else if (userData.plan !== 'PREMIUM') {
-      await prisma.user.update({
-        where: { id: authUser.userId },
-        data: { plan: 'PREMIUM' },
-      }).catch(() => {});
-    }
-
-    const effectivePlan = activeSubscription ? 'PREMIUM' : (userData.plan || 'FREEMIUM');
+    await restoreMissedPaidSubscription(authUser.userId);
+    const effectivePlan = await getEffectivePlan(authUser.userId);
 
     const responsePayload: ProfileOverviewResponse = {
       user: {

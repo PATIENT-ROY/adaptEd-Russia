@@ -2,7 +2,15 @@ import { Router } from 'express';
 import { prisma } from '../lib/database';
 import { authMiddleware } from '../lib/auth';
 import { createPayment, getPayment, cancelPayment, checkPaymentStatus, TEST_CARDS, TEST_SBP_PHONES } from '../lib/yookassa';
+import { applySucceededPayment, hasPaidEntitlement } from '../lib/effective-plan';
+import { canApplyFromYooKassaStatus, isPaymentTester } from '../lib/payment-test-access';
 import { v4 as uuidv4 } from 'uuid';
+
+function paymentTesterForbidden(req: { user?: { role?: string; email?: string } }, res: any) {
+  if (isPaymentTester(req.user)) return false;
+  res.status(403).json({ error: 'PAYMENT_TEST_ONLY' });
+  return true;
+}
 
 const router = Router();
 
@@ -13,7 +21,7 @@ router.get('/plans', async (req, res) => {
       where: { isActive: true },
       orderBy: { price: 'asc' },
     });
-    
+
     res.json(plans);
   } catch (error) {
     console.error('Error fetching subscription plans:', error);
@@ -24,6 +32,7 @@ router.get('/plans', async (req, res) => {
 // Создать платеж для подписки
 router.post('/create-payment', authMiddleware, async (req, res) => {
   try {
+    if (paymentTesterForbidden(req as any, res)) return;
     const { planId, paymentMethod } = req.body;
     const userId = (req as any).user.userId;
 
@@ -36,9 +45,12 @@ router.post('/create-payment', authMiddleware, async (req, res) => {
       return res.status(404).json({ error: 'Subscription plan not found' });
     }
 
+    // Amount is plan.price from the catalog. Ignore any client-supplied amount.
+    const amount = plan.price;
+
     // Создаем платеж в YooKassa
     const yooKassaPayment = await createPayment(
-      plan.price,
+      amount,
       `Подписка ${plan.name} - ${plan.interval === 'MONTHLY' ? 'месячная' : 'годовая'}`,
       {
         userId,
@@ -55,7 +67,7 @@ router.post('/create-payment', authMiddleware, async (req, res) => {
         id: uuidv4(),
         userId,
         planId,
-        amount: plan.price,
+        amount,
         currency: plan.currency,
         description: yooKassaPayment.description || '',
         status: 'PENDING',
@@ -102,7 +114,7 @@ router.get('/payment/:paymentId', authMiddleware, async (req, res) => {
 
     // Получаем актуальный статус из YooKassa (или mock)
     let statusNormalized = (payment.status || '').toUpperCase();
-    if (payment.yooKassaPaymentId) {
+    if (payment.yooKassaPaymentId && canApplyFromYooKassaStatus((req as any).user, payment.yooKassaPaymentId)) {
       try {
         const yooKassaStatus = await checkPaymentStatus(payment.yooKassaPaymentId);
         
@@ -127,33 +139,12 @@ router.get('/payment/:paymentId', authMiddleware, async (req, res) => {
                     where: { price: payment.amount, isActive: true },
                   });
               if (plan) {
-                const startDate = new Date();
-                const endDate = new Date();
-                endDate.setMonth(endDate.getMonth() + (plan.interval === 'MONTHLY' ? 1 : 12));
-
-                await prisma.subscription.upsert({
-                  where: { userId: payment.userId },
-                  update: {
-                    status: 'ACTIVE',
-                    startDate,
-                    endDate,
-                    paymentId: payment.id,
-                  },
-                  create: {
-                    id: uuidv4(),
-                    userId: payment.userId,
-                    planId: plan.id,
-                    status: 'ACTIVE',
-                    startDate,
-                    endDate,
-                    autoRenew: true,
-                    paymentId: payment.id,
-                  },
-                });
-
-                await prisma.user.update({
-                  where: { id: payment.userId },
-                  data: { plan: 'PREMIUM' },
+                await applySucceededPayment({
+                  userId: payment.userId,
+                  paymentId: payment.id,
+                  paymentCreatedAt: payment.createdAt,
+                  plan,
+                  source: 'live',
                 });
               }
             } catch (applyErr) {
@@ -209,17 +200,17 @@ router.get('/subscription', authMiddleware, async (req, res) => {
   try {
     const userId = (req as any).user.userId;
 
-    const subscription = await prisma.subscription.findFirst({
-      where: { 
-        userId,
-        status: 'ACTIVE',
-        endDate: { gte: new Date() },
-      },
+    const subscription = await prisma.subscription.findUnique({
+      where: { userId },
       include: {
         plan: true,
         payment: true,
       },
     });
+
+    if (!hasPaidEntitlement(subscription)) {
+      return res.json(null);
+    }
 
     res.json(subscription);
   } catch (error) {
@@ -285,34 +276,12 @@ router.post('/webhook', async (req, res) => {
           });
 
           if (plan) {
-            const startDate = new Date();
-            const endDate = new Date();
-            endDate.setMonth(endDate.getMonth() + (plan.interval === 'MONTHLY' ? 1 : 12));
-
-            await prisma.subscription.upsert({
-              where: { userId: metadata.userId },
-              update: {
-                status: 'ACTIVE',
-                startDate,
-                endDate,
-                paymentId: payment.id,
-              },
-              create: {
-                id: uuidv4(),
-                userId: metadata.userId,
-                planId: metadata.planId,
-                status: 'ACTIVE',
-                startDate,
-                endDate,
-                autoRenew: true,
-                paymentId: payment.id,
-              },
-            });
-
-            // Обновляем план пользователя на PREMIUM (отображается в профиле)
-            await prisma.user.update({
-              where: { id: metadata.userId },
-              data: { plan: 'PREMIUM' },
+            await applySucceededPayment({
+              userId: metadata.userId,
+              paymentId: payment.id,
+              paymentCreatedAt: payment.createdAt,
+              plan,
+              source: 'live',
             });
           }
         }
@@ -329,6 +298,7 @@ router.post('/webhook', async (req, res) => {
 // Принудительно применить Premium по оплаченному платежу текущего пользователя (без payment_id)
 router.post('/fix-my-plan', authMiddleware, async (req, res) => {
   try {
+    if (paymentTesterForbidden(req as any, res)) return;
     const userId = (req as any).user.userId;
 
     const recentPayments = await prisma.payment.findMany({
@@ -369,30 +339,18 @@ router.post('/fix-my-plan', authMiddleware, async (req, res) => {
       });
     }
 
-    const startDate = new Date();
-    const endDate = new Date();
-    endDate.setMonth(endDate.getMonth() + (plan.interval === 'MONTHLY' ? 1 : 12));
-
-    await prisma.subscription.upsert({
-      where: { userId },
-      update: { status: 'ACTIVE', startDate, endDate, paymentId: succeededPayment.id },
-      create: {
-        id: uuidv4(),
-        userId,
-        planId: plan.id,
-        status: 'ACTIVE',
-        startDate,
-        endDate,
-        autoRenew: true,
-        paymentId: succeededPayment.id,
-      },
-    });
-    await prisma.user.update({
-      where: { id: userId },
-      data: { plan: 'PREMIUM' },
+    const applied = await applySucceededPayment({
+      userId,
+      paymentId: succeededPayment.id,
+      paymentCreatedAt: succeededPayment.createdAt,
+      plan,
+      source: 'live',
     });
 
-    res.json({ success: true, message: 'Premium применён' });
+    res.json({
+      success: applied.applied,
+      message: applied.applied ? 'Premium применён' : `Premium не продлён (${applied.reason})`,
+    });
   } catch (error) {
     console.error('fix-my-plan error:', error);
     res.status(500).json({ error: 'Ошибка: ' + (error instanceof Error ? error.message : 'Unknown') });
@@ -402,6 +360,7 @@ router.post('/fix-my-plan', authMiddleware, async (req, res) => {
 // Ручное применение Premium по payment_id (для случаев когда авто-применение не сработало)
 router.post('/apply-premium/:paymentId', authMiddleware, async (req, res) => {
   try {
+    if (paymentTesterForbidden(req as any, res)) return;
     const { paymentId } = req.params;
     const userId = (req as any).user.userId;
 
@@ -432,34 +391,22 @@ router.post('/apply-premium/:paymentId', authMiddleware, async (req, res) => {
       return res.status(400).json({ error: 'No subscription plan found. Run: npx tsx src/scripts/init-payment-data.ts' });
     }
 
-    const startDate = new Date();
-    const endDate = new Date();
-    endDate.setMonth(endDate.getMonth() + (plan.interval === 'MONTHLY' ? 1 : 12));
-
-    await prisma.subscription.upsert({
-      where: { userId },
-      update: { status: 'ACTIVE', startDate, endDate, paymentId: payment.id },
-      create: {
-        id: uuidv4(),
-        userId,
-        planId: plan.id,
-        status: 'ACTIVE',
-        startDate,
-        endDate,
-        autoRenew: true,
-        paymentId: payment.id,
-      },
-    });
-    await prisma.user.update({
-      where: { id: userId },
-      data: { plan: 'PREMIUM' },
+    const applied = await applySucceededPayment({
+      userId,
+      paymentId: payment.id,
+      paymentCreatedAt: payment.createdAt,
+      plan,
+      source: 'live',
     });
     await prisma.payment.update({
       where: { id: payment.id },
       data: { status: 'SUCCEEDED' },
     });
 
-    res.json({ success: true, message: 'Premium applied' });
+    res.json({
+      success: applied.applied,
+      message: applied.applied ? 'Premium applied' : `Premium not extended (${applied.reason})`,
+    });
   } catch (error) {
     console.error('Apply premium error:', error);
     res.status(500).json({ error: 'Failed to apply premium' });
@@ -467,7 +414,8 @@ router.post('/apply-premium/:paymentId', authMiddleware, async (req, res) => {
 });
 
 // Получить тестовые данные для разработки
-router.get('/test-data', (req, res) => {
+router.get('/test-data', authMiddleware, async (req, res) => {
+  if (paymentTesterForbidden(req as any, res)) return;
   res.json({
     testCards: TEST_CARDS,
     testSbpPhones: TEST_SBP_PHONES,

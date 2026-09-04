@@ -49,7 +49,7 @@ import { useTranslation } from "@/hooks/useTranslation";
 import { useBodyScrollLock } from "@/hooks/useBodyScrollLock";
 import {
   localizePlanName,
-  localizePlanFeatures,
+  getCanonicalPlanFeatures,
   localizePaymentDescription,
 } from "@/lib/payment-i18n";
 
@@ -491,11 +491,7 @@ function PaymentTestContent() {
                           </div>
                           <ul className="text-sm sm:text-[15px] text-gray-600 space-y-2">
                             {(() => {
-                              const features = localizePlanFeatures(
-                                plan.features,
-                                t,
-                                3,
-                              );
+                              const features = getCanonicalPlanFeatures(plan, t);
                               if (features.length === 0) {
                                 return (
                                   <li>{t("payment.test.featuresError")}</li>

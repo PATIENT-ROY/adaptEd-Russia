@@ -3,6 +3,7 @@ import jwt, { JwtPayload, SignOptions } from 'jsonwebtoken';
 import crypto from 'crypto';
 import { Request, Response, NextFunction } from 'express';
 import { prisma } from './database';
+import { overlayEffectivePlan } from './effective-plan';
 
 let jwtSecret = process.env.JWT_SECRET;
 if (!jwtSecret) {
@@ -86,11 +87,11 @@ export async function authenticateUser(email: string, password: string) {
   }
 
   const { password: _, ...userWithoutPassword } = user;
-  return userWithoutPassword;
+  return overlayEffectivePlan(userWithoutPassword);
 }
 
 export async function getUserById(userId: string) {
-  return prisma.user.findUnique({
+  const user = await prisma.user.findUnique({
     where: { id: userId },
     select: {
       id: true,
@@ -108,6 +109,8 @@ export async function getUserById(userId: string) {
       registeredAt: true,
     },
   });
+  if (!user) return null;
+  return overlayEffectivePlan(user);
 }
 
 // Middleware для проверки аутентификации

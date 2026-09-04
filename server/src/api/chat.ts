@@ -8,6 +8,17 @@ import {
   DeepSeekConfigurationError,
   getDeepSeekApiKey,
 } from '../lib/deepseek';
+import { getEffectivePlan } from '../lib/effective-plan';
+import { PLAN_CONFIG, PlanKey } from '../lib/plan-limits';
+import {
+  AiQuotaError,
+  accumulateProviderUsage,
+  assertChatQuota,
+  countChatUserMessagesToday,
+  logAiMeter,
+  parseDeepSeekUsage,
+  withUserDailyQuotaLock,
+} from '../lib/ai-meter';
 
 const router = Router();
 
@@ -17,13 +28,6 @@ const sendMessageSchema = z.object({
 });
 
 // ── Plan-based limits ───────────────────────────────────────────────
-
-const PLAN_CONFIG = {
-  FREEMIUM: { dailyMessages: 15, maxTokens: 1500 },
-  PREMIUM:  { dailyMessages: 200, maxTokens: 3000 },
-} as const;
-
-type PlanKey = keyof typeof PLAN_CONFIG;
 
 const MODE_TEMPERATURE: Record<string, number> = {
   study: 0.4,
@@ -190,19 +194,9 @@ function findRelatedGuides(
 
 // ── Helper: get today's start ───────────────────────────────────────
 
-function getTodayStart(): Date {
-  const d = new Date();
-  d.setHours(0, 0, 0, 0);
-  return d;
-}
-
-// ── Helper: get usage for user ──────────────────────────────────────
-
 async function getUserUsage(userId: string, plan: PlanKey) {
   const config = PLAN_CONFIG[plan] || PLAN_CONFIG.FREEMIUM;
-  const todayUsed = await prisma.chatMessage.count({
-    where: { userId, isUser: true, createdAt: { gte: getTodayStart() } },
-  });
+  const todayUsed = await countChatUserMessagesToday(userId);
   return { used: todayUsed, limit: config.dailyMessages, plan };
 }
 
@@ -238,11 +232,7 @@ router.get('/messages', authMiddleware, async (req: Request, res: Response) => {
       timestamp: msg.createdAt.toISOString(),
     }));
 
-    const userData = await prisma.user.findUnique({
-      where: { id: user.userId },
-      select: { plan: true },
-    });
-    const plan = (userData?.plan || 'FREEMIUM') as PlanKey;
+    const plan = await getEffectivePlan(user.userId);
     const usage = await getUserUsage(user.userId, plan);
 
     res.json({
@@ -268,31 +258,34 @@ router.post('/messages', authMiddleware, async (req: Request, res: Response) => 
     // 1. Fetch user profile
     const userData = await prisma.user.findUnique({
       where: { id: user.userId },
-      select: { plan: true, university: true, faculty: true, year: true, country: true },
+      select: { university: true, faculty: true, year: true, country: true },
     });
 
-    const plan = (userData?.plan || 'FREEMIUM') as PlanKey;
+    const plan = await getEffectivePlan(user.userId);
     const config = PLAN_CONFIG[plan] || PLAN_CONFIG.FREEMIUM;
 
-    // 2. Check daily limit
-    const todayUsed = await prisma.chatMessage.count({
-      where: { userId: user.userId, isUser: true, createdAt: { gte: getTodayStart() } },
-    });
-
-    if (todayUsed >= config.dailyMessages) {
-      return res.status(429).json({
-        success: false,
-        error: plan === 'FREEMIUM'
-          ? 'LIMIT_FREEMIUM'
-          : 'LIMIT_PREMIUM',
-        usage: { used: todayUsed, limit: config.dailyMessages, plan },
-      } as ApiResponse);
+    let userMessage;
+    let todayUsed: number;
+    try {
+      const reserved = await withUserDailyQuotaLock(user.userId, async (tx) => {
+        const quota = await assertChatQuota(user.userId, plan, tx);
+        const created = await tx.chatMessage.create({
+          data: { userId: user.userId, content: validatedData.content, isUser: true },
+        });
+        return { created, todayUsed: quota.used + 1 };
+      });
+      userMessage = reserved.created;
+      todayUsed = reserved.todayUsed;
+    } catch (error) {
+      if (error instanceof AiQuotaError) {
+        return res.status(429).json({
+          success: false,
+          error: error.code,
+          usage: { used: error.used, limit: error.limit, plan: error.plan },
+        } as ApiResponse);
+      }
+      throw error;
     }
-
-    // 3. Save user message
-    const userMessage = await prisma.chatMessage.create({
-      data: { userId: user.userId, content: validatedData.content, isUser: true },
-    });
 
     // 4. Fetch conversation history for context
     const recentMessages = await prisma.chatMessage.findMany({
@@ -318,12 +311,22 @@ router.post('/messages', authMiddleware, async (req: Request, res: Response) => 
     );
 
     // 6. Generate AI response
-    const aiResponseText = await generateAIResponse({
+    const generated = await generateAIResponse({
       systemPrompt,
       conversationHistory,
       userMessage: validatedData.content,
       maxTokens: config.maxTokens,
       temperature: MODE_TEMPERATURE[validatedData.mode] ?? 0.5,
+    });
+    const aiResponseText = generated.text;
+    logAiMeter({
+      kind: 'chat',
+      plan,
+      ok: !generated.fallback,
+      attempts: generated.attempts,
+      promptTokens: generated.usage.promptTokens,
+      completionTokens: generated.usage.completionTokens,
+      fallback: generated.fallback,
     });
 
     // 7. Save AI message
@@ -405,11 +408,19 @@ interface AIOptions {
   temperature: number;
 }
 
-async function generateAIResponse(options: AIOptions): Promise<string> {
+interface GeneratedAi {
+  text: string;
+  usage: { promptTokens?: number; completionTokens?: number };
+  attempts: number;
+  fallback: boolean;
+}
+
+async function generateAIResponse(options: AIOptions): Promise<GeneratedAi> {
   const MAX_RETRIES = 3;
   const apiKey = getDeepSeekApiKey();
 
   let lastError: Error | null = null;
+  let usage = accumulateProviderUsage([]);
 
   const messages = [
     { role: 'system', content: options.systemPrompt },
@@ -433,6 +444,17 @@ async function generateAIResponse(options: AIOptions): Promise<string> {
         }),
       });
 
+      let data: unknown = null;
+      try {
+        data = await response.json();
+      } catch {
+        data = null;
+      }
+
+      if (data) {
+        usage = accumulateProviderUsage([usage, parseDeepSeekUsage(data)]);
+      }
+
       if (!response.ok) {
         const status = response.status;
 
@@ -448,16 +470,20 @@ async function generateAIResponse(options: AIOptions): Promise<string> {
         continue;
       }
 
-      const data = await response.json() as {
+      const aiResponse = (data as {
         choices?: Array<{ message?: { content?: string } }>;
-      };
-
-      const aiResponse = data.choices?.[0]?.message?.content;
+      } | null)?.choices?.[0]?.message?.content;
       if (!aiResponse) {
-        throw new Error('Empty AI response');
+        lastError = new Error('Empty AI response');
+        continue;
       }
 
-      return aiResponse;
+      return {
+        text: aiResponse,
+        usage,
+        attempts: attempt + 1,
+        fallback: false,
+      };
     } catch (error) {
       lastError = error instanceof Error ? error : new Error(String(error));
       console.warn(`[AI] Attempt ${attempt + 1}/${MAX_RETRIES} failed:`, error);
@@ -465,7 +491,12 @@ async function generateAIResponse(options: AIOptions): Promise<string> {
   }
 
   console.error('[AI] All attempts failed:', lastError);
-  return generateMockResponse(options.userMessage);
+  return {
+    text: generateMockResponse(options.userMessage),
+    usage,
+    attempts: MAX_RETRIES,
+    fallback: true,
+  };
 }
 
 // ── Improved fallback responses ─────────────────────────────────────

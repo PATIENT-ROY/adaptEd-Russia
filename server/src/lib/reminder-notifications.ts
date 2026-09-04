@@ -1,35 +1,19 @@
 import { prisma } from './database';
-import { sendReminderEmail } from './email';
+import { SKIP_RESERVED_EMAIL, sendReminderEmail } from './email';
+import { parseTelegramChatId, sendTelegramMessage } from './telegram';
+import { getEffectivePlan } from './effective-plan';
+import { FREEMIUM_MONTHLY_NOTIFICATIONS, PlanKey } from './plan-limits';
 
-export const FREEMIUM_MONTHLY_NOTIFICATIONS = 2;
+export { getEffectivePlan, FREEMIUM_MONTHLY_NOTIFICATIONS };
 
 export interface ReminderQuota {
   used: number;
   limit: number | null;
-  plan: 'FREEMIUM' | 'PREMIUM';
+  plan: PlanKey;
 }
 
 function monthStart(now = new Date()) {
   return new Date(Date.UTC(now.getUTCFullYear(), now.getUTCMonth(), 1));
-}
-
-export async function getEffectivePlan(userId: string): Promise<'FREEMIUM' | 'PREMIUM'> {
-  const user = await prisma.user.findUnique({
-    where: { id: userId },
-    select: { plan: true },
-  });
-  if (user?.plan === 'PREMIUM') return 'PREMIUM';
-
-  const subscription = await prisma.subscription.findFirst({
-    where: {
-      userId,
-      status: 'ACTIVE',
-      endDate: { gte: new Date() },
-    },
-    select: { id: true },
-  });
-
-  return subscription ? 'PREMIUM' : 'FREEMIUM';
 }
 
 export async function getReminderQuota(userId: string): Promise<ReminderQuota> {
@@ -46,34 +30,6 @@ export async function getReminderQuota(userId: string): Promise<ReminderQuota> {
     limit: plan === 'PREMIUM' ? null : FREEMIUM_MONTHLY_NOTIFICATIONS,
     plan,
   };
-}
-
-function parseTelegramChatId(socialLinks: string | null | undefined): string | null {
-  if (!socialLinks) return null;
-  try {
-    const parsed = JSON.parse(socialLinks) as { telegramChatId?: string; telegram_chat_id?: string };
-    const id = parsed.telegramChatId || parsed.telegram_chat_id;
-    return id ? String(id) : null;
-  } catch {
-    return null;
-  }
-}
-
-async function sendTelegramMessage(chatId: string, text: string): Promise<boolean> {
-  const token = process.env.TELEGRAM_BOT_TOKEN;
-  if (!token) return false;
-
-  try {
-    const response = await fetch(`https://api.telegram.org/bot${token}/sendMessage`, {
-      method: 'POST',
-      headers: { 'Content-Type': 'application/json' },
-      body: JSON.stringify({ chat_id: chatId, text }),
-    });
-    return response.ok;
-  } catch (error) {
-    console.error('[reminders] telegram send failed:', error);
-    return false;
-  }
 }
 
 async function deliverReminder(reminder: {
@@ -114,10 +70,17 @@ async function deliverReminder(reminder: {
   });
 
   if (!result.sent) {
+    if (result.error === SKIP_RESERVED_EMAIL) return true;
     console.error('[reminders] email failed:', reminder.id, result.error);
   }
 
   return result.sent;
+}
+
+function reminderLeadMs() {
+  const hours = Number(process.env.REMINDER_LEAD_HOURS);
+  const parsed = Number.isFinite(hours) && hours >= 0 ? hours : 24;
+  return parsed * 60 * 60 * 1000;
 }
 
 export async function dispatchDueReminders(): Promise<void> {
@@ -125,7 +88,7 @@ export async function dispatchDueReminders(): Promise<void> {
     where: {
       status: 'PENDING',
       notifiedAt: null,
-      dueDate: { lte: new Date() },
+      dueDate: { lte: new Date(Date.now() + reminderLeadMs()) },
     },
     include: {
       user: {

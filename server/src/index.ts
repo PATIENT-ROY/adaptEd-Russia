@@ -21,7 +21,9 @@ import noteRoutes from './api/notes.js';
 import guideProgressRoutes from './api/guide-progress.js';
 import adminRoutes from './api/admin.js';
 import buddyRoutes from './api/buddy.js';
+import telegramRoutes from './api/telegram.js';
 import { startReminderNotificationWorker } from './lib/reminder-notifications.js';
+import { syncTelegramWebhook } from './lib/telegram.js';
 
 // Загружаем переменные окружения
 dotenv.config();
@@ -67,7 +69,10 @@ const standardMax = Number(process.env.RATE_LIMIT_MAX_REQUESTS) || (
 const standardLimiter = rateLimit({
   windowMs: standardWindowMs,
   max: standardMax,
-  skip: (req) => req.method === 'OPTIONS',
+  skip: (req) =>
+    req.method === 'OPTIONS' ||
+    req.path.endsWith('/telegram/webhook') ||
+    req.originalUrl.includes('/telegram/webhook'),
   handler: (_req, res) => {
     res.status(429).json({ error: 'RATE_LIMITED' });
   },
@@ -266,6 +271,7 @@ app.use('/api', reviewRoutes);
 app.use('/api/guide-progress', guideProgressRoutes);
 app.use('/api/admin', adminRoutes);
 app.use('/api/buddy', buddyRoutes);
+app.use('/api/telegram', telegramRoutes);
 
 // 404 handler
 app.use('*', (req, res) => {
@@ -291,6 +297,7 @@ app.listen(PORT, HOST, () => {
   console.log(`📊 Health check: http://${HOST}:${PORT}/health`);
   console.log(`🔗 API Base URL: http://${HOST}:${PORT}/api`);
   startReminderNotificationWorker();
+  void syncTelegramWebhook();
 });
 
 export default app; 
