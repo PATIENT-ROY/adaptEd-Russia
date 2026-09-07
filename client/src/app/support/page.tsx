@@ -271,7 +271,11 @@ export default function SupportPage() {
         ) : (
           <>
             {/* Back Button */}
-            <BackButton href="/" label={t("support.back")} className="mb-6" />
+            <BackButton
+              label={t("support.back")}
+              fallbackHref={user ? "/profile" : "/"}
+              className="mb-6"
+            />
 
             {/* Header */}
             <div className="text-center mb-12">

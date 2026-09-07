@@ -3,7 +3,6 @@
 import { useState, useEffect, useRef, useCallback, useMemo } from "react";
 import { Layout } from "@/components/layout/layout";
 import { ProtectedRoute } from "@/components/auth/ProtectedRoute";
-import { FeaturePreviewGate } from "@/components/auth/FeaturePreviewGate";
 import { useAuth } from "@/contexts/AuthContext";
 import { useChat } from "@/hooks/useChat";
 import { useTranslation } from "@/hooks/useTranslation";
@@ -241,11 +240,52 @@ export default function AiAssistantPage() {
   const [isListening, setIsListening] = useState(false);
   const [speechError, setSpeechError] = useState<string | null>(null);
   const unauthFallback = (
-    <FeaturePreviewGate
-      featureName={t("aiHelper.header.title")}
-      previewTitle={t("aiHelper.preview.title")}
-      previewText={t("aiHelper.preview.text")}
-    />
+    <Layout>
+      <div className="space-y-4 sm:space-y-6">
+        <div className="rounded-2xl bg-white p-4 shadow-sm sm:rounded-3xl sm:p-6">
+          <BackButton label={t("templates.back")} fallbackHref="/ai-helper" />
+          <div className="mt-4 flex items-center gap-3">
+            <div className="shrink-0 rounded-lg bg-blue-50 p-2.5 sm:p-3">
+              <GraduationCap className="h-5 w-5 text-blue-600 sm:h-6 sm:w-6" />
+            </div>
+            <div className="min-w-0">
+              <h1 className="text-xl font-bold leading-tight text-gray-900 sm:text-2xl">
+                {t("aiHelper.header.title")}
+              </h1>
+              <p className="mt-0.5 text-sm text-gray-600 sm:text-base">
+                {t("aiHelper.header.subtitle")}
+              </p>
+            </div>
+          </div>
+        </div>
+
+        <Card className="w-full">
+          <CardContent className="flex flex-col items-center justify-center gap-5 p-6 text-center sm:p-8">
+            <EmptyState
+              icon={MessageSquare}
+              title={t("aiHelper.empty.title")}
+              description={t("aiHelper.empty.desc")}
+              className="py-0 mb-0"
+            />
+            <div className="w-full max-w-md rounded-xl border border-slate-200 bg-slate-50 p-4 text-start">
+              <p className="text-sm font-semibold text-slate-800">{t("aiHelper.preview.title")}</p>
+              <p className="mt-1 text-sm text-slate-600">{t("aiHelper.preview.text")}</p>
+            </div>
+            <p className="text-sm text-slate-600">{t("auth.preview.loginRequired")}</p>
+            <div className="flex w-full max-w-md flex-col gap-3 sm:flex-row">
+              <Link href="/login?returnTo=%2Fai-helper%2Fassistant" className="w-full">
+                <Button className="w-full">{t("login.submit")}</Button>
+              </Link>
+              <Link href="/register?returnTo=%2Fai-helper%2Fassistant" className="w-full">
+                <Button variant="outline" className="w-full">
+                  {t("auth.preview.createAccount")}
+                </Button>
+              </Link>
+            </div>
+          </CardContent>
+        </Card>
+      </div>
+    </Layout>
   );
 
   const defaultRelatedGuides = useMemo(
@@ -253,16 +293,6 @@ export default function AiAssistantPage() {
       { title: t("aiHelper.guides.default.1"), url: "/guides/life/dorm", category: "life" },
       { title: t("aiHelper.guides.default.2"), url: "/guides/life/migration-registration", category: "life" },
       { title: t("aiHelper.guides.default.3"), url: "/guides/life/insurance-dms", category: "life" },
-    ],
-    [t],
-  );
-
-  const popularStudentQuestions = useMemo(
-    () => [
-      t("aiHelper.popular.1"),
-      t("aiHelper.popular.2"),
-      t("aiHelper.popular.3"),
-      t("aiHelper.popular.4"),
     ],
     [t],
   );
@@ -459,19 +489,6 @@ export default function AiAssistantPage() {
     }
   }, [sendMessage, currentMode]);
 
-  const handlePopularQuestionSend = useCallback(
-    async (question: string) => {
-      setInputMessage(question);
-      try {
-        await sendMessage(question, currentMode);
-        setInputMessage("");
-      } catch (err) {
-        console.error("Error sending popular question:", err);
-      }
-    },
-    [sendMessage, currentMode],
-  );
-
   const handleKeyDown = useCallback((e: React.KeyboardEvent) => {
     if (e.key === "Enter" && !e.shiftKey) {
       e.preventDefault();
@@ -552,7 +569,7 @@ export default function AiAssistantPage() {
           {/* Header */}
           <div className="bg-white rounded-2xl sm:rounded-3xl p-4 sm:p-6 shadow-sm">
             <div className="flex flex-col space-y-4">
-              <BackButton label={t("templates.backToHub")} href="/ai-helper" />
+              <BackButton label={t("templates.back")} fallbackHref="/ai-helper" />
               <div className="flex flex-row items-center gap-3">
                 <div
                   className={`rounded-lg p-2.5 sm:p-3 shrink-0 ${currentModeConfig.bgColor}`}
@@ -607,7 +624,7 @@ export default function AiAssistantPage() {
           <div className="grid grid-cols-1 xl:grid-cols-4 gap-4 sm:gap-6 lg:gap-8">
             {/* Chat Section */}
             <div className="xl:col-span-3 order-1">
-              <Card className="h-[760px] min-h-0 sm:h-[calc(100dvh-180px)] sm:min-h-[720px] sm:max-h-[900px] flex flex-col relative">
+              <Card className="h-[min(820px,calc(100dvh-8rem))] min-h-0 sm:h-[calc(100dvh-160px)] sm:min-h-[760px] sm:max-h-[960px] flex flex-col relative">
                 {/* Limit Overlay */}
                 {limitError && (
                   <LimitOverlay
@@ -801,30 +818,6 @@ export default function AiAssistantPage() {
 
                   {/* Input */}
                   <div className="border-t p-2.5 sm:p-4 flex-shrink-0 space-y-2">
-                    {/* Popular questions */}
-                    <div className="rounded-xl border border-slate-200 bg-slate-50 p-2.5 sm:p-3">
-                      <p className="text-xs sm:text-sm font-semibold text-slate-800 mb-2">
-                        {t("aiHelper.popular.title")}
-                      </p>
-                      <div className="space-y-1.5 sm:space-y-2">
-                        {popularStudentQuestions.map((question) => (
-                          <button
-                            key={question}
-                            type="button"
-                            onClick={() => handlePopularQuestionSend(question)}
-                            disabled={loading || isAtLimit}
-                            className="flex w-full min-w-0 items-center justify-between gap-3 rounded-lg border border-slate-200 bg-white px-3 py-2 text-left text-xs leading-snug transition-colors hover:border-blue-300 hover:bg-blue-50 disabled:opacity-50 sm:text-sm"
-                            aria-label={`${t("aiHelper.input.send")}: ${question}`}
-                          >
-                            <span className="min-w-0 flex-1">
-                              {question}
-                            </span>
-                            <Send className="h-4 w-4 shrink-0 text-slate-600" />
-                          </button>
-                        ))}
-                      </div>
-                    </div>
-
                     {speechError && (
                       <p className="text-xs text-red-500 text-center" role="alert">
                         {speechError}

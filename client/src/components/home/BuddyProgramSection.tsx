@@ -3,6 +3,7 @@
 import Link from "next/link";
 
 import {
+  ChevronRight,
   Globe2,
   HeartHandshake,
   MessageCircle,
@@ -48,6 +49,7 @@ function BuddyTrackCard({
   description,
   href,
   tone,
+  cta,
 }: {
   icon: LucideIcon;
   iconClassName: string;
@@ -56,11 +58,12 @@ function BuddyTrackCard({
   description: string;
   href: string;
   tone: "student" | "mentor";
+  cta: string;
 }) {
   return (
     <Link
       href={href}
-      className={`relative flex h-full min-w-0 flex-col rounded-[24px] bg-white p-6 text-start shadow-[0_10px_32px_rgba(15,23,42,0.07)] ring-1 sm:p-7 ${
+      className={`relative flex h-full min-w-0 flex-col rounded-[24px] bg-white p-6 text-start shadow-[0_10px_32px_rgba(15,23,42,0.07)] ring-1 active:scale-[0.99] sm:p-7 ${
         tone === "student" ? "ring-blue-100" : "ring-emerald-100"
       } transition hover:-translate-y-1 hover:shadow-[0_16px_40px_rgba(15,23,42,0.12)] focus:outline-none focus-visible:ring-2 focus-visible:ring-indigo-500 focus-visible:ring-offset-2`}
     >
@@ -84,6 +87,16 @@ function BuddyTrackCard({
       <p className="mt-2 text-[15px] leading-relaxed text-slate-500">
         {description}
       </p>
+      <span
+        className={`mt-5 inline-flex min-h-11 w-full items-center justify-between gap-2 rounded-xl px-3.5 py-2.5 text-sm font-semibold ${
+          tone === "student"
+            ? "bg-blue-50 text-blue-700"
+            : "bg-emerald-50 text-emerald-800"
+        }`}
+      >
+        {cta}
+        <ChevronRight className="h-4 w-4 shrink-0 rtl:rotate-180" aria-hidden />
+      </span>
     </Link>
   );
 }
@@ -142,6 +155,7 @@ export function BuddyProgramSection() {
               description={t("home.buddy.student.description")}
               href="/buddy?form=student#application"
               tone="student"
+              cta={t("home.buddy.open")}
             />
           </StaggerItem>
 
@@ -158,6 +172,7 @@ export function BuddyProgramSection() {
               description={t("home.buddy.mentor.description")}
               href="/buddy?form=mentor#application"
               tone="mentor"
+              cta={t("home.buddy.open")}
             />
           </StaggerItem>
         </StaggerReveal>

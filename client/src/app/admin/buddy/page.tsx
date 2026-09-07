@@ -5,6 +5,7 @@ import Link from "next/link";
 import { AlertCircle, ArrowLeft, HeartHandshake, Loader2, Save, Shield } from "lucide-react";
 import { Layout } from "@/components/layout/layout";
 import { Button } from "@/components/ui/button";
+import { SelectField } from "@/components/ui/select-field";
 import { useAuth } from "@/contexts/AuthContext";
 import { useTranslation } from "@/hooks/useTranslation";
 import { buddyT, type BuddyKey } from "@/lib/buddy-i18n";
@@ -165,17 +166,17 @@ export default function BuddyAdminPage() {
           <div className="rounded-3xl bg-white p-5 shadow-sm ring-1 ring-slate-200">
             <div className="grid gap-3 sm:grid-cols-3 lg:grid-cols-1 xl:grid-cols-3">
               <label className="text-sm font-semibold text-slate-700">{bt("admin.filter.type")}
-                <select data-testid="buddy-filter-type" value={type} onChange={(e) => setType(e.target.value as typeof type)} className="mt-1.5 w-full rounded-xl border border-slate-300 px-3 py-2.5 font-normal">
+                <SelectField data-testid="buddy-filter-type" wrapperClassName="mt-1.5" value={type} onChange={(e) => setType(e.target.value as typeof type)}>
                   <option value="">{bt("admin.filter.all")}</option>
                   <option value="STUDENT">{bt("application.student")}</option>
                   <option value="MENTOR">{bt("application.mentor")}</option>
-                </select>
+                </SelectField>
               </label>
               <label className="text-sm font-semibold text-slate-700">{bt("admin.filter.status")}
-                <select data-testid="buddy-filter-status" value={status} onChange={(e) => setStatus(e.target.value as typeof status)} className="mt-1.5 w-full rounded-xl border border-slate-300 px-3 py-2.5 font-normal">
+                <SelectField data-testid="buddy-filter-status" wrapperClassName="mt-1.5" value={status} onChange={(e) => setStatus(e.target.value as typeof status)}>
                   <option value="">{bt("admin.filter.all")}</option>
                   {STATUSES.map((item) => <option key={item} value={item}>{bt(`application.${item}` as BuddyKey)}</option>)}
-                </select>
+                </SelectField>
               </label>
               <label className="text-sm font-semibold text-slate-700">{bt("admin.filter.city")}
                 <input data-testid="buddy-filter-city" value={city} onChange={(e) => setCity(e.target.value)} maxLength={100} className="mt-1.5 w-full rounded-xl border border-slate-300 px-3 py-2.5 font-normal" />
@@ -224,9 +225,9 @@ export default function BuddyAdminPage() {
                 <div className="mt-7 border-t border-slate-200 pt-6">
                   <div className="grid gap-4 sm:grid-cols-2">
                     <label className="text-sm font-semibold text-slate-700">{bt("admin.field.status")}
-                      <select data-testid="buddy-admin-status" value={editStatus} onChange={(e) => setEditStatus(e.target.value as BuddyApplicationStatus)} className="mt-2 w-full rounded-xl border border-slate-300 px-3 py-3 font-normal">
+                      <SelectField data-testid="buddy-admin-status" wrapperClassName="mt-2" className="py-3" value={editStatus} onChange={(e) => setEditStatus(e.target.value as BuddyApplicationStatus)}>
                         {STATUSES.map((item) => <option key={item} value={item}>{bt(`application.${item}` as BuddyKey)}</option>)}
-                      </select>
+                      </SelectField>
                     </label>
                     <label className="text-sm font-semibold text-slate-700 sm:col-span-2">{bt("admin.field.note")}
                       <textarea data-testid="buddy-admin-note" value={note} onChange={(e) => setNote(e.target.value)} maxLength={2000} rows={5} className="mt-2 w-full rounded-xl border border-slate-300 px-3 py-3 font-normal" />

@@ -178,16 +178,16 @@ export function LanguageSwitcher({
             dismissHint();
           }
         }}
-        className="flex items-center gap-1 sm:gap-2 p-1 sm:px-2 sm:py-1 h-6 sm:h-7 lg:h-8 rounded-lg sm:rounded-xl border-indigo-200 bg-white text-indigo-600 hover:border-indigo-300 hover:bg-indigo-50 hover:text-indigo-700"
+        className="flex items-center gap-1 sm:gap-2 p-1 sm:px-2 sm:py-1 h-6 sm:h-7 lg:h-8 leading-none rounded-lg sm:rounded-xl border-indigo-200 bg-white text-indigo-600 hover:border-indigo-300 hover:bg-indigo-50 hover:text-indigo-700"
       >
-        <Globe className="h-2.5 w-2.5 sm:h-3 sm:w-3" />
-        <span className="text-sm sm:text-base">{currentLang?.flag}</span>
-        <span className="hidden sm:inline text-xs sm:text-sm font-medium">
+        <Globe className="h-2.5 w-2.5 sm:h-3 sm:w-3 shrink-0" />
+        <span className="text-sm sm:text-base leading-none">{currentLang?.flag}</span>
+        <span className="hidden sm:inline text-xs sm:text-sm font-medium leading-none">
           {currentLang?.name}
         </span>
         <ChevronDown
           className={cn(
-            "h-2.5 w-2.5 sm:h-3 sm:w-3 transition-transform duration-200",
+            "h-2.5 w-2.5 sm:h-3 sm:w-3 shrink-0 transition-transform duration-200",
             isOpen && "rotate-180"
           )}
         />

@@ -794,6 +794,7 @@ const translations: Record<Language, Record<string, string>> = {
     "home.buddy.mentor.role": "Для местного наставника",
     "home.buddy.mentor.title": "Стать наставником",
     "home.buddy.mentor.description": "Поделитесь опытом, познакомьте студента с городом и помогите ему легче адаптироваться",
+    "home.buddy.open": "Открыть анкету",
     "home.buddy.comingSoon": "Скоро",
     
     "home.section.pricing.title": "Подписки",
@@ -2661,6 +2662,7 @@ const translations: Record<Language, Record<string, string>> = {
     "home.buddy.mentor.role": "For local mentors",
     "home.buddy.mentor.title": "Become a mentor",
     "home.buddy.mentor.description": "Share your experience, introduce a student to the city, and help them adapt more easily",
+    "home.buddy.open": "Open application",
     "home.buddy.comingSoon": "Coming soon",
     
     "home.section.pricing.title": "Subscriptions",
@@ -4524,6 +4526,7 @@ const translations: Record<Language, Record<string, string>> = {
     "home.buddy.mentor.role": "Pour le mentor local",
     "home.buddy.mentor.title": "Devenir mentor",
     "home.buddy.mentor.description": "Partagez votre expérience, faites découvrir la ville à un étudiant et aidez-le à s'adapter plus facilement",
+    "home.buddy.open": "Ouvrir le formulaire",
     "home.buddy.comingSoon": "Bientôt",
     
     "home.section.pricing.title": "Abonnements",
@@ -6355,6 +6358,7 @@ const translations: Record<Language, Record<string, string>> = {
     "home.buddy.mentor.role": "للمرشد المحلي",
     "home.buddy.mentor.title": "كن مرشدًا",
     "home.buddy.mentor.description": "شارك خبرتك، وعرّف الطالب على المدينة، وساعده على التكيف بسهولة أكبر",
+    "home.buddy.open": "فتح الاستمارة",
     "home.buddy.comingSoon": "قريبًا",
     
     "home.section.pricing.title": "الاشتراكات",
@@ -8216,6 +8220,7 @@ const translations: Record<Language, Record<string, string>> = {
     "home.buddy.mentor.role": "面向本地导师",
     "home.buddy.mentor.title": "成为导师",
     "home.buddy.mentor.description": "分享经验，带学生了解城市，帮助他们更轻松地适应",
+    "home.buddy.open": "打开申请表",
     "home.buddy.comingSoon": "即将推出",
     
     "home.section.pricing.title": "订阅",

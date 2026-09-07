@@ -1,6 +1,7 @@
 "use client";
 
 import { Navigation } from "./navigation";
+import { RememberPath } from "./remember-path";
 import { useLanguage } from "@/contexts/LanguageContext";
 import { useTranslation } from "@/hooks/useTranslation";
 
@@ -20,6 +21,7 @@ export function Layout({ children }: LayoutProps) {
       >
         {t("a11y.skipToContent")}
       </a>
+      <RememberPath />
       <Navigation
         currentLanguage={currentLanguage}
         onLanguageChange={setLanguage}
