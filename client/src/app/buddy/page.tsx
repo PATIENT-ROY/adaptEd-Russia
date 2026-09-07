@@ -1,11 +1,12 @@
 "use client";
 
 import Link from "next/link";
-import { useCallback, useEffect, useLayoutEffect, useMemo, useRef, useState } from "react";
+import { useCallback, useEffect, useLayoutEffect, useMemo, useRef, useState, type SelectHTMLAttributes } from "react";
 import {
   AlertCircle,
   Check,
   CheckCircle2,
+  ChevronDown,
   Clock3,
   HeartHandshake,
   Loader2,
@@ -18,6 +19,7 @@ import {
 } from "lucide-react";
 import { BuddyMineCards } from "@/components/buddy/BuddyMineCards";
 import { Layout } from "@/components/layout/layout";
+import { BackButton } from "@/components/ui/back-button";
 import { Button } from "@/components/ui/button";
 import { useAuth } from "@/contexts/AuthContext";
 import { useTranslation } from "@/hooks/useTranslation";
@@ -98,6 +100,26 @@ const initialForm: FormState = {
 const fieldClass =
   "mt-2 w-full rounded-xl border border-slate-300 bg-white px-3.5 py-3 text-base text-slate-900 outline-none transition placeholder:text-slate-400 focus:border-indigo-500 focus:ring-2 focus:ring-indigo-200";
 const labelClass = "block text-sm font-semibold text-slate-800";
+
+function SelectField({
+  className,
+  children,
+  ...props
+}: SelectHTMLAttributes<HTMLSelectElement>) {
+  return (
+    <div className="relative mt-2">
+      <select
+        {...props}
+        className={`${fieldClass} mt-0 appearance-none pe-10 ${className ?? ""}`}
+      >
+        {children}
+      </select>
+      <span className="pointer-events-none absolute inset-y-0 end-3.5 flex items-center text-slate-500">
+        <ChevronDown aria-hidden className="h-4 w-4" />
+      </span>
+    </div>
+  );
+}
 
 function localeFor(language: Language) {
   return {
@@ -266,11 +288,11 @@ function ApplicationForm({
         {type === "MENTOR" && (
           <label className={labelClass}>
             {bt("field.status")} *
-            <select className={fieldClass} value={form.participantStatus} onChange={(e) => setValue("participantStatus", e.target.value as BuddyParticipantStatus)}>
+            <SelectField value={form.participantStatus} onChange={(e) => setValue("participantStatus", e.target.value as BuddyParticipantStatus)}>
               {PARTICIPANT_STATUSES.map((status) => (
                 <option key={status} value={status}>{bt(`status.${status === "LOCAL_RESIDENT" ? "local" : status.toLowerCase()}` as BuddyKey)}</option>
               ))}
-            </select>
+            </SelectField>
           </label>
         )}
         <label className={labelClass}>
@@ -307,9 +329,9 @@ function ApplicationForm({
         </label>
         <label className={labelClass}>
           {bt("field.contactMethod")} *
-          <select className={fieldClass} value={form.contactMethod} onChange={(e) => setValue("contactMethod", e.target.value as BuddyContactMethod)}>
+          <SelectField value={form.contactMethod} onChange={(e) => setValue("contactMethod", e.target.value as BuddyContactMethod)}>
             {CONTACT_METHODS.map((method) => <option key={method} value={method}>{bt(`contact.${method}` as BuddyKey)}</option>)}
-          </select>
+          </SelectField>
         </label>
         <label className={labelClass}>
           {bt("field.contact")} *
@@ -439,6 +461,7 @@ export default function BuddyPage() {
   return (
     <Layout>
       <div dir={isRtl ? "rtl" : "ltr"} className="space-y-12 pb-12 pt-4 sm:space-y-16 sm:pt-8" style={{ overflowAnchor: "none" }}>
+        <BackButton label={bt("back")} />
         {!submitted && (
           <>
         <section className="overflow-hidden rounded-3xl bg-gradient-to-br from-indigo-50 via-white to-emerald-50 px-5 py-10 ring-1 ring-indigo-100 sm:px-10 sm:py-16">

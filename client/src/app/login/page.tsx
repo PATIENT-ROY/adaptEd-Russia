@@ -42,6 +42,8 @@ export default function LoginPage() {
   const stepTimeoutRef = useRef<NodeJS.Timeout | null>(null);
 
   const [registerHref, setRegisterHref] = useState("/register");
+  const emailInputRef = useRef<HTMLInputElement>(null);
+  const passwordInputRef = useRef<HTMLInputElement>(null);
 
   const { login, user, isLoading: isAuthLoading } = useAuth();
   const { t } = useTranslation();
@@ -113,6 +115,11 @@ export default function LoginPage() {
   };
 
   useEffect(() => {
+    if (step === "email") emailInputRef.current?.focus();
+    if (step === "password") passwordInputRef.current?.focus();
+  }, [step]);
+
+  useEffect(() => {
     return () => {
       if (stepTimeoutRef.current) {
         clearTimeout(stepTimeoutRef.current);
@@ -163,7 +170,7 @@ export default function LoginPage() {
           </CardHeader>
 
           <CardContent className="space-y-4 sm:space-y-6 relative overflow-hidden min-h-[320px] sm:min-h-[360px]">
-            <AnimatePresence mode="wait">
+            <AnimatePresence mode="wait" initial={false}>
               {step === "email" ? (
                 <motion.form
                   key="email-step"
@@ -186,12 +193,12 @@ export default function LoginPage() {
                   <Mail className="absolute left-3 top-1/2 transform -translate-y-1/2 h-4 w-4 text-slate-400" />
                   <Input
                     id="email"
+                    ref={emailInputRef}
                     type="email"
                     placeholder={t("login.emailPlaceholder")}
                     value={email}
                     onChange={(e) => setEmail(e.target.value)}
                     className="pl-10 h-12 border-slate-200 focus:border-blue-500 focus:ring-blue-500"
-                        autoFocus
                     required
                   />
                 </div>
@@ -270,7 +277,7 @@ export default function LoginPage() {
                     value={password}
                     onChange={(e) => setPassword(e.target.value)}
                     className="pl-10 pr-10 h-12 border-slate-200 focus:border-blue-500 focus:ring-blue-500"
-                          autoFocus={false}
+                    ref={passwordInputRef}
                     required
                   />
                   <button
@@ -362,6 +369,16 @@ export default function LoginPage() {
                 </motion.div>
               )}
             </AnimatePresence>
+
+            {/* Divider */}
+            <div className="relative">
+              <div className="absolute inset-0 flex items-center">
+                <div className="w-full border-t border-slate-200" />
+              </div>
+              <div className="relative flex justify-center text-sm">
+                <span className="px-2 bg-white text-slate-500">{t("login.or")}</span>
+              </div>
+            </div>
 
             {/* Register Link */}
             <div className="text-center">

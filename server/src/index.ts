@@ -58,7 +58,9 @@ app.use(helmet());
         allowedHeaders: ['Content-Type', 'Authorization'],
       }));
 
-const ENABLE_RATE_LIMIT = process.env.RATE_LIMIT !== 'false';
+const ENABLE_RATE_LIMIT =
+  process.env.RATE_LIMIT === 'true' ||
+  (process.env.NODE_ENV === 'production' && process.env.RATE_LIMIT !== 'false');
 
 // Стандартный лимитер для большинства API
 const standardWindowMs = Number(process.env.RATE_LIMIT_WINDOW_MS) || 15 * 60 * 1000;

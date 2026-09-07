@@ -86,7 +86,10 @@ export function AuthProvider({ children }: { children: React.ReactNode }) {
     async (email: string, password: string): Promise<boolean> => {
       setIsLoading(true);
       try {
-        const response = await apiClient.login({ email, password });
+        const response = await apiClient.login({
+          email: email.trim().toLowerCase(),
+          password,
+        });
         
         if (response?.user && response?.token) {
           setUser(response.user);
@@ -159,6 +162,7 @@ export function AuthProvider({ children }: { children: React.ReactNode }) {
 
     clearApiCache();
     router.push("/");
+    window.scrollTo(0, 0);
   }, [user, router]);
 
   const clearNewUserFlag = useCallback(() => {

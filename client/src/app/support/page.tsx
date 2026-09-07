@@ -2,6 +2,7 @@
 
 import { useState, useEffect, useCallback, useMemo, useRef } from "react";
 import Link from "next/link";
+import { useRouter } from "next/navigation";
 import {
   Card,
   CardContent,
@@ -55,6 +56,7 @@ interface SupportTicket {
 
 export default function SupportPage() {
   const { t } = useTranslation();
+  const router = useRouter();
   const { user } = useAuth();
   const { submitSupportForm } = useSupport();
   const [formData, setFormData] = useState({
@@ -71,7 +73,6 @@ export default function SupportPage() {
   const [myTickets, setMyTickets] = useState<SupportTicket[]>([]);
   const [expandedTicketId, setExpandedTicketId] = useState<string | null>(null);
   const guideContextApplied = useRef(false);
-  const successRef = useRef<HTMLDivElement>(null);
 
   useEffect(() => {
     const timer = window.setTimeout(() => {
@@ -195,6 +196,7 @@ export default function SupportPage() {
     try {
       await submitSupportForm(formData);
       setIsSubmitted(true);
+      window.scrollTo(0, 0);
       setFormData({
         name: user?.name ?? "",
         email: user?.email ?? "",
@@ -214,8 +216,7 @@ export default function SupportPage() {
 
   useEffect(() => {
     if (!isSubmitted) return;
-    window.scrollTo({ top: 0, left: 0, behavior: "auto" });
-    successRef.current?.scrollIntoView({ block: "start", behavior: "auto" });
+    window.scrollTo(0, 0);
   }, [isSubmitted]);
 
   const faqItems = useMemo(
@@ -250,11 +251,11 @@ export default function SupportPage() {
 
   return (
     <Layout>
-    <div className="min-h-screen bg-gradient-to-br from-blue-50 via-white to-purple-50 py-8">
+    <div className={`bg-gradient-to-br from-blue-50 via-white to-purple-50 py-8 ${isSubmitted ? "" : "min-h-screen"}`}>
       <div className="max-w-6xl mx-auto px-4 sm:px-6 lg:px-8">
         {isSubmitted ? (
-          <div ref={successRef} className="max-w-4xl mx-auto scroll-mt-24">
-            <Card className="text-center p-8">
+          <div className="flex justify-center">
+            <Card className="w-full max-w-lg text-center p-8">
               <CheckCircle className="h-16 w-16 text-green-500 mx-auto mb-4" />
               <CardTitle className="text-2xl mb-2">
                 {t("support.submitted.title")}
@@ -262,8 +263,8 @@ export default function SupportPage() {
               <CardDescription className="text-lg">
                 {t("support.submitted.description")}
               </CardDescription>
-              <Button onClick={() => setIsSubmitted(false)} className="mt-6">
-                {t("support.submitted.sendAnother")}
+              <Button onClick={() => router.push("/profile")} className="mt-6">
+                {t("support.submitted.close")}
               </Button>
             </Card>
           </div>

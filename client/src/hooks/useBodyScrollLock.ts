@@ -4,6 +4,7 @@ import { useEffect } from "react";
 
 let lockCount = 0;
 let savedScrollY = 0;
+let savedPath = "";
 let lastTouchY = 0;
 
 function isInsideScrollable(target: EventTarget | null, deltaY: number) {
@@ -55,6 +56,7 @@ function lockScroll() {
   const html = document.documentElement;
   const { body } = document;
   savedScrollY = window.scrollY;
+  savedPath = `${window.location.pathname}${window.location.search}`;
   const gap = window.innerWidth - html.clientWidth;
 
   html.classList.add("body-scroll-locked");
@@ -85,7 +87,10 @@ function unlockScroll() {
   document.removeEventListener("touchstart", onTouchStart);
   document.removeEventListener("touchmove", onTouchMove);
 
-  window.scrollTo(0, savedScrollY);
+  const currentPath = `${window.location.pathname}${window.location.search}`;
+  // Logout (and any other lock that survives a route change) must not restore
+  // the previous page's scrollY onto the new page.
+  window.scrollTo(0, currentPath === savedPath ? savedScrollY : 0);
 }
 
 export function useBodyScrollLock(locked: boolean) {

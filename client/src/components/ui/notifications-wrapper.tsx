@@ -73,7 +73,10 @@ export function NotificationsWrapper({ children }: NotificationsWrapperProps) {
         <LogoutNotification
           userName={logoutInfo.userName}
           isVisible={showLogoutNotification}
-          onClose={() => setShowLogoutNotification(false)}
+          onClose={() => {
+            setShowLogoutNotification(false);
+            window.scrollTo(0, 0);
+          }}
         />
       )}
     </>

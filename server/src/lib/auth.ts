@@ -57,7 +57,7 @@ export function verifyToken(token: string): JWTPayload | null {
 
 export async function authenticateUser(email: string, password: string) {
   const user = await prisma.user.findUnique({
-    where: { email },
+    where: { email: email.trim().toLowerCase() },
     select: {
       id: true,
       email: true,
