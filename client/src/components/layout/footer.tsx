@@ -245,6 +245,12 @@ export function Footer() {
             </div>
 
             <div className="order-1 grid w-full grid-cols-1 items-center justify-items-center gap-y-2 text-center text-xs sm:order-2 sm:flex sm:w-auto sm:flex-wrap sm:items-center sm:justify-end sm:gap-x-4 sm:gap-y-1 sm:text-sm lg:pr-20">
+              <a
+                href="/safety"
+                className="col-span-2 min-h-0 leading-snug text-slate-400 transition-colors duration-300 hover:text-blue-400 sm:col-span-1"
+              >
+                {t("footer.safety")}
+              </a>
               <Link
                 href="/privacy-policy"
                 className="col-span-2 min-h-0 leading-snug text-slate-400 transition-colors duration-300 hover:text-blue-400 sm:col-span-1"

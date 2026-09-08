@@ -139,7 +139,8 @@ exports.Prisma.UserScalarFieldEnum = {
   gender: 'gender',
   emailNotifications: 'emailNotifications',
   timezone: 'timezone',
-  tokenVersion: 'tokenVersion'
+  tokenVersion: 'tokenVersion',
+  blockedAt: 'blockedAt'
 };
 
 exports.Prisma.BuddyApplicationScalarFieldEnum = {

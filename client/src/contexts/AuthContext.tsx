@@ -97,7 +97,10 @@ export function AuthProvider({ children }: { children: React.ReactNode }) {
           return true;
         }
         return false;
-      } catch {
+      } catch (error) {
+        if (error instanceof Error && error.message === "ACCOUNT_BLOCKED") {
+          throw error;
+        }
         return false;
       } finally {
         setIsLoading(false);

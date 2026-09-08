@@ -361,6 +361,13 @@ router.post('/login', async (req: Request, res: Response) => {
       } as ApiResponse);
     }
 
+    if ("blocked" in user) {
+      return res.status(403).json({
+        success: false,
+        error: "ACCOUNT_BLOCKED",
+      } as ApiResponse);
+    }
+
     // Генерируем JWT токен
     const { tokenVersion, ...publicUser } = user;
     const token = generateToken({

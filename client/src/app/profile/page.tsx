@@ -231,6 +231,32 @@ function compressImage(file: File, maxDim = 256): Promise<string> {
   });
 }
 
+function SafetyRulesCard({ t }: { t: (key: string) => string }) {
+  return (
+    <button
+      type="button"
+      className="block w-full text-left"
+      onClick={() => window.location.assign("/safety")}
+    >
+      <Card
+        className={`${profileCardClass} transition-shadow hover:shadow-2xl`}
+        style={profileCardStyle}
+      >
+        <CardContent className="relative z-10 flex items-center gap-3 p-4 sm:p-5">
+          <div className="flex h-10 w-10 shrink-0 items-center justify-center rounded-xl bg-amber-100 text-amber-800">
+            <Shield className="h-5 w-5" />
+          </div>
+          <div className="min-w-0 flex-1">
+            <p className="font-semibold text-slate-900">{t("profile.safety.title")}</p>
+            <p className="mt-0.5 text-sm leading-snug text-slate-600">{t("profile.safety.desc")}</p>
+          </div>
+          <ChevronRight className="h-5 w-5 shrink-0 text-slate-400" />
+        </CardContent>
+      </Card>
+    </button>
+  );
+}
+
 function SettingsPanel({
   isOpen,
   onToggle,
@@ -983,6 +1009,8 @@ function ProfileContent() {
               </div>
             </div>
           )}
+
+          <SafetyRulesCard t={t} />
 
           <section aria-labelledby="profile-buddy-heading" data-testid="profile-buddy-applications">
             <Card className={profileCardClass} style={profileCardStyle}>
