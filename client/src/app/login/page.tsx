@@ -95,8 +95,12 @@ export default function LoginPage() {
         setError(t("login.error.invalidCredentials"));
         setPassword("");
       }
-    } catch {
-      setError(t("login.error.generic"));
+    } catch (error) {
+      setError(
+        error instanceof Error && error.message === "ACCOUNT_BLOCKED"
+          ? t("login.error.blocked")
+          : t("login.error.generic"),
+      );
     } finally {
       setIsLoading(false);
     }

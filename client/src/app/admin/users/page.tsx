@@ -19,6 +19,8 @@ import {
   UserMinus,
   Trash2,
   MailX,
+  Ban,
+  Unlock,
 } from "lucide-react";
 import Link from "next/link";
 import { useAuth } from "@/contexts/AuthContext";
@@ -28,7 +30,7 @@ import { Language, Role } from "@/types";
 import { useTranslation } from "@/hooks/useTranslation";
 import { API_BASE_URL } from "@/lib/api";
 import { countrySuggestions } from "@/constants/countries";
-import { fetchAdminUsers, revokeAdminInvite, demoteAdminUser, deleteAdminUser, type AdminUserRow } from "@/lib/admin-api";
+import { fetchAdminUsers, revokeAdminInvite, demoteAdminUser, deleteAdminUser, blockAdminUser, unblockAdminUser, type AdminUserRow } from "@/lib/admin-api";
 
 const statusColors: Record<string, string> = {
   active: "bg-green-100 text-green-700",
@@ -75,7 +77,7 @@ function AdminUsersContent() {
   const [copiedInvite, setCopiedInvite] = useState(false);
   const [inviteStatus, setInviteStatus] = useState<string>("");
   const [pendingAction, setPendingAction] = useState<
-    null | { kind: "revoke" | "demote" | "delete"; user: AdminUserRow }
+    null | { kind: "revoke" | "demote" | "delete" | "block" | "unblock"; user: AdminUserRow }
   >(null);
   const [deleteEmail, setDeleteEmail] = useState("");
   const [actionBusy, setActionBusy] = useState(false);
@@ -288,6 +290,22 @@ function AdminUsersContent() {
           );
         }
         showToast(result.message || t("admin.users.toast.demoted"));
+      } else if (pendingAction.kind === "block") {
+        const result = await blockAdminUser(target.id);
+        if (result.data.user) {
+          setUsers((prev) =>
+            prev.map((row) => (row.id === target.id ? result.data.user : row)),
+          );
+        }
+        showToast(result.message || t("admin.users.toast.blocked"));
+      } else if (pendingAction.kind === "unblock") {
+        const result = await unblockAdminUser(target.id);
+        if (result.data.user) {
+          setUsers((prev) =>
+            prev.map((row) => (row.id === target.id ? result.data.user : row)),
+          );
+        }
+        showToast(result.message || t("admin.users.toast.unblocked"));
       } else {
         const result = await deleteAdminUser(target.id, deleteEmail.trim());
         if (result.data.deleted) {
@@ -348,6 +366,21 @@ function AdminUsersContent() {
           </div>
         </div>
 
+        <div className="grid gap-3 sm:grid-cols-3">
+          <div className="rounded-2xl border border-amber-200 bg-amber-50 p-4">
+            <p className="text-sm font-semibold text-amber-950">{t("admin.users.policy.blockTitle")}</p>
+            <p className="mt-1 text-sm leading-relaxed text-amber-900/90">{t("admin.users.policy.blockText")}</p>
+          </div>
+          <div className="rounded-2xl border border-red-200 bg-red-50 p-4">
+            <p className="text-sm font-semibold text-red-950">{t("admin.users.policy.deleteTitle")}</p>
+            <p className="mt-1 text-sm leading-relaxed text-red-900/90">{t("admin.users.policy.deleteText")}</p>
+          </div>
+          <div className="rounded-2xl border border-slate-200 bg-slate-50 p-4">
+            <p className="text-sm font-semibold text-slate-900">{t("admin.users.policy.keepTitle")}</p>
+            <p className="mt-1 text-sm leading-relaxed text-slate-700">{t("admin.users.policy.keepText")}</p>
+          </div>
+        </div>
+
         {/* Filters */}
         <Card>
           <CardContent className="p-4 sm:p-6">
@@ -384,6 +417,7 @@ function AdminUsersContent() {
                 <option value="all">{t("admin.users.filters.status.all")}</option>
                 <option value="active">{t("admin.users.filters.status.active")}</option>
                 <option value="pending">{t("admin.users.filters.status.pending")}</option>
+                <option value="blocked">{t("admin.users.filters.status.blocked")}</option>
               </select>
                 <ChevronDown className="h-4 w-4 text-gray-400 pointer-events-none absolute right-3 top-1/2 -translate-y-1/2" />
               </div>
@@ -517,6 +551,37 @@ function AdminUsersContent() {
                                 {t("admin.users.actions.demote")}
                               </Button>
                             )}
+                          {u.role !== "admin" && u.id !== user?.id && u.status !== "blocked" && (
+                            <Button
+                              type="button"
+                              variant="outline"
+                              size="sm"
+                              className="text-amber-800 border-amber-200 hover:bg-amber-50"
+                              aria-label={t("admin.users.actions.block")}
+                              onClick={() => {
+                                setActionError("");
+                                setPendingAction({ kind: "block", user: u });
+                              }}
+                            >
+                              <Ban className="h-4 w-4 mr-1" />
+                              {t("admin.users.actions.block")}
+                            </Button>
+                          )}
+                          {u.role !== "admin" && u.id !== user?.id && u.status === "blocked" && (
+                            <Button
+                              type="button"
+                              variant="outline"
+                              size="sm"
+                              aria-label={t("admin.users.actions.unblock")}
+                              onClick={() => {
+                                setActionError("");
+                                setPendingAction({ kind: "unblock", user: u });
+                              }}
+                            >
+                              <Unlock className="h-4 w-4 mr-1" />
+                              {t("admin.users.actions.unblock")}
+                            </Button>
+                          )}
                           {u.role !== "admin" && u.id !== user?.id && (
                             <Button
                               type="button"
@@ -775,7 +840,11 @@ function AdminUsersContent() {
                   ? t("admin.users.actions.confirmRevokeTitle")
                   : pendingAction.kind === "demote"
                     ? t("admin.users.actions.confirmDemoteTitle")
-                    : t("admin.users.actions.confirmDeleteTitle")}
+                    : pendingAction.kind === "block"
+                      ? t("admin.users.actions.confirmBlockTitle")
+                      : pendingAction.kind === "unblock"
+                        ? t("admin.users.actions.confirmUnblockTitle")
+                        : t("admin.users.actions.confirmDeleteTitle")}
               </CardTitle>
             </CardHeader>
             <CardContent className="space-y-4">
@@ -787,10 +856,20 @@ function AdminUsersContent() {
                         "{name}",
                         pendingAction.user.name,
                       )
-                    : t("admin.users.actions.confirmDeleteBody").replace(
-                        "{email}",
-                        pendingAction.user.email,
-                      )}
+                    : pendingAction.kind === "block"
+                      ? t("admin.users.actions.confirmBlockBody").replace(
+                          "{name}",
+                          pendingAction.user.name,
+                        )
+                      : pendingAction.kind === "unblock"
+                        ? t("admin.users.actions.confirmUnblockBody").replace(
+                            "{name}",
+                            pendingAction.user.name,
+                          )
+                        : t("admin.users.actions.confirmDeleteBody").replace(
+                            "{email}",
+                            pendingAction.user.email,
+                          )}
               </p>
               {pendingAction.kind === "delete" && (
                 <div className="space-y-2">
@@ -823,7 +902,7 @@ function AdminUsersContent() {
                         pendingAction.user.email.toLowerCase())
                   }
                   className={
-                    pendingAction.kind === "delete"
+                    pendingAction.kind === "delete" || pendingAction.kind === "block"
                       ? "bg-red-600 hover:bg-red-700 text-white"
                       : undefined
                   }
@@ -834,7 +913,11 @@ function AdminUsersContent() {
                       ? t("admin.users.actions.revoke")
                       : pendingAction.kind === "demote"
                         ? t("admin.users.actions.demote")
-                        : t("admin.users.actions.delete")}
+                        : pendingAction.kind === "block"
+                          ? t("admin.users.actions.block")
+                          : pendingAction.kind === "unblock"
+                            ? t("admin.users.actions.unblock")
+                            : t("admin.users.actions.delete")}
                 </Button>
               </div>
             </CardContent>

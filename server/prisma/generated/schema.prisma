@@ -36,12 +36,13 @@ model User {
   university         String?
   faculty            String?
   year               String?
-  plan               String  @default("FREEMIUM")
+  plan               String    @default("FREEMIUM")
   phone              String?
   gender             String?
-  emailNotifications Boolean @default(true)
-  timezone           String  @default("Europe/Moscow")
-  tokenVersion       Int     @default(0)
+  emailNotifications Boolean   @default(true)
+  timezone           String    @default("Europe/Moscow")
+  tokenVersion       Int       @default(0)
+  blockedAt          DateTime?
 
   // Связи
   reminders             Reminder[]

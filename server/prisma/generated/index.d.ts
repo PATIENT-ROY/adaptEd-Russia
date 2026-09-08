@@ -3007,6 +3007,7 @@ export namespace Prisma {
     emailNotifications: boolean | null
     timezone: string | null
     tokenVersion: number | null
+    blockedAt: Date | null
   }
 
   export type UserMaxAggregateOutputType = {
@@ -3027,6 +3028,7 @@ export namespace Prisma {
     emailNotifications: boolean | null
     timezone: string | null
     tokenVersion: number | null
+    blockedAt: Date | null
   }
 
   export type UserCountAggregateOutputType = {
@@ -3047,6 +3049,7 @@ export namespace Prisma {
     emailNotifications: number
     timezone: number
     tokenVersion: number
+    blockedAt: number
     _all: number
   }
 
@@ -3077,6 +3080,7 @@ export namespace Prisma {
     emailNotifications?: true
     timezone?: true
     tokenVersion?: true
+    blockedAt?: true
   }
 
   export type UserMaxAggregateInputType = {
@@ -3097,6 +3101,7 @@ export namespace Prisma {
     emailNotifications?: true
     timezone?: true
     tokenVersion?: true
+    blockedAt?: true
   }
 
   export type UserCountAggregateInputType = {
@@ -3117,6 +3122,7 @@ export namespace Prisma {
     emailNotifications?: true
     timezone?: true
     tokenVersion?: true
+    blockedAt?: true
     _all?: true
   }
 
@@ -3224,6 +3230,7 @@ export namespace Prisma {
     emailNotifications: boolean
     timezone: string
     tokenVersion: number
+    blockedAt: Date | null
     _count: UserCountAggregateOutputType | null
     _avg: UserAvgAggregateOutputType | null
     _sum: UserSumAggregateOutputType | null
@@ -3263,6 +3270,7 @@ export namespace Prisma {
     emailNotifications?: boolean
     timezone?: boolean
     tokenVersion?: boolean
+    blockedAt?: boolean
     reminders?: boolean | User$remindersArgs<ExtArgs>
     notes?: boolean | User$notesArgs<ExtArgs>
     chatMessages?: boolean | User$chatMessagesArgs<ExtArgs>
@@ -3299,6 +3307,7 @@ export namespace Prisma {
     emailNotifications?: boolean
     timezone?: boolean
     tokenVersion?: boolean
+    blockedAt?: boolean
   }, ExtArgs["result"]["user"]>
 
   export type UserSelectScalar = {
@@ -3319,6 +3328,7 @@ export namespace Prisma {
     emailNotifications?: boolean
     timezone?: boolean
     tokenVersion?: boolean
+    blockedAt?: boolean
   }
 
   export type UserInclude<ExtArgs extends $Extensions.InternalArgs = $Extensions.DefaultArgs> = {
@@ -3378,6 +3388,7 @@ export namespace Prisma {
       emailNotifications: boolean
       timezone: string
       tokenVersion: number
+      blockedAt: Date | null
     }, ExtArgs["result"]["user"]>
     composites: {}
   }
@@ -3803,6 +3814,7 @@ export namespace Prisma {
     readonly emailNotifications: FieldRef<"User", 'Boolean'>
     readonly timezone: FieldRef<"User", 'String'>
     readonly tokenVersion: FieldRef<"User", 'Int'>
+    readonly blockedAt: FieldRef<"User", 'DateTime'>
   }
     
 
@@ -24595,7 +24607,8 @@ export namespace Prisma {
     gender: 'gender',
     emailNotifications: 'emailNotifications',
     timezone: 'timezone',
-    tokenVersion: 'tokenVersion'
+    tokenVersion: 'tokenVersion',
+    blockedAt: 'blockedAt'
   };
 
   export type UserScalarFieldEnum = (typeof UserScalarFieldEnum)[keyof typeof UserScalarFieldEnum]
@@ -25056,6 +25069,7 @@ export namespace Prisma {
     emailNotifications?: BoolFilter<"User"> | boolean
     timezone?: StringFilter<"User"> | string
     tokenVersion?: IntFilter<"User"> | number
+    blockedAt?: DateTimeNullableFilter<"User"> | Date | string | null
     reminders?: ReminderListRelationFilter
     notes?: NoteListRelationFilter
     chatMessages?: ChatMessageListRelationFilter
@@ -25091,6 +25105,7 @@ export namespace Prisma {
     emailNotifications?: SortOrder
     timezone?: SortOrder
     tokenVersion?: SortOrder
+    blockedAt?: SortOrderInput | SortOrder
     reminders?: ReminderOrderByRelationAggregateInput
     notes?: NoteOrderByRelationAggregateInput
     chatMessages?: ChatMessageOrderByRelationAggregateInput
@@ -25129,6 +25144,7 @@ export namespace Prisma {
     emailNotifications?: BoolFilter<"User"> | boolean
     timezone?: StringFilter<"User"> | string
     tokenVersion?: IntFilter<"User"> | number
+    blockedAt?: DateTimeNullableFilter<"User"> | Date | string | null
     reminders?: ReminderListRelationFilter
     notes?: NoteListRelationFilter
     chatMessages?: ChatMessageListRelationFilter
@@ -25164,6 +25180,7 @@ export namespace Prisma {
     emailNotifications?: SortOrder
     timezone?: SortOrder
     tokenVersion?: SortOrder
+    blockedAt?: SortOrderInput | SortOrder
     _count?: UserCountOrderByAggregateInput
     _avg?: UserAvgOrderByAggregateInput
     _max?: UserMaxOrderByAggregateInput
@@ -25192,6 +25209,7 @@ export namespace Prisma {
     emailNotifications?: BoolWithAggregatesFilter<"User"> | boolean
     timezone?: StringWithAggregatesFilter<"User"> | string
     tokenVersion?: IntWithAggregatesFilter<"User"> | number
+    blockedAt?: DateTimeNullableWithAggregatesFilter<"User"> | Date | string | null
   }
 
   export type BuddyApplicationWhereInput = {
@@ -26812,6 +26830,7 @@ export namespace Prisma {
     emailNotifications?: boolean
     timezone?: string
     tokenVersion?: number
+    blockedAt?: Date | string | null
     reminders?: ReminderCreateNestedManyWithoutUserInput
     notes?: NoteCreateNestedManyWithoutUserInput
     chatMessages?: ChatMessageCreateNestedManyWithoutUserInput
@@ -26847,6 +26866,7 @@ export namespace Prisma {
     emailNotifications?: boolean
     timezone?: string
     tokenVersion?: number
+    blockedAt?: Date | string | null
     reminders?: ReminderUncheckedCreateNestedManyWithoutUserInput
     notes?: NoteUncheckedCreateNestedManyWithoutUserInput
     chatMessages?: ChatMessageUncheckedCreateNestedManyWithoutUserInput
@@ -26882,6 +26902,7 @@ export namespace Prisma {
     emailNotifications?: BoolFieldUpdateOperationsInput | boolean
     timezone?: StringFieldUpdateOperationsInput | string
     tokenVersion?: IntFieldUpdateOperationsInput | number
+    blockedAt?: NullableDateTimeFieldUpdateOperationsInput | Date | string | null
     reminders?: ReminderUpdateManyWithoutUserNestedInput
     notes?: NoteUpdateManyWithoutUserNestedInput
     chatMessages?: ChatMessageUpdateManyWithoutUserNestedInput
@@ -26917,6 +26938,7 @@ export namespace Prisma {
     emailNotifications?: BoolFieldUpdateOperationsInput | boolean
     timezone?: StringFieldUpdateOperationsInput | string
     tokenVersion?: IntFieldUpdateOperationsInput | number
+    blockedAt?: NullableDateTimeFieldUpdateOperationsInput | Date | string | null
     reminders?: ReminderUncheckedUpdateManyWithoutUserNestedInput
     notes?: NoteUncheckedUpdateManyWithoutUserNestedInput
     chatMessages?: ChatMessageUncheckedUpdateManyWithoutUserNestedInput
@@ -26952,6 +26974,7 @@ export namespace Prisma {
     emailNotifications?: boolean
     timezone?: string
     tokenVersion?: number
+    blockedAt?: Date | string | null
   }
 
   export type UserUpdateManyMutationInput = {
@@ -26972,6 +26995,7 @@ export namespace Prisma {
     emailNotifications?: BoolFieldUpdateOperationsInput | boolean
     timezone?: StringFieldUpdateOperationsInput | string
     tokenVersion?: IntFieldUpdateOperationsInput | number
+    blockedAt?: NullableDateTimeFieldUpdateOperationsInput | Date | string | null
   }
 
   export type UserUncheckedUpdateManyInput = {
@@ -26992,6 +27016,7 @@ export namespace Prisma {
     emailNotifications?: BoolFieldUpdateOperationsInput | boolean
     timezone?: StringFieldUpdateOperationsInput | string
     tokenVersion?: IntFieldUpdateOperationsInput | number
+    blockedAt?: NullableDateTimeFieldUpdateOperationsInput | Date | string | null
   }
 
   export type BuddyApplicationCreateInput = {
@@ -28817,6 +28842,17 @@ export namespace Prisma {
     not?: NestedIntFilter<$PrismaModel> | number
   }
 
+  export type DateTimeNullableFilter<$PrismaModel = never> = {
+    equals?: Date | string | DateTimeFieldRefInput<$PrismaModel> | null
+    in?: Date[] | string[] | ListDateTimeFieldRefInput<$PrismaModel> | null
+    notIn?: Date[] | string[] | ListDateTimeFieldRefInput<$PrismaModel> | null
+    lt?: Date | string | DateTimeFieldRefInput<$PrismaModel>
+    lte?: Date | string | DateTimeFieldRefInput<$PrismaModel>
+    gt?: Date | string | DateTimeFieldRefInput<$PrismaModel>
+    gte?: Date | string | DateTimeFieldRefInput<$PrismaModel>
+    not?: NestedDateTimeNullableFilter<$PrismaModel> | Date | string | null
+  }
+
   export type ReminderListRelationFilter = {
     every?: ReminderWhereInput
     some?: ReminderWhereInput
@@ -28985,6 +29021,7 @@ export namespace Prisma {
     emailNotifications?: SortOrder
     timezone?: SortOrder
     tokenVersion?: SortOrder
+    blockedAt?: SortOrder
   }
 
   export type UserAvgOrderByAggregateInput = {
@@ -29009,6 +29046,7 @@ export namespace Prisma {
     emailNotifications?: SortOrder
     timezone?: SortOrder
     tokenVersion?: SortOrder
+    blockedAt?: SortOrder
   }
 
   export type UserMinOrderByAggregateInput = {
@@ -29029,6 +29067,7 @@ export namespace Prisma {
     emailNotifications?: SortOrder
     timezone?: SortOrder
     tokenVersion?: SortOrder
+    blockedAt?: SortOrder
   }
 
   export type UserSumOrderByAggregateInput = {
@@ -29107,6 +29146,20 @@ export namespace Prisma {
     _sum?: NestedIntFilter<$PrismaModel>
     _min?: NestedIntFilter<$PrismaModel>
     _max?: NestedIntFilter<$PrismaModel>
+  }
+
+  export type DateTimeNullableWithAggregatesFilter<$PrismaModel = never> = {
+    equals?: Date | string | DateTimeFieldRefInput<$PrismaModel> | null
+    in?: Date[] | string[] | ListDateTimeFieldRefInput<$PrismaModel> | null
+    notIn?: Date[] | string[] | ListDateTimeFieldRefInput<$PrismaModel> | null
+    lt?: Date | string | DateTimeFieldRefInput<$PrismaModel>
+    lte?: Date | string | DateTimeFieldRefInput<$PrismaModel>
+    gt?: Date | string | DateTimeFieldRefInput<$PrismaModel>
+    gte?: Date | string | DateTimeFieldRefInput<$PrismaModel>
+    not?: NestedDateTimeNullableWithAggregatesFilter<$PrismaModel> | Date | string | null
+    _count?: NestedIntNullableFilter<$PrismaModel>
+    _min?: NestedDateTimeNullableFilter<$PrismaModel>
+    _max?: NestedDateTimeNullableFilter<$PrismaModel>
   }
 
   export type EnumBuddyApplicationTypeFilter<$PrismaModel = never> = {
@@ -29230,17 +29283,6 @@ export namespace Prisma {
     _max?: NestedEnumBuddyApplicationStatusFilter<$PrismaModel>
   }
 
-  export type DateTimeNullableFilter<$PrismaModel = never> = {
-    equals?: Date | string | DateTimeFieldRefInput<$PrismaModel> | null
-    in?: Date[] | string[] | ListDateTimeFieldRefInput<$PrismaModel> | null
-    notIn?: Date[] | string[] | ListDateTimeFieldRefInput<$PrismaModel> | null
-    lt?: Date | string | DateTimeFieldRefInput<$PrismaModel>
-    lte?: Date | string | DateTimeFieldRefInput<$PrismaModel>
-    gt?: Date | string | DateTimeFieldRefInput<$PrismaModel>
-    gte?: Date | string | DateTimeFieldRefInput<$PrismaModel>
-    not?: NestedDateTimeNullableFilter<$PrismaModel> | Date | string | null
-  }
-
   export type PasswordSetupTokenCountOrderByAggregateInput = {
     id?: SortOrder
     userId?: SortOrder
@@ -29266,20 +29308,6 @@ export namespace Prisma {
     expiresAt?: SortOrder
     usedAt?: SortOrder
     createdAt?: SortOrder
-  }
-
-  export type DateTimeNullableWithAggregatesFilter<$PrismaModel = never> = {
-    equals?: Date | string | DateTimeFieldRefInput<$PrismaModel> | null
-    in?: Date[] | string[] | ListDateTimeFieldRefInput<$PrismaModel> | null
-    notIn?: Date[] | string[] | ListDateTimeFieldRefInput<$PrismaModel> | null
-    lt?: Date | string | DateTimeFieldRefInput<$PrismaModel>
-    lte?: Date | string | DateTimeFieldRefInput<$PrismaModel>
-    gt?: Date | string | DateTimeFieldRefInput<$PrismaModel>
-    gte?: Date | string | DateTimeFieldRefInput<$PrismaModel>
-    not?: NestedDateTimeNullableWithAggregatesFilter<$PrismaModel> | Date | string | null
-    _count?: NestedIntNullableFilter<$PrismaModel>
-    _min?: NestedDateTimeNullableFilter<$PrismaModel>
-    _max?: NestedDateTimeNullableFilter<$PrismaModel>
   }
 
   export type ProfileCountOrderByAggregateInput = {
@@ -30292,6 +30320,10 @@ export namespace Prisma {
     divide?: number
   }
 
+  export type NullableDateTimeFieldUpdateOperationsInput = {
+    set?: Date | string | null
+  }
+
   export type ReminderUpdateManyWithoutUserNestedInput = {
     create?: XOR<ReminderCreateWithoutUserInput, ReminderUncheckedCreateWithoutUserInput> | ReminderCreateWithoutUserInput[] | ReminderUncheckedCreateWithoutUserInput[]
     connectOrCreate?: ReminderCreateOrConnectWithoutUserInput | ReminderCreateOrConnectWithoutUserInput[]
@@ -30748,10 +30780,6 @@ export namespace Prisma {
     create?: XOR<UserCreateWithoutPasswordSetupTokensInput, UserUncheckedCreateWithoutPasswordSetupTokensInput>
     connectOrCreate?: UserCreateOrConnectWithoutPasswordSetupTokensInput
     connect?: UserWhereUniqueInput
-  }
-
-  export type NullableDateTimeFieldUpdateOperationsInput = {
-    set?: Date | string | null
   }
 
   export type UserUpdateOneRequiredWithoutPasswordSetupTokensNestedInput = {
@@ -31463,6 +31491,17 @@ export namespace Prisma {
     not?: NestedIntFilter<$PrismaModel> | number
   }
 
+  export type NestedDateTimeNullableFilter<$PrismaModel = never> = {
+    equals?: Date | string | DateTimeFieldRefInput<$PrismaModel> | null
+    in?: Date[] | string[] | ListDateTimeFieldRefInput<$PrismaModel> | null
+    notIn?: Date[] | string[] | ListDateTimeFieldRefInput<$PrismaModel> | null
+    lt?: Date | string | DateTimeFieldRefInput<$PrismaModel>
+    lte?: Date | string | DateTimeFieldRefInput<$PrismaModel>
+    gt?: Date | string | DateTimeFieldRefInput<$PrismaModel>
+    gte?: Date | string | DateTimeFieldRefInput<$PrismaModel>
+    not?: NestedDateTimeNullableFilter<$PrismaModel> | Date | string | null
+  }
+
   export type NestedStringWithAggregatesFilter<$PrismaModel = never> = {
     equals?: string | StringFieldRefInput<$PrismaModel>
     in?: string[] | ListStringFieldRefInput<$PrismaModel>
@@ -31557,6 +31596,20 @@ export namespace Prisma {
     not?: NestedFloatFilter<$PrismaModel> | number
   }
 
+  export type NestedDateTimeNullableWithAggregatesFilter<$PrismaModel = never> = {
+    equals?: Date | string | DateTimeFieldRefInput<$PrismaModel> | null
+    in?: Date[] | string[] | ListDateTimeFieldRefInput<$PrismaModel> | null
+    notIn?: Date[] | string[] | ListDateTimeFieldRefInput<$PrismaModel> | null
+    lt?: Date | string | DateTimeFieldRefInput<$PrismaModel>
+    lte?: Date | string | DateTimeFieldRefInput<$PrismaModel>
+    gt?: Date | string | DateTimeFieldRefInput<$PrismaModel>
+    gte?: Date | string | DateTimeFieldRefInput<$PrismaModel>
+    not?: NestedDateTimeNullableWithAggregatesFilter<$PrismaModel> | Date | string | null
+    _count?: NestedIntNullableFilter<$PrismaModel>
+    _min?: NestedDateTimeNullableFilter<$PrismaModel>
+    _max?: NestedDateTimeNullableFilter<$PrismaModel>
+  }
+
   export type NestedEnumBuddyApplicationTypeFilter<$PrismaModel = never> = {
     equals?: $Enums.BuddyApplicationType | EnumBuddyApplicationTypeFieldRefInput<$PrismaModel>
     in?: $Enums.BuddyApplicationType[] | ListEnumBuddyApplicationTypeFieldRefInput<$PrismaModel>
@@ -31589,31 +31642,6 @@ export namespace Prisma {
     _count?: NestedIntFilter<$PrismaModel>
     _min?: NestedEnumBuddyApplicationStatusFilter<$PrismaModel>
     _max?: NestedEnumBuddyApplicationStatusFilter<$PrismaModel>
-  }
-
-  export type NestedDateTimeNullableFilter<$PrismaModel = never> = {
-    equals?: Date | string | DateTimeFieldRefInput<$PrismaModel> | null
-    in?: Date[] | string[] | ListDateTimeFieldRefInput<$PrismaModel> | null
-    notIn?: Date[] | string[] | ListDateTimeFieldRefInput<$PrismaModel> | null
-    lt?: Date | string | DateTimeFieldRefInput<$PrismaModel>
-    lte?: Date | string | DateTimeFieldRefInput<$PrismaModel>
-    gt?: Date | string | DateTimeFieldRefInput<$PrismaModel>
-    gte?: Date | string | DateTimeFieldRefInput<$PrismaModel>
-    not?: NestedDateTimeNullableFilter<$PrismaModel> | Date | string | null
-  }
-
-  export type NestedDateTimeNullableWithAggregatesFilter<$PrismaModel = never> = {
-    equals?: Date | string | DateTimeFieldRefInput<$PrismaModel> | null
-    in?: Date[] | string[] | ListDateTimeFieldRefInput<$PrismaModel> | null
-    notIn?: Date[] | string[] | ListDateTimeFieldRefInput<$PrismaModel> | null
-    lt?: Date | string | DateTimeFieldRefInput<$PrismaModel>
-    lte?: Date | string | DateTimeFieldRefInput<$PrismaModel>
-    gt?: Date | string | DateTimeFieldRefInput<$PrismaModel>
-    gte?: Date | string | DateTimeFieldRefInput<$PrismaModel>
-    not?: NestedDateTimeNullableWithAggregatesFilter<$PrismaModel> | Date | string | null
-    _count?: NestedIntNullableFilter<$PrismaModel>
-    _min?: NestedDateTimeNullableFilter<$PrismaModel>
-    _max?: NestedDateTimeNullableFilter<$PrismaModel>
   }
 
   export type NestedFloatWithAggregatesFilter<$PrismaModel = never> = {
@@ -32604,6 +32632,7 @@ export namespace Prisma {
     emailNotifications?: boolean
     timezone?: string
     tokenVersion?: number
+    blockedAt?: Date | string | null
     reminders?: ReminderCreateNestedManyWithoutUserInput
     notes?: NoteCreateNestedManyWithoutUserInput
     chatMessages?: ChatMessageCreateNestedManyWithoutUserInput
@@ -32638,6 +32667,7 @@ export namespace Prisma {
     emailNotifications?: boolean
     timezone?: string
     tokenVersion?: number
+    blockedAt?: Date | string | null
     reminders?: ReminderUncheckedCreateNestedManyWithoutUserInput
     notes?: NoteUncheckedCreateNestedManyWithoutUserInput
     chatMessages?: ChatMessageUncheckedCreateNestedManyWithoutUserInput
@@ -32688,6 +32718,7 @@ export namespace Prisma {
     emailNotifications?: BoolFieldUpdateOperationsInput | boolean
     timezone?: StringFieldUpdateOperationsInput | string
     tokenVersion?: IntFieldUpdateOperationsInput | number
+    blockedAt?: NullableDateTimeFieldUpdateOperationsInput | Date | string | null
     reminders?: ReminderUpdateManyWithoutUserNestedInput
     notes?: NoteUpdateManyWithoutUserNestedInput
     chatMessages?: ChatMessageUpdateManyWithoutUserNestedInput
@@ -32722,6 +32753,7 @@ export namespace Prisma {
     emailNotifications?: BoolFieldUpdateOperationsInput | boolean
     timezone?: StringFieldUpdateOperationsInput | string
     tokenVersion?: IntFieldUpdateOperationsInput | number
+    blockedAt?: NullableDateTimeFieldUpdateOperationsInput | Date | string | null
     reminders?: ReminderUncheckedUpdateManyWithoutUserNestedInput
     notes?: NoteUncheckedUpdateManyWithoutUserNestedInput
     chatMessages?: ChatMessageUncheckedUpdateManyWithoutUserNestedInput
@@ -32756,6 +32788,7 @@ export namespace Prisma {
     emailNotifications?: boolean
     timezone?: string
     tokenVersion?: number
+    blockedAt?: Date | string | null
     reminders?: ReminderCreateNestedManyWithoutUserInput
     notes?: NoteCreateNestedManyWithoutUserInput
     chatMessages?: ChatMessageCreateNestedManyWithoutUserInput
@@ -32790,6 +32823,7 @@ export namespace Prisma {
     emailNotifications?: boolean
     timezone?: string
     tokenVersion?: number
+    blockedAt?: Date | string | null
     reminders?: ReminderUncheckedCreateNestedManyWithoutUserInput
     notes?: NoteUncheckedCreateNestedManyWithoutUserInput
     chatMessages?: ChatMessageUncheckedCreateNestedManyWithoutUserInput
@@ -32840,6 +32874,7 @@ export namespace Prisma {
     emailNotifications?: BoolFieldUpdateOperationsInput | boolean
     timezone?: StringFieldUpdateOperationsInput | string
     tokenVersion?: IntFieldUpdateOperationsInput | number
+    blockedAt?: NullableDateTimeFieldUpdateOperationsInput | Date | string | null
     reminders?: ReminderUpdateManyWithoutUserNestedInput
     notes?: NoteUpdateManyWithoutUserNestedInput
     chatMessages?: ChatMessageUpdateManyWithoutUserNestedInput
@@ -32874,6 +32909,7 @@ export namespace Prisma {
     emailNotifications?: BoolFieldUpdateOperationsInput | boolean
     timezone?: StringFieldUpdateOperationsInput | string
     tokenVersion?: IntFieldUpdateOperationsInput | number
+    blockedAt?: NullableDateTimeFieldUpdateOperationsInput | Date | string | null
     reminders?: ReminderUncheckedUpdateManyWithoutUserNestedInput
     notes?: NoteUncheckedUpdateManyWithoutUserNestedInput
     chatMessages?: ChatMessageUncheckedUpdateManyWithoutUserNestedInput
@@ -32908,6 +32944,7 @@ export namespace Prisma {
     emailNotifications?: boolean
     timezone?: string
     tokenVersion?: number
+    blockedAt?: Date | string | null
     reminders?: ReminderCreateNestedManyWithoutUserInput
     notes?: NoteCreateNestedManyWithoutUserInput
     chatMessages?: ChatMessageCreateNestedManyWithoutUserInput
@@ -32942,6 +32979,7 @@ export namespace Prisma {
     emailNotifications?: boolean
     timezone?: string
     tokenVersion?: number
+    blockedAt?: Date | string | null
     reminders?: ReminderUncheckedCreateNestedManyWithoutUserInput
     notes?: NoteUncheckedCreateNestedManyWithoutUserInput
     chatMessages?: ChatMessageUncheckedCreateNestedManyWithoutUserInput
@@ -32992,6 +33030,7 @@ export namespace Prisma {
     emailNotifications?: BoolFieldUpdateOperationsInput | boolean
     timezone?: StringFieldUpdateOperationsInput | string
     tokenVersion?: IntFieldUpdateOperationsInput | number
+    blockedAt?: NullableDateTimeFieldUpdateOperationsInput | Date | string | null
     reminders?: ReminderUpdateManyWithoutUserNestedInput
     notes?: NoteUpdateManyWithoutUserNestedInput
     chatMessages?: ChatMessageUpdateManyWithoutUserNestedInput
@@ -33026,6 +33065,7 @@ export namespace Prisma {
     emailNotifications?: BoolFieldUpdateOperationsInput | boolean
     timezone?: StringFieldUpdateOperationsInput | string
     tokenVersion?: IntFieldUpdateOperationsInput | number
+    blockedAt?: NullableDateTimeFieldUpdateOperationsInput | Date | string | null
     reminders?: ReminderUncheckedUpdateManyWithoutUserNestedInput
     notes?: NoteUncheckedUpdateManyWithoutUserNestedInput
     chatMessages?: ChatMessageUncheckedUpdateManyWithoutUserNestedInput
@@ -33060,6 +33100,7 @@ export namespace Prisma {
     emailNotifications?: boolean
     timezone?: string
     tokenVersion?: number
+    blockedAt?: Date | string | null
     reminders?: ReminderCreateNestedManyWithoutUserInput
     chatMessages?: ChatMessageCreateNestedManyWithoutUserInput
     profile?: ProfileCreateNestedOneWithoutUserInput
@@ -33094,6 +33135,7 @@ export namespace Prisma {
     emailNotifications?: boolean
     timezone?: string
     tokenVersion?: number
+    blockedAt?: Date | string | null
     reminders?: ReminderUncheckedCreateNestedManyWithoutUserInput
     chatMessages?: ChatMessageUncheckedCreateNestedManyWithoutUserInput
     profile?: ProfileUncheckedCreateNestedOneWithoutUserInput
@@ -33184,6 +33226,7 @@ export namespace Prisma {
     emailNotifications?: BoolFieldUpdateOperationsInput | boolean
     timezone?: StringFieldUpdateOperationsInput | string
     tokenVersion?: IntFieldUpdateOperationsInput | number
+    blockedAt?: NullableDateTimeFieldUpdateOperationsInput | Date | string | null
     reminders?: ReminderUpdateManyWithoutUserNestedInput
     chatMessages?: ChatMessageUpdateManyWithoutUserNestedInput
     profile?: ProfileUpdateOneWithoutUserNestedInput
@@ -33218,6 +33261,7 @@ export namespace Prisma {
     emailNotifications?: BoolFieldUpdateOperationsInput | boolean
     timezone?: StringFieldUpdateOperationsInput | string
     tokenVersion?: IntFieldUpdateOperationsInput | number
+    blockedAt?: NullableDateTimeFieldUpdateOperationsInput | Date | string | null
     reminders?: ReminderUncheckedUpdateManyWithoutUserNestedInput
     chatMessages?: ChatMessageUncheckedUpdateManyWithoutUserNestedInput
     profile?: ProfileUncheckedUpdateOneWithoutUserNestedInput
@@ -33268,6 +33312,7 @@ export namespace Prisma {
     emailNotifications?: boolean
     timezone?: string
     tokenVersion?: number
+    blockedAt?: Date | string | null
     notes?: NoteCreateNestedManyWithoutUserInput
     chatMessages?: ChatMessageCreateNestedManyWithoutUserInput
     profile?: ProfileCreateNestedOneWithoutUserInput
@@ -33302,6 +33347,7 @@ export namespace Prisma {
     emailNotifications?: boolean
     timezone?: string
     tokenVersion?: number
+    blockedAt?: Date | string | null
     notes?: NoteUncheckedCreateNestedManyWithoutUserInput
     chatMessages?: ChatMessageUncheckedCreateNestedManyWithoutUserInput
     profile?: ProfileUncheckedCreateNestedOneWithoutUserInput
@@ -33379,6 +33425,7 @@ export namespace Prisma {
     emailNotifications?: BoolFieldUpdateOperationsInput | boolean
     timezone?: StringFieldUpdateOperationsInput | string
     tokenVersion?: IntFieldUpdateOperationsInput | number
+    blockedAt?: NullableDateTimeFieldUpdateOperationsInput | Date | string | null
     notes?: NoteUpdateManyWithoutUserNestedInput
     chatMessages?: ChatMessageUpdateManyWithoutUserNestedInput
     profile?: ProfileUpdateOneWithoutUserNestedInput
@@ -33413,6 +33460,7 @@ export namespace Prisma {
     emailNotifications?: BoolFieldUpdateOperationsInput | boolean
     timezone?: StringFieldUpdateOperationsInput | string
     tokenVersion?: IntFieldUpdateOperationsInput | number
+    blockedAt?: NullableDateTimeFieldUpdateOperationsInput | Date | string | null
     notes?: NoteUncheckedUpdateManyWithoutUserNestedInput
     chatMessages?: ChatMessageUncheckedUpdateManyWithoutUserNestedInput
     profile?: ProfileUncheckedUpdateOneWithoutUserNestedInput
@@ -33480,6 +33528,7 @@ export namespace Prisma {
     emailNotifications?: boolean
     timezone?: string
     tokenVersion?: number
+    blockedAt?: Date | string | null
     reminders?: ReminderCreateNestedManyWithoutUserInput
     notes?: NoteCreateNestedManyWithoutUserInput
     profile?: ProfileCreateNestedOneWithoutUserInput
@@ -33514,6 +33563,7 @@ export namespace Prisma {
     emailNotifications?: boolean
     timezone?: string
     tokenVersion?: number
+    blockedAt?: Date | string | null
     reminders?: ReminderUncheckedCreateNestedManyWithoutUserInput
     notes?: NoteUncheckedCreateNestedManyWithoutUserInput
     profile?: ProfileUncheckedCreateNestedOneWithoutUserInput
@@ -33564,6 +33614,7 @@ export namespace Prisma {
     emailNotifications?: BoolFieldUpdateOperationsInput | boolean
     timezone?: StringFieldUpdateOperationsInput | string
     tokenVersion?: IntFieldUpdateOperationsInput | number
+    blockedAt?: NullableDateTimeFieldUpdateOperationsInput | Date | string | null
     reminders?: ReminderUpdateManyWithoutUserNestedInput
     notes?: NoteUpdateManyWithoutUserNestedInput
     profile?: ProfileUpdateOneWithoutUserNestedInput
@@ -33598,6 +33649,7 @@ export namespace Prisma {
     emailNotifications?: BoolFieldUpdateOperationsInput | boolean
     timezone?: StringFieldUpdateOperationsInput | string
     tokenVersion?: IntFieldUpdateOperationsInput | number
+    blockedAt?: NullableDateTimeFieldUpdateOperationsInput | Date | string | null
     reminders?: ReminderUncheckedUpdateManyWithoutUserNestedInput
     notes?: NoteUncheckedUpdateManyWithoutUserNestedInput
     profile?: ProfileUncheckedUpdateOneWithoutUserNestedInput
@@ -33632,6 +33684,7 @@ export namespace Prisma {
     emailNotifications?: boolean
     timezone?: string
     tokenVersion?: number
+    blockedAt?: Date | string | null
     reminders?: ReminderCreateNestedManyWithoutUserInput
     notes?: NoteCreateNestedManyWithoutUserInput
     chatMessages?: ChatMessageCreateNestedManyWithoutUserInput
@@ -33666,6 +33719,7 @@ export namespace Prisma {
     emailNotifications?: boolean
     timezone?: string
     tokenVersion?: number
+    blockedAt?: Date | string | null
     reminders?: ReminderUncheckedCreateNestedManyWithoutUserInput
     notes?: NoteUncheckedCreateNestedManyWithoutUserInput
     chatMessages?: ChatMessageUncheckedCreateNestedManyWithoutUserInput
@@ -33742,6 +33796,7 @@ export namespace Prisma {
     emailNotifications?: BoolFieldUpdateOperationsInput | boolean
     timezone?: StringFieldUpdateOperationsInput | string
     tokenVersion?: IntFieldUpdateOperationsInput | number
+    blockedAt?: NullableDateTimeFieldUpdateOperationsInput | Date | string | null
     reminders?: ReminderUpdateManyWithoutUserNestedInput
     notes?: NoteUpdateManyWithoutUserNestedInput
     chatMessages?: ChatMessageUpdateManyWithoutUserNestedInput
@@ -33776,6 +33831,7 @@ export namespace Prisma {
     emailNotifications?: BoolFieldUpdateOperationsInput | boolean
     timezone?: StringFieldUpdateOperationsInput | string
     tokenVersion?: IntFieldUpdateOperationsInput | number
+    blockedAt?: NullableDateTimeFieldUpdateOperationsInput | Date | string | null
     reminders?: ReminderUncheckedUpdateManyWithoutUserNestedInput
     notes?: NoteUncheckedUpdateManyWithoutUserNestedInput
     chatMessages?: ChatMessageUncheckedUpdateManyWithoutUserNestedInput
@@ -34062,6 +34118,7 @@ export namespace Prisma {
     emailNotifications?: boolean
     timezone?: string
     tokenVersion?: number
+    blockedAt?: Date | string | null
     reminders?: ReminderCreateNestedManyWithoutUserInput
     notes?: NoteCreateNestedManyWithoutUserInput
     chatMessages?: ChatMessageCreateNestedManyWithoutUserInput
@@ -34096,6 +34153,7 @@ export namespace Prisma {
     emailNotifications?: boolean
     timezone?: string
     tokenVersion?: number
+    blockedAt?: Date | string | null
     reminders?: ReminderUncheckedCreateNestedManyWithoutUserInput
     notes?: NoteUncheckedCreateNestedManyWithoutUserInput
     chatMessages?: ChatMessageUncheckedCreateNestedManyWithoutUserInput
@@ -34180,6 +34238,7 @@ export namespace Prisma {
     emailNotifications?: BoolFieldUpdateOperationsInput | boolean
     timezone?: StringFieldUpdateOperationsInput | string
     tokenVersion?: IntFieldUpdateOperationsInput | number
+    blockedAt?: NullableDateTimeFieldUpdateOperationsInput | Date | string | null
     reminders?: ReminderUpdateManyWithoutUserNestedInput
     notes?: NoteUpdateManyWithoutUserNestedInput
     chatMessages?: ChatMessageUpdateManyWithoutUserNestedInput
@@ -34214,6 +34273,7 @@ export namespace Prisma {
     emailNotifications?: BoolFieldUpdateOperationsInput | boolean
     timezone?: StringFieldUpdateOperationsInput | string
     tokenVersion?: IntFieldUpdateOperationsInput | number
+    blockedAt?: NullableDateTimeFieldUpdateOperationsInput | Date | string | null
     reminders?: ReminderUncheckedUpdateManyWithoutUserNestedInput
     notes?: NoteUncheckedUpdateManyWithoutUserNestedInput
     chatMessages?: ChatMessageUncheckedUpdateManyWithoutUserNestedInput
@@ -34264,6 +34324,7 @@ export namespace Prisma {
     emailNotifications?: boolean
     timezone?: string
     tokenVersion?: number
+    blockedAt?: Date | string | null
     reminders?: ReminderCreateNestedManyWithoutUserInput
     notes?: NoteCreateNestedManyWithoutUserInput
     chatMessages?: ChatMessageCreateNestedManyWithoutUserInput
@@ -34298,6 +34359,7 @@ export namespace Prisma {
     emailNotifications?: boolean
     timezone?: string
     tokenVersion?: number
+    blockedAt?: Date | string | null
     reminders?: ReminderUncheckedCreateNestedManyWithoutUserInput
     notes?: NoteUncheckedCreateNestedManyWithoutUserInput
     chatMessages?: ChatMessageUncheckedCreateNestedManyWithoutUserInput
@@ -34410,6 +34472,7 @@ export namespace Prisma {
     emailNotifications?: BoolFieldUpdateOperationsInput | boolean
     timezone?: StringFieldUpdateOperationsInput | string
     tokenVersion?: IntFieldUpdateOperationsInput | number
+    blockedAt?: NullableDateTimeFieldUpdateOperationsInput | Date | string | null
     reminders?: ReminderUpdateManyWithoutUserNestedInput
     notes?: NoteUpdateManyWithoutUserNestedInput
     chatMessages?: ChatMessageUpdateManyWithoutUserNestedInput
@@ -34444,6 +34507,7 @@ export namespace Prisma {
     emailNotifications?: BoolFieldUpdateOperationsInput | boolean
     timezone?: StringFieldUpdateOperationsInput | string
     tokenVersion?: IntFieldUpdateOperationsInput | number
+    blockedAt?: NullableDateTimeFieldUpdateOperationsInput | Date | string | null
     reminders?: ReminderUncheckedUpdateManyWithoutUserNestedInput
     notes?: NoteUncheckedUpdateManyWithoutUserNestedInput
     chatMessages?: ChatMessageUncheckedUpdateManyWithoutUserNestedInput
@@ -34600,6 +34664,7 @@ export namespace Prisma {
     emailNotifications?: boolean
     timezone?: string
     tokenVersion?: number
+    blockedAt?: Date | string | null
     reminders?: ReminderCreateNestedManyWithoutUserInput
     notes?: NoteCreateNestedManyWithoutUserInput
     chatMessages?: ChatMessageCreateNestedManyWithoutUserInput
@@ -34634,6 +34699,7 @@ export namespace Prisma {
     emailNotifications?: boolean
     timezone?: string
     tokenVersion?: number
+    blockedAt?: Date | string | null
     reminders?: ReminderUncheckedCreateNestedManyWithoutUserInput
     notes?: NoteUncheckedCreateNestedManyWithoutUserInput
     chatMessages?: ChatMessageUncheckedCreateNestedManyWithoutUserInput
@@ -34733,6 +34799,7 @@ export namespace Prisma {
     emailNotifications?: BoolFieldUpdateOperationsInput | boolean
     timezone?: StringFieldUpdateOperationsInput | string
     tokenVersion?: IntFieldUpdateOperationsInput | number
+    blockedAt?: NullableDateTimeFieldUpdateOperationsInput | Date | string | null
     reminders?: ReminderUpdateManyWithoutUserNestedInput
     notes?: NoteUpdateManyWithoutUserNestedInput
     chatMessages?: ChatMessageUpdateManyWithoutUserNestedInput
@@ -34767,6 +34834,7 @@ export namespace Prisma {
     emailNotifications?: BoolFieldUpdateOperationsInput | boolean
     timezone?: StringFieldUpdateOperationsInput | string
     tokenVersion?: IntFieldUpdateOperationsInput | number
+    blockedAt?: NullableDateTimeFieldUpdateOperationsInput | Date | string | null
     reminders?: ReminderUncheckedUpdateManyWithoutUserNestedInput
     notes?: NoteUncheckedUpdateManyWithoutUserNestedInput
     chatMessages?: ChatMessageUncheckedUpdateManyWithoutUserNestedInput
@@ -34856,6 +34924,7 @@ export namespace Prisma {
     emailNotifications?: boolean
     timezone?: string
     tokenVersion?: number
+    blockedAt?: Date | string | null
     reminders?: ReminderCreateNestedManyWithoutUserInput
     notes?: NoteCreateNestedManyWithoutUserInput
     chatMessages?: ChatMessageCreateNestedManyWithoutUserInput
@@ -34890,6 +34959,7 @@ export namespace Prisma {
     emailNotifications?: boolean
     timezone?: string
     tokenVersion?: number
+    blockedAt?: Date | string | null
     reminders?: ReminderUncheckedCreateNestedManyWithoutUserInput
     notes?: NoteUncheckedCreateNestedManyWithoutUserInput
     chatMessages?: ChatMessageUncheckedCreateNestedManyWithoutUserInput
@@ -34988,6 +35058,7 @@ export namespace Prisma {
     emailNotifications?: BoolFieldUpdateOperationsInput | boolean
     timezone?: StringFieldUpdateOperationsInput | string
     tokenVersion?: IntFieldUpdateOperationsInput | number
+    blockedAt?: NullableDateTimeFieldUpdateOperationsInput | Date | string | null
     reminders?: ReminderUpdateManyWithoutUserNestedInput
     notes?: NoteUpdateManyWithoutUserNestedInput
     chatMessages?: ChatMessageUpdateManyWithoutUserNestedInput
@@ -35022,6 +35093,7 @@ export namespace Prisma {
     emailNotifications?: BoolFieldUpdateOperationsInput | boolean
     timezone?: StringFieldUpdateOperationsInput | string
     tokenVersion?: IntFieldUpdateOperationsInput | number
+    blockedAt?: NullableDateTimeFieldUpdateOperationsInput | Date | string | null
     reminders?: ReminderUncheckedUpdateManyWithoutUserNestedInput
     notes?: NoteUncheckedUpdateManyWithoutUserNestedInput
     chatMessages?: ChatMessageUncheckedUpdateManyWithoutUserNestedInput
@@ -35117,6 +35189,7 @@ export namespace Prisma {
     emailNotifications?: boolean
     timezone?: string
     tokenVersion?: number
+    blockedAt?: Date | string | null
     reminders?: ReminderCreateNestedManyWithoutUserInput
     notes?: NoteCreateNestedManyWithoutUserInput
     chatMessages?: ChatMessageCreateNestedManyWithoutUserInput
@@ -35151,6 +35224,7 @@ export namespace Prisma {
     emailNotifications?: boolean
     timezone?: string
     tokenVersion?: number
+    blockedAt?: Date | string | null
     reminders?: ReminderUncheckedCreateNestedManyWithoutUserInput
     notes?: NoteUncheckedCreateNestedManyWithoutUserInput
     chatMessages?: ChatMessageUncheckedCreateNestedManyWithoutUserInput
@@ -35236,6 +35310,7 @@ export namespace Prisma {
     emailNotifications?: BoolFieldUpdateOperationsInput | boolean
     timezone?: StringFieldUpdateOperationsInput | string
     tokenVersion?: IntFieldUpdateOperationsInput | number
+    blockedAt?: NullableDateTimeFieldUpdateOperationsInput | Date | string | null
     reminders?: ReminderUpdateManyWithoutUserNestedInput
     notes?: NoteUpdateManyWithoutUserNestedInput
     chatMessages?: ChatMessageUpdateManyWithoutUserNestedInput
@@ -35270,6 +35345,7 @@ export namespace Prisma {
     emailNotifications?: BoolFieldUpdateOperationsInput | boolean
     timezone?: StringFieldUpdateOperationsInput | string
     tokenVersion?: IntFieldUpdateOperationsInput | number
+    blockedAt?: NullableDateTimeFieldUpdateOperationsInput | Date | string | null
     reminders?: ReminderUncheckedUpdateManyWithoutUserNestedInput
     notes?: NoteUncheckedUpdateManyWithoutUserNestedInput
     chatMessages?: ChatMessageUncheckedUpdateManyWithoutUserNestedInput
@@ -35333,6 +35409,7 @@ export namespace Prisma {
     emailNotifications?: boolean
     timezone?: string
     tokenVersion?: number
+    blockedAt?: Date | string | null
     reminders?: ReminderCreateNestedManyWithoutUserInput
     notes?: NoteCreateNestedManyWithoutUserInput
     chatMessages?: ChatMessageCreateNestedManyWithoutUserInput
@@ -35367,6 +35444,7 @@ export namespace Prisma {
     emailNotifications?: boolean
     timezone?: string
     tokenVersion?: number
+    blockedAt?: Date | string | null
     reminders?: ReminderUncheckedCreateNestedManyWithoutUserInput
     notes?: NoteUncheckedCreateNestedManyWithoutUserInput
     chatMessages?: ChatMessageUncheckedCreateNestedManyWithoutUserInput
@@ -35452,6 +35530,7 @@ export namespace Prisma {
     emailNotifications?: BoolFieldUpdateOperationsInput | boolean
     timezone?: StringFieldUpdateOperationsInput | string
     tokenVersion?: IntFieldUpdateOperationsInput | number
+    blockedAt?: NullableDateTimeFieldUpdateOperationsInput | Date | string | null
     reminders?: ReminderUpdateManyWithoutUserNestedInput
     notes?: NoteUpdateManyWithoutUserNestedInput
     chatMessages?: ChatMessageUpdateManyWithoutUserNestedInput
@@ -35486,6 +35565,7 @@ export namespace Prisma {
     emailNotifications?: BoolFieldUpdateOperationsInput | boolean
     timezone?: StringFieldUpdateOperationsInput | string
     tokenVersion?: IntFieldUpdateOperationsInput | number
+    blockedAt?: NullableDateTimeFieldUpdateOperationsInput | Date | string | null
     reminders?: ReminderUncheckedUpdateManyWithoutUserNestedInput
     notes?: NoteUncheckedUpdateManyWithoutUserNestedInput
     chatMessages?: ChatMessageUncheckedUpdateManyWithoutUserNestedInput
@@ -35520,6 +35600,7 @@ export namespace Prisma {
     emailNotifications?: boolean
     timezone?: string
     tokenVersion?: number
+    blockedAt?: Date | string | null
     reminders?: ReminderCreateNestedManyWithoutUserInput
     notes?: NoteCreateNestedManyWithoutUserInput
     chatMessages?: ChatMessageCreateNestedManyWithoutUserInput
@@ -35554,6 +35635,7 @@ export namespace Prisma {
     emailNotifications?: boolean
     timezone?: string
     tokenVersion?: number
+    blockedAt?: Date | string | null
     reminders?: ReminderUncheckedCreateNestedManyWithoutUserInput
     notes?: NoteUncheckedCreateNestedManyWithoutUserInput
     chatMessages?: ChatMessageUncheckedCreateNestedManyWithoutUserInput
@@ -35604,6 +35686,7 @@ export namespace Prisma {
     emailNotifications?: BoolFieldUpdateOperationsInput | boolean
     timezone?: StringFieldUpdateOperationsInput | string
     tokenVersion?: IntFieldUpdateOperationsInput | number
+    blockedAt?: NullableDateTimeFieldUpdateOperationsInput | Date | string | null
     reminders?: ReminderUpdateManyWithoutUserNestedInput
     notes?: NoteUpdateManyWithoutUserNestedInput
     chatMessages?: ChatMessageUpdateManyWithoutUserNestedInput
@@ -35638,6 +35721,7 @@ export namespace Prisma {
     emailNotifications?: BoolFieldUpdateOperationsInput | boolean
     timezone?: StringFieldUpdateOperationsInput | string
     tokenVersion?: IntFieldUpdateOperationsInput | number
+    blockedAt?: NullableDateTimeFieldUpdateOperationsInput | Date | string | null
     reminders?: ReminderUncheckedUpdateManyWithoutUserNestedInput
     notes?: NoteUncheckedUpdateManyWithoutUserNestedInput
     chatMessages?: ChatMessageUncheckedUpdateManyWithoutUserNestedInput
@@ -35672,6 +35756,7 @@ export namespace Prisma {
     emailNotifications?: boolean
     timezone?: string
     tokenVersion?: number
+    blockedAt?: Date | string | null
     reminders?: ReminderCreateNestedManyWithoutUserInput
     notes?: NoteCreateNestedManyWithoutUserInput
     chatMessages?: ChatMessageCreateNestedManyWithoutUserInput
@@ -35706,6 +35791,7 @@ export namespace Prisma {
     emailNotifications?: boolean
     timezone?: string
     tokenVersion?: number
+    blockedAt?: Date | string | null
     reminders?: ReminderUncheckedCreateNestedManyWithoutUserInput
     notes?: NoteUncheckedCreateNestedManyWithoutUserInput
     chatMessages?: ChatMessageUncheckedCreateNestedManyWithoutUserInput
@@ -35756,6 +35842,7 @@ export namespace Prisma {
     emailNotifications?: BoolFieldUpdateOperationsInput | boolean
     timezone?: StringFieldUpdateOperationsInput | string
     tokenVersion?: IntFieldUpdateOperationsInput | number
+    blockedAt?: NullableDateTimeFieldUpdateOperationsInput | Date | string | null
     reminders?: ReminderUpdateManyWithoutUserNestedInput
     notes?: NoteUpdateManyWithoutUserNestedInput
     chatMessages?: ChatMessageUpdateManyWithoutUserNestedInput
@@ -35790,6 +35877,7 @@ export namespace Prisma {
     emailNotifications?: BoolFieldUpdateOperationsInput | boolean
     timezone?: StringFieldUpdateOperationsInput | string
     tokenVersion?: IntFieldUpdateOperationsInput | number
+    blockedAt?: NullableDateTimeFieldUpdateOperationsInput | Date | string | null
     reminders?: ReminderUncheckedUpdateManyWithoutUserNestedInput
     notes?: NoteUncheckedUpdateManyWithoutUserNestedInput
     chatMessages?: ChatMessageUncheckedUpdateManyWithoutUserNestedInput

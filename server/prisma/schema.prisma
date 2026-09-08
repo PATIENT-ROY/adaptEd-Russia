@@ -42,6 +42,7 @@ model User {
   emailNotifications Boolean @default(true)
   timezone           String  @default("Europe/Moscow")
   tokenVersion       Int     @default(0)
+  blockedAt          DateTime?
 
   // Связи
   reminders             Reminder[]

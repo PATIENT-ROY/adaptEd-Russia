@@ -13,6 +13,7 @@ export default function sitemap(): MetadataRoute.Sitemap {
     ["/education/schedule", "monthly", 0.7],
     ["/buddy", "monthly", 0.7],
     ["/support", "monthly", 0.6],
+    ["/safety", "yearly", 0.4],
     ["/privacy-policy", "yearly", 0.3],
     ["/personal-data-consent", "yearly", 0.3],
   ] as const;

@@ -196,6 +196,20 @@ export function deleteAdminUser(userId: string, confirmEmail: string) {
   );
 }
 
+export function blockAdminUser(userId: string) {
+  return adminMutate<{ user: AdminUserRow }>(
+    `/users/${encodeURIComponent(userId)}/block`,
+    'POST',
+  );
+}
+
+export function unblockAdminUser(userId: string) {
+  return adminMutate<{ user: AdminUserRow }>(
+    `/users/${encodeURIComponent(userId)}/unblock`,
+    'POST',
+  );
+}
+
 export function fetchAdminGuideStats() {
   return adminFetch<AdminGuidesPayload>('/guides');
 }

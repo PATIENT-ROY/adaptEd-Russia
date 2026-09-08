@@ -193,6 +193,7 @@ const adminUserListSelect = {
   passwordSetupTokens: {
     select: { usedAt: true, expiresAt: true, createdAt: true },
   },
+  blockedAt: true,
 };
 
 type AdminUserListRecord = {
@@ -210,6 +211,7 @@ type AdminUserListRecord = {
     expiresAt: Date;
     createdAt: Date;
   }>;
+  blockedAt: Date | null;
 };
 
 function toAdminUserRow(u: AdminUserListRecord) {
@@ -222,7 +224,7 @@ function toAdminUserRow(u: AdminUserListRecord) {
     country: u.country,
     language: u.language.toLowerCase(),
     role: u.role.toLowerCase(),
-    status: invitePending ? 'pending' : 'active',
+    status: u.blockedAt ? "blocked" : invitePending ? "pending" : "active",
     invitePending,
     registeredAt: u.registeredAt.toISOString().slice(0, 10),
     lastLogin: invitePending
@@ -454,6 +456,96 @@ router.delete('/users/:id', async (req: AuthedRequest, res) => {
     } as ApiResponse);
   } catch (error) {
     console.error('Admin delete user error:', error);
+    res.status(500).json({ success: false, error: 'Внутренняя ошибка сервера' } as ApiResponse);
+  }
+});
+
+// POST /api/admin/users/:id/block
+router.post('/users/:id/block', async (req: AuthedRequest, res) => {
+  try {
+    const targetId = String(req.params.id);
+    if (targetId === req.user?.userId) {
+      return res.status(400).json({
+        success: false,
+        error: 'Нельзя заблокировать свой аккаунт',
+      } as ApiResponse);
+    }
+
+    const target = await prisma.user.findUnique({
+      where: { id: targetId },
+      select: { id: true, role: true, blockedAt: true },
+    });
+    if (!target) {
+      return res.status(404).json({ success: false, error: 'Пользователь не найден' } as ApiResponse);
+    }
+    if (target.role === 'ADMIN') {
+      return res.status(400).json({
+        success: false,
+        error: 'Сначала снимите права администратора',
+      } as ApiResponse);
+    }
+    if (target.blockedAt) {
+      return res.status(400).json({
+        success: false,
+        error: 'Пользователь уже заблокирован',
+      } as ApiResponse);
+    }
+
+    await prisma.user.update({
+      where: { id: target.id },
+      data: { blockedAt: new Date(), tokenVersion: { increment: 1 } },
+    });
+
+    const row = await loadAdminUserRow(target.id);
+    return res.json({
+      success: true,
+      data: { user: row },
+      message: 'Пользователь заблокирован',
+    } as ApiResponse);
+  } catch (error) {
+    console.error('Admin block user error:', error);
+    res.status(500).json({ success: false, error: 'Внутренняя ошибка сервера' } as ApiResponse);
+  }
+});
+
+// POST /api/admin/users/:id/unblock
+router.post('/users/:id/unblock', async (req: AuthedRequest, res) => {
+  try {
+    const targetId = String(req.params.id);
+    if (targetId === req.user?.userId) {
+      return res.status(400).json({
+        success: false,
+        error: 'Нельзя разблокировать свой аккаунт',
+      } as ApiResponse);
+    }
+
+    const target = await prisma.user.findUnique({
+      where: { id: targetId },
+      select: { id: true, blockedAt: true },
+    });
+    if (!target) {
+      return res.status(404).json({ success: false, error: 'Пользователь не найден' } as ApiResponse);
+    }
+    if (!target.blockedAt) {
+      return res.status(400).json({
+        success: false,
+        error: 'Пользователь не заблокирован',
+      } as ApiResponse);
+    }
+
+    await prisma.user.update({
+      where: { id: target.id },
+      data: { blockedAt: null, tokenVersion: { increment: 1 } },
+    });
+
+    const row = await loadAdminUserRow(target.id);
+    return res.json({
+      success: true,
+      data: { user: row },
+      message: 'Пользователь разблокирован',
+    } as ApiResponse);
+  } catch (error) {
+    console.error('Admin unblock user error:', error);
     res.status(500).json({ success: false, error: 'Внутренняя ошибка сервера' } as ApiResponse);
   }
 });
