@@ -3,22 +3,64 @@
 import { usePathname } from "next/navigation";
 import { useEffect } from "react";
 
-const AUTH_PATHS = ["/login", "/register", "/set-password"];
-export const LAST_PATH_KEY = "adapted:lastPath";
-export const CURRENT_PATH_KEY = "adapted:currentPath";
+const AUTH_PATHS = ["/login", "/register", "/set-password", "/forgot-password"];
+const STACK_KEY = "adapted:pathStack";
+const MAX_STACK = 40;
 
 function isAuthPath(pathname: string) {
   return AUTH_PATHS.some((path) => pathname === path || pathname.startsWith(`${path}/`));
 }
 
-export function getLastInAppPath() {
-  if (typeof window === "undefined") return null;
+function pathOf(url: string) {
+  const q = url.indexOf("?");
+  return q === -1 ? url : url.slice(0, q);
+}
+
+function sameLocation(a: string, b: string) {
+  return a === b;
+}
+
+function currentLocation() {
+  return `${window.location.pathname}${window.location.search}`;
+}
+
+function readStack(): string[] {
   try {
-    const last = sessionStorage.getItem(LAST_PATH_KEY);
-    if (!last || last === window.location.pathname || isAuthPath(last)) return null;
-    return last;
+    const raw = sessionStorage.getItem(STACK_KEY);
+    const parsed = raw ? JSON.parse(raw) : [];
+    if (!Array.isArray(parsed)) return [];
+    return parsed.filter((item): item is string => typeof item === "string" && item.startsWith("/"));
   } catch {
-    return null;
+    return [];
+  }
+}
+
+function writeStack(stack: string[]) {
+  sessionStorage.setItem(STACK_KEY, JSON.stringify(stack.slice(-MAX_STACK)));
+}
+
+function goTo(url: string) {
+  const current = currentLocation();
+  if (url === window.location.pathname || url === current) return;
+  window.location.assign(url);
+}
+
+export function goBackInApp(fallbackHref = "/") {
+  if (typeof window === "undefined") return;
+  try {
+    const current = currentLocation();
+    const stack = readStack();
+    while (stack.length > 0 && sameLocation(stack[stack.length - 1], current)) {
+      stack.pop();
+    }
+    while (stack.length > 0 && isAuthPath(pathOf(stack[stack.length - 1]))) {
+      stack.pop();
+    }
+    const target = stack[stack.length - 1] ?? fallbackHref;
+    writeStack(stack);
+    goTo(target);
+  } catch {
+    goTo(fallbackHref);
   }
 }
 
@@ -28,11 +70,12 @@ export function RememberPath() {
   useEffect(() => {
     if (!pathname || isAuthPath(pathname)) return;
     try {
-      const previous = sessionStorage.getItem(CURRENT_PATH_KEY);
-      if (previous && previous !== pathname) {
-        sessionStorage.setItem(LAST_PATH_KEY, previous);
+      const full = currentLocation();
+      const stack = readStack();
+      if (stack[stack.length - 1] !== full) {
+        stack.push(full);
+        writeStack(stack);
       }
-      sessionStorage.setItem(CURRENT_PATH_KEY, pathname);
     } catch {
       // private mode
     }

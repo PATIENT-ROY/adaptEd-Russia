@@ -2,7 +2,7 @@
 
 import { ArrowLeft } from "lucide-react";
 import { cn } from "@/lib/utils";
-import { getLastInAppPath } from "@/components/layout/remember-path";
+import { goBackInApp } from "@/components/layout/remember-path";
 
 interface BackButtonProps {
   label: string;
@@ -14,13 +14,6 @@ interface BackButtonProps {
 
 const backButtonClassName =
   "inline-flex h-8 w-fit items-center gap-1.5 rounded-lg border border-slate-300 bg-white px-2.5 text-xs font-medium leading-none text-slate-700 sm:h-9 sm:px-3 sm:text-sm hover:border-slate-400 hover:bg-slate-50 hover:text-slate-900";
-
-function goTo(url: string) {
-  if (typeof window === "undefined") return;
-  const current = `${window.location.pathname}${window.location.search}`;
-  if (url === window.location.pathname || url === current) return;
-  window.location.assign(url);
-}
 
 export function BackButton({
   label,
@@ -43,7 +36,7 @@ export function BackButton({
       onClick={
         onClick ??
         (() => {
-          goTo(getLastInAppPath() ?? href ?? fallbackHref);
+          goBackInApp(href ?? fallbackHref);
         })
       }
       className={classes}
