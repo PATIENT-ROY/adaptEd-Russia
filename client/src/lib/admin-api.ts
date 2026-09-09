@@ -63,6 +63,12 @@ export type AdminInboxSummary = {
   newBuddyApplications: number;
   unansweredQuestions: number;
   total: number;
+  actionRequired: {
+    openTickets: number;
+    pendingReviews: number;
+    newBuddyApplications: number;
+    unansweredQuestions: number;
+  };
 };
 
 const emptyMetric = (): StatMetric => ({ value: 0, change: '0%' });
@@ -161,6 +167,7 @@ export async function fetchAdminInboxSummary(): Promise<AdminInboxSummary> {
     newBuddyApplications: Number(data.newBuddyApplications ?? 0),
     unansweredQuestions: Number(data.unansweredQuestions ?? 0),
   };
+  const actionRequiredRaw = asRecord(data.actionRequired);
   return {
     ...summary,
     total: Number(
@@ -170,7 +177,26 @@ export async function fetchAdminInboxSummary(): Promise<AdminInboxSummary> {
           summary.newBuddyApplications +
           summary.unansweredQuestions,
     ),
+    actionRequired: {
+      openTickets: Number(actionRequiredRaw.openTickets ?? summary.openTickets),
+      pendingReviews: Number(actionRequiredRaw.pendingReviews ?? summary.pendingReviews),
+      newBuddyApplications: Number(
+        actionRequiredRaw.newBuddyApplications ?? summary.newBuddyApplications,
+      ),
+      unansweredQuestions: Number(
+        actionRequiredRaw.unansweredQuestions ?? summary.unansweredQuestions,
+      ),
+    },
   };
+}
+
+export function markAdminInboxSeen(
+  category: 'support' | 'reviews' | 'buddy' | 'community',
+) {
+  return adminMutate<{ category: string; seenAt: string }>(
+    `/inbox-summary/seen/${category}`,
+    'POST',
+  );
 }
 
 export function fetchAdminUsers() {

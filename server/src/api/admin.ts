@@ -3,10 +3,13 @@ import { authMiddleware } from '../lib/auth';
 import { prisma } from '../lib/database';
 import { ApiResponse } from '../types/index.js';
 import { ACHIEVEMENT_CATALOG_SIZE } from './user';
+import { z } from 'zod';
+import { recordAdminAction } from '../lib/admin-audit';
 
 const router = Router();
 
 type AuthedRequest = Request & { user?: { userId: string; role: string } };
+const inboxCategorySchema = z.enum(['support', 'reviews', 'buddy', 'community']);
 
 function requireAdmin(req: AuthedRequest, res: Response, next: () => void) {
   if (req.user?.role !== 'ADMIN') {
@@ -24,9 +27,18 @@ function pctChange(current: number, previous: number): string {
 }
 
 // Lightweight counters for the global admin notification bell.
-router.get('/inbox-summary', async (_req, res) => {
+router.get('/inbox-summary', async (req: AuthedRequest, res) => {
   try {
-    const [openTickets, pendingReviews, newBuddyApplications, unansweredQuestions] =
+    const reads = await prisma.adminInboxRead.findMany({
+      where: { adminUserId: req.user!.userId },
+      select: { category: true, seenAt: true },
+    });
+    const seenAt = new Map(reads.map((row) => [row.category, row.seenAt]));
+    const after = (category: string) =>
+      seenAt.has(category) ? { gt: seenAt.get(category)! } : undefined;
+
+    const [openTickets, pendingReviews, newBuddyApplications, unansweredQuestions,
+      unreadTickets, unreadReviews, unreadBuddyApplications, unreadQuestions] =
       await Promise.all([
         prisma.supportTicket.count({
           where: { status: { in: ['OPEN', 'IN_PROGRESS'] } },
@@ -34,22 +46,63 @@ router.get('/inbox-summary', async (_req, res) => {
         prisma.review.count({ where: { status: 'PENDING' } }),
         prisma.buddyApplication.count({ where: { status: 'NEW' } }),
         prisma.question.count({ where: { isAnswered: false } }),
+        prisma.supportTicket.count({
+          where: { status: { in: ['OPEN', 'IN_PROGRESS'] }, createdAt: after('support') },
+        }),
+        prisma.review.count({
+          where: { status: 'PENDING', createdAt: after('reviews') },
+        }),
+        prisma.buddyApplication.count({
+          where: { status: 'NEW', createdAt: after('buddy') },
+        }),
+        prisma.question.count({
+          where: { isAnswered: false, createdAt: after('community') },
+        }),
       ]);
 
     res.json({
       success: true,
       data: {
-        openTickets,
-        pendingReviews,
-        newBuddyApplications,
-        unansweredQuestions,
-        total:
-          openTickets + pendingReviews + newBuddyApplications + unansweredQuestions,
+        openTickets: unreadTickets,
+        pendingReviews: unreadReviews,
+        newBuddyApplications: unreadBuddyApplications,
+        unansweredQuestions: unreadQuestions,
+        total: unreadTickets + unreadReviews + unreadBuddyApplications + unreadQuestions,
+        actionRequired: {
+          openTickets,
+          pendingReviews,
+          newBuddyApplications,
+          unansweredQuestions,
+        },
       },
     } as ApiResponse);
   } catch (error) {
     console.error('Admin inbox summary error:', error);
     res.status(500).json({ success: false, error: 'Внутренняя ошибка сервера' } as ApiResponse);
+  }
+});
+
+router.post('/inbox-summary/seen/:category', async (req: AuthedRequest, res) => {
+  const parsed = inboxCategorySchema.safeParse(req.params.category);
+  if (!parsed.success) {
+    return res.status(422).json({ success: false, error: 'Неверная категория' } as ApiResponse);
+  }
+  try {
+    const row = await prisma.adminInboxRead.upsert({
+      where: {
+        adminUserId_category: {
+          adminUserId: req.user!.userId,
+          category: parsed.data,
+        },
+      },
+      create: { adminUserId: req.user!.userId, category: parsed.data },
+      update: { seenAt: new Date() },
+      select: { category: true, seenAt: true },
+    });
+    return res.json({ success: true, data: row } as ApiResponse);
+  } catch (error) {
+    console.error('Admin inbox seen error:', error);
+    return res.status(500).json({ success: false, error: 'Внутренняя ошибка сервера' } as ApiResponse);
   }
 });
 
@@ -374,6 +427,7 @@ router.post('/users/:id/revoke-invite', async (req: AuthedRequest, res) => {
 
     if (isStub) {
       await prisma.user.delete({ where: { id: target.id } });
+      await recordAdminAction({ actorUserId: req.user!.userId, action: 'user.invite.revoke', entityType: 'User', entityId: target.id, metadata: { deletedStub: true } });
       return res.json({
         success: true,
         data: { deleted: true, id: target.id },
@@ -382,6 +436,7 @@ router.post('/users/:id/revoke-invite', async (req: AuthedRequest, res) => {
     }
 
     const row = await loadAdminUserRow(target.id);
+    await recordAdminAction({ actorUserId: req.user!.userId, action: 'user.invite.revoke', entityType: 'User', entityId: target.id, metadata: { deletedStub: false } });
     return res.json({
       success: true,
       data: { deleted: false, user: row },
@@ -430,6 +485,7 @@ router.post('/users/:id/demote', async (req: AuthedRequest, res) => {
     });
 
     const row = await loadAdminUserRow(target.id);
+    await recordAdminAction({ actorUserId: req.user!.userId, action: 'user.demote', entityType: 'User', entityId: target.id });
     return res.json({
       success: true,
       data: { user: row },
@@ -479,6 +535,7 @@ router.delete('/users/:id', async (req: AuthedRequest, res) => {
     }
 
     await prisma.user.delete({ where: { id: target.id } });
+    await recordAdminAction({ actorUserId: req.user!.userId, action: 'user.delete', entityType: 'User', entityId: target.id });
     return res.json({
       success: true,
       data: { deleted: true, id: target.id },
@@ -527,6 +584,7 @@ router.post('/users/:id/block', async (req: AuthedRequest, res) => {
     });
 
     const row = await loadAdminUserRow(target.id);
+    await recordAdminAction({ actorUserId: req.user!.userId, action: 'user.block', entityType: 'User', entityId: target.id });
     return res.json({
       success: true,
       data: { user: row },
@@ -569,6 +627,7 @@ router.post('/users/:id/unblock', async (req: AuthedRequest, res) => {
     });
 
     const row = await loadAdminUserRow(target.id);
+    await recordAdminAction({ actorUserId: req.user!.userId, action: 'user.unblock', entityType: 'User', entityId: target.id });
     return res.json({
       success: true,
       data: { user: row },

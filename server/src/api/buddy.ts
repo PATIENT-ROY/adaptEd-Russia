@@ -1,5 +1,6 @@
 import { Router, Request, Response } from "express";
 import rateLimit from "express-rate-limit";
+import { recordAdminAction } from "../lib/admin-audit";
 import { z } from "zod";
 import { authMiddleware } from "../lib/auth";
 import { prisma } from "../lib/database";
@@ -339,6 +340,13 @@ router.patch(
         where: { id: String(req.params.id) },
         data: parsed.data,
         include: { user: { select: { id: true, email: true } } },
+      });
+      await recordAdminAction({
+        actorUserId: req.user!.userId,
+        action: "buddy.update",
+        entityType: "BuddyApplication",
+        entityId: application.id,
+        metadata: parsed.data,
       });
       return res.json({ success: true, data: application });
     } catch (error: unknown) {

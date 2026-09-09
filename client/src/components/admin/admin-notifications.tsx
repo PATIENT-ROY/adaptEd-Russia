@@ -3,7 +3,11 @@
 import Link from "next/link";
 import { useCallback, useEffect, useRef, useState } from "react";
 import { Bell, HeartHandshake, MessageSquare, Star, Users } from "lucide-react";
-import { fetchAdminInboxSummary, type AdminInboxSummary } from "@/lib/admin-api";
+import {
+  fetchAdminInboxSummary,
+  markAdminInboxSeen,
+  type AdminInboxSummary,
+} from "@/lib/admin-api";
 import { useTranslation } from "@/hooks/useTranslation";
 import { cn } from "@/lib/utils";
 
@@ -13,6 +17,12 @@ const EMPTY_SUMMARY: AdminInboxSummary = {
   newBuddyApplications: 0,
   unansweredQuestions: 0,
   total: 0,
+  actionRequired: {
+    openTickets: 0,
+    pendingReviews: 0,
+    newBuddyApplications: 0,
+    unansweredQuestions: 0,
+  },
 };
 
 export function AdminNotifications() {
@@ -66,24 +76,32 @@ export function AdminNotifications() {
       href: "/admin/buddy",
       label: t("admin.dashboard.ops.newBuddyApplications"),
       count: summary.newBuddyApplications,
+      required: summary.actionRequired.newBuddyApplications,
+      category: "buddy" as const,
       icon: HeartHandshake,
     },
     {
       href: "/admin/support",
       label: t("admin.dashboard.ops.openTickets"),
       count: summary.openTickets,
+      required: summary.actionRequired.openTickets,
+      category: "support" as const,
       icon: MessageSquare,
     },
     {
       href: "/admin/reviews",
       label: t("admin.dashboard.ops.pendingReviews"),
       count: summary.pendingReviews,
+      required: summary.actionRequired.pendingReviews,
+      category: "reviews" as const,
       icon: Star,
     },
     {
-      href: "/community/questions",
+      href: "/community/questions?status=unanswered",
       label: t("community.questions.filter.unanswered"),
       count: summary.unansweredQuestions,
+      required: summary.actionRequired.unansweredQuestions,
+      category: "community" as const,
       icon: Users,
     },
   ];
@@ -135,7 +153,10 @@ export function AdminNotifications() {
                   key={item.href}
                   href={item.href}
                   role="menuitem"
-                  onClick={() => setOpen(false)}
+                  onClick={() => {
+                    setOpen(false);
+                    if (item.count > 0) void markAdminInboxSeen(item.category);
+                  }}
                   className="flex items-center gap-3 rounded-xl px-3 py-2.5 text-sm text-slate-700 transition hover:bg-slate-50"
                 >
                   <span className="flex h-8 w-8 shrink-0 items-center justify-center rounded-lg bg-slate-100 text-slate-600">
@@ -148,7 +169,7 @@ export function AdminNotifications() {
                       item.count > 0 ? "bg-red-100 text-red-700" : "bg-slate-100 text-slate-500",
                     )}
                   >
-                    {item.count}
+                    {item.count > 0 ? `${item.count} / ${item.required}` : item.required}
                   </span>
                 </Link>
               );

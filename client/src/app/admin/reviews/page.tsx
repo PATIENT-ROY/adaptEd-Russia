@@ -55,12 +55,12 @@ function AdminReviewsContent() {
           },
         }
       );
-      if (res.ok) {
-        const body = await res.json();
-        setReviews(body.data || []);
-      }
+      const body = await res.json().catch(() => ({}));
+      if (!res.ok) throw new Error(body.error || "Не удалось загрузить отзывы");
+      setReviews(body.data || []);
     } catch (err) {
       console.error("Error loading reviews:", err);
+      showToast(err instanceof Error ? err.message : "Не удалось загрузить отзывы");
     } finally {
       setLoading(false);
     }
@@ -82,9 +82,8 @@ function AdminReviewsContent() {
   };
 
   const handleApprove = async (id: string) => {
-    updateLocal(id, { status: ReviewStatus.APPROVED });
     try {
-      await fetch(`${API_BASE_URL}/admin/reviews/${id}`, {
+      const res = await fetch(`${API_BASE_URL}/admin/reviews/${id}`, {
         method: "PATCH",
         headers: {
           "Content-Type": "application/json",
@@ -92,17 +91,19 @@ function AdminReviewsContent() {
         },
         body: JSON.stringify({ status: "APPROVED" }),
       });
+      const body = await res.json().catch(() => ({}));
+      if (!res.ok) throw new Error(body.error || "Не удалось одобрить отзыв");
       await loadReviews();
     } catch (e) {
       console.error("Approve error:", e);
-      loadReviews();
+      showToast(e instanceof Error ? e.message : "Не удалось одобрить отзыв");
+      await loadReviews();
     }
   };
 
   const handleReject = async (id: string) => {
-    updateLocal(id, { status: ReviewStatus.REJECTED });
     try {
-      await fetch(`${API_BASE_URL}/admin/reviews/${id}`, {
+      const res = await fetch(`${API_BASE_URL}/admin/reviews/${id}`, {
         method: "PATCH",
         headers: {
           "Content-Type": "application/json",
@@ -110,10 +111,13 @@ function AdminReviewsContent() {
         },
         body: JSON.stringify({ status: ReviewStatus.REJECTED }),
       });
+      const body = await res.json().catch(() => ({}));
+      if (!res.ok) throw new Error(body.error || "Не удалось отклонить отзыв");
       await loadReviews();
     } catch (e) {
       console.error(e);
-      loadReviews();
+      showToast(e instanceof Error ? e.message : "Не удалось отклонить отзыв");
+      await loadReviews();
     }
   };
 
@@ -143,15 +147,12 @@ function AdminReviewsContent() {
         body: JSON.stringify({ isFeatured: !curr.isFeatured }),
       });
       const body = await res.json().catch(() => ({}));
-      if (!res.ok && (body as { error?: string }).error) {
-        showToast((body as { error: string }).error);
-        await loadReviews();
-        return;
-      }
+      if (!res.ok) throw new Error((body as { error?: string }).error || "Не удалось изменить отзыв");
       await loadReviews();
     } catch (e) {
       console.error(e);
-      loadReviews();
+      showToast(e instanceof Error ? e.message : "Не удалось изменить отзыв");
+      await loadReviews();
     }
   };
 
@@ -159,16 +160,19 @@ function AdminReviewsContent() {
     const original = reviews;
     removeLocal(id);
     try {
-      await fetch(`${API_BASE_URL}/admin/reviews/${id}`, {
+      const res = await fetch(`${API_BASE_URL}/admin/reviews/${id}`, {
         method: "DELETE",
         headers: {
           Authorization: `Bearer ${localStorage.getItem("token")}`,
         },
       });
+      const body = await res.json().catch(() => ({}));
+      if (!res.ok) throw new Error(body.error || "Не удалось удалить отзыв");
       await loadReviews();
     } catch (e) {
       console.error(e);
       setReviews(original);
+      showToast(e instanceof Error ? e.message : "Не удалось удалить отзыв");
     }
   };
 

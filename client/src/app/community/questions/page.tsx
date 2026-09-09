@@ -111,7 +111,11 @@ export default function CommunityQuestionsPage() {
 
   const [activeSort, setActiveSort] = useState<"popular" | "new">("new");
   const [statusFilter, setStatusFilter] =
-    useState<QuestionStatusFilter>("all");
+    useState<QuestionStatusFilter>(() => {
+      if (typeof window === "undefined") return "all";
+      const status = new URLSearchParams(window.location.search).get("status");
+      return status === "answered" || status === "unanswered" ? status : "all";
+    });
   const [mineOnly, setMineOnly] = useState(false);
   const [isFormVisible, setIsFormVisible] = useState(false);
   const [expandedQuestionId, setExpandedQuestionId] = useState<string | null>(
