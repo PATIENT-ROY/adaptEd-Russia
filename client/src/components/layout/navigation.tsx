@@ -209,7 +209,7 @@ export function Navigation({
               <div className="flex items-center gap-1 sm:gap-2">
                 {user.role === Role.ADMIN && <AdminNotifications />}
                 {user.role === Role.ADMIN && (
-                  <Link href="/admin">
+                  <Link href="/admin" className="hidden sm:block">
                     <Button className="rounded-lg sm:rounded-xl bg-gradient-to-r from-red-500 to-red-600 hover:from-red-600 hover:to-red-700 text-white shadow-lg hover:shadow-xl transform hover:scale-105 transition-all duration-300 text-xs sm:text-sm h-6 sm:h-7 lg:h-8 px-2 sm:px-3 font-medium">
                       <Shield className="me-1 h-2 w-2 sm:h-2.5 sm:w-2.5" />
                       <span className="hidden sm:inline">{t("nav.admin")}</span>
