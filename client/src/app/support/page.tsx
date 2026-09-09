@@ -50,6 +50,7 @@ interface SupportTicket {
     content: string;
     isAdmin: boolean;
     createdAt: string;
+    readByUserAt?: string | null;
   }>;
 }
 
@@ -165,6 +166,33 @@ export default function SupportPage() {
         return <Badge className="bg-gray-100 text-gray-700">{t("support.tickets.status.closed")}</Badge>;
       default:
         return <Badge>{status}</Badge>;
+    }
+  };
+
+  const openTicket = async (ticket: SupportTicket) => {
+    const nextId = expandedTicketId === ticket.id ? null : ticket.id;
+    setExpandedTicketId(nextId);
+    if (!nextId || !ticket.responses.some((response) => response.isAdmin && !response.readByUserAt)) return;
+    try {
+      const token = localStorage.getItem("token");
+      const response = await fetch(`${API_BASE_URL}/support/my-tickets/${ticket.id}/read`, {
+        method: "POST",
+        headers: { Authorization: `Bearer ${token}` },
+      });
+      if (response.ok) {
+        setMyTickets((current) => current.map((item) =>
+          item.id === ticket.id
+            ? {
+                ...item,
+                responses: item.responses.map((entry) =>
+                  entry.isAdmin ? { ...entry, readByUserAt: new Date().toISOString() } : entry,
+                ),
+              }
+            : item,
+        ));
+      }
+    } catch (error) {
+      console.error("Failed to mark support responses as read:", error);
     }
   };
 
@@ -572,7 +600,7 @@ export default function SupportPage() {
 
             {/* My Tickets */}
             {user && myTickets.length > 0 && (
-              <div className="mt-12">
+              <div id="my-tickets" className="mt-12 scroll-mt-20">
                 <h2 className="text-2xl font-bold text-gray-900 mb-6 flex items-center gap-2">
                   <Inbox className="h-6 w-6 text-blue-600" />
                   {t("support.tickets.title")}
@@ -582,9 +610,7 @@ export default function SupportPage() {
                     <Card key={ticket.id} className="overflow-hidden">
                       <div
                         className="p-4 cursor-pointer hover:bg-gray-50 transition-colors"
-                        onClick={() => setExpandedTicketId(
-                          expandedTicketId === ticket.id ? null : ticket.id
-                        )}
+                        onClick={() => void openTicket(ticket)}
                       >
                         <div className="flex items-center justify-between">
                           <div className="flex-1">

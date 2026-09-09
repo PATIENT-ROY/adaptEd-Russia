@@ -258,8 +258,28 @@ exports.Prisma.SupportResponseScalarFieldEnum = {
   id: 'id',
   ticketId: 'ticketId',
   adminId: 'adminId',
+  adminUserId: 'adminUserId',
   content: 'content',
   isAdmin: 'isAdmin',
+  readByUserAt: 'readByUserAt',
+  createdAt: 'createdAt'
+};
+
+exports.Prisma.AdminInboxReadScalarFieldEnum = {
+  id: 'id',
+  adminUserId: 'adminUserId',
+  category: 'category',
+  seenAt: 'seenAt',
+  updatedAt: 'updatedAt'
+};
+
+exports.Prisma.AdminAuditLogScalarFieldEnum = {
+  id: 'id',
+  actorUserId: 'actorUserId',
+  action: 'action',
+  entityType: 'entityType',
+  entityId: 'entityId',
+  metadata: 'metadata',
   createdAt: 'createdAt'
 };
 
@@ -399,6 +419,11 @@ exports.Prisma.SortOrder = {
   desc: 'desc'
 };
 
+exports.Prisma.NullableJsonNullValueInput = {
+  DbNull: Prisma.DbNull,
+  JsonNull: Prisma.JsonNull
+};
+
 exports.Prisma.QueryMode = {
   default: 'default',
   insensitive: 'insensitive'
@@ -407,6 +432,12 @@ exports.Prisma.QueryMode = {
 exports.Prisma.NullsOrder = {
   first: 'first',
   last: 'last'
+};
+
+exports.Prisma.JsonNullValueFilter = {
+  DbNull: Prisma.DbNull,
+  JsonNull: Prisma.JsonNull,
+  AnyNull: Prisma.AnyNull
 };
 exports.BuddyApplicationType = exports.$Enums.BuddyApplicationType = {
   STUDENT: 'STUDENT',
@@ -433,6 +464,8 @@ exports.Prisma.ModelName = {
   ChatMessage: 'ChatMessage',
   SupportTicket: 'SupportTicket',
   SupportResponse: 'SupportResponse',
+  AdminInboxRead: 'AdminInboxRead',
+  AdminAuditLog: 'AdminAuditLog',
   Admin: 'Admin',
   SubscriptionPlan: 'SubscriptionPlan',
   Payment: 'Payment',

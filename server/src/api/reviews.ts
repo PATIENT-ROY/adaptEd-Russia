@@ -12,6 +12,7 @@ const router = Router();
 
 // Automatic country -> flag resolution for all 249 countries in any language
 import countries from 'i18n-iso-countries';
+import { recordAdminAction } from '../lib/admin-audit';
 
 countries.registerLocale(require('i18n-iso-countries/langs/ru.json'));
 countries.registerLocale(require('i18n-iso-countries/langs/en.json'));
@@ -372,6 +373,14 @@ router.patch('/admin/reviews/:id', authMiddleware, async (req: AuthenticatedRequ
       data,
     });
 
+    await recordAdminAction({
+      actorUserId: req.user!.userId,
+      action: 'review.update',
+      entityType: 'Review',
+      entityId: review.id,
+      metadata: data,
+    });
+
     res.json({ success: true, data: review, message: 'Отзыв обновлён' } as ApiResponse);
   } catch (error: unknown) {
     if (error instanceof z.ZodError) {
@@ -400,6 +409,12 @@ router.delete('/admin/reviews/:id', authMiddleware, async (req: AuthenticatedReq
     }
     const { id } = req.params;
     await prisma.review.delete({ where: { id } });
+    await recordAdminAction({
+      actorUserId: req.user!.userId,
+      action: 'review.delete',
+      entityType: 'Review',
+      entityId: id,
+    });
     res.json({ success: true, message: 'Отзыв удалён' } as ApiResponse);
   } catch (error: any) {
     if (error.code === 'P2025') {

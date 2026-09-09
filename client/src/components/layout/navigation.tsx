@@ -25,6 +25,7 @@ import { useState } from "react";
 import type { Language } from "@/types";
 import { Role } from "@/types";
 import { AdminNotifications } from "@/components/admin/admin-notifications";
+import { SupportNotifications } from "@/components/support/support-notifications";
 
 interface NavigationProps {
   currentLanguage: Language;
@@ -208,6 +209,7 @@ export function Navigation({
             {user ? (
               <div className="flex items-center gap-1 sm:gap-2">
                 {user.role === Role.ADMIN && <AdminNotifications />}
+                {user.role !== Role.ADMIN && <SupportNotifications />}
                 {user.role === Role.ADMIN && (
                   <Link href="/admin" className="hidden sm:block">
                     <Button className="rounded-lg sm:rounded-xl bg-gradient-to-r from-red-500 to-red-600 hover:from-red-600 hover:to-red-700 text-white shadow-lg hover:shadow-xl transform hover:scale-105 transition-all duration-300 text-xs sm:text-sm h-6 sm:h-7 lg:h-8 px-2 sm:px-3 font-medium">

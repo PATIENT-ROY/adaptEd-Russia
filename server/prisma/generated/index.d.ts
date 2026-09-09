@@ -64,6 +64,16 @@ export type SupportTicket = $Result.DefaultSelection<Prisma.$SupportTicketPayloa
  */
 export type SupportResponse = $Result.DefaultSelection<Prisma.$SupportResponsePayload>
 /**
+ * Model AdminInboxRead
+ * 
+ */
+export type AdminInboxRead = $Result.DefaultSelection<Prisma.$AdminInboxReadPayload>
+/**
+ * Model AdminAuditLog
+ * 
+ */
+export type AdminAuditLog = $Result.DefaultSelection<Prisma.$AdminAuditLogPayload>
+/**
  * Model Admin
  * 
  */
@@ -374,6 +384,26 @@ export class PrismaClient<
     * ```
     */
   get supportResponse(): Prisma.SupportResponseDelegate<ExtArgs>;
+
+  /**
+   * `prisma.adminInboxRead`: Exposes CRUD operations for the **AdminInboxRead** model.
+    * Example usage:
+    * ```ts
+    * // Fetch zero or more AdminInboxReads
+    * const adminInboxReads = await prisma.adminInboxRead.findMany()
+    * ```
+    */
+  get adminInboxRead(): Prisma.AdminInboxReadDelegate<ExtArgs>;
+
+  /**
+   * `prisma.adminAuditLog`: Exposes CRUD operations for the **AdminAuditLog** model.
+    * Example usage:
+    * ```ts
+    * // Fetch zero or more AdminAuditLogs
+    * const adminAuditLogs = await prisma.adminAuditLog.findMany()
+    * ```
+    */
+  get adminAuditLog(): Prisma.AdminAuditLogDelegate<ExtArgs>;
 
   /**
    * `prisma.admin`: Exposes CRUD operations for the **Admin** model.
@@ -935,6 +965,8 @@ export namespace Prisma {
     ChatMessage: 'ChatMessage',
     SupportTicket: 'SupportTicket',
     SupportResponse: 'SupportResponse',
+    AdminInboxRead: 'AdminInboxRead',
+    AdminAuditLog: 'AdminAuditLog',
     Admin: 'Admin',
     SubscriptionPlan: 'SubscriptionPlan',
     Payment: 'Payment',
@@ -961,7 +993,7 @@ export namespace Prisma {
 
   export type TypeMap<ExtArgs extends $Extensions.InternalArgs = $Extensions.DefaultArgs, ClientOptions = {}> = {
     meta: {
-      modelProps: "user" | "buddyApplication" | "passwordSetupToken" | "profile" | "note" | "reminder" | "guide" | "chatMessage" | "supportTicket" | "supportResponse" | "admin" | "subscriptionPlan" | "payment" | "subscription" | "grant" | "userGrantApplication" | "question" | "answer" | "questionLike" | "guideRead" | "review"
+      modelProps: "user" | "buddyApplication" | "passwordSetupToken" | "profile" | "note" | "reminder" | "guide" | "chatMessage" | "supportTicket" | "supportResponse" | "adminInboxRead" | "adminAuditLog" | "admin" | "subscriptionPlan" | "payment" | "subscription" | "grant" | "userGrantApplication" | "question" | "answer" | "questionLike" | "guideRead" | "review"
       txIsolationLevel: Prisma.TransactionIsolationLevel
     }
     model: {
@@ -1662,6 +1694,146 @@ export namespace Prisma {
           count: {
             args: Prisma.SupportResponseCountArgs<ExtArgs>
             result: $Utils.Optional<SupportResponseCountAggregateOutputType> | number
+          }
+        }
+      }
+      AdminInboxRead: {
+        payload: Prisma.$AdminInboxReadPayload<ExtArgs>
+        fields: Prisma.AdminInboxReadFieldRefs
+        operations: {
+          findUnique: {
+            args: Prisma.AdminInboxReadFindUniqueArgs<ExtArgs>
+            result: $Utils.PayloadToResult<Prisma.$AdminInboxReadPayload> | null
+          }
+          findUniqueOrThrow: {
+            args: Prisma.AdminInboxReadFindUniqueOrThrowArgs<ExtArgs>
+            result: $Utils.PayloadToResult<Prisma.$AdminInboxReadPayload>
+          }
+          findFirst: {
+            args: Prisma.AdminInboxReadFindFirstArgs<ExtArgs>
+            result: $Utils.PayloadToResult<Prisma.$AdminInboxReadPayload> | null
+          }
+          findFirstOrThrow: {
+            args: Prisma.AdminInboxReadFindFirstOrThrowArgs<ExtArgs>
+            result: $Utils.PayloadToResult<Prisma.$AdminInboxReadPayload>
+          }
+          findMany: {
+            args: Prisma.AdminInboxReadFindManyArgs<ExtArgs>
+            result: $Utils.PayloadToResult<Prisma.$AdminInboxReadPayload>[]
+          }
+          create: {
+            args: Prisma.AdminInboxReadCreateArgs<ExtArgs>
+            result: $Utils.PayloadToResult<Prisma.$AdminInboxReadPayload>
+          }
+          createMany: {
+            args: Prisma.AdminInboxReadCreateManyArgs<ExtArgs>
+            result: BatchPayload
+          }
+          createManyAndReturn: {
+            args: Prisma.AdminInboxReadCreateManyAndReturnArgs<ExtArgs>
+            result: $Utils.PayloadToResult<Prisma.$AdminInboxReadPayload>[]
+          }
+          delete: {
+            args: Prisma.AdminInboxReadDeleteArgs<ExtArgs>
+            result: $Utils.PayloadToResult<Prisma.$AdminInboxReadPayload>
+          }
+          update: {
+            args: Prisma.AdminInboxReadUpdateArgs<ExtArgs>
+            result: $Utils.PayloadToResult<Prisma.$AdminInboxReadPayload>
+          }
+          deleteMany: {
+            args: Prisma.AdminInboxReadDeleteManyArgs<ExtArgs>
+            result: BatchPayload
+          }
+          updateMany: {
+            args: Prisma.AdminInboxReadUpdateManyArgs<ExtArgs>
+            result: BatchPayload
+          }
+          upsert: {
+            args: Prisma.AdminInboxReadUpsertArgs<ExtArgs>
+            result: $Utils.PayloadToResult<Prisma.$AdminInboxReadPayload>
+          }
+          aggregate: {
+            args: Prisma.AdminInboxReadAggregateArgs<ExtArgs>
+            result: $Utils.Optional<AggregateAdminInboxRead>
+          }
+          groupBy: {
+            args: Prisma.AdminInboxReadGroupByArgs<ExtArgs>
+            result: $Utils.Optional<AdminInboxReadGroupByOutputType>[]
+          }
+          count: {
+            args: Prisma.AdminInboxReadCountArgs<ExtArgs>
+            result: $Utils.Optional<AdminInboxReadCountAggregateOutputType> | number
+          }
+        }
+      }
+      AdminAuditLog: {
+        payload: Prisma.$AdminAuditLogPayload<ExtArgs>
+        fields: Prisma.AdminAuditLogFieldRefs
+        operations: {
+          findUnique: {
+            args: Prisma.AdminAuditLogFindUniqueArgs<ExtArgs>
+            result: $Utils.PayloadToResult<Prisma.$AdminAuditLogPayload> | null
+          }
+          findUniqueOrThrow: {
+            args: Prisma.AdminAuditLogFindUniqueOrThrowArgs<ExtArgs>
+            result: $Utils.PayloadToResult<Prisma.$AdminAuditLogPayload>
+          }
+          findFirst: {
+            args: Prisma.AdminAuditLogFindFirstArgs<ExtArgs>
+            result: $Utils.PayloadToResult<Prisma.$AdminAuditLogPayload> | null
+          }
+          findFirstOrThrow: {
+            args: Prisma.AdminAuditLogFindFirstOrThrowArgs<ExtArgs>
+            result: $Utils.PayloadToResult<Prisma.$AdminAuditLogPayload>
+          }
+          findMany: {
+            args: Prisma.AdminAuditLogFindManyArgs<ExtArgs>
+            result: $Utils.PayloadToResult<Prisma.$AdminAuditLogPayload>[]
+          }
+          create: {
+            args: Prisma.AdminAuditLogCreateArgs<ExtArgs>
+            result: $Utils.PayloadToResult<Prisma.$AdminAuditLogPayload>
+          }
+          createMany: {
+            args: Prisma.AdminAuditLogCreateManyArgs<ExtArgs>
+            result: BatchPayload
+          }
+          createManyAndReturn: {
+            args: Prisma.AdminAuditLogCreateManyAndReturnArgs<ExtArgs>
+            result: $Utils.PayloadToResult<Prisma.$AdminAuditLogPayload>[]
+          }
+          delete: {
+            args: Prisma.AdminAuditLogDeleteArgs<ExtArgs>
+            result: $Utils.PayloadToResult<Prisma.$AdminAuditLogPayload>
+          }
+          update: {
+            args: Prisma.AdminAuditLogUpdateArgs<ExtArgs>
+            result: $Utils.PayloadToResult<Prisma.$AdminAuditLogPayload>
+          }
+          deleteMany: {
+            args: Prisma.AdminAuditLogDeleteManyArgs<ExtArgs>
+            result: BatchPayload
+          }
+          updateMany: {
+            args: Prisma.AdminAuditLogUpdateManyArgs<ExtArgs>
+            result: BatchPayload
+          }
+          upsert: {
+            args: Prisma.AdminAuditLogUpsertArgs<ExtArgs>
+            result: $Utils.PayloadToResult<Prisma.$AdminAuditLogPayload>
+          }
+          aggregate: {
+            args: Prisma.AdminAuditLogAggregateArgs<ExtArgs>
+            result: $Utils.Optional<AggregateAdminAuditLog>
+          }
+          groupBy: {
+            args: Prisma.AdminAuditLogGroupByArgs<ExtArgs>
+            result: $Utils.Optional<AdminAuditLogGroupByOutputType>[]
+          }
+          count: {
+            args: Prisma.AdminAuditLogCountArgs<ExtArgs>
+            result: $Utils.Optional<AdminAuditLogCountAggregateOutputType> | number
           }
         }
       }
@@ -2610,6 +2782,9 @@ export namespace Prisma {
     guideReads: number
     passwordSetupTokens: number
     buddyApplications: number
+    adminInboxReads: number
+    adminAuditLogs: number
+    adminSupportResponses: number
   }
 
   export type UserCountOutputTypeSelect<ExtArgs extends $Extensions.InternalArgs = $Extensions.DefaultArgs> = {
@@ -2627,6 +2802,9 @@ export namespace Prisma {
     guideReads?: boolean | UserCountOutputTypeCountGuideReadsArgs
     passwordSetupTokens?: boolean | UserCountOutputTypeCountPasswordSetupTokensArgs
     buddyApplications?: boolean | UserCountOutputTypeCountBuddyApplicationsArgs
+    adminInboxReads?: boolean | UserCountOutputTypeCountAdminInboxReadsArgs
+    adminAuditLogs?: boolean | UserCountOutputTypeCountAdminAuditLogsArgs
+    adminSupportResponses?: boolean | UserCountOutputTypeCountAdminSupportResponsesArgs
   }
 
   // Custom InputTypes
@@ -2736,6 +2914,27 @@ export namespace Prisma {
    */
   export type UserCountOutputTypeCountBuddyApplicationsArgs<ExtArgs extends $Extensions.InternalArgs = $Extensions.DefaultArgs> = {
     where?: BuddyApplicationWhereInput
+  }
+
+  /**
+   * UserCountOutputType without action
+   */
+  export type UserCountOutputTypeCountAdminInboxReadsArgs<ExtArgs extends $Extensions.InternalArgs = $Extensions.DefaultArgs> = {
+    where?: AdminInboxReadWhereInput
+  }
+
+  /**
+   * UserCountOutputType without action
+   */
+  export type UserCountOutputTypeCountAdminAuditLogsArgs<ExtArgs extends $Extensions.InternalArgs = $Extensions.DefaultArgs> = {
+    where?: AdminAuditLogWhereInput
+  }
+
+  /**
+   * UserCountOutputType without action
+   */
+  export type UserCountOutputTypeCountAdminSupportResponsesArgs<ExtArgs extends $Extensions.InternalArgs = $Extensions.DefaultArgs> = {
+    where?: SupportResponseWhereInput
   }
 
 
@@ -3286,6 +3485,9 @@ export namespace Prisma {
     guideReads?: boolean | User$guideReadsArgs<ExtArgs>
     passwordSetupTokens?: boolean | User$passwordSetupTokensArgs<ExtArgs>
     buddyApplications?: boolean | User$buddyApplicationsArgs<ExtArgs>
+    adminInboxReads?: boolean | User$adminInboxReadsArgs<ExtArgs>
+    adminAuditLogs?: boolean | User$adminAuditLogsArgs<ExtArgs>
+    adminSupportResponses?: boolean | User$adminSupportResponsesArgs<ExtArgs>
     _count?: boolean | UserCountOutputTypeDefaultArgs<ExtArgs>
   }, ExtArgs["result"]["user"]>
 
@@ -3347,6 +3549,9 @@ export namespace Prisma {
     guideReads?: boolean | User$guideReadsArgs<ExtArgs>
     passwordSetupTokens?: boolean | User$passwordSetupTokensArgs<ExtArgs>
     buddyApplications?: boolean | User$buddyApplicationsArgs<ExtArgs>
+    adminInboxReads?: boolean | User$adminInboxReadsArgs<ExtArgs>
+    adminAuditLogs?: boolean | User$adminAuditLogsArgs<ExtArgs>
+    adminSupportResponses?: boolean | User$adminSupportResponsesArgs<ExtArgs>
     _count?: boolean | UserCountOutputTypeDefaultArgs<ExtArgs>
   }
   export type UserIncludeCreateManyAndReturn<ExtArgs extends $Extensions.InternalArgs = $Extensions.DefaultArgs> = {}
@@ -3369,6 +3574,9 @@ export namespace Prisma {
       guideReads: Prisma.$GuideReadPayload<ExtArgs>[]
       passwordSetupTokens: Prisma.$PasswordSetupTokenPayload<ExtArgs>[]
       buddyApplications: Prisma.$BuddyApplicationPayload<ExtArgs>[]
+      adminInboxReads: Prisma.$AdminInboxReadPayload<ExtArgs>[]
+      adminAuditLogs: Prisma.$AdminAuditLogPayload<ExtArgs>[]
+      adminSupportResponses: Prisma.$SupportResponsePayload<ExtArgs>[]
     }
     scalars: $Extensions.GetPayloadResult<{
       id: string
@@ -3768,6 +3976,9 @@ export namespace Prisma {
     guideReads<T extends User$guideReadsArgs<ExtArgs> = {}>(args?: Subset<T, User$guideReadsArgs<ExtArgs>>): Prisma.PrismaPromise<$Result.GetResult<Prisma.$GuideReadPayload<ExtArgs>, T, "findMany"> | Null>
     passwordSetupTokens<T extends User$passwordSetupTokensArgs<ExtArgs> = {}>(args?: Subset<T, User$passwordSetupTokensArgs<ExtArgs>>): Prisma.PrismaPromise<$Result.GetResult<Prisma.$PasswordSetupTokenPayload<ExtArgs>, T, "findMany"> | Null>
     buddyApplications<T extends User$buddyApplicationsArgs<ExtArgs> = {}>(args?: Subset<T, User$buddyApplicationsArgs<ExtArgs>>): Prisma.PrismaPromise<$Result.GetResult<Prisma.$BuddyApplicationPayload<ExtArgs>, T, "findMany"> | Null>
+    adminInboxReads<T extends User$adminInboxReadsArgs<ExtArgs> = {}>(args?: Subset<T, User$adminInboxReadsArgs<ExtArgs>>): Prisma.PrismaPromise<$Result.GetResult<Prisma.$AdminInboxReadPayload<ExtArgs>, T, "findMany"> | Null>
+    adminAuditLogs<T extends User$adminAuditLogsArgs<ExtArgs> = {}>(args?: Subset<T, User$adminAuditLogsArgs<ExtArgs>>): Prisma.PrismaPromise<$Result.GetResult<Prisma.$AdminAuditLogPayload<ExtArgs>, T, "findMany"> | Null>
+    adminSupportResponses<T extends User$adminSupportResponsesArgs<ExtArgs> = {}>(args?: Subset<T, User$adminSupportResponsesArgs<ExtArgs>>): Prisma.PrismaPromise<$Result.GetResult<Prisma.$SupportResponsePayload<ExtArgs>, T, "findMany"> | Null>
     /**
      * Attaches callbacks for the resolution and/or rejection of the Promise.
      * @param onfulfilled The callback to execute when the Promise is resolved.
@@ -4421,6 +4632,66 @@ export namespace Prisma {
     take?: number
     skip?: number
     distinct?: BuddyApplicationScalarFieldEnum | BuddyApplicationScalarFieldEnum[]
+  }
+
+  /**
+   * User.adminInboxReads
+   */
+  export type User$adminInboxReadsArgs<ExtArgs extends $Extensions.InternalArgs = $Extensions.DefaultArgs> = {
+    /**
+     * Select specific fields to fetch from the AdminInboxRead
+     */
+    select?: AdminInboxReadSelect<ExtArgs> | null
+    /**
+     * Choose, which related nodes to fetch as well
+     */
+    include?: AdminInboxReadInclude<ExtArgs> | null
+    where?: AdminInboxReadWhereInput
+    orderBy?: AdminInboxReadOrderByWithRelationInput | AdminInboxReadOrderByWithRelationInput[]
+    cursor?: AdminInboxReadWhereUniqueInput
+    take?: number
+    skip?: number
+    distinct?: AdminInboxReadScalarFieldEnum | AdminInboxReadScalarFieldEnum[]
+  }
+
+  /**
+   * User.adminAuditLogs
+   */
+  export type User$adminAuditLogsArgs<ExtArgs extends $Extensions.InternalArgs = $Extensions.DefaultArgs> = {
+    /**
+     * Select specific fields to fetch from the AdminAuditLog
+     */
+    select?: AdminAuditLogSelect<ExtArgs> | null
+    /**
+     * Choose, which related nodes to fetch as well
+     */
+    include?: AdminAuditLogInclude<ExtArgs> | null
+    where?: AdminAuditLogWhereInput
+    orderBy?: AdminAuditLogOrderByWithRelationInput | AdminAuditLogOrderByWithRelationInput[]
+    cursor?: AdminAuditLogWhereUniqueInput
+    take?: number
+    skip?: number
+    distinct?: AdminAuditLogScalarFieldEnum | AdminAuditLogScalarFieldEnum[]
+  }
+
+  /**
+   * User.adminSupportResponses
+   */
+  export type User$adminSupportResponsesArgs<ExtArgs extends $Extensions.InternalArgs = $Extensions.DefaultArgs> = {
+    /**
+     * Select specific fields to fetch from the SupportResponse
+     */
+    select?: SupportResponseSelect<ExtArgs> | null
+    /**
+     * Choose, which related nodes to fetch as well
+     */
+    include?: SupportResponseInclude<ExtArgs> | null
+    where?: SupportResponseWhereInput
+    orderBy?: SupportResponseOrderByWithRelationInput | SupportResponseOrderByWithRelationInput[]
+    cursor?: SupportResponseWhereUniqueInput
+    take?: number
+    skip?: number
+    distinct?: SupportResponseScalarFieldEnum | SupportResponseScalarFieldEnum[]
   }
 
   /**
@@ -12543,8 +12814,10 @@ export namespace Prisma {
     id: string | null
     ticketId: string | null
     adminId: string | null
+    adminUserId: string | null
     content: string | null
     isAdmin: boolean | null
+    readByUserAt: Date | null
     createdAt: Date | null
   }
 
@@ -12552,8 +12825,10 @@ export namespace Prisma {
     id: string | null
     ticketId: string | null
     adminId: string | null
+    adminUserId: string | null
     content: string | null
     isAdmin: boolean | null
+    readByUserAt: Date | null
     createdAt: Date | null
   }
 
@@ -12561,8 +12836,10 @@ export namespace Prisma {
     id: number
     ticketId: number
     adminId: number
+    adminUserId: number
     content: number
     isAdmin: number
+    readByUserAt: number
     createdAt: number
     _all: number
   }
@@ -12572,8 +12849,10 @@ export namespace Prisma {
     id?: true
     ticketId?: true
     adminId?: true
+    adminUserId?: true
     content?: true
     isAdmin?: true
+    readByUserAt?: true
     createdAt?: true
   }
 
@@ -12581,8 +12860,10 @@ export namespace Prisma {
     id?: true
     ticketId?: true
     adminId?: true
+    adminUserId?: true
     content?: true
     isAdmin?: true
+    readByUserAt?: true
     createdAt?: true
   }
 
@@ -12590,8 +12871,10 @@ export namespace Prisma {
     id?: true
     ticketId?: true
     adminId?: true
+    adminUserId?: true
     content?: true
     isAdmin?: true
+    readByUserAt?: true
     createdAt?: true
     _all?: true
   }
@@ -12672,8 +12955,10 @@ export namespace Prisma {
     id: string
     ticketId: string
     adminId: string | null
+    adminUserId: string | null
     content: string
     isAdmin: boolean
+    readByUserAt: Date | null
     createdAt: Date
     _count: SupportResponseCountAggregateOutputType | null
     _min: SupportResponseMinAggregateOutputType | null
@@ -12698,40 +12983,50 @@ export namespace Prisma {
     id?: boolean
     ticketId?: boolean
     adminId?: boolean
+    adminUserId?: boolean
     content?: boolean
     isAdmin?: boolean
+    readByUserAt?: boolean
     createdAt?: boolean
     ticket?: boolean | SupportTicketDefaultArgs<ExtArgs>
     admin?: boolean | SupportResponse$adminArgs<ExtArgs>
+    adminUser?: boolean | SupportResponse$adminUserArgs<ExtArgs>
   }, ExtArgs["result"]["supportResponse"]>
 
   export type SupportResponseSelectCreateManyAndReturn<ExtArgs extends $Extensions.InternalArgs = $Extensions.DefaultArgs> = $Extensions.GetSelect<{
     id?: boolean
     ticketId?: boolean
     adminId?: boolean
+    adminUserId?: boolean
     content?: boolean
     isAdmin?: boolean
+    readByUserAt?: boolean
     createdAt?: boolean
     ticket?: boolean | SupportTicketDefaultArgs<ExtArgs>
     admin?: boolean | SupportResponse$adminArgs<ExtArgs>
+    adminUser?: boolean | SupportResponse$adminUserArgs<ExtArgs>
   }, ExtArgs["result"]["supportResponse"]>
 
   export type SupportResponseSelectScalar = {
     id?: boolean
     ticketId?: boolean
     adminId?: boolean
+    adminUserId?: boolean
     content?: boolean
     isAdmin?: boolean
+    readByUserAt?: boolean
     createdAt?: boolean
   }
 
   export type SupportResponseInclude<ExtArgs extends $Extensions.InternalArgs = $Extensions.DefaultArgs> = {
     ticket?: boolean | SupportTicketDefaultArgs<ExtArgs>
     admin?: boolean | SupportResponse$adminArgs<ExtArgs>
+    adminUser?: boolean | SupportResponse$adminUserArgs<ExtArgs>
   }
   export type SupportResponseIncludeCreateManyAndReturn<ExtArgs extends $Extensions.InternalArgs = $Extensions.DefaultArgs> = {
     ticket?: boolean | SupportTicketDefaultArgs<ExtArgs>
     admin?: boolean | SupportResponse$adminArgs<ExtArgs>
+    adminUser?: boolean | SupportResponse$adminUserArgs<ExtArgs>
   }
 
   export type $SupportResponsePayload<ExtArgs extends $Extensions.InternalArgs = $Extensions.DefaultArgs> = {
@@ -12739,13 +13034,16 @@ export namespace Prisma {
     objects: {
       ticket: Prisma.$SupportTicketPayload<ExtArgs>
       admin: Prisma.$AdminPayload<ExtArgs> | null
+      adminUser: Prisma.$UserPayload<ExtArgs> | null
     }
     scalars: $Extensions.GetPayloadResult<{
       id: string
       ticketId: string
       adminId: string | null
+      adminUserId: string | null
       content: string
       isAdmin: boolean
+      readByUserAt: Date | null
       createdAt: Date
     }, ExtArgs["result"]["supportResponse"]>
     composites: {}
@@ -13113,6 +13411,7 @@ export namespace Prisma {
     readonly [Symbol.toStringTag]: "PrismaPromise"
     ticket<T extends SupportTicketDefaultArgs<ExtArgs> = {}>(args?: Subset<T, SupportTicketDefaultArgs<ExtArgs>>): Prisma__SupportTicketClient<$Result.GetResult<Prisma.$SupportTicketPayload<ExtArgs>, T, "findUniqueOrThrow"> | Null, Null, ExtArgs>
     admin<T extends SupportResponse$adminArgs<ExtArgs> = {}>(args?: Subset<T, SupportResponse$adminArgs<ExtArgs>>): Prisma__AdminClient<$Result.GetResult<Prisma.$AdminPayload<ExtArgs>, T, "findUniqueOrThrow"> | null, null, ExtArgs>
+    adminUser<T extends SupportResponse$adminUserArgs<ExtArgs> = {}>(args?: Subset<T, SupportResponse$adminUserArgs<ExtArgs>>): Prisma__UserClient<$Result.GetResult<Prisma.$UserPayload<ExtArgs>, T, "findUniqueOrThrow"> | null, null, ExtArgs>
     /**
      * Attaches callbacks for the resolution and/or rejection of the Promise.
      * @param onfulfilled The callback to execute when the Promise is resolved.
@@ -13145,8 +13444,10 @@ export namespace Prisma {
     readonly id: FieldRef<"SupportResponse", 'String'>
     readonly ticketId: FieldRef<"SupportResponse", 'String'>
     readonly adminId: FieldRef<"SupportResponse", 'String'>
+    readonly adminUserId: FieldRef<"SupportResponse", 'String'>
     readonly content: FieldRef<"SupportResponse", 'String'>
     readonly isAdmin: FieldRef<"SupportResponse", 'Boolean'>
+    readonly readByUserAt: FieldRef<"SupportResponse", 'DateTime'>
     readonly createdAt: FieldRef<"SupportResponse", 'DateTime'>
   }
     
@@ -13481,6 +13782,21 @@ export namespace Prisma {
   }
 
   /**
+   * SupportResponse.adminUser
+   */
+  export type SupportResponse$adminUserArgs<ExtArgs extends $Extensions.InternalArgs = $Extensions.DefaultArgs> = {
+    /**
+     * Select specific fields to fetch from the User
+     */
+    select?: UserSelect<ExtArgs> | null
+    /**
+     * Choose, which related nodes to fetch as well
+     */
+    include?: UserInclude<ExtArgs> | null
+    where?: UserWhereInput
+  }
+
+  /**
    * SupportResponse without action
    */
   export type SupportResponseDefaultArgs<ExtArgs extends $Extensions.InternalArgs = $Extensions.DefaultArgs> = {
@@ -13492,6 +13808,1892 @@ export namespace Prisma {
      * Choose, which related nodes to fetch as well
      */
     include?: SupportResponseInclude<ExtArgs> | null
+  }
+
+
+  /**
+   * Model AdminInboxRead
+   */
+
+  export type AggregateAdminInboxRead = {
+    _count: AdminInboxReadCountAggregateOutputType | null
+    _min: AdminInboxReadMinAggregateOutputType | null
+    _max: AdminInboxReadMaxAggregateOutputType | null
+  }
+
+  export type AdminInboxReadMinAggregateOutputType = {
+    id: string | null
+    adminUserId: string | null
+    category: string | null
+    seenAt: Date | null
+    updatedAt: Date | null
+  }
+
+  export type AdminInboxReadMaxAggregateOutputType = {
+    id: string | null
+    adminUserId: string | null
+    category: string | null
+    seenAt: Date | null
+    updatedAt: Date | null
+  }
+
+  export type AdminInboxReadCountAggregateOutputType = {
+    id: number
+    adminUserId: number
+    category: number
+    seenAt: number
+    updatedAt: number
+    _all: number
+  }
+
+
+  export type AdminInboxReadMinAggregateInputType = {
+    id?: true
+    adminUserId?: true
+    category?: true
+    seenAt?: true
+    updatedAt?: true
+  }
+
+  export type AdminInboxReadMaxAggregateInputType = {
+    id?: true
+    adminUserId?: true
+    category?: true
+    seenAt?: true
+    updatedAt?: true
+  }
+
+  export type AdminInboxReadCountAggregateInputType = {
+    id?: true
+    adminUserId?: true
+    category?: true
+    seenAt?: true
+    updatedAt?: true
+    _all?: true
+  }
+
+  export type AdminInboxReadAggregateArgs<ExtArgs extends $Extensions.InternalArgs = $Extensions.DefaultArgs> = {
+    /**
+     * Filter which AdminInboxRead to aggregate.
+     */
+    where?: AdminInboxReadWhereInput
+    /**
+     * {@link https://www.prisma.io/docs/concepts/components/prisma-client/sorting Sorting Docs}
+     * 
+     * Determine the order of AdminInboxReads to fetch.
+     */
+    orderBy?: AdminInboxReadOrderByWithRelationInput | AdminInboxReadOrderByWithRelationInput[]
+    /**
+     * {@link https://www.prisma.io/docs/concepts/components/prisma-client/pagination#cursor-based-pagination Cursor Docs}
+     * 
+     * Sets the start position
+     */
+    cursor?: AdminInboxReadWhereUniqueInput
+    /**
+     * {@link https://www.prisma.io/docs/concepts/components/prisma-client/pagination Pagination Docs}
+     * 
+     * Take `±n` AdminInboxReads from the position of the cursor.
+     */
+    take?: number
+    /**
+     * {@link https://www.prisma.io/docs/concepts/components/prisma-client/pagination Pagination Docs}
+     * 
+     * Skip the first `n` AdminInboxReads.
+     */
+    skip?: number
+    /**
+     * {@link https://www.prisma.io/docs/concepts/components/prisma-client/aggregations Aggregation Docs}
+     * 
+     * Count returned AdminInboxReads
+    **/
+    _count?: true | AdminInboxReadCountAggregateInputType
+    /**
+     * {@link https://www.prisma.io/docs/concepts/components/prisma-client/aggregations Aggregation Docs}
+     * 
+     * Select which fields to find the minimum value
+    **/
+    _min?: AdminInboxReadMinAggregateInputType
+    /**
+     * {@link https://www.prisma.io/docs/concepts/components/prisma-client/aggregations Aggregation Docs}
+     * 
+     * Select which fields to find the maximum value
+    **/
+    _max?: AdminInboxReadMaxAggregateInputType
+  }
+
+  export type GetAdminInboxReadAggregateType<T extends AdminInboxReadAggregateArgs> = {
+        [P in keyof T & keyof AggregateAdminInboxRead]: P extends '_count' | 'count'
+      ? T[P] extends true
+        ? number
+        : GetScalarType<T[P], AggregateAdminInboxRead[P]>
+      : GetScalarType<T[P], AggregateAdminInboxRead[P]>
+  }
+
+
+
+
+  export type AdminInboxReadGroupByArgs<ExtArgs extends $Extensions.InternalArgs = $Extensions.DefaultArgs> = {
+    where?: AdminInboxReadWhereInput
+    orderBy?: AdminInboxReadOrderByWithAggregationInput | AdminInboxReadOrderByWithAggregationInput[]
+    by: AdminInboxReadScalarFieldEnum[] | AdminInboxReadScalarFieldEnum
+    having?: AdminInboxReadScalarWhereWithAggregatesInput
+    take?: number
+    skip?: number
+    _count?: AdminInboxReadCountAggregateInputType | true
+    _min?: AdminInboxReadMinAggregateInputType
+    _max?: AdminInboxReadMaxAggregateInputType
+  }
+
+  export type AdminInboxReadGroupByOutputType = {
+    id: string
+    adminUserId: string
+    category: string
+    seenAt: Date
+    updatedAt: Date
+    _count: AdminInboxReadCountAggregateOutputType | null
+    _min: AdminInboxReadMinAggregateOutputType | null
+    _max: AdminInboxReadMaxAggregateOutputType | null
+  }
+
+  type GetAdminInboxReadGroupByPayload<T extends AdminInboxReadGroupByArgs> = Prisma.PrismaPromise<
+    Array<
+      PickEnumerable<AdminInboxReadGroupByOutputType, T['by']> &
+        {
+          [P in ((keyof T) & (keyof AdminInboxReadGroupByOutputType))]: P extends '_count'
+            ? T[P] extends boolean
+              ? number
+              : GetScalarType<T[P], AdminInboxReadGroupByOutputType[P]>
+            : GetScalarType<T[P], AdminInboxReadGroupByOutputType[P]>
+        }
+      >
+    >
+
+
+  export type AdminInboxReadSelect<ExtArgs extends $Extensions.InternalArgs = $Extensions.DefaultArgs> = $Extensions.GetSelect<{
+    id?: boolean
+    adminUserId?: boolean
+    category?: boolean
+    seenAt?: boolean
+    updatedAt?: boolean
+    adminUser?: boolean | UserDefaultArgs<ExtArgs>
+  }, ExtArgs["result"]["adminInboxRead"]>
+
+  export type AdminInboxReadSelectCreateManyAndReturn<ExtArgs extends $Extensions.InternalArgs = $Extensions.DefaultArgs> = $Extensions.GetSelect<{
+    id?: boolean
+    adminUserId?: boolean
+    category?: boolean
+    seenAt?: boolean
+    updatedAt?: boolean
+    adminUser?: boolean | UserDefaultArgs<ExtArgs>
+  }, ExtArgs["result"]["adminInboxRead"]>
+
+  export type AdminInboxReadSelectScalar = {
+    id?: boolean
+    adminUserId?: boolean
+    category?: boolean
+    seenAt?: boolean
+    updatedAt?: boolean
+  }
+
+  export type AdminInboxReadInclude<ExtArgs extends $Extensions.InternalArgs = $Extensions.DefaultArgs> = {
+    adminUser?: boolean | UserDefaultArgs<ExtArgs>
+  }
+  export type AdminInboxReadIncludeCreateManyAndReturn<ExtArgs extends $Extensions.InternalArgs = $Extensions.DefaultArgs> = {
+    adminUser?: boolean | UserDefaultArgs<ExtArgs>
+  }
+
+  export type $AdminInboxReadPayload<ExtArgs extends $Extensions.InternalArgs = $Extensions.DefaultArgs> = {
+    name: "AdminInboxRead"
+    objects: {
+      adminUser: Prisma.$UserPayload<ExtArgs>
+    }
+    scalars: $Extensions.GetPayloadResult<{
+      id: string
+      adminUserId: string
+      category: string
+      seenAt: Date
+      updatedAt: Date
+    }, ExtArgs["result"]["adminInboxRead"]>
+    composites: {}
+  }
+
+  type AdminInboxReadGetPayload<S extends boolean | null | undefined | AdminInboxReadDefaultArgs> = $Result.GetResult<Prisma.$AdminInboxReadPayload, S>
+
+  type AdminInboxReadCountArgs<ExtArgs extends $Extensions.InternalArgs = $Extensions.DefaultArgs> = 
+    Omit<AdminInboxReadFindManyArgs, 'select' | 'include' | 'distinct'> & {
+      select?: AdminInboxReadCountAggregateInputType | true
+    }
+
+  export interface AdminInboxReadDelegate<ExtArgs extends $Extensions.InternalArgs = $Extensions.DefaultArgs> {
+    [K: symbol]: { types: Prisma.TypeMap<ExtArgs>['model']['AdminInboxRead'], meta: { name: 'AdminInboxRead' } }
+    /**
+     * Find zero or one AdminInboxRead that matches the filter.
+     * @param {AdminInboxReadFindUniqueArgs} args - Arguments to find a AdminInboxRead
+     * @example
+     * // Get one AdminInboxRead
+     * const adminInboxRead = await prisma.adminInboxRead.findUnique({
+     *   where: {
+     *     // ... provide filter here
+     *   }
+     * })
+     */
+    findUnique<T extends AdminInboxReadFindUniqueArgs>(args: SelectSubset<T, AdminInboxReadFindUniqueArgs<ExtArgs>>): Prisma__AdminInboxReadClient<$Result.GetResult<Prisma.$AdminInboxReadPayload<ExtArgs>, T, "findUnique"> | null, null, ExtArgs>
+
+    /**
+     * Find one AdminInboxRead that matches the filter or throw an error with `error.code='P2025'` 
+     * if no matches were found.
+     * @param {AdminInboxReadFindUniqueOrThrowArgs} args - Arguments to find a AdminInboxRead
+     * @example
+     * // Get one AdminInboxRead
+     * const adminInboxRead = await prisma.adminInboxRead.findUniqueOrThrow({
+     *   where: {
+     *     // ... provide filter here
+     *   }
+     * })
+     */
+    findUniqueOrThrow<T extends AdminInboxReadFindUniqueOrThrowArgs>(args: SelectSubset<T, AdminInboxReadFindUniqueOrThrowArgs<ExtArgs>>): Prisma__AdminInboxReadClient<$Result.GetResult<Prisma.$AdminInboxReadPayload<ExtArgs>, T, "findUniqueOrThrow">, never, ExtArgs>
+
+    /**
+     * Find the first AdminInboxRead that matches the filter.
+     * Note, that providing `undefined` is treated as the value not being there.
+     * Read more here: https://pris.ly/d/null-undefined
+     * @param {AdminInboxReadFindFirstArgs} args - Arguments to find a AdminInboxRead
+     * @example
+     * // Get one AdminInboxRead
+     * const adminInboxRead = await prisma.adminInboxRead.findFirst({
+     *   where: {
+     *     // ... provide filter here
+     *   }
+     * })
+     */
+    findFirst<T extends AdminInboxReadFindFirstArgs>(args?: SelectSubset<T, AdminInboxReadFindFirstArgs<ExtArgs>>): Prisma__AdminInboxReadClient<$Result.GetResult<Prisma.$AdminInboxReadPayload<ExtArgs>, T, "findFirst"> | null, null, ExtArgs>
+
+    /**
+     * Find the first AdminInboxRead that matches the filter or
+     * throw `PrismaKnownClientError` with `P2025` code if no matches were found.
+     * Note, that providing `undefined` is treated as the value not being there.
+     * Read more here: https://pris.ly/d/null-undefined
+     * @param {AdminInboxReadFindFirstOrThrowArgs} args - Arguments to find a AdminInboxRead
+     * @example
+     * // Get one AdminInboxRead
+     * const adminInboxRead = await prisma.adminInboxRead.findFirstOrThrow({
+     *   where: {
+     *     // ... provide filter here
+     *   }
+     * })
+     */
+    findFirstOrThrow<T extends AdminInboxReadFindFirstOrThrowArgs>(args?: SelectSubset<T, AdminInboxReadFindFirstOrThrowArgs<ExtArgs>>): Prisma__AdminInboxReadClient<$Result.GetResult<Prisma.$AdminInboxReadPayload<ExtArgs>, T, "findFirstOrThrow">, never, ExtArgs>
+
+    /**
+     * Find zero or more AdminInboxReads that matches the filter.
+     * Note, that providing `undefined` is treated as the value not being there.
+     * Read more here: https://pris.ly/d/null-undefined
+     * @param {AdminInboxReadFindManyArgs} args - Arguments to filter and select certain fields only.
+     * @example
+     * // Get all AdminInboxReads
+     * const adminInboxReads = await prisma.adminInboxRead.findMany()
+     * 
+     * // Get first 10 AdminInboxReads
+     * const adminInboxReads = await prisma.adminInboxRead.findMany({ take: 10 })
+     * 
+     * // Only select the `id`
+     * const adminInboxReadWithIdOnly = await prisma.adminInboxRead.findMany({ select: { id: true } })
+     * 
+     */
+    findMany<T extends AdminInboxReadFindManyArgs>(args?: SelectSubset<T, AdminInboxReadFindManyArgs<ExtArgs>>): Prisma.PrismaPromise<$Result.GetResult<Prisma.$AdminInboxReadPayload<ExtArgs>, T, "findMany">>
+
+    /**
+     * Create a AdminInboxRead.
+     * @param {AdminInboxReadCreateArgs} args - Arguments to create a AdminInboxRead.
+     * @example
+     * // Create one AdminInboxRead
+     * const AdminInboxRead = await prisma.adminInboxRead.create({
+     *   data: {
+     *     // ... data to create a AdminInboxRead
+     *   }
+     * })
+     * 
+     */
+    create<T extends AdminInboxReadCreateArgs>(args: SelectSubset<T, AdminInboxReadCreateArgs<ExtArgs>>): Prisma__AdminInboxReadClient<$Result.GetResult<Prisma.$AdminInboxReadPayload<ExtArgs>, T, "create">, never, ExtArgs>
+
+    /**
+     * Create many AdminInboxReads.
+     * @param {AdminInboxReadCreateManyArgs} args - Arguments to create many AdminInboxReads.
+     * @example
+     * // Create many AdminInboxReads
+     * const adminInboxRead = await prisma.adminInboxRead.createMany({
+     *   data: [
+     *     // ... provide data here
+     *   ]
+     * })
+     *     
+     */
+    createMany<T extends AdminInboxReadCreateManyArgs>(args?: SelectSubset<T, AdminInboxReadCreateManyArgs<ExtArgs>>): Prisma.PrismaPromise<BatchPayload>
+
+    /**
+     * Create many AdminInboxReads and returns the data saved in the database.
+     * @param {AdminInboxReadCreateManyAndReturnArgs} args - Arguments to create many AdminInboxReads.
+     * @example
+     * // Create many AdminInboxReads
+     * const adminInboxRead = await prisma.adminInboxRead.createManyAndReturn({
+     *   data: [
+     *     // ... provide data here
+     *   ]
+     * })
+     * 
+     * // Create many AdminInboxReads and only return the `id`
+     * const adminInboxReadWithIdOnly = await prisma.adminInboxRead.createManyAndReturn({ 
+     *   select: { id: true },
+     *   data: [
+     *     // ... provide data here
+     *   ]
+     * })
+     * Note, that providing `undefined` is treated as the value not being there.
+     * Read more here: https://pris.ly/d/null-undefined
+     * 
+     */
+    createManyAndReturn<T extends AdminInboxReadCreateManyAndReturnArgs>(args?: SelectSubset<T, AdminInboxReadCreateManyAndReturnArgs<ExtArgs>>): Prisma.PrismaPromise<$Result.GetResult<Prisma.$AdminInboxReadPayload<ExtArgs>, T, "createManyAndReturn">>
+
+    /**
+     * Delete a AdminInboxRead.
+     * @param {AdminInboxReadDeleteArgs} args - Arguments to delete one AdminInboxRead.
+     * @example
+     * // Delete one AdminInboxRead
+     * const AdminInboxRead = await prisma.adminInboxRead.delete({
+     *   where: {
+     *     // ... filter to delete one AdminInboxRead
+     *   }
+     * })
+     * 
+     */
+    delete<T extends AdminInboxReadDeleteArgs>(args: SelectSubset<T, AdminInboxReadDeleteArgs<ExtArgs>>): Prisma__AdminInboxReadClient<$Result.GetResult<Prisma.$AdminInboxReadPayload<ExtArgs>, T, "delete">, never, ExtArgs>
+
+    /**
+     * Update one AdminInboxRead.
+     * @param {AdminInboxReadUpdateArgs} args - Arguments to update one AdminInboxRead.
+     * @example
+     * // Update one AdminInboxRead
+     * const adminInboxRead = await prisma.adminInboxRead.update({
+     *   where: {
+     *     // ... provide filter here
+     *   },
+     *   data: {
+     *     // ... provide data here
+     *   }
+     * })
+     * 
+     */
+    update<T extends AdminInboxReadUpdateArgs>(args: SelectSubset<T, AdminInboxReadUpdateArgs<ExtArgs>>): Prisma__AdminInboxReadClient<$Result.GetResult<Prisma.$AdminInboxReadPayload<ExtArgs>, T, "update">, never, ExtArgs>
+
+    /**
+     * Delete zero or more AdminInboxReads.
+     * @param {AdminInboxReadDeleteManyArgs} args - Arguments to filter AdminInboxReads to delete.
+     * @example
+     * // Delete a few AdminInboxReads
+     * const { count } = await prisma.adminInboxRead.deleteMany({
+     *   where: {
+     *     // ... provide filter here
+     *   }
+     * })
+     * 
+     */
+    deleteMany<T extends AdminInboxReadDeleteManyArgs>(args?: SelectSubset<T, AdminInboxReadDeleteManyArgs<ExtArgs>>): Prisma.PrismaPromise<BatchPayload>
+
+    /**
+     * Update zero or more AdminInboxReads.
+     * Note, that providing `undefined` is treated as the value not being there.
+     * Read more here: https://pris.ly/d/null-undefined
+     * @param {AdminInboxReadUpdateManyArgs} args - Arguments to update one or more rows.
+     * @example
+     * // Update many AdminInboxReads
+     * const adminInboxRead = await prisma.adminInboxRead.updateMany({
+     *   where: {
+     *     // ... provide filter here
+     *   },
+     *   data: {
+     *     // ... provide data here
+     *   }
+     * })
+     * 
+     */
+    updateMany<T extends AdminInboxReadUpdateManyArgs>(args: SelectSubset<T, AdminInboxReadUpdateManyArgs<ExtArgs>>): Prisma.PrismaPromise<BatchPayload>
+
+    /**
+     * Create or update one AdminInboxRead.
+     * @param {AdminInboxReadUpsertArgs} args - Arguments to update or create a AdminInboxRead.
+     * @example
+     * // Update or create a AdminInboxRead
+     * const adminInboxRead = await prisma.adminInboxRead.upsert({
+     *   create: {
+     *     // ... data to create a AdminInboxRead
+     *   },
+     *   update: {
+     *     // ... in case it already exists, update
+     *   },
+     *   where: {
+     *     // ... the filter for the AdminInboxRead we want to update
+     *   }
+     * })
+     */
+    upsert<T extends AdminInboxReadUpsertArgs>(args: SelectSubset<T, AdminInboxReadUpsertArgs<ExtArgs>>): Prisma__AdminInboxReadClient<$Result.GetResult<Prisma.$AdminInboxReadPayload<ExtArgs>, T, "upsert">, never, ExtArgs>
+
+
+    /**
+     * Count the number of AdminInboxReads.
+     * Note, that providing `undefined` is treated as the value not being there.
+     * Read more here: https://pris.ly/d/null-undefined
+     * @param {AdminInboxReadCountArgs} args - Arguments to filter AdminInboxReads to count.
+     * @example
+     * // Count the number of AdminInboxReads
+     * const count = await prisma.adminInboxRead.count({
+     *   where: {
+     *     // ... the filter for the AdminInboxReads we want to count
+     *   }
+     * })
+    **/
+    count<T extends AdminInboxReadCountArgs>(
+      args?: Subset<T, AdminInboxReadCountArgs>,
+    ): Prisma.PrismaPromise<
+      T extends $Utils.Record<'select', any>
+        ? T['select'] extends true
+          ? number
+          : GetScalarType<T['select'], AdminInboxReadCountAggregateOutputType>
+        : number
+    >
+
+    /**
+     * Allows you to perform aggregations operations on a AdminInboxRead.
+     * Note, that providing `undefined` is treated as the value not being there.
+     * Read more here: https://pris.ly/d/null-undefined
+     * @param {AdminInboxReadAggregateArgs} args - Select which aggregations you would like to apply and on what fields.
+     * @example
+     * // Ordered by age ascending
+     * // Where email contains prisma.io
+     * // Limited to the 10 users
+     * const aggregations = await prisma.user.aggregate({
+     *   _avg: {
+     *     age: true,
+     *   },
+     *   where: {
+     *     email: {
+     *       contains: "prisma.io",
+     *     },
+     *   },
+     *   orderBy: {
+     *     age: "asc",
+     *   },
+     *   take: 10,
+     * })
+    **/
+    aggregate<T extends AdminInboxReadAggregateArgs>(args: Subset<T, AdminInboxReadAggregateArgs>): Prisma.PrismaPromise<GetAdminInboxReadAggregateType<T>>
+
+    /**
+     * Group by AdminInboxRead.
+     * Note, that providing `undefined` is treated as the value not being there.
+     * Read more here: https://pris.ly/d/null-undefined
+     * @param {AdminInboxReadGroupByArgs} args - Group by arguments.
+     * @example
+     * // Group by city, order by createdAt, get count
+     * const result = await prisma.user.groupBy({
+     *   by: ['city', 'createdAt'],
+     *   orderBy: {
+     *     createdAt: true
+     *   },
+     *   _count: {
+     *     _all: true
+     *   },
+     * })
+     * 
+    **/
+    groupBy<
+      T extends AdminInboxReadGroupByArgs,
+      HasSelectOrTake extends Or<
+        Extends<'skip', Keys<T>>,
+        Extends<'take', Keys<T>>
+      >,
+      OrderByArg extends True extends HasSelectOrTake
+        ? { orderBy: AdminInboxReadGroupByArgs['orderBy'] }
+        : { orderBy?: AdminInboxReadGroupByArgs['orderBy'] },
+      OrderFields extends ExcludeUnderscoreKeys<Keys<MaybeTupleToUnion<T['orderBy']>>>,
+      ByFields extends MaybeTupleToUnion<T['by']>,
+      ByValid extends Has<ByFields, OrderFields>,
+      HavingFields extends GetHavingFields<T['having']>,
+      HavingValid extends Has<ByFields, HavingFields>,
+      ByEmpty extends T['by'] extends never[] ? True : False,
+      InputErrors extends ByEmpty extends True
+      ? `Error: "by" must not be empty.`
+      : HavingValid extends False
+      ? {
+          [P in HavingFields]: P extends ByFields
+            ? never
+            : P extends string
+            ? `Error: Field "${P}" used in "having" needs to be provided in "by".`
+            : [
+                Error,
+                'Field ',
+                P,
+                ` in "having" needs to be provided in "by"`,
+              ]
+        }[HavingFields]
+      : 'take' extends Keys<T>
+      ? 'orderBy' extends Keys<T>
+        ? ByValid extends True
+          ? {}
+          : {
+              [P in OrderFields]: P extends ByFields
+                ? never
+                : `Error: Field "${P}" in "orderBy" needs to be provided in "by"`
+            }[OrderFields]
+        : 'Error: If you provide "take", you also need to provide "orderBy"'
+      : 'skip' extends Keys<T>
+      ? 'orderBy' extends Keys<T>
+        ? ByValid extends True
+          ? {}
+          : {
+              [P in OrderFields]: P extends ByFields
+                ? never
+                : `Error: Field "${P}" in "orderBy" needs to be provided in "by"`
+            }[OrderFields]
+        : 'Error: If you provide "skip", you also need to provide "orderBy"'
+      : ByValid extends True
+      ? {}
+      : {
+          [P in OrderFields]: P extends ByFields
+            ? never
+            : `Error: Field "${P}" in "orderBy" needs to be provided in "by"`
+        }[OrderFields]
+    >(args: SubsetIntersection<T, AdminInboxReadGroupByArgs, OrderByArg> & InputErrors): {} extends InputErrors ? GetAdminInboxReadGroupByPayload<T> : Prisma.PrismaPromise<InputErrors>
+  /**
+   * Fields of the AdminInboxRead model
+   */
+  readonly fields: AdminInboxReadFieldRefs;
+  }
+
+  /**
+   * The delegate class that acts as a "Promise-like" for AdminInboxRead.
+   * Why is this prefixed with `Prisma__`?
+   * Because we want to prevent naming conflicts as mentioned in
+   * https://github.com/prisma/prisma-client-js/issues/707
+   */
+  export interface Prisma__AdminInboxReadClient<T, Null = never, ExtArgs extends $Extensions.InternalArgs = $Extensions.DefaultArgs> extends Prisma.PrismaPromise<T> {
+    readonly [Symbol.toStringTag]: "PrismaPromise"
+    adminUser<T extends UserDefaultArgs<ExtArgs> = {}>(args?: Subset<T, UserDefaultArgs<ExtArgs>>): Prisma__UserClient<$Result.GetResult<Prisma.$UserPayload<ExtArgs>, T, "findUniqueOrThrow"> | Null, Null, ExtArgs>
+    /**
+     * Attaches callbacks for the resolution and/or rejection of the Promise.
+     * @param onfulfilled The callback to execute when the Promise is resolved.
+     * @param onrejected The callback to execute when the Promise is rejected.
+     * @returns A Promise for the completion of which ever callback is executed.
+     */
+    then<TResult1 = T, TResult2 = never>(onfulfilled?: ((value: T) => TResult1 | PromiseLike<TResult1>) | undefined | null, onrejected?: ((reason: any) => TResult2 | PromiseLike<TResult2>) | undefined | null): $Utils.JsPromise<TResult1 | TResult2>
+    /**
+     * Attaches a callback for only the rejection of the Promise.
+     * @param onrejected The callback to execute when the Promise is rejected.
+     * @returns A Promise for the completion of the callback.
+     */
+    catch<TResult = never>(onrejected?: ((reason: any) => TResult | PromiseLike<TResult>) | undefined | null): $Utils.JsPromise<T | TResult>
+    /**
+     * Attaches a callback that is invoked when the Promise is settled (fulfilled or rejected). The
+     * resolved value cannot be modified from the callback.
+     * @param onfinally The callback to execute when the Promise is settled (fulfilled or rejected).
+     * @returns A Promise for the completion of the callback.
+     */
+    finally(onfinally?: (() => void) | undefined | null): $Utils.JsPromise<T>
+  }
+
+
+
+
+  /**
+   * Fields of the AdminInboxRead model
+   */ 
+  interface AdminInboxReadFieldRefs {
+    readonly id: FieldRef<"AdminInboxRead", 'String'>
+    readonly adminUserId: FieldRef<"AdminInboxRead", 'String'>
+    readonly category: FieldRef<"AdminInboxRead", 'String'>
+    readonly seenAt: FieldRef<"AdminInboxRead", 'DateTime'>
+    readonly updatedAt: FieldRef<"AdminInboxRead", 'DateTime'>
+  }
+    
+
+  // Custom InputTypes
+  /**
+   * AdminInboxRead findUnique
+   */
+  export type AdminInboxReadFindUniqueArgs<ExtArgs extends $Extensions.InternalArgs = $Extensions.DefaultArgs> = {
+    /**
+     * Select specific fields to fetch from the AdminInboxRead
+     */
+    select?: AdminInboxReadSelect<ExtArgs> | null
+    /**
+     * Choose, which related nodes to fetch as well
+     */
+    include?: AdminInboxReadInclude<ExtArgs> | null
+    /**
+     * Filter, which AdminInboxRead to fetch.
+     */
+    where: AdminInboxReadWhereUniqueInput
+  }
+
+  /**
+   * AdminInboxRead findUniqueOrThrow
+   */
+  export type AdminInboxReadFindUniqueOrThrowArgs<ExtArgs extends $Extensions.InternalArgs = $Extensions.DefaultArgs> = {
+    /**
+     * Select specific fields to fetch from the AdminInboxRead
+     */
+    select?: AdminInboxReadSelect<ExtArgs> | null
+    /**
+     * Choose, which related nodes to fetch as well
+     */
+    include?: AdminInboxReadInclude<ExtArgs> | null
+    /**
+     * Filter, which AdminInboxRead to fetch.
+     */
+    where: AdminInboxReadWhereUniqueInput
+  }
+
+  /**
+   * AdminInboxRead findFirst
+   */
+  export type AdminInboxReadFindFirstArgs<ExtArgs extends $Extensions.InternalArgs = $Extensions.DefaultArgs> = {
+    /**
+     * Select specific fields to fetch from the AdminInboxRead
+     */
+    select?: AdminInboxReadSelect<ExtArgs> | null
+    /**
+     * Choose, which related nodes to fetch as well
+     */
+    include?: AdminInboxReadInclude<ExtArgs> | null
+    /**
+     * Filter, which AdminInboxRead to fetch.
+     */
+    where?: AdminInboxReadWhereInput
+    /**
+     * {@link https://www.prisma.io/docs/concepts/components/prisma-client/sorting Sorting Docs}
+     * 
+     * Determine the order of AdminInboxReads to fetch.
+     */
+    orderBy?: AdminInboxReadOrderByWithRelationInput | AdminInboxReadOrderByWithRelationInput[]
+    /**
+     * {@link https://www.prisma.io/docs/concepts/components/prisma-client/pagination#cursor-based-pagination Cursor Docs}
+     * 
+     * Sets the position for searching for AdminInboxReads.
+     */
+    cursor?: AdminInboxReadWhereUniqueInput
+    /**
+     * {@link https://www.prisma.io/docs/concepts/components/prisma-client/pagination Pagination Docs}
+     * 
+     * Take `±n` AdminInboxReads from the position of the cursor.
+     */
+    take?: number
+    /**
+     * {@link https://www.prisma.io/docs/concepts/components/prisma-client/pagination Pagination Docs}
+     * 
+     * Skip the first `n` AdminInboxReads.
+     */
+    skip?: number
+    /**
+     * {@link https://www.prisma.io/docs/concepts/components/prisma-client/distinct Distinct Docs}
+     * 
+     * Filter by unique combinations of AdminInboxReads.
+     */
+    distinct?: AdminInboxReadScalarFieldEnum | AdminInboxReadScalarFieldEnum[]
+  }
+
+  /**
+   * AdminInboxRead findFirstOrThrow
+   */
+  export type AdminInboxReadFindFirstOrThrowArgs<ExtArgs extends $Extensions.InternalArgs = $Extensions.DefaultArgs> = {
+    /**
+     * Select specific fields to fetch from the AdminInboxRead
+     */
+    select?: AdminInboxReadSelect<ExtArgs> | null
+    /**
+     * Choose, which related nodes to fetch as well
+     */
+    include?: AdminInboxReadInclude<ExtArgs> | null
+    /**
+     * Filter, which AdminInboxRead to fetch.
+     */
+    where?: AdminInboxReadWhereInput
+    /**
+     * {@link https://www.prisma.io/docs/concepts/components/prisma-client/sorting Sorting Docs}
+     * 
+     * Determine the order of AdminInboxReads to fetch.
+     */
+    orderBy?: AdminInboxReadOrderByWithRelationInput | AdminInboxReadOrderByWithRelationInput[]
+    /**
+     * {@link https://www.prisma.io/docs/concepts/components/prisma-client/pagination#cursor-based-pagination Cursor Docs}
+     * 
+     * Sets the position for searching for AdminInboxReads.
+     */
+    cursor?: AdminInboxReadWhereUniqueInput
+    /**
+     * {@link https://www.prisma.io/docs/concepts/components/prisma-client/pagination Pagination Docs}
+     * 
+     * Take `±n` AdminInboxReads from the position of the cursor.
+     */
+    take?: number
+    /**
+     * {@link https://www.prisma.io/docs/concepts/components/prisma-client/pagination Pagination Docs}
+     * 
+     * Skip the first `n` AdminInboxReads.
+     */
+    skip?: number
+    /**
+     * {@link https://www.prisma.io/docs/concepts/components/prisma-client/distinct Distinct Docs}
+     * 
+     * Filter by unique combinations of AdminInboxReads.
+     */
+    distinct?: AdminInboxReadScalarFieldEnum | AdminInboxReadScalarFieldEnum[]
+  }
+
+  /**
+   * AdminInboxRead findMany
+   */
+  export type AdminInboxReadFindManyArgs<ExtArgs extends $Extensions.InternalArgs = $Extensions.DefaultArgs> = {
+    /**
+     * Select specific fields to fetch from the AdminInboxRead
+     */
+    select?: AdminInboxReadSelect<ExtArgs> | null
+    /**
+     * Choose, which related nodes to fetch as well
+     */
+    include?: AdminInboxReadInclude<ExtArgs> | null
+    /**
+     * Filter, which AdminInboxReads to fetch.
+     */
+    where?: AdminInboxReadWhereInput
+    /**
+     * {@link https://www.prisma.io/docs/concepts/components/prisma-client/sorting Sorting Docs}
+     * 
+     * Determine the order of AdminInboxReads to fetch.
+     */
+    orderBy?: AdminInboxReadOrderByWithRelationInput | AdminInboxReadOrderByWithRelationInput[]
+    /**
+     * {@link https://www.prisma.io/docs/concepts/components/prisma-client/pagination#cursor-based-pagination Cursor Docs}
+     * 
+     * Sets the position for listing AdminInboxReads.
+     */
+    cursor?: AdminInboxReadWhereUniqueInput
+    /**
+     * {@link https://www.prisma.io/docs/concepts/components/prisma-client/pagination Pagination Docs}
+     * 
+     * Take `±n` AdminInboxReads from the position of the cursor.
+     */
+    take?: number
+    /**
+     * {@link https://www.prisma.io/docs/concepts/components/prisma-client/pagination Pagination Docs}
+     * 
+     * Skip the first `n` AdminInboxReads.
+     */
+    skip?: number
+    distinct?: AdminInboxReadScalarFieldEnum | AdminInboxReadScalarFieldEnum[]
+  }
+
+  /**
+   * AdminInboxRead create
+   */
+  export type AdminInboxReadCreateArgs<ExtArgs extends $Extensions.InternalArgs = $Extensions.DefaultArgs> = {
+    /**
+     * Select specific fields to fetch from the AdminInboxRead
+     */
+    select?: AdminInboxReadSelect<ExtArgs> | null
+    /**
+     * Choose, which related nodes to fetch as well
+     */
+    include?: AdminInboxReadInclude<ExtArgs> | null
+    /**
+     * The data needed to create a AdminInboxRead.
+     */
+    data: XOR<AdminInboxReadCreateInput, AdminInboxReadUncheckedCreateInput>
+  }
+
+  /**
+   * AdminInboxRead createMany
+   */
+  export type AdminInboxReadCreateManyArgs<ExtArgs extends $Extensions.InternalArgs = $Extensions.DefaultArgs> = {
+    /**
+     * The data used to create many AdminInboxReads.
+     */
+    data: AdminInboxReadCreateManyInput | AdminInboxReadCreateManyInput[]
+    skipDuplicates?: boolean
+  }
+
+  /**
+   * AdminInboxRead createManyAndReturn
+   */
+  export type AdminInboxReadCreateManyAndReturnArgs<ExtArgs extends $Extensions.InternalArgs = $Extensions.DefaultArgs> = {
+    /**
+     * Select specific fields to fetch from the AdminInboxRead
+     */
+    select?: AdminInboxReadSelectCreateManyAndReturn<ExtArgs> | null
+    /**
+     * The data used to create many AdminInboxReads.
+     */
+    data: AdminInboxReadCreateManyInput | AdminInboxReadCreateManyInput[]
+    skipDuplicates?: boolean
+    /**
+     * Choose, which related nodes to fetch as well
+     */
+    include?: AdminInboxReadIncludeCreateManyAndReturn<ExtArgs> | null
+  }
+
+  /**
+   * AdminInboxRead update
+   */
+  export type AdminInboxReadUpdateArgs<ExtArgs extends $Extensions.InternalArgs = $Extensions.DefaultArgs> = {
+    /**
+     * Select specific fields to fetch from the AdminInboxRead
+     */
+    select?: AdminInboxReadSelect<ExtArgs> | null
+    /**
+     * Choose, which related nodes to fetch as well
+     */
+    include?: AdminInboxReadInclude<ExtArgs> | null
+    /**
+     * The data needed to update a AdminInboxRead.
+     */
+    data: XOR<AdminInboxReadUpdateInput, AdminInboxReadUncheckedUpdateInput>
+    /**
+     * Choose, which AdminInboxRead to update.
+     */
+    where: AdminInboxReadWhereUniqueInput
+  }
+
+  /**
+   * AdminInboxRead updateMany
+   */
+  export type AdminInboxReadUpdateManyArgs<ExtArgs extends $Extensions.InternalArgs = $Extensions.DefaultArgs> = {
+    /**
+     * The data used to update AdminInboxReads.
+     */
+    data: XOR<AdminInboxReadUpdateManyMutationInput, AdminInboxReadUncheckedUpdateManyInput>
+    /**
+     * Filter which AdminInboxReads to update
+     */
+    where?: AdminInboxReadWhereInput
+  }
+
+  /**
+   * AdminInboxRead upsert
+   */
+  export type AdminInboxReadUpsertArgs<ExtArgs extends $Extensions.InternalArgs = $Extensions.DefaultArgs> = {
+    /**
+     * Select specific fields to fetch from the AdminInboxRead
+     */
+    select?: AdminInboxReadSelect<ExtArgs> | null
+    /**
+     * Choose, which related nodes to fetch as well
+     */
+    include?: AdminInboxReadInclude<ExtArgs> | null
+    /**
+     * The filter to search for the AdminInboxRead to update in case it exists.
+     */
+    where: AdminInboxReadWhereUniqueInput
+    /**
+     * In case the AdminInboxRead found by the `where` argument doesn't exist, create a new AdminInboxRead with this data.
+     */
+    create: XOR<AdminInboxReadCreateInput, AdminInboxReadUncheckedCreateInput>
+    /**
+     * In case the AdminInboxRead was found with the provided `where` argument, update it with this data.
+     */
+    update: XOR<AdminInboxReadUpdateInput, AdminInboxReadUncheckedUpdateInput>
+  }
+
+  /**
+   * AdminInboxRead delete
+   */
+  export type AdminInboxReadDeleteArgs<ExtArgs extends $Extensions.InternalArgs = $Extensions.DefaultArgs> = {
+    /**
+     * Select specific fields to fetch from the AdminInboxRead
+     */
+    select?: AdminInboxReadSelect<ExtArgs> | null
+    /**
+     * Choose, which related nodes to fetch as well
+     */
+    include?: AdminInboxReadInclude<ExtArgs> | null
+    /**
+     * Filter which AdminInboxRead to delete.
+     */
+    where: AdminInboxReadWhereUniqueInput
+  }
+
+  /**
+   * AdminInboxRead deleteMany
+   */
+  export type AdminInboxReadDeleteManyArgs<ExtArgs extends $Extensions.InternalArgs = $Extensions.DefaultArgs> = {
+    /**
+     * Filter which AdminInboxReads to delete
+     */
+    where?: AdminInboxReadWhereInput
+  }
+
+  /**
+   * AdminInboxRead without action
+   */
+  export type AdminInboxReadDefaultArgs<ExtArgs extends $Extensions.InternalArgs = $Extensions.DefaultArgs> = {
+    /**
+     * Select specific fields to fetch from the AdminInboxRead
+     */
+    select?: AdminInboxReadSelect<ExtArgs> | null
+    /**
+     * Choose, which related nodes to fetch as well
+     */
+    include?: AdminInboxReadInclude<ExtArgs> | null
+  }
+
+
+  /**
+   * Model AdminAuditLog
+   */
+
+  export type AggregateAdminAuditLog = {
+    _count: AdminAuditLogCountAggregateOutputType | null
+    _min: AdminAuditLogMinAggregateOutputType | null
+    _max: AdminAuditLogMaxAggregateOutputType | null
+  }
+
+  export type AdminAuditLogMinAggregateOutputType = {
+    id: string | null
+    actorUserId: string | null
+    action: string | null
+    entityType: string | null
+    entityId: string | null
+    createdAt: Date | null
+  }
+
+  export type AdminAuditLogMaxAggregateOutputType = {
+    id: string | null
+    actorUserId: string | null
+    action: string | null
+    entityType: string | null
+    entityId: string | null
+    createdAt: Date | null
+  }
+
+  export type AdminAuditLogCountAggregateOutputType = {
+    id: number
+    actorUserId: number
+    action: number
+    entityType: number
+    entityId: number
+    metadata: number
+    createdAt: number
+    _all: number
+  }
+
+
+  export type AdminAuditLogMinAggregateInputType = {
+    id?: true
+    actorUserId?: true
+    action?: true
+    entityType?: true
+    entityId?: true
+    createdAt?: true
+  }
+
+  export type AdminAuditLogMaxAggregateInputType = {
+    id?: true
+    actorUserId?: true
+    action?: true
+    entityType?: true
+    entityId?: true
+    createdAt?: true
+  }
+
+  export type AdminAuditLogCountAggregateInputType = {
+    id?: true
+    actorUserId?: true
+    action?: true
+    entityType?: true
+    entityId?: true
+    metadata?: true
+    createdAt?: true
+    _all?: true
+  }
+
+  export type AdminAuditLogAggregateArgs<ExtArgs extends $Extensions.InternalArgs = $Extensions.DefaultArgs> = {
+    /**
+     * Filter which AdminAuditLog to aggregate.
+     */
+    where?: AdminAuditLogWhereInput
+    /**
+     * {@link https://www.prisma.io/docs/concepts/components/prisma-client/sorting Sorting Docs}
+     * 
+     * Determine the order of AdminAuditLogs to fetch.
+     */
+    orderBy?: AdminAuditLogOrderByWithRelationInput | AdminAuditLogOrderByWithRelationInput[]
+    /**
+     * {@link https://www.prisma.io/docs/concepts/components/prisma-client/pagination#cursor-based-pagination Cursor Docs}
+     * 
+     * Sets the start position
+     */
+    cursor?: AdminAuditLogWhereUniqueInput
+    /**
+     * {@link https://www.prisma.io/docs/concepts/components/prisma-client/pagination Pagination Docs}
+     * 
+     * Take `±n` AdminAuditLogs from the position of the cursor.
+     */
+    take?: number
+    /**
+     * {@link https://www.prisma.io/docs/concepts/components/prisma-client/pagination Pagination Docs}
+     * 
+     * Skip the first `n` AdminAuditLogs.
+     */
+    skip?: number
+    /**
+     * {@link https://www.prisma.io/docs/concepts/components/prisma-client/aggregations Aggregation Docs}
+     * 
+     * Count returned AdminAuditLogs
+    **/
+    _count?: true | AdminAuditLogCountAggregateInputType
+    /**
+     * {@link https://www.prisma.io/docs/concepts/components/prisma-client/aggregations Aggregation Docs}
+     * 
+     * Select which fields to find the minimum value
+    **/
+    _min?: AdminAuditLogMinAggregateInputType
+    /**
+     * {@link https://www.prisma.io/docs/concepts/components/prisma-client/aggregations Aggregation Docs}
+     * 
+     * Select which fields to find the maximum value
+    **/
+    _max?: AdminAuditLogMaxAggregateInputType
+  }
+
+  export type GetAdminAuditLogAggregateType<T extends AdminAuditLogAggregateArgs> = {
+        [P in keyof T & keyof AggregateAdminAuditLog]: P extends '_count' | 'count'
+      ? T[P] extends true
+        ? number
+        : GetScalarType<T[P], AggregateAdminAuditLog[P]>
+      : GetScalarType<T[P], AggregateAdminAuditLog[P]>
+  }
+
+
+
+
+  export type AdminAuditLogGroupByArgs<ExtArgs extends $Extensions.InternalArgs = $Extensions.DefaultArgs> = {
+    where?: AdminAuditLogWhereInput
+    orderBy?: AdminAuditLogOrderByWithAggregationInput | AdminAuditLogOrderByWithAggregationInput[]
+    by: AdminAuditLogScalarFieldEnum[] | AdminAuditLogScalarFieldEnum
+    having?: AdminAuditLogScalarWhereWithAggregatesInput
+    take?: number
+    skip?: number
+    _count?: AdminAuditLogCountAggregateInputType | true
+    _min?: AdminAuditLogMinAggregateInputType
+    _max?: AdminAuditLogMaxAggregateInputType
+  }
+
+  export type AdminAuditLogGroupByOutputType = {
+    id: string
+    actorUserId: string
+    action: string
+    entityType: string
+    entityId: string
+    metadata: JsonValue | null
+    createdAt: Date
+    _count: AdminAuditLogCountAggregateOutputType | null
+    _min: AdminAuditLogMinAggregateOutputType | null
+    _max: AdminAuditLogMaxAggregateOutputType | null
+  }
+
+  type GetAdminAuditLogGroupByPayload<T extends AdminAuditLogGroupByArgs> = Prisma.PrismaPromise<
+    Array<
+      PickEnumerable<AdminAuditLogGroupByOutputType, T['by']> &
+        {
+          [P in ((keyof T) & (keyof AdminAuditLogGroupByOutputType))]: P extends '_count'
+            ? T[P] extends boolean
+              ? number
+              : GetScalarType<T[P], AdminAuditLogGroupByOutputType[P]>
+            : GetScalarType<T[P], AdminAuditLogGroupByOutputType[P]>
+        }
+      >
+    >
+
+
+  export type AdminAuditLogSelect<ExtArgs extends $Extensions.InternalArgs = $Extensions.DefaultArgs> = $Extensions.GetSelect<{
+    id?: boolean
+    actorUserId?: boolean
+    action?: boolean
+    entityType?: boolean
+    entityId?: boolean
+    metadata?: boolean
+    createdAt?: boolean
+    actor?: boolean | UserDefaultArgs<ExtArgs>
+  }, ExtArgs["result"]["adminAuditLog"]>
+
+  export type AdminAuditLogSelectCreateManyAndReturn<ExtArgs extends $Extensions.InternalArgs = $Extensions.DefaultArgs> = $Extensions.GetSelect<{
+    id?: boolean
+    actorUserId?: boolean
+    action?: boolean
+    entityType?: boolean
+    entityId?: boolean
+    metadata?: boolean
+    createdAt?: boolean
+    actor?: boolean | UserDefaultArgs<ExtArgs>
+  }, ExtArgs["result"]["adminAuditLog"]>
+
+  export type AdminAuditLogSelectScalar = {
+    id?: boolean
+    actorUserId?: boolean
+    action?: boolean
+    entityType?: boolean
+    entityId?: boolean
+    metadata?: boolean
+    createdAt?: boolean
+  }
+
+  export type AdminAuditLogInclude<ExtArgs extends $Extensions.InternalArgs = $Extensions.DefaultArgs> = {
+    actor?: boolean | UserDefaultArgs<ExtArgs>
+  }
+  export type AdminAuditLogIncludeCreateManyAndReturn<ExtArgs extends $Extensions.InternalArgs = $Extensions.DefaultArgs> = {
+    actor?: boolean | UserDefaultArgs<ExtArgs>
+  }
+
+  export type $AdminAuditLogPayload<ExtArgs extends $Extensions.InternalArgs = $Extensions.DefaultArgs> = {
+    name: "AdminAuditLog"
+    objects: {
+      actor: Prisma.$UserPayload<ExtArgs>
+    }
+    scalars: $Extensions.GetPayloadResult<{
+      id: string
+      actorUserId: string
+      action: string
+      entityType: string
+      entityId: string
+      metadata: Prisma.JsonValue | null
+      createdAt: Date
+    }, ExtArgs["result"]["adminAuditLog"]>
+    composites: {}
+  }
+
+  type AdminAuditLogGetPayload<S extends boolean | null | undefined | AdminAuditLogDefaultArgs> = $Result.GetResult<Prisma.$AdminAuditLogPayload, S>
+
+  type AdminAuditLogCountArgs<ExtArgs extends $Extensions.InternalArgs = $Extensions.DefaultArgs> = 
+    Omit<AdminAuditLogFindManyArgs, 'select' | 'include' | 'distinct'> & {
+      select?: AdminAuditLogCountAggregateInputType | true
+    }
+
+  export interface AdminAuditLogDelegate<ExtArgs extends $Extensions.InternalArgs = $Extensions.DefaultArgs> {
+    [K: symbol]: { types: Prisma.TypeMap<ExtArgs>['model']['AdminAuditLog'], meta: { name: 'AdminAuditLog' } }
+    /**
+     * Find zero or one AdminAuditLog that matches the filter.
+     * @param {AdminAuditLogFindUniqueArgs} args - Arguments to find a AdminAuditLog
+     * @example
+     * // Get one AdminAuditLog
+     * const adminAuditLog = await prisma.adminAuditLog.findUnique({
+     *   where: {
+     *     // ... provide filter here
+     *   }
+     * })
+     */
+    findUnique<T extends AdminAuditLogFindUniqueArgs>(args: SelectSubset<T, AdminAuditLogFindUniqueArgs<ExtArgs>>): Prisma__AdminAuditLogClient<$Result.GetResult<Prisma.$AdminAuditLogPayload<ExtArgs>, T, "findUnique"> | null, null, ExtArgs>
+
+    /**
+     * Find one AdminAuditLog that matches the filter or throw an error with `error.code='P2025'` 
+     * if no matches were found.
+     * @param {AdminAuditLogFindUniqueOrThrowArgs} args - Arguments to find a AdminAuditLog
+     * @example
+     * // Get one AdminAuditLog
+     * const adminAuditLog = await prisma.adminAuditLog.findUniqueOrThrow({
+     *   where: {
+     *     // ... provide filter here
+     *   }
+     * })
+     */
+    findUniqueOrThrow<T extends AdminAuditLogFindUniqueOrThrowArgs>(args: SelectSubset<T, AdminAuditLogFindUniqueOrThrowArgs<ExtArgs>>): Prisma__AdminAuditLogClient<$Result.GetResult<Prisma.$AdminAuditLogPayload<ExtArgs>, T, "findUniqueOrThrow">, never, ExtArgs>
+
+    /**
+     * Find the first AdminAuditLog that matches the filter.
+     * Note, that providing `undefined` is treated as the value not being there.
+     * Read more here: https://pris.ly/d/null-undefined
+     * @param {AdminAuditLogFindFirstArgs} args - Arguments to find a AdminAuditLog
+     * @example
+     * // Get one AdminAuditLog
+     * const adminAuditLog = await prisma.adminAuditLog.findFirst({
+     *   where: {
+     *     // ... provide filter here
+     *   }
+     * })
+     */
+    findFirst<T extends AdminAuditLogFindFirstArgs>(args?: SelectSubset<T, AdminAuditLogFindFirstArgs<ExtArgs>>): Prisma__AdminAuditLogClient<$Result.GetResult<Prisma.$AdminAuditLogPayload<ExtArgs>, T, "findFirst"> | null, null, ExtArgs>
+
+    /**
+     * Find the first AdminAuditLog that matches the filter or
+     * throw `PrismaKnownClientError` with `P2025` code if no matches were found.
+     * Note, that providing `undefined` is treated as the value not being there.
+     * Read more here: https://pris.ly/d/null-undefined
+     * @param {AdminAuditLogFindFirstOrThrowArgs} args - Arguments to find a AdminAuditLog
+     * @example
+     * // Get one AdminAuditLog
+     * const adminAuditLog = await prisma.adminAuditLog.findFirstOrThrow({
+     *   where: {
+     *     // ... provide filter here
+     *   }
+     * })
+     */
+    findFirstOrThrow<T extends AdminAuditLogFindFirstOrThrowArgs>(args?: SelectSubset<T, AdminAuditLogFindFirstOrThrowArgs<ExtArgs>>): Prisma__AdminAuditLogClient<$Result.GetResult<Prisma.$AdminAuditLogPayload<ExtArgs>, T, "findFirstOrThrow">, never, ExtArgs>
+
+    /**
+     * Find zero or more AdminAuditLogs that matches the filter.
+     * Note, that providing `undefined` is treated as the value not being there.
+     * Read more here: https://pris.ly/d/null-undefined
+     * @param {AdminAuditLogFindManyArgs} args - Arguments to filter and select certain fields only.
+     * @example
+     * // Get all AdminAuditLogs
+     * const adminAuditLogs = await prisma.adminAuditLog.findMany()
+     * 
+     * // Get first 10 AdminAuditLogs
+     * const adminAuditLogs = await prisma.adminAuditLog.findMany({ take: 10 })
+     * 
+     * // Only select the `id`
+     * const adminAuditLogWithIdOnly = await prisma.adminAuditLog.findMany({ select: { id: true } })
+     * 
+     */
+    findMany<T extends AdminAuditLogFindManyArgs>(args?: SelectSubset<T, AdminAuditLogFindManyArgs<ExtArgs>>): Prisma.PrismaPromise<$Result.GetResult<Prisma.$AdminAuditLogPayload<ExtArgs>, T, "findMany">>
+
+    /**
+     * Create a AdminAuditLog.
+     * @param {AdminAuditLogCreateArgs} args - Arguments to create a AdminAuditLog.
+     * @example
+     * // Create one AdminAuditLog
+     * const AdminAuditLog = await prisma.adminAuditLog.create({
+     *   data: {
+     *     // ... data to create a AdminAuditLog
+     *   }
+     * })
+     * 
+     */
+    create<T extends AdminAuditLogCreateArgs>(args: SelectSubset<T, AdminAuditLogCreateArgs<ExtArgs>>): Prisma__AdminAuditLogClient<$Result.GetResult<Prisma.$AdminAuditLogPayload<ExtArgs>, T, "create">, never, ExtArgs>
+
+    /**
+     * Create many AdminAuditLogs.
+     * @param {AdminAuditLogCreateManyArgs} args - Arguments to create many AdminAuditLogs.
+     * @example
+     * // Create many AdminAuditLogs
+     * const adminAuditLog = await prisma.adminAuditLog.createMany({
+     *   data: [
+     *     // ... provide data here
+     *   ]
+     * })
+     *     
+     */
+    createMany<T extends AdminAuditLogCreateManyArgs>(args?: SelectSubset<T, AdminAuditLogCreateManyArgs<ExtArgs>>): Prisma.PrismaPromise<BatchPayload>
+
+    /**
+     * Create many AdminAuditLogs and returns the data saved in the database.
+     * @param {AdminAuditLogCreateManyAndReturnArgs} args - Arguments to create many AdminAuditLogs.
+     * @example
+     * // Create many AdminAuditLogs
+     * const adminAuditLog = await prisma.adminAuditLog.createManyAndReturn({
+     *   data: [
+     *     // ... provide data here
+     *   ]
+     * })
+     * 
+     * // Create many AdminAuditLogs and only return the `id`
+     * const adminAuditLogWithIdOnly = await prisma.adminAuditLog.createManyAndReturn({ 
+     *   select: { id: true },
+     *   data: [
+     *     // ... provide data here
+     *   ]
+     * })
+     * Note, that providing `undefined` is treated as the value not being there.
+     * Read more here: https://pris.ly/d/null-undefined
+     * 
+     */
+    createManyAndReturn<T extends AdminAuditLogCreateManyAndReturnArgs>(args?: SelectSubset<T, AdminAuditLogCreateManyAndReturnArgs<ExtArgs>>): Prisma.PrismaPromise<$Result.GetResult<Prisma.$AdminAuditLogPayload<ExtArgs>, T, "createManyAndReturn">>
+
+    /**
+     * Delete a AdminAuditLog.
+     * @param {AdminAuditLogDeleteArgs} args - Arguments to delete one AdminAuditLog.
+     * @example
+     * // Delete one AdminAuditLog
+     * const AdminAuditLog = await prisma.adminAuditLog.delete({
+     *   where: {
+     *     // ... filter to delete one AdminAuditLog
+     *   }
+     * })
+     * 
+     */
+    delete<T extends AdminAuditLogDeleteArgs>(args: SelectSubset<T, AdminAuditLogDeleteArgs<ExtArgs>>): Prisma__AdminAuditLogClient<$Result.GetResult<Prisma.$AdminAuditLogPayload<ExtArgs>, T, "delete">, never, ExtArgs>
+
+    /**
+     * Update one AdminAuditLog.
+     * @param {AdminAuditLogUpdateArgs} args - Arguments to update one AdminAuditLog.
+     * @example
+     * // Update one AdminAuditLog
+     * const adminAuditLog = await prisma.adminAuditLog.update({
+     *   where: {
+     *     // ... provide filter here
+     *   },
+     *   data: {
+     *     // ... provide data here
+     *   }
+     * })
+     * 
+     */
+    update<T extends AdminAuditLogUpdateArgs>(args: SelectSubset<T, AdminAuditLogUpdateArgs<ExtArgs>>): Prisma__AdminAuditLogClient<$Result.GetResult<Prisma.$AdminAuditLogPayload<ExtArgs>, T, "update">, never, ExtArgs>
+
+    /**
+     * Delete zero or more AdminAuditLogs.
+     * @param {AdminAuditLogDeleteManyArgs} args - Arguments to filter AdminAuditLogs to delete.
+     * @example
+     * // Delete a few AdminAuditLogs
+     * const { count } = await prisma.adminAuditLog.deleteMany({
+     *   where: {
+     *     // ... provide filter here
+     *   }
+     * })
+     * 
+     */
+    deleteMany<T extends AdminAuditLogDeleteManyArgs>(args?: SelectSubset<T, AdminAuditLogDeleteManyArgs<ExtArgs>>): Prisma.PrismaPromise<BatchPayload>
+
+    /**
+     * Update zero or more AdminAuditLogs.
+     * Note, that providing `undefined` is treated as the value not being there.
+     * Read more here: https://pris.ly/d/null-undefined
+     * @param {AdminAuditLogUpdateManyArgs} args - Arguments to update one or more rows.
+     * @example
+     * // Update many AdminAuditLogs
+     * const adminAuditLog = await prisma.adminAuditLog.updateMany({
+     *   where: {
+     *     // ... provide filter here
+     *   },
+     *   data: {
+     *     // ... provide data here
+     *   }
+     * })
+     * 
+     */
+    updateMany<T extends AdminAuditLogUpdateManyArgs>(args: SelectSubset<T, AdminAuditLogUpdateManyArgs<ExtArgs>>): Prisma.PrismaPromise<BatchPayload>
+
+    /**
+     * Create or update one AdminAuditLog.
+     * @param {AdminAuditLogUpsertArgs} args - Arguments to update or create a AdminAuditLog.
+     * @example
+     * // Update or create a AdminAuditLog
+     * const adminAuditLog = await prisma.adminAuditLog.upsert({
+     *   create: {
+     *     // ... data to create a AdminAuditLog
+     *   },
+     *   update: {
+     *     // ... in case it already exists, update
+     *   },
+     *   where: {
+     *     // ... the filter for the AdminAuditLog we want to update
+     *   }
+     * })
+     */
+    upsert<T extends AdminAuditLogUpsertArgs>(args: SelectSubset<T, AdminAuditLogUpsertArgs<ExtArgs>>): Prisma__AdminAuditLogClient<$Result.GetResult<Prisma.$AdminAuditLogPayload<ExtArgs>, T, "upsert">, never, ExtArgs>
+
+
+    /**
+     * Count the number of AdminAuditLogs.
+     * Note, that providing `undefined` is treated as the value not being there.
+     * Read more here: https://pris.ly/d/null-undefined
+     * @param {AdminAuditLogCountArgs} args - Arguments to filter AdminAuditLogs to count.
+     * @example
+     * // Count the number of AdminAuditLogs
+     * const count = await prisma.adminAuditLog.count({
+     *   where: {
+     *     // ... the filter for the AdminAuditLogs we want to count
+     *   }
+     * })
+    **/
+    count<T extends AdminAuditLogCountArgs>(
+      args?: Subset<T, AdminAuditLogCountArgs>,
+    ): Prisma.PrismaPromise<
+      T extends $Utils.Record<'select', any>
+        ? T['select'] extends true
+          ? number
+          : GetScalarType<T['select'], AdminAuditLogCountAggregateOutputType>
+        : number
+    >
+
+    /**
+     * Allows you to perform aggregations operations on a AdminAuditLog.
+     * Note, that providing `undefined` is treated as the value not being there.
+     * Read more here: https://pris.ly/d/null-undefined
+     * @param {AdminAuditLogAggregateArgs} args - Select which aggregations you would like to apply and on what fields.
+     * @example
+     * // Ordered by age ascending
+     * // Where email contains prisma.io
+     * // Limited to the 10 users
+     * const aggregations = await prisma.user.aggregate({
+     *   _avg: {
+     *     age: true,
+     *   },
+     *   where: {
+     *     email: {
+     *       contains: "prisma.io",
+     *     },
+     *   },
+     *   orderBy: {
+     *     age: "asc",
+     *   },
+     *   take: 10,
+     * })
+    **/
+    aggregate<T extends AdminAuditLogAggregateArgs>(args: Subset<T, AdminAuditLogAggregateArgs>): Prisma.PrismaPromise<GetAdminAuditLogAggregateType<T>>
+
+    /**
+     * Group by AdminAuditLog.
+     * Note, that providing `undefined` is treated as the value not being there.
+     * Read more here: https://pris.ly/d/null-undefined
+     * @param {AdminAuditLogGroupByArgs} args - Group by arguments.
+     * @example
+     * // Group by city, order by createdAt, get count
+     * const result = await prisma.user.groupBy({
+     *   by: ['city', 'createdAt'],
+     *   orderBy: {
+     *     createdAt: true
+     *   },
+     *   _count: {
+     *     _all: true
+     *   },
+     * })
+     * 
+    **/
+    groupBy<
+      T extends AdminAuditLogGroupByArgs,
+      HasSelectOrTake extends Or<
+        Extends<'skip', Keys<T>>,
+        Extends<'take', Keys<T>>
+      >,
+      OrderByArg extends True extends HasSelectOrTake
+        ? { orderBy: AdminAuditLogGroupByArgs['orderBy'] }
+        : { orderBy?: AdminAuditLogGroupByArgs['orderBy'] },
+      OrderFields extends ExcludeUnderscoreKeys<Keys<MaybeTupleToUnion<T['orderBy']>>>,
+      ByFields extends MaybeTupleToUnion<T['by']>,
+      ByValid extends Has<ByFields, OrderFields>,
+      HavingFields extends GetHavingFields<T['having']>,
+      HavingValid extends Has<ByFields, HavingFields>,
+      ByEmpty extends T['by'] extends never[] ? True : False,
+      InputErrors extends ByEmpty extends True
+      ? `Error: "by" must not be empty.`
+      : HavingValid extends False
+      ? {
+          [P in HavingFields]: P extends ByFields
+            ? never
+            : P extends string
+            ? `Error: Field "${P}" used in "having" needs to be provided in "by".`
+            : [
+                Error,
+                'Field ',
+                P,
+                ` in "having" needs to be provided in "by"`,
+              ]
+        }[HavingFields]
+      : 'take' extends Keys<T>
+      ? 'orderBy' extends Keys<T>
+        ? ByValid extends True
+          ? {}
+          : {
+              [P in OrderFields]: P extends ByFields
+                ? never
+                : `Error: Field "${P}" in "orderBy" needs to be provided in "by"`
+            }[OrderFields]
+        : 'Error: If you provide "take", you also need to provide "orderBy"'
+      : 'skip' extends Keys<T>
+      ? 'orderBy' extends Keys<T>
+        ? ByValid extends True
+          ? {}
+          : {
+              [P in OrderFields]: P extends ByFields
+                ? never
+                : `Error: Field "${P}" in "orderBy" needs to be provided in "by"`
+            }[OrderFields]
+        : 'Error: If you provide "skip", you also need to provide "orderBy"'
+      : ByValid extends True
+      ? {}
+      : {
+          [P in OrderFields]: P extends ByFields
+            ? never
+            : `Error: Field "${P}" in "orderBy" needs to be provided in "by"`
+        }[OrderFields]
+    >(args: SubsetIntersection<T, AdminAuditLogGroupByArgs, OrderByArg> & InputErrors): {} extends InputErrors ? GetAdminAuditLogGroupByPayload<T> : Prisma.PrismaPromise<InputErrors>
+  /**
+   * Fields of the AdminAuditLog model
+   */
+  readonly fields: AdminAuditLogFieldRefs;
+  }
+
+  /**
+   * The delegate class that acts as a "Promise-like" for AdminAuditLog.
+   * Why is this prefixed with `Prisma__`?
+   * Because we want to prevent naming conflicts as mentioned in
+   * https://github.com/prisma/prisma-client-js/issues/707
+   */
+  export interface Prisma__AdminAuditLogClient<T, Null = never, ExtArgs extends $Extensions.InternalArgs = $Extensions.DefaultArgs> extends Prisma.PrismaPromise<T> {
+    readonly [Symbol.toStringTag]: "PrismaPromise"
+    actor<T extends UserDefaultArgs<ExtArgs> = {}>(args?: Subset<T, UserDefaultArgs<ExtArgs>>): Prisma__UserClient<$Result.GetResult<Prisma.$UserPayload<ExtArgs>, T, "findUniqueOrThrow"> | Null, Null, ExtArgs>
+    /**
+     * Attaches callbacks for the resolution and/or rejection of the Promise.
+     * @param onfulfilled The callback to execute when the Promise is resolved.
+     * @param onrejected The callback to execute when the Promise is rejected.
+     * @returns A Promise for the completion of which ever callback is executed.
+     */
+    then<TResult1 = T, TResult2 = never>(onfulfilled?: ((value: T) => TResult1 | PromiseLike<TResult1>) | undefined | null, onrejected?: ((reason: any) => TResult2 | PromiseLike<TResult2>) | undefined | null): $Utils.JsPromise<TResult1 | TResult2>
+    /**
+     * Attaches a callback for only the rejection of the Promise.
+     * @param onrejected The callback to execute when the Promise is rejected.
+     * @returns A Promise for the completion of the callback.
+     */
+    catch<TResult = never>(onrejected?: ((reason: any) => TResult | PromiseLike<TResult>) | undefined | null): $Utils.JsPromise<T | TResult>
+    /**
+     * Attaches a callback that is invoked when the Promise is settled (fulfilled or rejected). The
+     * resolved value cannot be modified from the callback.
+     * @param onfinally The callback to execute when the Promise is settled (fulfilled or rejected).
+     * @returns A Promise for the completion of the callback.
+     */
+    finally(onfinally?: (() => void) | undefined | null): $Utils.JsPromise<T>
+  }
+
+
+
+
+  /**
+   * Fields of the AdminAuditLog model
+   */ 
+  interface AdminAuditLogFieldRefs {
+    readonly id: FieldRef<"AdminAuditLog", 'String'>
+    readonly actorUserId: FieldRef<"AdminAuditLog", 'String'>
+    readonly action: FieldRef<"AdminAuditLog", 'String'>
+    readonly entityType: FieldRef<"AdminAuditLog", 'String'>
+    readonly entityId: FieldRef<"AdminAuditLog", 'String'>
+    readonly metadata: FieldRef<"AdminAuditLog", 'Json'>
+    readonly createdAt: FieldRef<"AdminAuditLog", 'DateTime'>
+  }
+    
+
+  // Custom InputTypes
+  /**
+   * AdminAuditLog findUnique
+   */
+  export type AdminAuditLogFindUniqueArgs<ExtArgs extends $Extensions.InternalArgs = $Extensions.DefaultArgs> = {
+    /**
+     * Select specific fields to fetch from the AdminAuditLog
+     */
+    select?: AdminAuditLogSelect<ExtArgs> | null
+    /**
+     * Choose, which related nodes to fetch as well
+     */
+    include?: AdminAuditLogInclude<ExtArgs> | null
+    /**
+     * Filter, which AdminAuditLog to fetch.
+     */
+    where: AdminAuditLogWhereUniqueInput
+  }
+
+  /**
+   * AdminAuditLog findUniqueOrThrow
+   */
+  export type AdminAuditLogFindUniqueOrThrowArgs<ExtArgs extends $Extensions.InternalArgs = $Extensions.DefaultArgs> = {
+    /**
+     * Select specific fields to fetch from the AdminAuditLog
+     */
+    select?: AdminAuditLogSelect<ExtArgs> | null
+    /**
+     * Choose, which related nodes to fetch as well
+     */
+    include?: AdminAuditLogInclude<ExtArgs> | null
+    /**
+     * Filter, which AdminAuditLog to fetch.
+     */
+    where: AdminAuditLogWhereUniqueInput
+  }
+
+  /**
+   * AdminAuditLog findFirst
+   */
+  export type AdminAuditLogFindFirstArgs<ExtArgs extends $Extensions.InternalArgs = $Extensions.DefaultArgs> = {
+    /**
+     * Select specific fields to fetch from the AdminAuditLog
+     */
+    select?: AdminAuditLogSelect<ExtArgs> | null
+    /**
+     * Choose, which related nodes to fetch as well
+     */
+    include?: AdminAuditLogInclude<ExtArgs> | null
+    /**
+     * Filter, which AdminAuditLog to fetch.
+     */
+    where?: AdminAuditLogWhereInput
+    /**
+     * {@link https://www.prisma.io/docs/concepts/components/prisma-client/sorting Sorting Docs}
+     * 
+     * Determine the order of AdminAuditLogs to fetch.
+     */
+    orderBy?: AdminAuditLogOrderByWithRelationInput | AdminAuditLogOrderByWithRelationInput[]
+    /**
+     * {@link https://www.prisma.io/docs/concepts/components/prisma-client/pagination#cursor-based-pagination Cursor Docs}
+     * 
+     * Sets the position for searching for AdminAuditLogs.
+     */
+    cursor?: AdminAuditLogWhereUniqueInput
+    /**
+     * {@link https://www.prisma.io/docs/concepts/components/prisma-client/pagination Pagination Docs}
+     * 
+     * Take `±n` AdminAuditLogs from the position of the cursor.
+     */
+    take?: number
+    /**
+     * {@link https://www.prisma.io/docs/concepts/components/prisma-client/pagination Pagination Docs}
+     * 
+     * Skip the first `n` AdminAuditLogs.
+     */
+    skip?: number
+    /**
+     * {@link https://www.prisma.io/docs/concepts/components/prisma-client/distinct Distinct Docs}
+     * 
+     * Filter by unique combinations of AdminAuditLogs.
+     */
+    distinct?: AdminAuditLogScalarFieldEnum | AdminAuditLogScalarFieldEnum[]
+  }
+
+  /**
+   * AdminAuditLog findFirstOrThrow
+   */
+  export type AdminAuditLogFindFirstOrThrowArgs<ExtArgs extends $Extensions.InternalArgs = $Extensions.DefaultArgs> = {
+    /**
+     * Select specific fields to fetch from the AdminAuditLog
+     */
+    select?: AdminAuditLogSelect<ExtArgs> | null
+    /**
+     * Choose, which related nodes to fetch as well
+     */
+    include?: AdminAuditLogInclude<ExtArgs> | null
+    /**
+     * Filter, which AdminAuditLog to fetch.
+     */
+    where?: AdminAuditLogWhereInput
+    /**
+     * {@link https://www.prisma.io/docs/concepts/components/prisma-client/sorting Sorting Docs}
+     * 
+     * Determine the order of AdminAuditLogs to fetch.
+     */
+    orderBy?: AdminAuditLogOrderByWithRelationInput | AdminAuditLogOrderByWithRelationInput[]
+    /**
+     * {@link https://www.prisma.io/docs/concepts/components/prisma-client/pagination#cursor-based-pagination Cursor Docs}
+     * 
+     * Sets the position for searching for AdminAuditLogs.
+     */
+    cursor?: AdminAuditLogWhereUniqueInput
+    /**
+     * {@link https://www.prisma.io/docs/concepts/components/prisma-client/pagination Pagination Docs}
+     * 
+     * Take `±n` AdminAuditLogs from the position of the cursor.
+     */
+    take?: number
+    /**
+     * {@link https://www.prisma.io/docs/concepts/components/prisma-client/pagination Pagination Docs}
+     * 
+     * Skip the first `n` AdminAuditLogs.
+     */
+    skip?: number
+    /**
+     * {@link https://www.prisma.io/docs/concepts/components/prisma-client/distinct Distinct Docs}
+     * 
+     * Filter by unique combinations of AdminAuditLogs.
+     */
+    distinct?: AdminAuditLogScalarFieldEnum | AdminAuditLogScalarFieldEnum[]
+  }
+
+  /**
+   * AdminAuditLog findMany
+   */
+  export type AdminAuditLogFindManyArgs<ExtArgs extends $Extensions.InternalArgs = $Extensions.DefaultArgs> = {
+    /**
+     * Select specific fields to fetch from the AdminAuditLog
+     */
+    select?: AdminAuditLogSelect<ExtArgs> | null
+    /**
+     * Choose, which related nodes to fetch as well
+     */
+    include?: AdminAuditLogInclude<ExtArgs> | null
+    /**
+     * Filter, which AdminAuditLogs to fetch.
+     */
+    where?: AdminAuditLogWhereInput
+    /**
+     * {@link https://www.prisma.io/docs/concepts/components/prisma-client/sorting Sorting Docs}
+     * 
+     * Determine the order of AdminAuditLogs to fetch.
+     */
+    orderBy?: AdminAuditLogOrderByWithRelationInput | AdminAuditLogOrderByWithRelationInput[]
+    /**
+     * {@link https://www.prisma.io/docs/concepts/components/prisma-client/pagination#cursor-based-pagination Cursor Docs}
+     * 
+     * Sets the position for listing AdminAuditLogs.
+     */
+    cursor?: AdminAuditLogWhereUniqueInput
+    /**
+     * {@link https://www.prisma.io/docs/concepts/components/prisma-client/pagination Pagination Docs}
+     * 
+     * Take `±n` AdminAuditLogs from the position of the cursor.
+     */
+    take?: number
+    /**
+     * {@link https://www.prisma.io/docs/concepts/components/prisma-client/pagination Pagination Docs}
+     * 
+     * Skip the first `n` AdminAuditLogs.
+     */
+    skip?: number
+    distinct?: AdminAuditLogScalarFieldEnum | AdminAuditLogScalarFieldEnum[]
+  }
+
+  /**
+   * AdminAuditLog create
+   */
+  export type AdminAuditLogCreateArgs<ExtArgs extends $Extensions.InternalArgs = $Extensions.DefaultArgs> = {
+    /**
+     * Select specific fields to fetch from the AdminAuditLog
+     */
+    select?: AdminAuditLogSelect<ExtArgs> | null
+    /**
+     * Choose, which related nodes to fetch as well
+     */
+    include?: AdminAuditLogInclude<ExtArgs> | null
+    /**
+     * The data needed to create a AdminAuditLog.
+     */
+    data: XOR<AdminAuditLogCreateInput, AdminAuditLogUncheckedCreateInput>
+  }
+
+  /**
+   * AdminAuditLog createMany
+   */
+  export type AdminAuditLogCreateManyArgs<ExtArgs extends $Extensions.InternalArgs = $Extensions.DefaultArgs> = {
+    /**
+     * The data used to create many AdminAuditLogs.
+     */
+    data: AdminAuditLogCreateManyInput | AdminAuditLogCreateManyInput[]
+    skipDuplicates?: boolean
+  }
+
+  /**
+   * AdminAuditLog createManyAndReturn
+   */
+  export type AdminAuditLogCreateManyAndReturnArgs<ExtArgs extends $Extensions.InternalArgs = $Extensions.DefaultArgs> = {
+    /**
+     * Select specific fields to fetch from the AdminAuditLog
+     */
+    select?: AdminAuditLogSelectCreateManyAndReturn<ExtArgs> | null
+    /**
+     * The data used to create many AdminAuditLogs.
+     */
+    data: AdminAuditLogCreateManyInput | AdminAuditLogCreateManyInput[]
+    skipDuplicates?: boolean
+    /**
+     * Choose, which related nodes to fetch as well
+     */
+    include?: AdminAuditLogIncludeCreateManyAndReturn<ExtArgs> | null
+  }
+
+  /**
+   * AdminAuditLog update
+   */
+  export type AdminAuditLogUpdateArgs<ExtArgs extends $Extensions.InternalArgs = $Extensions.DefaultArgs> = {
+    /**
+     * Select specific fields to fetch from the AdminAuditLog
+     */
+    select?: AdminAuditLogSelect<ExtArgs> | null
+    /**
+     * Choose, which related nodes to fetch as well
+     */
+    include?: AdminAuditLogInclude<ExtArgs> | null
+    /**
+     * The data needed to update a AdminAuditLog.
+     */
+    data: XOR<AdminAuditLogUpdateInput, AdminAuditLogUncheckedUpdateInput>
+    /**
+     * Choose, which AdminAuditLog to update.
+     */
+    where: AdminAuditLogWhereUniqueInput
+  }
+
+  /**
+   * AdminAuditLog updateMany
+   */
+  export type AdminAuditLogUpdateManyArgs<ExtArgs extends $Extensions.InternalArgs = $Extensions.DefaultArgs> = {
+    /**
+     * The data used to update AdminAuditLogs.
+     */
+    data: XOR<AdminAuditLogUpdateManyMutationInput, AdminAuditLogUncheckedUpdateManyInput>
+    /**
+     * Filter which AdminAuditLogs to update
+     */
+    where?: AdminAuditLogWhereInput
+  }
+
+  /**
+   * AdminAuditLog upsert
+   */
+  export type AdminAuditLogUpsertArgs<ExtArgs extends $Extensions.InternalArgs = $Extensions.DefaultArgs> = {
+    /**
+     * Select specific fields to fetch from the AdminAuditLog
+     */
+    select?: AdminAuditLogSelect<ExtArgs> | null
+    /**
+     * Choose, which related nodes to fetch as well
+     */
+    include?: AdminAuditLogInclude<ExtArgs> | null
+    /**
+     * The filter to search for the AdminAuditLog to update in case it exists.
+     */
+    where: AdminAuditLogWhereUniqueInput
+    /**
+     * In case the AdminAuditLog found by the `where` argument doesn't exist, create a new AdminAuditLog with this data.
+     */
+    create: XOR<AdminAuditLogCreateInput, AdminAuditLogUncheckedCreateInput>
+    /**
+     * In case the AdminAuditLog was found with the provided `where` argument, update it with this data.
+     */
+    update: XOR<AdminAuditLogUpdateInput, AdminAuditLogUncheckedUpdateInput>
+  }
+
+  /**
+   * AdminAuditLog delete
+   */
+  export type AdminAuditLogDeleteArgs<ExtArgs extends $Extensions.InternalArgs = $Extensions.DefaultArgs> = {
+    /**
+     * Select specific fields to fetch from the AdminAuditLog
+     */
+    select?: AdminAuditLogSelect<ExtArgs> | null
+    /**
+     * Choose, which related nodes to fetch as well
+     */
+    include?: AdminAuditLogInclude<ExtArgs> | null
+    /**
+     * Filter which AdminAuditLog to delete.
+     */
+    where: AdminAuditLogWhereUniqueInput
+  }
+
+  /**
+   * AdminAuditLog deleteMany
+   */
+  export type AdminAuditLogDeleteManyArgs<ExtArgs extends $Extensions.InternalArgs = $Extensions.DefaultArgs> = {
+    /**
+     * Filter which AdminAuditLogs to delete
+     */
+    where?: AdminAuditLogWhereInput
+  }
+
+  /**
+   * AdminAuditLog without action
+   */
+  export type AdminAuditLogDefaultArgs<ExtArgs extends $Extensions.InternalArgs = $Extensions.DefaultArgs> = {
+    /**
+     * Select specific fields to fetch from the AdminAuditLog
+     */
+    select?: AdminAuditLogSelect<ExtArgs> | null
+    /**
+     * Choose, which related nodes to fetch as well
+     */
+    include?: AdminAuditLogInclude<ExtArgs> | null
   }
 
 
@@ -24753,12 +26955,38 @@ export namespace Prisma {
     id: 'id',
     ticketId: 'ticketId',
     adminId: 'adminId',
+    adminUserId: 'adminUserId',
     content: 'content',
     isAdmin: 'isAdmin',
+    readByUserAt: 'readByUserAt',
     createdAt: 'createdAt'
   };
 
   export type SupportResponseScalarFieldEnum = (typeof SupportResponseScalarFieldEnum)[keyof typeof SupportResponseScalarFieldEnum]
+
+
+  export const AdminInboxReadScalarFieldEnum: {
+    id: 'id',
+    adminUserId: 'adminUserId',
+    category: 'category',
+    seenAt: 'seenAt',
+    updatedAt: 'updatedAt'
+  };
+
+  export type AdminInboxReadScalarFieldEnum = (typeof AdminInboxReadScalarFieldEnum)[keyof typeof AdminInboxReadScalarFieldEnum]
+
+
+  export const AdminAuditLogScalarFieldEnum: {
+    id: 'id',
+    actorUserId: 'actorUserId',
+    action: 'action',
+    entityType: 'entityType',
+    entityId: 'entityId',
+    metadata: 'metadata',
+    createdAt: 'createdAt'
+  };
+
+  export type AdminAuditLogScalarFieldEnum = (typeof AdminAuditLogScalarFieldEnum)[keyof typeof AdminAuditLogScalarFieldEnum]
 
 
   export const AdminScalarFieldEnum: {
@@ -24933,6 +27161,14 @@ export namespace Prisma {
   export type SortOrder = (typeof SortOrder)[keyof typeof SortOrder]
 
 
+  export const NullableJsonNullValueInput: {
+    DbNull: typeof DbNull,
+    JsonNull: typeof JsonNull
+  };
+
+  export type NullableJsonNullValueInput = (typeof NullableJsonNullValueInput)[keyof typeof NullableJsonNullValueInput]
+
+
   export const QueryMode: {
     default: 'default',
     insensitive: 'insensitive'
@@ -24947,6 +27183,15 @@ export namespace Prisma {
   };
 
   export type NullsOrder = (typeof NullsOrder)[keyof typeof NullsOrder]
+
+
+  export const JsonNullValueFilter: {
+    DbNull: typeof DbNull,
+    JsonNull: typeof JsonNull,
+    AnyNull: typeof AnyNull
+  };
+
+  export type JsonNullValueFilter = (typeof JsonNullValueFilter)[keyof typeof JsonNullValueFilter]
 
 
   /**
@@ -25032,6 +27277,13 @@ export namespace Prisma {
 
 
   /**
+   * Reference to a field of type 'Json'
+   */
+  export type JsonFieldRefInput<$PrismaModel> = FieldRefInputType<$PrismaModel, 'Json'>
+    
+
+
+  /**
    * Reference to a field of type 'Float'
    */
   export type FloatFieldRefInput<$PrismaModel> = FieldRefInputType<$PrismaModel, 'Float'>
@@ -25085,6 +27337,9 @@ export namespace Prisma {
     guideReads?: GuideReadListRelationFilter
     passwordSetupTokens?: PasswordSetupTokenListRelationFilter
     buddyApplications?: BuddyApplicationListRelationFilter
+    adminInboxReads?: AdminInboxReadListRelationFilter
+    adminAuditLogs?: AdminAuditLogListRelationFilter
+    adminSupportResponses?: SupportResponseListRelationFilter
   }
 
   export type UserOrderByWithRelationInput = {
@@ -25121,6 +27376,9 @@ export namespace Prisma {
     guideReads?: GuideReadOrderByRelationAggregateInput
     passwordSetupTokens?: PasswordSetupTokenOrderByRelationAggregateInput
     buddyApplications?: BuddyApplicationOrderByRelationAggregateInput
+    adminInboxReads?: AdminInboxReadOrderByRelationAggregateInput
+    adminAuditLogs?: AdminAuditLogOrderByRelationAggregateInput
+    adminSupportResponses?: SupportResponseOrderByRelationAggregateInput
   }
 
   export type UserWhereUniqueInput = Prisma.AtLeast<{
@@ -25160,6 +27418,9 @@ export namespace Prisma {
     guideReads?: GuideReadListRelationFilter
     passwordSetupTokens?: PasswordSetupTokenListRelationFilter
     buddyApplications?: BuddyApplicationListRelationFilter
+    adminInboxReads?: AdminInboxReadListRelationFilter
+    adminAuditLogs?: AdminAuditLogListRelationFilter
+    adminSupportResponses?: SupportResponseListRelationFilter
   }, "id" | "email">
 
   export type UserOrderByWithAggregationInput = {
@@ -25902,22 +28163,28 @@ export namespace Prisma {
     id?: StringFilter<"SupportResponse"> | string
     ticketId?: StringFilter<"SupportResponse"> | string
     adminId?: StringNullableFilter<"SupportResponse"> | string | null
+    adminUserId?: StringNullableFilter<"SupportResponse"> | string | null
     content?: StringFilter<"SupportResponse"> | string
     isAdmin?: BoolFilter<"SupportResponse"> | boolean
+    readByUserAt?: DateTimeNullableFilter<"SupportResponse"> | Date | string | null
     createdAt?: DateTimeFilter<"SupportResponse"> | Date | string
     ticket?: XOR<SupportTicketRelationFilter, SupportTicketWhereInput>
     admin?: XOR<AdminNullableRelationFilter, AdminWhereInput> | null
+    adminUser?: XOR<UserNullableRelationFilter, UserWhereInput> | null
   }
 
   export type SupportResponseOrderByWithRelationInput = {
     id?: SortOrder
     ticketId?: SortOrder
     adminId?: SortOrderInput | SortOrder
+    adminUserId?: SortOrderInput | SortOrder
     content?: SortOrder
     isAdmin?: SortOrder
+    readByUserAt?: SortOrderInput | SortOrder
     createdAt?: SortOrder
     ticket?: SupportTicketOrderByWithRelationInput
     admin?: AdminOrderByWithRelationInput
+    adminUser?: UserOrderByWithRelationInput
   }
 
   export type SupportResponseWhereUniqueInput = Prisma.AtLeast<{
@@ -25927,19 +28194,24 @@ export namespace Prisma {
     NOT?: SupportResponseWhereInput | SupportResponseWhereInput[]
     ticketId?: StringFilter<"SupportResponse"> | string
     adminId?: StringNullableFilter<"SupportResponse"> | string | null
+    adminUserId?: StringNullableFilter<"SupportResponse"> | string | null
     content?: StringFilter<"SupportResponse"> | string
     isAdmin?: BoolFilter<"SupportResponse"> | boolean
+    readByUserAt?: DateTimeNullableFilter<"SupportResponse"> | Date | string | null
     createdAt?: DateTimeFilter<"SupportResponse"> | Date | string
     ticket?: XOR<SupportTicketRelationFilter, SupportTicketWhereInput>
     admin?: XOR<AdminNullableRelationFilter, AdminWhereInput> | null
+    adminUser?: XOR<UserNullableRelationFilter, UserWhereInput> | null
   }, "id">
 
   export type SupportResponseOrderByWithAggregationInput = {
     id?: SortOrder
     ticketId?: SortOrder
     adminId?: SortOrderInput | SortOrder
+    adminUserId?: SortOrderInput | SortOrder
     content?: SortOrder
     isAdmin?: SortOrder
+    readByUserAt?: SortOrderInput | SortOrder
     createdAt?: SortOrder
     _count?: SupportResponseCountOrderByAggregateInput
     _max?: SupportResponseMaxOrderByAggregateInput
@@ -25953,9 +28225,132 @@ export namespace Prisma {
     id?: StringWithAggregatesFilter<"SupportResponse"> | string
     ticketId?: StringWithAggregatesFilter<"SupportResponse"> | string
     adminId?: StringNullableWithAggregatesFilter<"SupportResponse"> | string | null
+    adminUserId?: StringNullableWithAggregatesFilter<"SupportResponse"> | string | null
     content?: StringWithAggregatesFilter<"SupportResponse"> | string
     isAdmin?: BoolWithAggregatesFilter<"SupportResponse"> | boolean
+    readByUserAt?: DateTimeNullableWithAggregatesFilter<"SupportResponse"> | Date | string | null
     createdAt?: DateTimeWithAggregatesFilter<"SupportResponse"> | Date | string
+  }
+
+  export type AdminInboxReadWhereInput = {
+    AND?: AdminInboxReadWhereInput | AdminInboxReadWhereInput[]
+    OR?: AdminInboxReadWhereInput[]
+    NOT?: AdminInboxReadWhereInput | AdminInboxReadWhereInput[]
+    id?: StringFilter<"AdminInboxRead"> | string
+    adminUserId?: StringFilter<"AdminInboxRead"> | string
+    category?: StringFilter<"AdminInboxRead"> | string
+    seenAt?: DateTimeFilter<"AdminInboxRead"> | Date | string
+    updatedAt?: DateTimeFilter<"AdminInboxRead"> | Date | string
+    adminUser?: XOR<UserRelationFilter, UserWhereInput>
+  }
+
+  export type AdminInboxReadOrderByWithRelationInput = {
+    id?: SortOrder
+    adminUserId?: SortOrder
+    category?: SortOrder
+    seenAt?: SortOrder
+    updatedAt?: SortOrder
+    adminUser?: UserOrderByWithRelationInput
+  }
+
+  export type AdminInboxReadWhereUniqueInput = Prisma.AtLeast<{
+    id?: string
+    adminUserId_category?: AdminInboxReadAdminUserIdCategoryCompoundUniqueInput
+    AND?: AdminInboxReadWhereInput | AdminInboxReadWhereInput[]
+    OR?: AdminInboxReadWhereInput[]
+    NOT?: AdminInboxReadWhereInput | AdminInboxReadWhereInput[]
+    adminUserId?: StringFilter<"AdminInboxRead"> | string
+    category?: StringFilter<"AdminInboxRead"> | string
+    seenAt?: DateTimeFilter<"AdminInboxRead"> | Date | string
+    updatedAt?: DateTimeFilter<"AdminInboxRead"> | Date | string
+    adminUser?: XOR<UserRelationFilter, UserWhereInput>
+  }, "id" | "adminUserId_category">
+
+  export type AdminInboxReadOrderByWithAggregationInput = {
+    id?: SortOrder
+    adminUserId?: SortOrder
+    category?: SortOrder
+    seenAt?: SortOrder
+    updatedAt?: SortOrder
+    _count?: AdminInboxReadCountOrderByAggregateInput
+    _max?: AdminInboxReadMaxOrderByAggregateInput
+    _min?: AdminInboxReadMinOrderByAggregateInput
+  }
+
+  export type AdminInboxReadScalarWhereWithAggregatesInput = {
+    AND?: AdminInboxReadScalarWhereWithAggregatesInput | AdminInboxReadScalarWhereWithAggregatesInput[]
+    OR?: AdminInboxReadScalarWhereWithAggregatesInput[]
+    NOT?: AdminInboxReadScalarWhereWithAggregatesInput | AdminInboxReadScalarWhereWithAggregatesInput[]
+    id?: StringWithAggregatesFilter<"AdminInboxRead"> | string
+    adminUserId?: StringWithAggregatesFilter<"AdminInboxRead"> | string
+    category?: StringWithAggregatesFilter<"AdminInboxRead"> | string
+    seenAt?: DateTimeWithAggregatesFilter<"AdminInboxRead"> | Date | string
+    updatedAt?: DateTimeWithAggregatesFilter<"AdminInboxRead"> | Date | string
+  }
+
+  export type AdminAuditLogWhereInput = {
+    AND?: AdminAuditLogWhereInput | AdminAuditLogWhereInput[]
+    OR?: AdminAuditLogWhereInput[]
+    NOT?: AdminAuditLogWhereInput | AdminAuditLogWhereInput[]
+    id?: StringFilter<"AdminAuditLog"> | string
+    actorUserId?: StringFilter<"AdminAuditLog"> | string
+    action?: StringFilter<"AdminAuditLog"> | string
+    entityType?: StringFilter<"AdminAuditLog"> | string
+    entityId?: StringFilter<"AdminAuditLog"> | string
+    metadata?: JsonNullableFilter<"AdminAuditLog">
+    createdAt?: DateTimeFilter<"AdminAuditLog"> | Date | string
+    actor?: XOR<UserRelationFilter, UserWhereInput>
+  }
+
+  export type AdminAuditLogOrderByWithRelationInput = {
+    id?: SortOrder
+    actorUserId?: SortOrder
+    action?: SortOrder
+    entityType?: SortOrder
+    entityId?: SortOrder
+    metadata?: SortOrderInput | SortOrder
+    createdAt?: SortOrder
+    actor?: UserOrderByWithRelationInput
+  }
+
+  export type AdminAuditLogWhereUniqueInput = Prisma.AtLeast<{
+    id?: string
+    AND?: AdminAuditLogWhereInput | AdminAuditLogWhereInput[]
+    OR?: AdminAuditLogWhereInput[]
+    NOT?: AdminAuditLogWhereInput | AdminAuditLogWhereInput[]
+    actorUserId?: StringFilter<"AdminAuditLog"> | string
+    action?: StringFilter<"AdminAuditLog"> | string
+    entityType?: StringFilter<"AdminAuditLog"> | string
+    entityId?: StringFilter<"AdminAuditLog"> | string
+    metadata?: JsonNullableFilter<"AdminAuditLog">
+    createdAt?: DateTimeFilter<"AdminAuditLog"> | Date | string
+    actor?: XOR<UserRelationFilter, UserWhereInput>
+  }, "id">
+
+  export type AdminAuditLogOrderByWithAggregationInput = {
+    id?: SortOrder
+    actorUserId?: SortOrder
+    action?: SortOrder
+    entityType?: SortOrder
+    entityId?: SortOrder
+    metadata?: SortOrderInput | SortOrder
+    createdAt?: SortOrder
+    _count?: AdminAuditLogCountOrderByAggregateInput
+    _max?: AdminAuditLogMaxOrderByAggregateInput
+    _min?: AdminAuditLogMinOrderByAggregateInput
+  }
+
+  export type AdminAuditLogScalarWhereWithAggregatesInput = {
+    AND?: AdminAuditLogScalarWhereWithAggregatesInput | AdminAuditLogScalarWhereWithAggregatesInput[]
+    OR?: AdminAuditLogScalarWhereWithAggregatesInput[]
+    NOT?: AdminAuditLogScalarWhereWithAggregatesInput | AdminAuditLogScalarWhereWithAggregatesInput[]
+    id?: StringWithAggregatesFilter<"AdminAuditLog"> | string
+    actorUserId?: StringWithAggregatesFilter<"AdminAuditLog"> | string
+    action?: StringWithAggregatesFilter<"AdminAuditLog"> | string
+    entityType?: StringWithAggregatesFilter<"AdminAuditLog"> | string
+    entityId?: StringWithAggregatesFilter<"AdminAuditLog"> | string
+    metadata?: JsonNullableWithAggregatesFilter<"AdminAuditLog">
+    createdAt?: DateTimeWithAggregatesFilter<"AdminAuditLog"> | Date | string
   }
 
   export type AdminWhereInput = {
@@ -26846,6 +29241,9 @@ export namespace Prisma {
     guideReads?: GuideReadCreateNestedManyWithoutUserInput
     passwordSetupTokens?: PasswordSetupTokenCreateNestedManyWithoutUserInput
     buddyApplications?: BuddyApplicationCreateNestedManyWithoutUserInput
+    adminInboxReads?: AdminInboxReadCreateNestedManyWithoutAdminUserInput
+    adminAuditLogs?: AdminAuditLogCreateNestedManyWithoutActorInput
+    adminSupportResponses?: SupportResponseCreateNestedManyWithoutAdminUserInput
   }
 
   export type UserUncheckedCreateInput = {
@@ -26882,6 +29280,9 @@ export namespace Prisma {
     guideReads?: GuideReadUncheckedCreateNestedManyWithoutUserInput
     passwordSetupTokens?: PasswordSetupTokenUncheckedCreateNestedManyWithoutUserInput
     buddyApplications?: BuddyApplicationUncheckedCreateNestedManyWithoutUserInput
+    adminInboxReads?: AdminInboxReadUncheckedCreateNestedManyWithoutAdminUserInput
+    adminAuditLogs?: AdminAuditLogUncheckedCreateNestedManyWithoutActorInput
+    adminSupportResponses?: SupportResponseUncheckedCreateNestedManyWithoutAdminUserInput
   }
 
   export type UserUpdateInput = {
@@ -26918,6 +29319,9 @@ export namespace Prisma {
     guideReads?: GuideReadUpdateManyWithoutUserNestedInput
     passwordSetupTokens?: PasswordSetupTokenUpdateManyWithoutUserNestedInput
     buddyApplications?: BuddyApplicationUpdateManyWithoutUserNestedInput
+    adminInboxReads?: AdminInboxReadUpdateManyWithoutAdminUserNestedInput
+    adminAuditLogs?: AdminAuditLogUpdateManyWithoutActorNestedInput
+    adminSupportResponses?: SupportResponseUpdateManyWithoutAdminUserNestedInput
   }
 
   export type UserUncheckedUpdateInput = {
@@ -26954,6 +29358,9 @@ export namespace Prisma {
     guideReads?: GuideReadUncheckedUpdateManyWithoutUserNestedInput
     passwordSetupTokens?: PasswordSetupTokenUncheckedUpdateManyWithoutUserNestedInput
     buddyApplications?: BuddyApplicationUncheckedUpdateManyWithoutUserNestedInput
+    adminInboxReads?: AdminInboxReadUncheckedUpdateManyWithoutAdminUserNestedInput
+    adminAuditLogs?: AdminAuditLogUncheckedUpdateManyWithoutActorNestedInput
+    adminSupportResponses?: SupportResponseUncheckedUpdateManyWithoutAdminUserNestedInput
   }
 
   export type UserCreateManyInput = {
@@ -27800,17 +30207,21 @@ export namespace Prisma {
     id?: string
     content: string
     isAdmin?: boolean
+    readByUserAt?: Date | string | null
     createdAt?: Date | string
     ticket: SupportTicketCreateNestedOneWithoutResponsesInput
     admin?: AdminCreateNestedOneWithoutSupportResponsesInput
+    adminUser?: UserCreateNestedOneWithoutAdminSupportResponsesInput
   }
 
   export type SupportResponseUncheckedCreateInput = {
     id?: string
     ticketId: string
     adminId?: string | null
+    adminUserId?: string | null
     content: string
     isAdmin?: boolean
+    readByUserAt?: Date | string | null
     createdAt?: Date | string
   }
 
@@ -27818,17 +30229,21 @@ export namespace Prisma {
     id?: StringFieldUpdateOperationsInput | string
     content?: StringFieldUpdateOperationsInput | string
     isAdmin?: BoolFieldUpdateOperationsInput | boolean
+    readByUserAt?: NullableDateTimeFieldUpdateOperationsInput | Date | string | null
     createdAt?: DateTimeFieldUpdateOperationsInput | Date | string
     ticket?: SupportTicketUpdateOneRequiredWithoutResponsesNestedInput
     admin?: AdminUpdateOneWithoutSupportResponsesNestedInput
+    adminUser?: UserUpdateOneWithoutAdminSupportResponsesNestedInput
   }
 
   export type SupportResponseUncheckedUpdateInput = {
     id?: StringFieldUpdateOperationsInput | string
     ticketId?: StringFieldUpdateOperationsInput | string
     adminId?: NullableStringFieldUpdateOperationsInput | string | null
+    adminUserId?: NullableStringFieldUpdateOperationsInput | string | null
     content?: StringFieldUpdateOperationsInput | string
     isAdmin?: BoolFieldUpdateOperationsInput | boolean
+    readByUserAt?: NullableDateTimeFieldUpdateOperationsInput | Date | string | null
     createdAt?: DateTimeFieldUpdateOperationsInput | Date | string
   }
 
@@ -27836,8 +30251,10 @@ export namespace Prisma {
     id?: string
     ticketId: string
     adminId?: string | null
+    adminUserId?: string | null
     content: string
     isAdmin?: boolean
+    readByUserAt?: Date | string | null
     createdAt?: Date | string
   }
 
@@ -27845,6 +30262,7 @@ export namespace Prisma {
     id?: StringFieldUpdateOperationsInput | string
     content?: StringFieldUpdateOperationsInput | string
     isAdmin?: BoolFieldUpdateOperationsInput | boolean
+    readByUserAt?: NullableDateTimeFieldUpdateOperationsInput | Date | string | null
     createdAt?: DateTimeFieldUpdateOperationsInput | Date | string
   }
 
@@ -27852,8 +30270,134 @@ export namespace Prisma {
     id?: StringFieldUpdateOperationsInput | string
     ticketId?: StringFieldUpdateOperationsInput | string
     adminId?: NullableStringFieldUpdateOperationsInput | string | null
+    adminUserId?: NullableStringFieldUpdateOperationsInput | string | null
     content?: StringFieldUpdateOperationsInput | string
     isAdmin?: BoolFieldUpdateOperationsInput | boolean
+    readByUserAt?: NullableDateTimeFieldUpdateOperationsInput | Date | string | null
+    createdAt?: DateTimeFieldUpdateOperationsInput | Date | string
+  }
+
+  export type AdminInboxReadCreateInput = {
+    id?: string
+    category: string
+    seenAt?: Date | string
+    updatedAt?: Date | string
+    adminUser: UserCreateNestedOneWithoutAdminInboxReadsInput
+  }
+
+  export type AdminInboxReadUncheckedCreateInput = {
+    id?: string
+    adminUserId: string
+    category: string
+    seenAt?: Date | string
+    updatedAt?: Date | string
+  }
+
+  export type AdminInboxReadUpdateInput = {
+    id?: StringFieldUpdateOperationsInput | string
+    category?: StringFieldUpdateOperationsInput | string
+    seenAt?: DateTimeFieldUpdateOperationsInput | Date | string
+    updatedAt?: DateTimeFieldUpdateOperationsInput | Date | string
+    adminUser?: UserUpdateOneRequiredWithoutAdminInboxReadsNestedInput
+  }
+
+  export type AdminInboxReadUncheckedUpdateInput = {
+    id?: StringFieldUpdateOperationsInput | string
+    adminUserId?: StringFieldUpdateOperationsInput | string
+    category?: StringFieldUpdateOperationsInput | string
+    seenAt?: DateTimeFieldUpdateOperationsInput | Date | string
+    updatedAt?: DateTimeFieldUpdateOperationsInput | Date | string
+  }
+
+  export type AdminInboxReadCreateManyInput = {
+    id?: string
+    adminUserId: string
+    category: string
+    seenAt?: Date | string
+    updatedAt?: Date | string
+  }
+
+  export type AdminInboxReadUpdateManyMutationInput = {
+    id?: StringFieldUpdateOperationsInput | string
+    category?: StringFieldUpdateOperationsInput | string
+    seenAt?: DateTimeFieldUpdateOperationsInput | Date | string
+    updatedAt?: DateTimeFieldUpdateOperationsInput | Date | string
+  }
+
+  export type AdminInboxReadUncheckedUpdateManyInput = {
+    id?: StringFieldUpdateOperationsInput | string
+    adminUserId?: StringFieldUpdateOperationsInput | string
+    category?: StringFieldUpdateOperationsInput | string
+    seenAt?: DateTimeFieldUpdateOperationsInput | Date | string
+    updatedAt?: DateTimeFieldUpdateOperationsInput | Date | string
+  }
+
+  export type AdminAuditLogCreateInput = {
+    id?: string
+    action: string
+    entityType: string
+    entityId: string
+    metadata?: NullableJsonNullValueInput | InputJsonValue
+    createdAt?: Date | string
+    actor: UserCreateNestedOneWithoutAdminAuditLogsInput
+  }
+
+  export type AdminAuditLogUncheckedCreateInput = {
+    id?: string
+    actorUserId: string
+    action: string
+    entityType: string
+    entityId: string
+    metadata?: NullableJsonNullValueInput | InputJsonValue
+    createdAt?: Date | string
+  }
+
+  export type AdminAuditLogUpdateInput = {
+    id?: StringFieldUpdateOperationsInput | string
+    action?: StringFieldUpdateOperationsInput | string
+    entityType?: StringFieldUpdateOperationsInput | string
+    entityId?: StringFieldUpdateOperationsInput | string
+    metadata?: NullableJsonNullValueInput | InputJsonValue
+    createdAt?: DateTimeFieldUpdateOperationsInput | Date | string
+    actor?: UserUpdateOneRequiredWithoutAdminAuditLogsNestedInput
+  }
+
+  export type AdminAuditLogUncheckedUpdateInput = {
+    id?: StringFieldUpdateOperationsInput | string
+    actorUserId?: StringFieldUpdateOperationsInput | string
+    action?: StringFieldUpdateOperationsInput | string
+    entityType?: StringFieldUpdateOperationsInput | string
+    entityId?: StringFieldUpdateOperationsInput | string
+    metadata?: NullableJsonNullValueInput | InputJsonValue
+    createdAt?: DateTimeFieldUpdateOperationsInput | Date | string
+  }
+
+  export type AdminAuditLogCreateManyInput = {
+    id?: string
+    actorUserId: string
+    action: string
+    entityType: string
+    entityId: string
+    metadata?: NullableJsonNullValueInput | InputJsonValue
+    createdAt?: Date | string
+  }
+
+  export type AdminAuditLogUpdateManyMutationInput = {
+    id?: StringFieldUpdateOperationsInput | string
+    action?: StringFieldUpdateOperationsInput | string
+    entityType?: StringFieldUpdateOperationsInput | string
+    entityId?: StringFieldUpdateOperationsInput | string
+    metadata?: NullableJsonNullValueInput | InputJsonValue
+    createdAt?: DateTimeFieldUpdateOperationsInput | Date | string
+  }
+
+  export type AdminAuditLogUncheckedUpdateManyInput = {
+    id?: StringFieldUpdateOperationsInput | string
+    actorUserId?: StringFieldUpdateOperationsInput | string
+    action?: StringFieldUpdateOperationsInput | string
+    entityType?: StringFieldUpdateOperationsInput | string
+    entityId?: StringFieldUpdateOperationsInput | string
+    metadata?: NullableJsonNullValueInput | InputJsonValue
     createdAt?: DateTimeFieldUpdateOperationsInput | Date | string
   }
 
@@ -28942,6 +31486,24 @@ export namespace Prisma {
     none?: BuddyApplicationWhereInput
   }
 
+  export type AdminInboxReadListRelationFilter = {
+    every?: AdminInboxReadWhereInput
+    some?: AdminInboxReadWhereInput
+    none?: AdminInboxReadWhereInput
+  }
+
+  export type AdminAuditLogListRelationFilter = {
+    every?: AdminAuditLogWhereInput
+    some?: AdminAuditLogWhereInput
+    none?: AdminAuditLogWhereInput
+  }
+
+  export type SupportResponseListRelationFilter = {
+    every?: SupportResponseWhereInput
+    some?: SupportResponseWhereInput
+    none?: SupportResponseWhereInput
+  }
+
   export type SortOrderInput = {
     sort: SortOrder
     nulls?: NullsOrder
@@ -29000,6 +31562,18 @@ export namespace Prisma {
   }
 
   export type BuddyApplicationOrderByRelationAggregateInput = {
+    _count?: SortOrder
+  }
+
+  export type AdminInboxReadOrderByRelationAggregateInput = {
+    _count?: SortOrder
+  }
+
+  export type AdminAuditLogOrderByRelationAggregateInput = {
+    _count?: SortOrder
+  }
+
+  export type SupportResponseOrderByRelationAggregateInput = {
     _count?: SortOrder
   }
 
@@ -29516,16 +32090,6 @@ export namespace Prisma {
     isNot?: UserWhereInput | null
   }
 
-  export type SupportResponseListRelationFilter = {
-    every?: SupportResponseWhereInput
-    some?: SupportResponseWhereInput
-    none?: SupportResponseWhereInput
-  }
-
-  export type SupportResponseOrderByRelationAggregateInput = {
-    _count?: SortOrder
-  }
-
   export type SupportTicketCountOrderByAggregateInput = {
     id?: SortOrder
     userId?: SortOrder
@@ -29582,8 +32146,10 @@ export namespace Prisma {
     id?: SortOrder
     ticketId?: SortOrder
     adminId?: SortOrder
+    adminUserId?: SortOrder
     content?: SortOrder
     isAdmin?: SortOrder
+    readByUserAt?: SortOrder
     createdAt?: SortOrder
   }
 
@@ -29591,8 +32157,10 @@ export namespace Prisma {
     id?: SortOrder
     ticketId?: SortOrder
     adminId?: SortOrder
+    adminUserId?: SortOrder
     content?: SortOrder
     isAdmin?: SortOrder
+    readByUserAt?: SortOrder
     createdAt?: SortOrder
   }
 
@@ -29600,9 +32168,115 @@ export namespace Prisma {
     id?: SortOrder
     ticketId?: SortOrder
     adminId?: SortOrder
+    adminUserId?: SortOrder
     content?: SortOrder
     isAdmin?: SortOrder
+    readByUserAt?: SortOrder
     createdAt?: SortOrder
+  }
+
+  export type AdminInboxReadAdminUserIdCategoryCompoundUniqueInput = {
+    adminUserId: string
+    category: string
+  }
+
+  export type AdminInboxReadCountOrderByAggregateInput = {
+    id?: SortOrder
+    adminUserId?: SortOrder
+    category?: SortOrder
+    seenAt?: SortOrder
+    updatedAt?: SortOrder
+  }
+
+  export type AdminInboxReadMaxOrderByAggregateInput = {
+    id?: SortOrder
+    adminUserId?: SortOrder
+    category?: SortOrder
+    seenAt?: SortOrder
+    updatedAt?: SortOrder
+  }
+
+  export type AdminInboxReadMinOrderByAggregateInput = {
+    id?: SortOrder
+    adminUserId?: SortOrder
+    category?: SortOrder
+    seenAt?: SortOrder
+    updatedAt?: SortOrder
+  }
+  export type JsonNullableFilter<$PrismaModel = never> = 
+    | PatchUndefined<
+        Either<Required<JsonNullableFilterBase<$PrismaModel>>, Exclude<keyof Required<JsonNullableFilterBase<$PrismaModel>>, 'path'>>,
+        Required<JsonNullableFilterBase<$PrismaModel>>
+      >
+    | OptionalFlat<Omit<Required<JsonNullableFilterBase<$PrismaModel>>, 'path'>>
+
+  export type JsonNullableFilterBase<$PrismaModel = never> = {
+    equals?: InputJsonValue | JsonFieldRefInput<$PrismaModel> | JsonNullValueFilter
+    path?: string[]
+    string_contains?: string | StringFieldRefInput<$PrismaModel>
+    string_starts_with?: string | StringFieldRefInput<$PrismaModel>
+    string_ends_with?: string | StringFieldRefInput<$PrismaModel>
+    array_contains?: InputJsonValue | JsonFieldRefInput<$PrismaModel> | null
+    array_starts_with?: InputJsonValue | JsonFieldRefInput<$PrismaModel> | null
+    array_ends_with?: InputJsonValue | JsonFieldRefInput<$PrismaModel> | null
+    lt?: InputJsonValue | JsonFieldRefInput<$PrismaModel>
+    lte?: InputJsonValue | JsonFieldRefInput<$PrismaModel>
+    gt?: InputJsonValue | JsonFieldRefInput<$PrismaModel>
+    gte?: InputJsonValue | JsonFieldRefInput<$PrismaModel>
+    not?: InputJsonValue | JsonFieldRefInput<$PrismaModel> | JsonNullValueFilter
+  }
+
+  export type AdminAuditLogCountOrderByAggregateInput = {
+    id?: SortOrder
+    actorUserId?: SortOrder
+    action?: SortOrder
+    entityType?: SortOrder
+    entityId?: SortOrder
+    metadata?: SortOrder
+    createdAt?: SortOrder
+  }
+
+  export type AdminAuditLogMaxOrderByAggregateInput = {
+    id?: SortOrder
+    actorUserId?: SortOrder
+    action?: SortOrder
+    entityType?: SortOrder
+    entityId?: SortOrder
+    createdAt?: SortOrder
+  }
+
+  export type AdminAuditLogMinOrderByAggregateInput = {
+    id?: SortOrder
+    actorUserId?: SortOrder
+    action?: SortOrder
+    entityType?: SortOrder
+    entityId?: SortOrder
+    createdAt?: SortOrder
+  }
+  export type JsonNullableWithAggregatesFilter<$PrismaModel = never> = 
+    | PatchUndefined<
+        Either<Required<JsonNullableWithAggregatesFilterBase<$PrismaModel>>, Exclude<keyof Required<JsonNullableWithAggregatesFilterBase<$PrismaModel>>, 'path'>>,
+        Required<JsonNullableWithAggregatesFilterBase<$PrismaModel>>
+      >
+    | OptionalFlat<Omit<Required<JsonNullableWithAggregatesFilterBase<$PrismaModel>>, 'path'>>
+
+  export type JsonNullableWithAggregatesFilterBase<$PrismaModel = never> = {
+    equals?: InputJsonValue | JsonFieldRefInput<$PrismaModel> | JsonNullValueFilter
+    path?: string[]
+    string_contains?: string | StringFieldRefInput<$PrismaModel>
+    string_starts_with?: string | StringFieldRefInput<$PrismaModel>
+    string_ends_with?: string | StringFieldRefInput<$PrismaModel>
+    array_contains?: InputJsonValue | JsonFieldRefInput<$PrismaModel> | null
+    array_starts_with?: InputJsonValue | JsonFieldRefInput<$PrismaModel> | null
+    array_ends_with?: InputJsonValue | JsonFieldRefInput<$PrismaModel> | null
+    lt?: InputJsonValue | JsonFieldRefInput<$PrismaModel>
+    lte?: InputJsonValue | JsonFieldRefInput<$PrismaModel>
+    gt?: InputJsonValue | JsonFieldRefInput<$PrismaModel>
+    gte?: InputJsonValue | JsonFieldRefInput<$PrismaModel>
+    not?: InputJsonValue | JsonFieldRefInput<$PrismaModel> | JsonNullValueFilter
+    _count?: NestedIntNullableFilter<$PrismaModel>
+    _min?: NestedJsonNullableFilter<$PrismaModel>
+    _max?: NestedJsonNullableFilter<$PrismaModel>
   }
 
   export type AdminCountOrderByAggregateInput = {
@@ -30192,6 +32866,27 @@ export namespace Prisma {
     connect?: BuddyApplicationWhereUniqueInput | BuddyApplicationWhereUniqueInput[]
   }
 
+  export type AdminInboxReadCreateNestedManyWithoutAdminUserInput = {
+    create?: XOR<AdminInboxReadCreateWithoutAdminUserInput, AdminInboxReadUncheckedCreateWithoutAdminUserInput> | AdminInboxReadCreateWithoutAdminUserInput[] | AdminInboxReadUncheckedCreateWithoutAdminUserInput[]
+    connectOrCreate?: AdminInboxReadCreateOrConnectWithoutAdminUserInput | AdminInboxReadCreateOrConnectWithoutAdminUserInput[]
+    createMany?: AdminInboxReadCreateManyAdminUserInputEnvelope
+    connect?: AdminInboxReadWhereUniqueInput | AdminInboxReadWhereUniqueInput[]
+  }
+
+  export type AdminAuditLogCreateNestedManyWithoutActorInput = {
+    create?: XOR<AdminAuditLogCreateWithoutActorInput, AdminAuditLogUncheckedCreateWithoutActorInput> | AdminAuditLogCreateWithoutActorInput[] | AdminAuditLogUncheckedCreateWithoutActorInput[]
+    connectOrCreate?: AdminAuditLogCreateOrConnectWithoutActorInput | AdminAuditLogCreateOrConnectWithoutActorInput[]
+    createMany?: AdminAuditLogCreateManyActorInputEnvelope
+    connect?: AdminAuditLogWhereUniqueInput | AdminAuditLogWhereUniqueInput[]
+  }
+
+  export type SupportResponseCreateNestedManyWithoutAdminUserInput = {
+    create?: XOR<SupportResponseCreateWithoutAdminUserInput, SupportResponseUncheckedCreateWithoutAdminUserInput> | SupportResponseCreateWithoutAdminUserInput[] | SupportResponseUncheckedCreateWithoutAdminUserInput[]
+    connectOrCreate?: SupportResponseCreateOrConnectWithoutAdminUserInput | SupportResponseCreateOrConnectWithoutAdminUserInput[]
+    createMany?: SupportResponseCreateManyAdminUserInputEnvelope
+    connect?: SupportResponseWhereUniqueInput | SupportResponseWhereUniqueInput[]
+  }
+
   export type ReminderUncheckedCreateNestedManyWithoutUserInput = {
     create?: XOR<ReminderCreateWithoutUserInput, ReminderUncheckedCreateWithoutUserInput> | ReminderCreateWithoutUserInput[] | ReminderUncheckedCreateWithoutUserInput[]
     connectOrCreate?: ReminderCreateOrConnectWithoutUserInput | ReminderCreateOrConnectWithoutUserInput[]
@@ -30294,6 +32989,27 @@ export namespace Prisma {
     connectOrCreate?: BuddyApplicationCreateOrConnectWithoutUserInput | BuddyApplicationCreateOrConnectWithoutUserInput[]
     createMany?: BuddyApplicationCreateManyUserInputEnvelope
     connect?: BuddyApplicationWhereUniqueInput | BuddyApplicationWhereUniqueInput[]
+  }
+
+  export type AdminInboxReadUncheckedCreateNestedManyWithoutAdminUserInput = {
+    create?: XOR<AdminInboxReadCreateWithoutAdminUserInput, AdminInboxReadUncheckedCreateWithoutAdminUserInput> | AdminInboxReadCreateWithoutAdminUserInput[] | AdminInboxReadUncheckedCreateWithoutAdminUserInput[]
+    connectOrCreate?: AdminInboxReadCreateOrConnectWithoutAdminUserInput | AdminInboxReadCreateOrConnectWithoutAdminUserInput[]
+    createMany?: AdminInboxReadCreateManyAdminUserInputEnvelope
+    connect?: AdminInboxReadWhereUniqueInput | AdminInboxReadWhereUniqueInput[]
+  }
+
+  export type AdminAuditLogUncheckedCreateNestedManyWithoutActorInput = {
+    create?: XOR<AdminAuditLogCreateWithoutActorInput, AdminAuditLogUncheckedCreateWithoutActorInput> | AdminAuditLogCreateWithoutActorInput[] | AdminAuditLogUncheckedCreateWithoutActorInput[]
+    connectOrCreate?: AdminAuditLogCreateOrConnectWithoutActorInput | AdminAuditLogCreateOrConnectWithoutActorInput[]
+    createMany?: AdminAuditLogCreateManyActorInputEnvelope
+    connect?: AdminAuditLogWhereUniqueInput | AdminAuditLogWhereUniqueInput[]
+  }
+
+  export type SupportResponseUncheckedCreateNestedManyWithoutAdminUserInput = {
+    create?: XOR<SupportResponseCreateWithoutAdminUserInput, SupportResponseUncheckedCreateWithoutAdminUserInput> | SupportResponseCreateWithoutAdminUserInput[] | SupportResponseUncheckedCreateWithoutAdminUserInput[]
+    connectOrCreate?: SupportResponseCreateOrConnectWithoutAdminUserInput | SupportResponseCreateOrConnectWithoutAdminUserInput[]
+    createMany?: SupportResponseCreateManyAdminUserInputEnvelope
+    connect?: SupportResponseWhereUniqueInput | SupportResponseWhereUniqueInput[]
   }
 
   export type StringFieldUpdateOperationsInput = {
@@ -30530,6 +33246,48 @@ export namespace Prisma {
     deleteMany?: BuddyApplicationScalarWhereInput | BuddyApplicationScalarWhereInput[]
   }
 
+  export type AdminInboxReadUpdateManyWithoutAdminUserNestedInput = {
+    create?: XOR<AdminInboxReadCreateWithoutAdminUserInput, AdminInboxReadUncheckedCreateWithoutAdminUserInput> | AdminInboxReadCreateWithoutAdminUserInput[] | AdminInboxReadUncheckedCreateWithoutAdminUserInput[]
+    connectOrCreate?: AdminInboxReadCreateOrConnectWithoutAdminUserInput | AdminInboxReadCreateOrConnectWithoutAdminUserInput[]
+    upsert?: AdminInboxReadUpsertWithWhereUniqueWithoutAdminUserInput | AdminInboxReadUpsertWithWhereUniqueWithoutAdminUserInput[]
+    createMany?: AdminInboxReadCreateManyAdminUserInputEnvelope
+    set?: AdminInboxReadWhereUniqueInput | AdminInboxReadWhereUniqueInput[]
+    disconnect?: AdminInboxReadWhereUniqueInput | AdminInboxReadWhereUniqueInput[]
+    delete?: AdminInboxReadWhereUniqueInput | AdminInboxReadWhereUniqueInput[]
+    connect?: AdminInboxReadWhereUniqueInput | AdminInboxReadWhereUniqueInput[]
+    update?: AdminInboxReadUpdateWithWhereUniqueWithoutAdminUserInput | AdminInboxReadUpdateWithWhereUniqueWithoutAdminUserInput[]
+    updateMany?: AdminInboxReadUpdateManyWithWhereWithoutAdminUserInput | AdminInboxReadUpdateManyWithWhereWithoutAdminUserInput[]
+    deleteMany?: AdminInboxReadScalarWhereInput | AdminInboxReadScalarWhereInput[]
+  }
+
+  export type AdminAuditLogUpdateManyWithoutActorNestedInput = {
+    create?: XOR<AdminAuditLogCreateWithoutActorInput, AdminAuditLogUncheckedCreateWithoutActorInput> | AdminAuditLogCreateWithoutActorInput[] | AdminAuditLogUncheckedCreateWithoutActorInput[]
+    connectOrCreate?: AdminAuditLogCreateOrConnectWithoutActorInput | AdminAuditLogCreateOrConnectWithoutActorInput[]
+    upsert?: AdminAuditLogUpsertWithWhereUniqueWithoutActorInput | AdminAuditLogUpsertWithWhereUniqueWithoutActorInput[]
+    createMany?: AdminAuditLogCreateManyActorInputEnvelope
+    set?: AdminAuditLogWhereUniqueInput | AdminAuditLogWhereUniqueInput[]
+    disconnect?: AdminAuditLogWhereUniqueInput | AdminAuditLogWhereUniqueInput[]
+    delete?: AdminAuditLogWhereUniqueInput | AdminAuditLogWhereUniqueInput[]
+    connect?: AdminAuditLogWhereUniqueInput | AdminAuditLogWhereUniqueInput[]
+    update?: AdminAuditLogUpdateWithWhereUniqueWithoutActorInput | AdminAuditLogUpdateWithWhereUniqueWithoutActorInput[]
+    updateMany?: AdminAuditLogUpdateManyWithWhereWithoutActorInput | AdminAuditLogUpdateManyWithWhereWithoutActorInput[]
+    deleteMany?: AdminAuditLogScalarWhereInput | AdminAuditLogScalarWhereInput[]
+  }
+
+  export type SupportResponseUpdateManyWithoutAdminUserNestedInput = {
+    create?: XOR<SupportResponseCreateWithoutAdminUserInput, SupportResponseUncheckedCreateWithoutAdminUserInput> | SupportResponseCreateWithoutAdminUserInput[] | SupportResponseUncheckedCreateWithoutAdminUserInput[]
+    connectOrCreate?: SupportResponseCreateOrConnectWithoutAdminUserInput | SupportResponseCreateOrConnectWithoutAdminUserInput[]
+    upsert?: SupportResponseUpsertWithWhereUniqueWithoutAdminUserInput | SupportResponseUpsertWithWhereUniqueWithoutAdminUserInput[]
+    createMany?: SupportResponseCreateManyAdminUserInputEnvelope
+    set?: SupportResponseWhereUniqueInput | SupportResponseWhereUniqueInput[]
+    disconnect?: SupportResponseWhereUniqueInput | SupportResponseWhereUniqueInput[]
+    delete?: SupportResponseWhereUniqueInput | SupportResponseWhereUniqueInput[]
+    connect?: SupportResponseWhereUniqueInput | SupportResponseWhereUniqueInput[]
+    update?: SupportResponseUpdateWithWhereUniqueWithoutAdminUserInput | SupportResponseUpdateWithWhereUniqueWithoutAdminUserInput[]
+    updateMany?: SupportResponseUpdateManyWithWhereWithoutAdminUserInput | SupportResponseUpdateManyWithWhereWithoutAdminUserInput[]
+    deleteMany?: SupportResponseScalarWhereInput | SupportResponseScalarWhereInput[]
+  }
+
   export type ReminderUncheckedUpdateManyWithoutUserNestedInput = {
     create?: XOR<ReminderCreateWithoutUserInput, ReminderUncheckedCreateWithoutUserInput> | ReminderCreateWithoutUserInput[] | ReminderUncheckedCreateWithoutUserInput[]
     connectOrCreate?: ReminderCreateOrConnectWithoutUserInput | ReminderCreateOrConnectWithoutUserInput[]
@@ -30734,6 +33492,48 @@ export namespace Prisma {
     update?: BuddyApplicationUpdateWithWhereUniqueWithoutUserInput | BuddyApplicationUpdateWithWhereUniqueWithoutUserInput[]
     updateMany?: BuddyApplicationUpdateManyWithWhereWithoutUserInput | BuddyApplicationUpdateManyWithWhereWithoutUserInput[]
     deleteMany?: BuddyApplicationScalarWhereInput | BuddyApplicationScalarWhereInput[]
+  }
+
+  export type AdminInboxReadUncheckedUpdateManyWithoutAdminUserNestedInput = {
+    create?: XOR<AdminInboxReadCreateWithoutAdminUserInput, AdminInboxReadUncheckedCreateWithoutAdminUserInput> | AdminInboxReadCreateWithoutAdminUserInput[] | AdminInboxReadUncheckedCreateWithoutAdminUserInput[]
+    connectOrCreate?: AdminInboxReadCreateOrConnectWithoutAdminUserInput | AdminInboxReadCreateOrConnectWithoutAdminUserInput[]
+    upsert?: AdminInboxReadUpsertWithWhereUniqueWithoutAdminUserInput | AdminInboxReadUpsertWithWhereUniqueWithoutAdminUserInput[]
+    createMany?: AdminInboxReadCreateManyAdminUserInputEnvelope
+    set?: AdminInboxReadWhereUniqueInput | AdminInboxReadWhereUniqueInput[]
+    disconnect?: AdminInboxReadWhereUniqueInput | AdminInboxReadWhereUniqueInput[]
+    delete?: AdminInboxReadWhereUniqueInput | AdminInboxReadWhereUniqueInput[]
+    connect?: AdminInboxReadWhereUniqueInput | AdminInboxReadWhereUniqueInput[]
+    update?: AdminInboxReadUpdateWithWhereUniqueWithoutAdminUserInput | AdminInboxReadUpdateWithWhereUniqueWithoutAdminUserInput[]
+    updateMany?: AdminInboxReadUpdateManyWithWhereWithoutAdminUserInput | AdminInboxReadUpdateManyWithWhereWithoutAdminUserInput[]
+    deleteMany?: AdminInboxReadScalarWhereInput | AdminInboxReadScalarWhereInput[]
+  }
+
+  export type AdminAuditLogUncheckedUpdateManyWithoutActorNestedInput = {
+    create?: XOR<AdminAuditLogCreateWithoutActorInput, AdminAuditLogUncheckedCreateWithoutActorInput> | AdminAuditLogCreateWithoutActorInput[] | AdminAuditLogUncheckedCreateWithoutActorInput[]
+    connectOrCreate?: AdminAuditLogCreateOrConnectWithoutActorInput | AdminAuditLogCreateOrConnectWithoutActorInput[]
+    upsert?: AdminAuditLogUpsertWithWhereUniqueWithoutActorInput | AdminAuditLogUpsertWithWhereUniqueWithoutActorInput[]
+    createMany?: AdminAuditLogCreateManyActorInputEnvelope
+    set?: AdminAuditLogWhereUniqueInput | AdminAuditLogWhereUniqueInput[]
+    disconnect?: AdminAuditLogWhereUniqueInput | AdminAuditLogWhereUniqueInput[]
+    delete?: AdminAuditLogWhereUniqueInput | AdminAuditLogWhereUniqueInput[]
+    connect?: AdminAuditLogWhereUniqueInput | AdminAuditLogWhereUniqueInput[]
+    update?: AdminAuditLogUpdateWithWhereUniqueWithoutActorInput | AdminAuditLogUpdateWithWhereUniqueWithoutActorInput[]
+    updateMany?: AdminAuditLogUpdateManyWithWhereWithoutActorInput | AdminAuditLogUpdateManyWithWhereWithoutActorInput[]
+    deleteMany?: AdminAuditLogScalarWhereInput | AdminAuditLogScalarWhereInput[]
+  }
+
+  export type SupportResponseUncheckedUpdateManyWithoutAdminUserNestedInput = {
+    create?: XOR<SupportResponseCreateWithoutAdminUserInput, SupportResponseUncheckedCreateWithoutAdminUserInput> | SupportResponseCreateWithoutAdminUserInput[] | SupportResponseUncheckedCreateWithoutAdminUserInput[]
+    connectOrCreate?: SupportResponseCreateOrConnectWithoutAdminUserInput | SupportResponseCreateOrConnectWithoutAdminUserInput[]
+    upsert?: SupportResponseUpsertWithWhereUniqueWithoutAdminUserInput | SupportResponseUpsertWithWhereUniqueWithoutAdminUserInput[]
+    createMany?: SupportResponseCreateManyAdminUserInputEnvelope
+    set?: SupportResponseWhereUniqueInput | SupportResponseWhereUniqueInput[]
+    disconnect?: SupportResponseWhereUniqueInput | SupportResponseWhereUniqueInput[]
+    delete?: SupportResponseWhereUniqueInput | SupportResponseWhereUniqueInput[]
+    connect?: SupportResponseWhereUniqueInput | SupportResponseWhereUniqueInput[]
+    update?: SupportResponseUpdateWithWhereUniqueWithoutAdminUserInput | SupportResponseUpdateWithWhereUniqueWithoutAdminUserInput[]
+    updateMany?: SupportResponseUpdateManyWithWhereWithoutAdminUserInput | SupportResponseUpdateManyWithWhereWithoutAdminUserInput[]
+    deleteMany?: SupportResponseScalarWhereInput | SupportResponseScalarWhereInput[]
   }
 
   export type BuddyApplicationCreatelanguagesInput = {
@@ -30974,6 +33774,12 @@ export namespace Prisma {
     connect?: AdminWhereUniqueInput
   }
 
+  export type UserCreateNestedOneWithoutAdminSupportResponsesInput = {
+    create?: XOR<UserCreateWithoutAdminSupportResponsesInput, UserUncheckedCreateWithoutAdminSupportResponsesInput>
+    connectOrCreate?: UserCreateOrConnectWithoutAdminSupportResponsesInput
+    connect?: UserWhereUniqueInput
+  }
+
   export type SupportTicketUpdateOneRequiredWithoutResponsesNestedInput = {
     create?: XOR<SupportTicketCreateWithoutResponsesInput, SupportTicketUncheckedCreateWithoutResponsesInput>
     connectOrCreate?: SupportTicketCreateOrConnectWithoutResponsesInput
@@ -30990,6 +33796,44 @@ export namespace Prisma {
     delete?: AdminWhereInput | boolean
     connect?: AdminWhereUniqueInput
     update?: XOR<XOR<AdminUpdateToOneWithWhereWithoutSupportResponsesInput, AdminUpdateWithoutSupportResponsesInput>, AdminUncheckedUpdateWithoutSupportResponsesInput>
+  }
+
+  export type UserUpdateOneWithoutAdminSupportResponsesNestedInput = {
+    create?: XOR<UserCreateWithoutAdminSupportResponsesInput, UserUncheckedCreateWithoutAdminSupportResponsesInput>
+    connectOrCreate?: UserCreateOrConnectWithoutAdminSupportResponsesInput
+    upsert?: UserUpsertWithoutAdminSupportResponsesInput
+    disconnect?: UserWhereInput | boolean
+    delete?: UserWhereInput | boolean
+    connect?: UserWhereUniqueInput
+    update?: XOR<XOR<UserUpdateToOneWithWhereWithoutAdminSupportResponsesInput, UserUpdateWithoutAdminSupportResponsesInput>, UserUncheckedUpdateWithoutAdminSupportResponsesInput>
+  }
+
+  export type UserCreateNestedOneWithoutAdminInboxReadsInput = {
+    create?: XOR<UserCreateWithoutAdminInboxReadsInput, UserUncheckedCreateWithoutAdminInboxReadsInput>
+    connectOrCreate?: UserCreateOrConnectWithoutAdminInboxReadsInput
+    connect?: UserWhereUniqueInput
+  }
+
+  export type UserUpdateOneRequiredWithoutAdminInboxReadsNestedInput = {
+    create?: XOR<UserCreateWithoutAdminInboxReadsInput, UserUncheckedCreateWithoutAdminInboxReadsInput>
+    connectOrCreate?: UserCreateOrConnectWithoutAdminInboxReadsInput
+    upsert?: UserUpsertWithoutAdminInboxReadsInput
+    connect?: UserWhereUniqueInput
+    update?: XOR<XOR<UserUpdateToOneWithWhereWithoutAdminInboxReadsInput, UserUpdateWithoutAdminInboxReadsInput>, UserUncheckedUpdateWithoutAdminInboxReadsInput>
+  }
+
+  export type UserCreateNestedOneWithoutAdminAuditLogsInput = {
+    create?: XOR<UserCreateWithoutAdminAuditLogsInput, UserUncheckedCreateWithoutAdminAuditLogsInput>
+    connectOrCreate?: UserCreateOrConnectWithoutAdminAuditLogsInput
+    connect?: UserWhereUniqueInput
+  }
+
+  export type UserUpdateOneRequiredWithoutAdminAuditLogsNestedInput = {
+    create?: XOR<UserCreateWithoutAdminAuditLogsInput, UserUncheckedCreateWithoutAdminAuditLogsInput>
+    connectOrCreate?: UserCreateOrConnectWithoutAdminAuditLogsInput
+    upsert?: UserUpsertWithoutAdminAuditLogsInput
+    connect?: UserWhereUniqueInput
+    update?: XOR<XOR<UserUpdateToOneWithWhereWithoutAdminAuditLogsInput, UserUpdateWithoutAdminAuditLogsInput>, UserUncheckedUpdateWithoutAdminAuditLogsInput>
   }
 
   export type SupportResponseCreateNestedManyWithoutAdminInput = {
@@ -31643,6 +34487,28 @@ export namespace Prisma {
     _min?: NestedEnumBuddyApplicationStatusFilter<$PrismaModel>
     _max?: NestedEnumBuddyApplicationStatusFilter<$PrismaModel>
   }
+  export type NestedJsonNullableFilter<$PrismaModel = never> = 
+    | PatchUndefined<
+        Either<Required<NestedJsonNullableFilterBase<$PrismaModel>>, Exclude<keyof Required<NestedJsonNullableFilterBase<$PrismaModel>>, 'path'>>,
+        Required<NestedJsonNullableFilterBase<$PrismaModel>>
+      >
+    | OptionalFlat<Omit<Required<NestedJsonNullableFilterBase<$PrismaModel>>, 'path'>>
+
+  export type NestedJsonNullableFilterBase<$PrismaModel = never> = {
+    equals?: InputJsonValue | JsonFieldRefInput<$PrismaModel> | JsonNullValueFilter
+    path?: string[]
+    string_contains?: string | StringFieldRefInput<$PrismaModel>
+    string_starts_with?: string | StringFieldRefInput<$PrismaModel>
+    string_ends_with?: string | StringFieldRefInput<$PrismaModel>
+    array_contains?: InputJsonValue | JsonFieldRefInput<$PrismaModel> | null
+    array_starts_with?: InputJsonValue | JsonFieldRefInput<$PrismaModel> | null
+    array_ends_with?: InputJsonValue | JsonFieldRefInput<$PrismaModel> | null
+    lt?: InputJsonValue | JsonFieldRefInput<$PrismaModel>
+    lte?: InputJsonValue | JsonFieldRefInput<$PrismaModel>
+    gt?: InputJsonValue | JsonFieldRefInput<$PrismaModel>
+    gte?: InputJsonValue | JsonFieldRefInput<$PrismaModel>
+    not?: InputJsonValue | JsonFieldRefInput<$PrismaModel> | JsonNullValueFilter
+  }
 
   export type NestedFloatWithAggregatesFilter<$PrismaModel = never> = {
     equals?: number | FloatFieldRefInput<$PrismaModel>
@@ -32147,6 +35013,88 @@ export namespace Prisma {
     skipDuplicates?: boolean
   }
 
+  export type AdminInboxReadCreateWithoutAdminUserInput = {
+    id?: string
+    category: string
+    seenAt?: Date | string
+    updatedAt?: Date | string
+  }
+
+  export type AdminInboxReadUncheckedCreateWithoutAdminUserInput = {
+    id?: string
+    category: string
+    seenAt?: Date | string
+    updatedAt?: Date | string
+  }
+
+  export type AdminInboxReadCreateOrConnectWithoutAdminUserInput = {
+    where: AdminInboxReadWhereUniqueInput
+    create: XOR<AdminInboxReadCreateWithoutAdminUserInput, AdminInboxReadUncheckedCreateWithoutAdminUserInput>
+  }
+
+  export type AdminInboxReadCreateManyAdminUserInputEnvelope = {
+    data: AdminInboxReadCreateManyAdminUserInput | AdminInboxReadCreateManyAdminUserInput[]
+    skipDuplicates?: boolean
+  }
+
+  export type AdminAuditLogCreateWithoutActorInput = {
+    id?: string
+    action: string
+    entityType: string
+    entityId: string
+    metadata?: NullableJsonNullValueInput | InputJsonValue
+    createdAt?: Date | string
+  }
+
+  export type AdminAuditLogUncheckedCreateWithoutActorInput = {
+    id?: string
+    action: string
+    entityType: string
+    entityId: string
+    metadata?: NullableJsonNullValueInput | InputJsonValue
+    createdAt?: Date | string
+  }
+
+  export type AdminAuditLogCreateOrConnectWithoutActorInput = {
+    where: AdminAuditLogWhereUniqueInput
+    create: XOR<AdminAuditLogCreateWithoutActorInput, AdminAuditLogUncheckedCreateWithoutActorInput>
+  }
+
+  export type AdminAuditLogCreateManyActorInputEnvelope = {
+    data: AdminAuditLogCreateManyActorInput | AdminAuditLogCreateManyActorInput[]
+    skipDuplicates?: boolean
+  }
+
+  export type SupportResponseCreateWithoutAdminUserInput = {
+    id?: string
+    content: string
+    isAdmin?: boolean
+    readByUserAt?: Date | string | null
+    createdAt?: Date | string
+    ticket: SupportTicketCreateNestedOneWithoutResponsesInput
+    admin?: AdminCreateNestedOneWithoutSupportResponsesInput
+  }
+
+  export type SupportResponseUncheckedCreateWithoutAdminUserInput = {
+    id?: string
+    ticketId: string
+    adminId?: string | null
+    content: string
+    isAdmin?: boolean
+    readByUserAt?: Date | string | null
+    createdAt?: Date | string
+  }
+
+  export type SupportResponseCreateOrConnectWithoutAdminUserInput = {
+    where: SupportResponseWhereUniqueInput
+    create: XOR<SupportResponseCreateWithoutAdminUserInput, SupportResponseUncheckedCreateWithoutAdminUserInput>
+  }
+
+  export type SupportResponseCreateManyAdminUserInputEnvelope = {
+    data: SupportResponseCreateManyAdminUserInput | SupportResponseCreateManyAdminUserInput[]
+    skipDuplicates?: boolean
+  }
+
   export type ReminderUpsertWithWhereUniqueWithoutUserInput = {
     where: ReminderWhereUniqueInput
     update: XOR<ReminderUpdateWithoutUserInput, ReminderUncheckedUpdateWithoutUserInput>
@@ -32614,6 +35562,92 @@ export namespace Prisma {
     updatedAt?: DateTimeFilter<"BuddyApplication"> | Date | string
   }
 
+  export type AdminInboxReadUpsertWithWhereUniqueWithoutAdminUserInput = {
+    where: AdminInboxReadWhereUniqueInput
+    update: XOR<AdminInboxReadUpdateWithoutAdminUserInput, AdminInboxReadUncheckedUpdateWithoutAdminUserInput>
+    create: XOR<AdminInboxReadCreateWithoutAdminUserInput, AdminInboxReadUncheckedCreateWithoutAdminUserInput>
+  }
+
+  export type AdminInboxReadUpdateWithWhereUniqueWithoutAdminUserInput = {
+    where: AdminInboxReadWhereUniqueInput
+    data: XOR<AdminInboxReadUpdateWithoutAdminUserInput, AdminInboxReadUncheckedUpdateWithoutAdminUserInput>
+  }
+
+  export type AdminInboxReadUpdateManyWithWhereWithoutAdminUserInput = {
+    where: AdminInboxReadScalarWhereInput
+    data: XOR<AdminInboxReadUpdateManyMutationInput, AdminInboxReadUncheckedUpdateManyWithoutAdminUserInput>
+  }
+
+  export type AdminInboxReadScalarWhereInput = {
+    AND?: AdminInboxReadScalarWhereInput | AdminInboxReadScalarWhereInput[]
+    OR?: AdminInboxReadScalarWhereInput[]
+    NOT?: AdminInboxReadScalarWhereInput | AdminInboxReadScalarWhereInput[]
+    id?: StringFilter<"AdminInboxRead"> | string
+    adminUserId?: StringFilter<"AdminInboxRead"> | string
+    category?: StringFilter<"AdminInboxRead"> | string
+    seenAt?: DateTimeFilter<"AdminInboxRead"> | Date | string
+    updatedAt?: DateTimeFilter<"AdminInboxRead"> | Date | string
+  }
+
+  export type AdminAuditLogUpsertWithWhereUniqueWithoutActorInput = {
+    where: AdminAuditLogWhereUniqueInput
+    update: XOR<AdminAuditLogUpdateWithoutActorInput, AdminAuditLogUncheckedUpdateWithoutActorInput>
+    create: XOR<AdminAuditLogCreateWithoutActorInput, AdminAuditLogUncheckedCreateWithoutActorInput>
+  }
+
+  export type AdminAuditLogUpdateWithWhereUniqueWithoutActorInput = {
+    where: AdminAuditLogWhereUniqueInput
+    data: XOR<AdminAuditLogUpdateWithoutActorInput, AdminAuditLogUncheckedUpdateWithoutActorInput>
+  }
+
+  export type AdminAuditLogUpdateManyWithWhereWithoutActorInput = {
+    where: AdminAuditLogScalarWhereInput
+    data: XOR<AdminAuditLogUpdateManyMutationInput, AdminAuditLogUncheckedUpdateManyWithoutActorInput>
+  }
+
+  export type AdminAuditLogScalarWhereInput = {
+    AND?: AdminAuditLogScalarWhereInput | AdminAuditLogScalarWhereInput[]
+    OR?: AdminAuditLogScalarWhereInput[]
+    NOT?: AdminAuditLogScalarWhereInput | AdminAuditLogScalarWhereInput[]
+    id?: StringFilter<"AdminAuditLog"> | string
+    actorUserId?: StringFilter<"AdminAuditLog"> | string
+    action?: StringFilter<"AdminAuditLog"> | string
+    entityType?: StringFilter<"AdminAuditLog"> | string
+    entityId?: StringFilter<"AdminAuditLog"> | string
+    metadata?: JsonNullableFilter<"AdminAuditLog">
+    createdAt?: DateTimeFilter<"AdminAuditLog"> | Date | string
+  }
+
+  export type SupportResponseUpsertWithWhereUniqueWithoutAdminUserInput = {
+    where: SupportResponseWhereUniqueInput
+    update: XOR<SupportResponseUpdateWithoutAdminUserInput, SupportResponseUncheckedUpdateWithoutAdminUserInput>
+    create: XOR<SupportResponseCreateWithoutAdminUserInput, SupportResponseUncheckedCreateWithoutAdminUserInput>
+  }
+
+  export type SupportResponseUpdateWithWhereUniqueWithoutAdminUserInput = {
+    where: SupportResponseWhereUniqueInput
+    data: XOR<SupportResponseUpdateWithoutAdminUserInput, SupportResponseUncheckedUpdateWithoutAdminUserInput>
+  }
+
+  export type SupportResponseUpdateManyWithWhereWithoutAdminUserInput = {
+    where: SupportResponseScalarWhereInput
+    data: XOR<SupportResponseUpdateManyMutationInput, SupportResponseUncheckedUpdateManyWithoutAdminUserInput>
+  }
+
+  export type SupportResponseScalarWhereInput = {
+    AND?: SupportResponseScalarWhereInput | SupportResponseScalarWhereInput[]
+    OR?: SupportResponseScalarWhereInput[]
+    NOT?: SupportResponseScalarWhereInput | SupportResponseScalarWhereInput[]
+    id?: StringFilter<"SupportResponse"> | string
+    ticketId?: StringFilter<"SupportResponse"> | string
+    adminId?: StringNullableFilter<"SupportResponse"> | string | null
+    adminUserId?: StringNullableFilter<"SupportResponse"> | string | null
+    content?: StringFilter<"SupportResponse"> | string
+    isAdmin?: BoolFilter<"SupportResponse"> | boolean
+    readByUserAt?: DateTimeNullableFilter<"SupportResponse"> | Date | string | null
+    createdAt?: DateTimeFilter<"SupportResponse"> | Date | string
+  }
+
   export type UserCreateWithoutBuddyApplicationsInput = {
     id?: string
     email: string
@@ -32647,6 +35681,9 @@ export namespace Prisma {
     reviews?: ReviewCreateNestedManyWithoutUserInput
     guideReads?: GuideReadCreateNestedManyWithoutUserInput
     passwordSetupTokens?: PasswordSetupTokenCreateNestedManyWithoutUserInput
+    adminInboxReads?: AdminInboxReadCreateNestedManyWithoutAdminUserInput
+    adminAuditLogs?: AdminAuditLogCreateNestedManyWithoutActorInput
+    adminSupportResponses?: SupportResponseCreateNestedManyWithoutAdminUserInput
   }
 
   export type UserUncheckedCreateWithoutBuddyApplicationsInput = {
@@ -32682,6 +35719,9 @@ export namespace Prisma {
     reviews?: ReviewUncheckedCreateNestedManyWithoutUserInput
     guideReads?: GuideReadUncheckedCreateNestedManyWithoutUserInput
     passwordSetupTokens?: PasswordSetupTokenUncheckedCreateNestedManyWithoutUserInput
+    adminInboxReads?: AdminInboxReadUncheckedCreateNestedManyWithoutAdminUserInput
+    adminAuditLogs?: AdminAuditLogUncheckedCreateNestedManyWithoutActorInput
+    adminSupportResponses?: SupportResponseUncheckedCreateNestedManyWithoutAdminUserInput
   }
 
   export type UserCreateOrConnectWithoutBuddyApplicationsInput = {
@@ -32733,6 +35773,9 @@ export namespace Prisma {
     reviews?: ReviewUpdateManyWithoutUserNestedInput
     guideReads?: GuideReadUpdateManyWithoutUserNestedInput
     passwordSetupTokens?: PasswordSetupTokenUpdateManyWithoutUserNestedInput
+    adminInboxReads?: AdminInboxReadUpdateManyWithoutAdminUserNestedInput
+    adminAuditLogs?: AdminAuditLogUpdateManyWithoutActorNestedInput
+    adminSupportResponses?: SupportResponseUpdateManyWithoutAdminUserNestedInput
   }
 
   export type UserUncheckedUpdateWithoutBuddyApplicationsInput = {
@@ -32768,6 +35811,9 @@ export namespace Prisma {
     reviews?: ReviewUncheckedUpdateManyWithoutUserNestedInput
     guideReads?: GuideReadUncheckedUpdateManyWithoutUserNestedInput
     passwordSetupTokens?: PasswordSetupTokenUncheckedUpdateManyWithoutUserNestedInput
+    adminInboxReads?: AdminInboxReadUncheckedUpdateManyWithoutAdminUserNestedInput
+    adminAuditLogs?: AdminAuditLogUncheckedUpdateManyWithoutActorNestedInput
+    adminSupportResponses?: SupportResponseUncheckedUpdateManyWithoutAdminUserNestedInput
   }
 
   export type UserCreateWithoutPasswordSetupTokensInput = {
@@ -32803,6 +35849,9 @@ export namespace Prisma {
     reviews?: ReviewCreateNestedManyWithoutUserInput
     guideReads?: GuideReadCreateNestedManyWithoutUserInput
     buddyApplications?: BuddyApplicationCreateNestedManyWithoutUserInput
+    adminInboxReads?: AdminInboxReadCreateNestedManyWithoutAdminUserInput
+    adminAuditLogs?: AdminAuditLogCreateNestedManyWithoutActorInput
+    adminSupportResponses?: SupportResponseCreateNestedManyWithoutAdminUserInput
   }
 
   export type UserUncheckedCreateWithoutPasswordSetupTokensInput = {
@@ -32838,6 +35887,9 @@ export namespace Prisma {
     reviews?: ReviewUncheckedCreateNestedManyWithoutUserInput
     guideReads?: GuideReadUncheckedCreateNestedManyWithoutUserInput
     buddyApplications?: BuddyApplicationUncheckedCreateNestedManyWithoutUserInput
+    adminInboxReads?: AdminInboxReadUncheckedCreateNestedManyWithoutAdminUserInput
+    adminAuditLogs?: AdminAuditLogUncheckedCreateNestedManyWithoutActorInput
+    adminSupportResponses?: SupportResponseUncheckedCreateNestedManyWithoutAdminUserInput
   }
 
   export type UserCreateOrConnectWithoutPasswordSetupTokensInput = {
@@ -32889,6 +35941,9 @@ export namespace Prisma {
     reviews?: ReviewUpdateManyWithoutUserNestedInput
     guideReads?: GuideReadUpdateManyWithoutUserNestedInput
     buddyApplications?: BuddyApplicationUpdateManyWithoutUserNestedInput
+    adminInboxReads?: AdminInboxReadUpdateManyWithoutAdminUserNestedInput
+    adminAuditLogs?: AdminAuditLogUpdateManyWithoutActorNestedInput
+    adminSupportResponses?: SupportResponseUpdateManyWithoutAdminUserNestedInput
   }
 
   export type UserUncheckedUpdateWithoutPasswordSetupTokensInput = {
@@ -32924,6 +35979,9 @@ export namespace Prisma {
     reviews?: ReviewUncheckedUpdateManyWithoutUserNestedInput
     guideReads?: GuideReadUncheckedUpdateManyWithoutUserNestedInput
     buddyApplications?: BuddyApplicationUncheckedUpdateManyWithoutUserNestedInput
+    adminInboxReads?: AdminInboxReadUncheckedUpdateManyWithoutAdminUserNestedInput
+    adminAuditLogs?: AdminAuditLogUncheckedUpdateManyWithoutActorNestedInput
+    adminSupportResponses?: SupportResponseUncheckedUpdateManyWithoutAdminUserNestedInput
   }
 
   export type UserCreateWithoutProfileInput = {
@@ -32959,6 +36017,9 @@ export namespace Prisma {
     guideReads?: GuideReadCreateNestedManyWithoutUserInput
     passwordSetupTokens?: PasswordSetupTokenCreateNestedManyWithoutUserInput
     buddyApplications?: BuddyApplicationCreateNestedManyWithoutUserInput
+    adminInboxReads?: AdminInboxReadCreateNestedManyWithoutAdminUserInput
+    adminAuditLogs?: AdminAuditLogCreateNestedManyWithoutActorInput
+    adminSupportResponses?: SupportResponseCreateNestedManyWithoutAdminUserInput
   }
 
   export type UserUncheckedCreateWithoutProfileInput = {
@@ -32994,6 +36055,9 @@ export namespace Prisma {
     guideReads?: GuideReadUncheckedCreateNestedManyWithoutUserInput
     passwordSetupTokens?: PasswordSetupTokenUncheckedCreateNestedManyWithoutUserInput
     buddyApplications?: BuddyApplicationUncheckedCreateNestedManyWithoutUserInput
+    adminInboxReads?: AdminInboxReadUncheckedCreateNestedManyWithoutAdminUserInput
+    adminAuditLogs?: AdminAuditLogUncheckedCreateNestedManyWithoutActorInput
+    adminSupportResponses?: SupportResponseUncheckedCreateNestedManyWithoutAdminUserInput
   }
 
   export type UserCreateOrConnectWithoutProfileInput = {
@@ -33045,6 +36109,9 @@ export namespace Prisma {
     guideReads?: GuideReadUpdateManyWithoutUserNestedInput
     passwordSetupTokens?: PasswordSetupTokenUpdateManyWithoutUserNestedInput
     buddyApplications?: BuddyApplicationUpdateManyWithoutUserNestedInput
+    adminInboxReads?: AdminInboxReadUpdateManyWithoutAdminUserNestedInput
+    adminAuditLogs?: AdminAuditLogUpdateManyWithoutActorNestedInput
+    adminSupportResponses?: SupportResponseUpdateManyWithoutAdminUserNestedInput
   }
 
   export type UserUncheckedUpdateWithoutProfileInput = {
@@ -33080,6 +36147,9 @@ export namespace Prisma {
     guideReads?: GuideReadUncheckedUpdateManyWithoutUserNestedInput
     passwordSetupTokens?: PasswordSetupTokenUncheckedUpdateManyWithoutUserNestedInput
     buddyApplications?: BuddyApplicationUncheckedUpdateManyWithoutUserNestedInput
+    adminInboxReads?: AdminInboxReadUncheckedUpdateManyWithoutAdminUserNestedInput
+    adminAuditLogs?: AdminAuditLogUncheckedUpdateManyWithoutActorNestedInput
+    adminSupportResponses?: SupportResponseUncheckedUpdateManyWithoutAdminUserNestedInput
   }
 
   export type UserCreateWithoutNotesInput = {
@@ -33115,6 +36185,9 @@ export namespace Prisma {
     guideReads?: GuideReadCreateNestedManyWithoutUserInput
     passwordSetupTokens?: PasswordSetupTokenCreateNestedManyWithoutUserInput
     buddyApplications?: BuddyApplicationCreateNestedManyWithoutUserInput
+    adminInboxReads?: AdminInboxReadCreateNestedManyWithoutAdminUserInput
+    adminAuditLogs?: AdminAuditLogCreateNestedManyWithoutActorInput
+    adminSupportResponses?: SupportResponseCreateNestedManyWithoutAdminUserInput
   }
 
   export type UserUncheckedCreateWithoutNotesInput = {
@@ -33150,6 +36223,9 @@ export namespace Prisma {
     guideReads?: GuideReadUncheckedCreateNestedManyWithoutUserInput
     passwordSetupTokens?: PasswordSetupTokenUncheckedCreateNestedManyWithoutUserInput
     buddyApplications?: BuddyApplicationUncheckedCreateNestedManyWithoutUserInput
+    adminInboxReads?: AdminInboxReadUncheckedCreateNestedManyWithoutAdminUserInput
+    adminAuditLogs?: AdminAuditLogUncheckedCreateNestedManyWithoutActorInput
+    adminSupportResponses?: SupportResponseUncheckedCreateNestedManyWithoutAdminUserInput
   }
 
   export type UserCreateOrConnectWithoutNotesInput = {
@@ -33241,6 +36317,9 @@ export namespace Prisma {
     guideReads?: GuideReadUpdateManyWithoutUserNestedInput
     passwordSetupTokens?: PasswordSetupTokenUpdateManyWithoutUserNestedInput
     buddyApplications?: BuddyApplicationUpdateManyWithoutUserNestedInput
+    adminInboxReads?: AdminInboxReadUpdateManyWithoutAdminUserNestedInput
+    adminAuditLogs?: AdminAuditLogUpdateManyWithoutActorNestedInput
+    adminSupportResponses?: SupportResponseUpdateManyWithoutAdminUserNestedInput
   }
 
   export type UserUncheckedUpdateWithoutNotesInput = {
@@ -33276,6 +36355,9 @@ export namespace Prisma {
     guideReads?: GuideReadUncheckedUpdateManyWithoutUserNestedInput
     passwordSetupTokens?: PasswordSetupTokenUncheckedUpdateManyWithoutUserNestedInput
     buddyApplications?: BuddyApplicationUncheckedUpdateManyWithoutUserNestedInput
+    adminInboxReads?: AdminInboxReadUncheckedUpdateManyWithoutAdminUserNestedInput
+    adminAuditLogs?: AdminAuditLogUncheckedUpdateManyWithoutActorNestedInput
+    adminSupportResponses?: SupportResponseUncheckedUpdateManyWithoutAdminUserNestedInput
   }
 
   export type ReminderUpsertWithWhereUniqueWithoutNoteInput = {
@@ -33327,6 +36409,9 @@ export namespace Prisma {
     guideReads?: GuideReadCreateNestedManyWithoutUserInput
     passwordSetupTokens?: PasswordSetupTokenCreateNestedManyWithoutUserInput
     buddyApplications?: BuddyApplicationCreateNestedManyWithoutUserInput
+    adminInboxReads?: AdminInboxReadCreateNestedManyWithoutAdminUserInput
+    adminAuditLogs?: AdminAuditLogCreateNestedManyWithoutActorInput
+    adminSupportResponses?: SupportResponseCreateNestedManyWithoutAdminUserInput
   }
 
   export type UserUncheckedCreateWithoutRemindersInput = {
@@ -33362,6 +36447,9 @@ export namespace Prisma {
     guideReads?: GuideReadUncheckedCreateNestedManyWithoutUserInput
     passwordSetupTokens?: PasswordSetupTokenUncheckedCreateNestedManyWithoutUserInput
     buddyApplications?: BuddyApplicationUncheckedCreateNestedManyWithoutUserInput
+    adminInboxReads?: AdminInboxReadUncheckedCreateNestedManyWithoutAdminUserInput
+    adminAuditLogs?: AdminAuditLogUncheckedCreateNestedManyWithoutActorInput
+    adminSupportResponses?: SupportResponseUncheckedCreateNestedManyWithoutAdminUserInput
   }
 
   export type UserCreateOrConnectWithoutRemindersInput = {
@@ -33440,6 +36528,9 @@ export namespace Prisma {
     guideReads?: GuideReadUpdateManyWithoutUserNestedInput
     passwordSetupTokens?: PasswordSetupTokenUpdateManyWithoutUserNestedInput
     buddyApplications?: BuddyApplicationUpdateManyWithoutUserNestedInput
+    adminInboxReads?: AdminInboxReadUpdateManyWithoutAdminUserNestedInput
+    adminAuditLogs?: AdminAuditLogUpdateManyWithoutActorNestedInput
+    adminSupportResponses?: SupportResponseUpdateManyWithoutAdminUserNestedInput
   }
 
   export type UserUncheckedUpdateWithoutRemindersInput = {
@@ -33475,6 +36566,9 @@ export namespace Prisma {
     guideReads?: GuideReadUncheckedUpdateManyWithoutUserNestedInput
     passwordSetupTokens?: PasswordSetupTokenUncheckedUpdateManyWithoutUserNestedInput
     buddyApplications?: BuddyApplicationUncheckedUpdateManyWithoutUserNestedInput
+    adminInboxReads?: AdminInboxReadUncheckedUpdateManyWithoutAdminUserNestedInput
+    adminAuditLogs?: AdminAuditLogUncheckedUpdateManyWithoutActorNestedInput
+    adminSupportResponses?: SupportResponseUncheckedUpdateManyWithoutAdminUserNestedInput
   }
 
   export type NoteUpsertWithoutRemindersInput = {
@@ -33543,6 +36637,9 @@ export namespace Prisma {
     guideReads?: GuideReadCreateNestedManyWithoutUserInput
     passwordSetupTokens?: PasswordSetupTokenCreateNestedManyWithoutUserInput
     buddyApplications?: BuddyApplicationCreateNestedManyWithoutUserInput
+    adminInboxReads?: AdminInboxReadCreateNestedManyWithoutAdminUserInput
+    adminAuditLogs?: AdminAuditLogCreateNestedManyWithoutActorInput
+    adminSupportResponses?: SupportResponseCreateNestedManyWithoutAdminUserInput
   }
 
   export type UserUncheckedCreateWithoutChatMessagesInput = {
@@ -33578,6 +36675,9 @@ export namespace Prisma {
     guideReads?: GuideReadUncheckedCreateNestedManyWithoutUserInput
     passwordSetupTokens?: PasswordSetupTokenUncheckedCreateNestedManyWithoutUserInput
     buddyApplications?: BuddyApplicationUncheckedCreateNestedManyWithoutUserInput
+    adminInboxReads?: AdminInboxReadUncheckedCreateNestedManyWithoutAdminUserInput
+    adminAuditLogs?: AdminAuditLogUncheckedCreateNestedManyWithoutActorInput
+    adminSupportResponses?: SupportResponseUncheckedCreateNestedManyWithoutAdminUserInput
   }
 
   export type UserCreateOrConnectWithoutChatMessagesInput = {
@@ -33629,6 +36729,9 @@ export namespace Prisma {
     guideReads?: GuideReadUpdateManyWithoutUserNestedInput
     passwordSetupTokens?: PasswordSetupTokenUpdateManyWithoutUserNestedInput
     buddyApplications?: BuddyApplicationUpdateManyWithoutUserNestedInput
+    adminInboxReads?: AdminInboxReadUpdateManyWithoutAdminUserNestedInput
+    adminAuditLogs?: AdminAuditLogUpdateManyWithoutActorNestedInput
+    adminSupportResponses?: SupportResponseUpdateManyWithoutAdminUserNestedInput
   }
 
   export type UserUncheckedUpdateWithoutChatMessagesInput = {
@@ -33664,6 +36767,9 @@ export namespace Prisma {
     guideReads?: GuideReadUncheckedUpdateManyWithoutUserNestedInput
     passwordSetupTokens?: PasswordSetupTokenUncheckedUpdateManyWithoutUserNestedInput
     buddyApplications?: BuddyApplicationUncheckedUpdateManyWithoutUserNestedInput
+    adminInboxReads?: AdminInboxReadUncheckedUpdateManyWithoutAdminUserNestedInput
+    adminAuditLogs?: AdminAuditLogUncheckedUpdateManyWithoutActorNestedInput
+    adminSupportResponses?: SupportResponseUncheckedUpdateManyWithoutAdminUserNestedInput
   }
 
   export type UserCreateWithoutSupportTicketsInput = {
@@ -33699,6 +36805,9 @@ export namespace Prisma {
     guideReads?: GuideReadCreateNestedManyWithoutUserInput
     passwordSetupTokens?: PasswordSetupTokenCreateNestedManyWithoutUserInput
     buddyApplications?: BuddyApplicationCreateNestedManyWithoutUserInput
+    adminInboxReads?: AdminInboxReadCreateNestedManyWithoutAdminUserInput
+    adminAuditLogs?: AdminAuditLogCreateNestedManyWithoutActorInput
+    adminSupportResponses?: SupportResponseCreateNestedManyWithoutAdminUserInput
   }
 
   export type UserUncheckedCreateWithoutSupportTicketsInput = {
@@ -33734,6 +36843,9 @@ export namespace Prisma {
     guideReads?: GuideReadUncheckedCreateNestedManyWithoutUserInput
     passwordSetupTokens?: PasswordSetupTokenUncheckedCreateNestedManyWithoutUserInput
     buddyApplications?: BuddyApplicationUncheckedCreateNestedManyWithoutUserInput
+    adminInboxReads?: AdminInboxReadUncheckedCreateNestedManyWithoutAdminUserInput
+    adminAuditLogs?: AdminAuditLogUncheckedCreateNestedManyWithoutActorInput
+    adminSupportResponses?: SupportResponseUncheckedCreateNestedManyWithoutAdminUserInput
   }
 
   export type UserCreateOrConnectWithoutSupportTicketsInput = {
@@ -33745,15 +36857,19 @@ export namespace Prisma {
     id?: string
     content: string
     isAdmin?: boolean
+    readByUserAt?: Date | string | null
     createdAt?: Date | string
     admin?: AdminCreateNestedOneWithoutSupportResponsesInput
+    adminUser?: UserCreateNestedOneWithoutAdminSupportResponsesInput
   }
 
   export type SupportResponseUncheckedCreateWithoutTicketInput = {
     id?: string
     adminId?: string | null
+    adminUserId?: string | null
     content: string
     isAdmin?: boolean
+    readByUserAt?: Date | string | null
     createdAt?: Date | string
   }
 
@@ -33811,6 +36927,9 @@ export namespace Prisma {
     guideReads?: GuideReadUpdateManyWithoutUserNestedInput
     passwordSetupTokens?: PasswordSetupTokenUpdateManyWithoutUserNestedInput
     buddyApplications?: BuddyApplicationUpdateManyWithoutUserNestedInput
+    adminInboxReads?: AdminInboxReadUpdateManyWithoutAdminUserNestedInput
+    adminAuditLogs?: AdminAuditLogUpdateManyWithoutActorNestedInput
+    adminSupportResponses?: SupportResponseUpdateManyWithoutAdminUserNestedInput
   }
 
   export type UserUncheckedUpdateWithoutSupportTicketsInput = {
@@ -33846,6 +36965,9 @@ export namespace Prisma {
     guideReads?: GuideReadUncheckedUpdateManyWithoutUserNestedInput
     passwordSetupTokens?: PasswordSetupTokenUncheckedUpdateManyWithoutUserNestedInput
     buddyApplications?: BuddyApplicationUncheckedUpdateManyWithoutUserNestedInput
+    adminInboxReads?: AdminInboxReadUncheckedUpdateManyWithoutAdminUserNestedInput
+    adminAuditLogs?: AdminAuditLogUncheckedUpdateManyWithoutActorNestedInput
+    adminSupportResponses?: SupportResponseUncheckedUpdateManyWithoutAdminUserNestedInput
   }
 
   export type SupportResponseUpsertWithWhereUniqueWithoutTicketInput = {
@@ -33862,18 +36984,6 @@ export namespace Prisma {
   export type SupportResponseUpdateManyWithWhereWithoutTicketInput = {
     where: SupportResponseScalarWhereInput
     data: XOR<SupportResponseUpdateManyMutationInput, SupportResponseUncheckedUpdateManyWithoutTicketInput>
-  }
-
-  export type SupportResponseScalarWhereInput = {
-    AND?: SupportResponseScalarWhereInput | SupportResponseScalarWhereInput[]
-    OR?: SupportResponseScalarWhereInput[]
-    NOT?: SupportResponseScalarWhereInput | SupportResponseScalarWhereInput[]
-    id?: StringFilter<"SupportResponse"> | string
-    ticketId?: StringFilter<"SupportResponse"> | string
-    adminId?: StringNullableFilter<"SupportResponse"> | string | null
-    content?: StringFilter<"SupportResponse"> | string
-    isAdmin?: BoolFilter<"SupportResponse"> | boolean
-    createdAt?: DateTimeFilter<"SupportResponse"> | Date | string
   }
 
   export type SupportTicketCreateWithoutResponsesInput = {
@@ -33934,6 +37044,87 @@ export namespace Prisma {
   export type AdminCreateOrConnectWithoutSupportResponsesInput = {
     where: AdminWhereUniqueInput
     create: XOR<AdminCreateWithoutSupportResponsesInput, AdminUncheckedCreateWithoutSupportResponsesInput>
+  }
+
+  export type UserCreateWithoutAdminSupportResponsesInput = {
+    id?: string
+    email: string
+    password: string
+    name: string
+    language?: string
+    country: string
+    role?: string
+    registeredAt?: Date | string
+    university?: string | null
+    faculty?: string | null
+    year?: string | null
+    plan?: string
+    phone?: string | null
+    gender?: string | null
+    emailNotifications?: boolean
+    timezone?: string
+    tokenVersion?: number
+    blockedAt?: Date | string | null
+    reminders?: ReminderCreateNestedManyWithoutUserInput
+    notes?: NoteCreateNestedManyWithoutUserInput
+    chatMessages?: ChatMessageCreateNestedManyWithoutUserInput
+    profile?: ProfileCreateNestedOneWithoutUserInput
+    supportTickets?: SupportTicketCreateNestedManyWithoutUserInput
+    payments?: PaymentCreateNestedManyWithoutUserInput
+    subscriptions?: SubscriptionCreateNestedManyWithoutUserInput
+    userGrantApplications?: UserGrantApplicationCreateNestedManyWithoutUserInput
+    questions?: QuestionCreateNestedManyWithoutAuthorInput
+    answers?: AnswerCreateNestedManyWithoutAuthorInput
+    questionLikes?: QuestionLikeCreateNestedManyWithoutUserInput
+    reviews?: ReviewCreateNestedManyWithoutUserInput
+    guideReads?: GuideReadCreateNestedManyWithoutUserInput
+    passwordSetupTokens?: PasswordSetupTokenCreateNestedManyWithoutUserInput
+    buddyApplications?: BuddyApplicationCreateNestedManyWithoutUserInput
+    adminInboxReads?: AdminInboxReadCreateNestedManyWithoutAdminUserInput
+    adminAuditLogs?: AdminAuditLogCreateNestedManyWithoutActorInput
+  }
+
+  export type UserUncheckedCreateWithoutAdminSupportResponsesInput = {
+    id?: string
+    email: string
+    password: string
+    name: string
+    language?: string
+    country: string
+    role?: string
+    registeredAt?: Date | string
+    university?: string | null
+    faculty?: string | null
+    year?: string | null
+    plan?: string
+    phone?: string | null
+    gender?: string | null
+    emailNotifications?: boolean
+    timezone?: string
+    tokenVersion?: number
+    blockedAt?: Date | string | null
+    reminders?: ReminderUncheckedCreateNestedManyWithoutUserInput
+    notes?: NoteUncheckedCreateNestedManyWithoutUserInput
+    chatMessages?: ChatMessageUncheckedCreateNestedManyWithoutUserInput
+    profile?: ProfileUncheckedCreateNestedOneWithoutUserInput
+    supportTickets?: SupportTicketUncheckedCreateNestedManyWithoutUserInput
+    payments?: PaymentUncheckedCreateNestedManyWithoutUserInput
+    subscriptions?: SubscriptionUncheckedCreateNestedManyWithoutUserInput
+    userGrantApplications?: UserGrantApplicationUncheckedCreateNestedManyWithoutUserInput
+    questions?: QuestionUncheckedCreateNestedManyWithoutAuthorInput
+    answers?: AnswerUncheckedCreateNestedManyWithoutAuthorInput
+    questionLikes?: QuestionLikeUncheckedCreateNestedManyWithoutUserInput
+    reviews?: ReviewUncheckedCreateNestedManyWithoutUserInput
+    guideReads?: GuideReadUncheckedCreateNestedManyWithoutUserInput
+    passwordSetupTokens?: PasswordSetupTokenUncheckedCreateNestedManyWithoutUserInput
+    buddyApplications?: BuddyApplicationUncheckedCreateNestedManyWithoutUserInput
+    adminInboxReads?: AdminInboxReadUncheckedCreateNestedManyWithoutAdminUserInput
+    adminAuditLogs?: AdminAuditLogUncheckedCreateNestedManyWithoutActorInput
+  }
+
+  export type UserCreateOrConnectWithoutAdminSupportResponsesInput = {
+    where: UserWhereUniqueInput
+    create: XOR<UserCreateWithoutAdminSupportResponsesInput, UserUncheckedCreateWithoutAdminSupportResponsesInput>
   }
 
   export type SupportTicketUpsertWithoutResponsesInput = {
@@ -34008,19 +37199,446 @@ export namespace Prisma {
     updatedAt?: DateTimeFieldUpdateOperationsInput | Date | string
   }
 
+  export type UserUpsertWithoutAdminSupportResponsesInput = {
+    update: XOR<UserUpdateWithoutAdminSupportResponsesInput, UserUncheckedUpdateWithoutAdminSupportResponsesInput>
+    create: XOR<UserCreateWithoutAdminSupportResponsesInput, UserUncheckedCreateWithoutAdminSupportResponsesInput>
+    where?: UserWhereInput
+  }
+
+  export type UserUpdateToOneWithWhereWithoutAdminSupportResponsesInput = {
+    where?: UserWhereInput
+    data: XOR<UserUpdateWithoutAdminSupportResponsesInput, UserUncheckedUpdateWithoutAdminSupportResponsesInput>
+  }
+
+  export type UserUpdateWithoutAdminSupportResponsesInput = {
+    id?: StringFieldUpdateOperationsInput | string
+    email?: StringFieldUpdateOperationsInput | string
+    password?: StringFieldUpdateOperationsInput | string
+    name?: StringFieldUpdateOperationsInput | string
+    language?: StringFieldUpdateOperationsInput | string
+    country?: StringFieldUpdateOperationsInput | string
+    role?: StringFieldUpdateOperationsInput | string
+    registeredAt?: DateTimeFieldUpdateOperationsInput | Date | string
+    university?: NullableStringFieldUpdateOperationsInput | string | null
+    faculty?: NullableStringFieldUpdateOperationsInput | string | null
+    year?: NullableStringFieldUpdateOperationsInput | string | null
+    plan?: StringFieldUpdateOperationsInput | string
+    phone?: NullableStringFieldUpdateOperationsInput | string | null
+    gender?: NullableStringFieldUpdateOperationsInput | string | null
+    emailNotifications?: BoolFieldUpdateOperationsInput | boolean
+    timezone?: StringFieldUpdateOperationsInput | string
+    tokenVersion?: IntFieldUpdateOperationsInput | number
+    blockedAt?: NullableDateTimeFieldUpdateOperationsInput | Date | string | null
+    reminders?: ReminderUpdateManyWithoutUserNestedInput
+    notes?: NoteUpdateManyWithoutUserNestedInput
+    chatMessages?: ChatMessageUpdateManyWithoutUserNestedInput
+    profile?: ProfileUpdateOneWithoutUserNestedInput
+    supportTickets?: SupportTicketUpdateManyWithoutUserNestedInput
+    payments?: PaymentUpdateManyWithoutUserNestedInput
+    subscriptions?: SubscriptionUpdateManyWithoutUserNestedInput
+    userGrantApplications?: UserGrantApplicationUpdateManyWithoutUserNestedInput
+    questions?: QuestionUpdateManyWithoutAuthorNestedInput
+    answers?: AnswerUpdateManyWithoutAuthorNestedInput
+    questionLikes?: QuestionLikeUpdateManyWithoutUserNestedInput
+    reviews?: ReviewUpdateManyWithoutUserNestedInput
+    guideReads?: GuideReadUpdateManyWithoutUserNestedInput
+    passwordSetupTokens?: PasswordSetupTokenUpdateManyWithoutUserNestedInput
+    buddyApplications?: BuddyApplicationUpdateManyWithoutUserNestedInput
+    adminInboxReads?: AdminInboxReadUpdateManyWithoutAdminUserNestedInput
+    adminAuditLogs?: AdminAuditLogUpdateManyWithoutActorNestedInput
+  }
+
+  export type UserUncheckedUpdateWithoutAdminSupportResponsesInput = {
+    id?: StringFieldUpdateOperationsInput | string
+    email?: StringFieldUpdateOperationsInput | string
+    password?: StringFieldUpdateOperationsInput | string
+    name?: StringFieldUpdateOperationsInput | string
+    language?: StringFieldUpdateOperationsInput | string
+    country?: StringFieldUpdateOperationsInput | string
+    role?: StringFieldUpdateOperationsInput | string
+    registeredAt?: DateTimeFieldUpdateOperationsInput | Date | string
+    university?: NullableStringFieldUpdateOperationsInput | string | null
+    faculty?: NullableStringFieldUpdateOperationsInput | string | null
+    year?: NullableStringFieldUpdateOperationsInput | string | null
+    plan?: StringFieldUpdateOperationsInput | string
+    phone?: NullableStringFieldUpdateOperationsInput | string | null
+    gender?: NullableStringFieldUpdateOperationsInput | string | null
+    emailNotifications?: BoolFieldUpdateOperationsInput | boolean
+    timezone?: StringFieldUpdateOperationsInput | string
+    tokenVersion?: IntFieldUpdateOperationsInput | number
+    blockedAt?: NullableDateTimeFieldUpdateOperationsInput | Date | string | null
+    reminders?: ReminderUncheckedUpdateManyWithoutUserNestedInput
+    notes?: NoteUncheckedUpdateManyWithoutUserNestedInput
+    chatMessages?: ChatMessageUncheckedUpdateManyWithoutUserNestedInput
+    profile?: ProfileUncheckedUpdateOneWithoutUserNestedInput
+    supportTickets?: SupportTicketUncheckedUpdateManyWithoutUserNestedInput
+    payments?: PaymentUncheckedUpdateManyWithoutUserNestedInput
+    subscriptions?: SubscriptionUncheckedUpdateManyWithoutUserNestedInput
+    userGrantApplications?: UserGrantApplicationUncheckedUpdateManyWithoutUserNestedInput
+    questions?: QuestionUncheckedUpdateManyWithoutAuthorNestedInput
+    answers?: AnswerUncheckedUpdateManyWithoutAuthorNestedInput
+    questionLikes?: QuestionLikeUncheckedUpdateManyWithoutUserNestedInput
+    reviews?: ReviewUncheckedUpdateManyWithoutUserNestedInput
+    guideReads?: GuideReadUncheckedUpdateManyWithoutUserNestedInput
+    passwordSetupTokens?: PasswordSetupTokenUncheckedUpdateManyWithoutUserNestedInput
+    buddyApplications?: BuddyApplicationUncheckedUpdateManyWithoutUserNestedInput
+    adminInboxReads?: AdminInboxReadUncheckedUpdateManyWithoutAdminUserNestedInput
+    adminAuditLogs?: AdminAuditLogUncheckedUpdateManyWithoutActorNestedInput
+  }
+
+  export type UserCreateWithoutAdminInboxReadsInput = {
+    id?: string
+    email: string
+    password: string
+    name: string
+    language?: string
+    country: string
+    role?: string
+    registeredAt?: Date | string
+    university?: string | null
+    faculty?: string | null
+    year?: string | null
+    plan?: string
+    phone?: string | null
+    gender?: string | null
+    emailNotifications?: boolean
+    timezone?: string
+    tokenVersion?: number
+    blockedAt?: Date | string | null
+    reminders?: ReminderCreateNestedManyWithoutUserInput
+    notes?: NoteCreateNestedManyWithoutUserInput
+    chatMessages?: ChatMessageCreateNestedManyWithoutUserInput
+    profile?: ProfileCreateNestedOneWithoutUserInput
+    supportTickets?: SupportTicketCreateNestedManyWithoutUserInput
+    payments?: PaymentCreateNestedManyWithoutUserInput
+    subscriptions?: SubscriptionCreateNestedManyWithoutUserInput
+    userGrantApplications?: UserGrantApplicationCreateNestedManyWithoutUserInput
+    questions?: QuestionCreateNestedManyWithoutAuthorInput
+    answers?: AnswerCreateNestedManyWithoutAuthorInput
+    questionLikes?: QuestionLikeCreateNestedManyWithoutUserInput
+    reviews?: ReviewCreateNestedManyWithoutUserInput
+    guideReads?: GuideReadCreateNestedManyWithoutUserInput
+    passwordSetupTokens?: PasswordSetupTokenCreateNestedManyWithoutUserInput
+    buddyApplications?: BuddyApplicationCreateNestedManyWithoutUserInput
+    adminAuditLogs?: AdminAuditLogCreateNestedManyWithoutActorInput
+    adminSupportResponses?: SupportResponseCreateNestedManyWithoutAdminUserInput
+  }
+
+  export type UserUncheckedCreateWithoutAdminInboxReadsInput = {
+    id?: string
+    email: string
+    password: string
+    name: string
+    language?: string
+    country: string
+    role?: string
+    registeredAt?: Date | string
+    university?: string | null
+    faculty?: string | null
+    year?: string | null
+    plan?: string
+    phone?: string | null
+    gender?: string | null
+    emailNotifications?: boolean
+    timezone?: string
+    tokenVersion?: number
+    blockedAt?: Date | string | null
+    reminders?: ReminderUncheckedCreateNestedManyWithoutUserInput
+    notes?: NoteUncheckedCreateNestedManyWithoutUserInput
+    chatMessages?: ChatMessageUncheckedCreateNestedManyWithoutUserInput
+    profile?: ProfileUncheckedCreateNestedOneWithoutUserInput
+    supportTickets?: SupportTicketUncheckedCreateNestedManyWithoutUserInput
+    payments?: PaymentUncheckedCreateNestedManyWithoutUserInput
+    subscriptions?: SubscriptionUncheckedCreateNestedManyWithoutUserInput
+    userGrantApplications?: UserGrantApplicationUncheckedCreateNestedManyWithoutUserInput
+    questions?: QuestionUncheckedCreateNestedManyWithoutAuthorInput
+    answers?: AnswerUncheckedCreateNestedManyWithoutAuthorInput
+    questionLikes?: QuestionLikeUncheckedCreateNestedManyWithoutUserInput
+    reviews?: ReviewUncheckedCreateNestedManyWithoutUserInput
+    guideReads?: GuideReadUncheckedCreateNestedManyWithoutUserInput
+    passwordSetupTokens?: PasswordSetupTokenUncheckedCreateNestedManyWithoutUserInput
+    buddyApplications?: BuddyApplicationUncheckedCreateNestedManyWithoutUserInput
+    adminAuditLogs?: AdminAuditLogUncheckedCreateNestedManyWithoutActorInput
+    adminSupportResponses?: SupportResponseUncheckedCreateNestedManyWithoutAdminUserInput
+  }
+
+  export type UserCreateOrConnectWithoutAdminInboxReadsInput = {
+    where: UserWhereUniqueInput
+    create: XOR<UserCreateWithoutAdminInboxReadsInput, UserUncheckedCreateWithoutAdminInboxReadsInput>
+  }
+
+  export type UserUpsertWithoutAdminInboxReadsInput = {
+    update: XOR<UserUpdateWithoutAdminInboxReadsInput, UserUncheckedUpdateWithoutAdminInboxReadsInput>
+    create: XOR<UserCreateWithoutAdminInboxReadsInput, UserUncheckedCreateWithoutAdminInboxReadsInput>
+    where?: UserWhereInput
+  }
+
+  export type UserUpdateToOneWithWhereWithoutAdminInboxReadsInput = {
+    where?: UserWhereInput
+    data: XOR<UserUpdateWithoutAdminInboxReadsInput, UserUncheckedUpdateWithoutAdminInboxReadsInput>
+  }
+
+  export type UserUpdateWithoutAdminInboxReadsInput = {
+    id?: StringFieldUpdateOperationsInput | string
+    email?: StringFieldUpdateOperationsInput | string
+    password?: StringFieldUpdateOperationsInput | string
+    name?: StringFieldUpdateOperationsInput | string
+    language?: StringFieldUpdateOperationsInput | string
+    country?: StringFieldUpdateOperationsInput | string
+    role?: StringFieldUpdateOperationsInput | string
+    registeredAt?: DateTimeFieldUpdateOperationsInput | Date | string
+    university?: NullableStringFieldUpdateOperationsInput | string | null
+    faculty?: NullableStringFieldUpdateOperationsInput | string | null
+    year?: NullableStringFieldUpdateOperationsInput | string | null
+    plan?: StringFieldUpdateOperationsInput | string
+    phone?: NullableStringFieldUpdateOperationsInput | string | null
+    gender?: NullableStringFieldUpdateOperationsInput | string | null
+    emailNotifications?: BoolFieldUpdateOperationsInput | boolean
+    timezone?: StringFieldUpdateOperationsInput | string
+    tokenVersion?: IntFieldUpdateOperationsInput | number
+    blockedAt?: NullableDateTimeFieldUpdateOperationsInput | Date | string | null
+    reminders?: ReminderUpdateManyWithoutUserNestedInput
+    notes?: NoteUpdateManyWithoutUserNestedInput
+    chatMessages?: ChatMessageUpdateManyWithoutUserNestedInput
+    profile?: ProfileUpdateOneWithoutUserNestedInput
+    supportTickets?: SupportTicketUpdateManyWithoutUserNestedInput
+    payments?: PaymentUpdateManyWithoutUserNestedInput
+    subscriptions?: SubscriptionUpdateManyWithoutUserNestedInput
+    userGrantApplications?: UserGrantApplicationUpdateManyWithoutUserNestedInput
+    questions?: QuestionUpdateManyWithoutAuthorNestedInput
+    answers?: AnswerUpdateManyWithoutAuthorNestedInput
+    questionLikes?: QuestionLikeUpdateManyWithoutUserNestedInput
+    reviews?: ReviewUpdateManyWithoutUserNestedInput
+    guideReads?: GuideReadUpdateManyWithoutUserNestedInput
+    passwordSetupTokens?: PasswordSetupTokenUpdateManyWithoutUserNestedInput
+    buddyApplications?: BuddyApplicationUpdateManyWithoutUserNestedInput
+    adminAuditLogs?: AdminAuditLogUpdateManyWithoutActorNestedInput
+    adminSupportResponses?: SupportResponseUpdateManyWithoutAdminUserNestedInput
+  }
+
+  export type UserUncheckedUpdateWithoutAdminInboxReadsInput = {
+    id?: StringFieldUpdateOperationsInput | string
+    email?: StringFieldUpdateOperationsInput | string
+    password?: StringFieldUpdateOperationsInput | string
+    name?: StringFieldUpdateOperationsInput | string
+    language?: StringFieldUpdateOperationsInput | string
+    country?: StringFieldUpdateOperationsInput | string
+    role?: StringFieldUpdateOperationsInput | string
+    registeredAt?: DateTimeFieldUpdateOperationsInput | Date | string
+    university?: NullableStringFieldUpdateOperationsInput | string | null
+    faculty?: NullableStringFieldUpdateOperationsInput | string | null
+    year?: NullableStringFieldUpdateOperationsInput | string | null
+    plan?: StringFieldUpdateOperationsInput | string
+    phone?: NullableStringFieldUpdateOperationsInput | string | null
+    gender?: NullableStringFieldUpdateOperationsInput | string | null
+    emailNotifications?: BoolFieldUpdateOperationsInput | boolean
+    timezone?: StringFieldUpdateOperationsInput | string
+    tokenVersion?: IntFieldUpdateOperationsInput | number
+    blockedAt?: NullableDateTimeFieldUpdateOperationsInput | Date | string | null
+    reminders?: ReminderUncheckedUpdateManyWithoutUserNestedInput
+    notes?: NoteUncheckedUpdateManyWithoutUserNestedInput
+    chatMessages?: ChatMessageUncheckedUpdateManyWithoutUserNestedInput
+    profile?: ProfileUncheckedUpdateOneWithoutUserNestedInput
+    supportTickets?: SupportTicketUncheckedUpdateManyWithoutUserNestedInput
+    payments?: PaymentUncheckedUpdateManyWithoutUserNestedInput
+    subscriptions?: SubscriptionUncheckedUpdateManyWithoutUserNestedInput
+    userGrantApplications?: UserGrantApplicationUncheckedUpdateManyWithoutUserNestedInput
+    questions?: QuestionUncheckedUpdateManyWithoutAuthorNestedInput
+    answers?: AnswerUncheckedUpdateManyWithoutAuthorNestedInput
+    questionLikes?: QuestionLikeUncheckedUpdateManyWithoutUserNestedInput
+    reviews?: ReviewUncheckedUpdateManyWithoutUserNestedInput
+    guideReads?: GuideReadUncheckedUpdateManyWithoutUserNestedInput
+    passwordSetupTokens?: PasswordSetupTokenUncheckedUpdateManyWithoutUserNestedInput
+    buddyApplications?: BuddyApplicationUncheckedUpdateManyWithoutUserNestedInput
+    adminAuditLogs?: AdminAuditLogUncheckedUpdateManyWithoutActorNestedInput
+    adminSupportResponses?: SupportResponseUncheckedUpdateManyWithoutAdminUserNestedInput
+  }
+
+  export type UserCreateWithoutAdminAuditLogsInput = {
+    id?: string
+    email: string
+    password: string
+    name: string
+    language?: string
+    country: string
+    role?: string
+    registeredAt?: Date | string
+    university?: string | null
+    faculty?: string | null
+    year?: string | null
+    plan?: string
+    phone?: string | null
+    gender?: string | null
+    emailNotifications?: boolean
+    timezone?: string
+    tokenVersion?: number
+    blockedAt?: Date | string | null
+    reminders?: ReminderCreateNestedManyWithoutUserInput
+    notes?: NoteCreateNestedManyWithoutUserInput
+    chatMessages?: ChatMessageCreateNestedManyWithoutUserInput
+    profile?: ProfileCreateNestedOneWithoutUserInput
+    supportTickets?: SupportTicketCreateNestedManyWithoutUserInput
+    payments?: PaymentCreateNestedManyWithoutUserInput
+    subscriptions?: SubscriptionCreateNestedManyWithoutUserInput
+    userGrantApplications?: UserGrantApplicationCreateNestedManyWithoutUserInput
+    questions?: QuestionCreateNestedManyWithoutAuthorInput
+    answers?: AnswerCreateNestedManyWithoutAuthorInput
+    questionLikes?: QuestionLikeCreateNestedManyWithoutUserInput
+    reviews?: ReviewCreateNestedManyWithoutUserInput
+    guideReads?: GuideReadCreateNestedManyWithoutUserInput
+    passwordSetupTokens?: PasswordSetupTokenCreateNestedManyWithoutUserInput
+    buddyApplications?: BuddyApplicationCreateNestedManyWithoutUserInput
+    adminInboxReads?: AdminInboxReadCreateNestedManyWithoutAdminUserInput
+    adminSupportResponses?: SupportResponseCreateNestedManyWithoutAdminUserInput
+  }
+
+  export type UserUncheckedCreateWithoutAdminAuditLogsInput = {
+    id?: string
+    email: string
+    password: string
+    name: string
+    language?: string
+    country: string
+    role?: string
+    registeredAt?: Date | string
+    university?: string | null
+    faculty?: string | null
+    year?: string | null
+    plan?: string
+    phone?: string | null
+    gender?: string | null
+    emailNotifications?: boolean
+    timezone?: string
+    tokenVersion?: number
+    blockedAt?: Date | string | null
+    reminders?: ReminderUncheckedCreateNestedManyWithoutUserInput
+    notes?: NoteUncheckedCreateNestedManyWithoutUserInput
+    chatMessages?: ChatMessageUncheckedCreateNestedManyWithoutUserInput
+    profile?: ProfileUncheckedCreateNestedOneWithoutUserInput
+    supportTickets?: SupportTicketUncheckedCreateNestedManyWithoutUserInput
+    payments?: PaymentUncheckedCreateNestedManyWithoutUserInput
+    subscriptions?: SubscriptionUncheckedCreateNestedManyWithoutUserInput
+    userGrantApplications?: UserGrantApplicationUncheckedCreateNestedManyWithoutUserInput
+    questions?: QuestionUncheckedCreateNestedManyWithoutAuthorInput
+    answers?: AnswerUncheckedCreateNestedManyWithoutAuthorInput
+    questionLikes?: QuestionLikeUncheckedCreateNestedManyWithoutUserInput
+    reviews?: ReviewUncheckedCreateNestedManyWithoutUserInput
+    guideReads?: GuideReadUncheckedCreateNestedManyWithoutUserInput
+    passwordSetupTokens?: PasswordSetupTokenUncheckedCreateNestedManyWithoutUserInput
+    buddyApplications?: BuddyApplicationUncheckedCreateNestedManyWithoutUserInput
+    adminInboxReads?: AdminInboxReadUncheckedCreateNestedManyWithoutAdminUserInput
+    adminSupportResponses?: SupportResponseUncheckedCreateNestedManyWithoutAdminUserInput
+  }
+
+  export type UserCreateOrConnectWithoutAdminAuditLogsInput = {
+    where: UserWhereUniqueInput
+    create: XOR<UserCreateWithoutAdminAuditLogsInput, UserUncheckedCreateWithoutAdminAuditLogsInput>
+  }
+
+  export type UserUpsertWithoutAdminAuditLogsInput = {
+    update: XOR<UserUpdateWithoutAdminAuditLogsInput, UserUncheckedUpdateWithoutAdminAuditLogsInput>
+    create: XOR<UserCreateWithoutAdminAuditLogsInput, UserUncheckedCreateWithoutAdminAuditLogsInput>
+    where?: UserWhereInput
+  }
+
+  export type UserUpdateToOneWithWhereWithoutAdminAuditLogsInput = {
+    where?: UserWhereInput
+    data: XOR<UserUpdateWithoutAdminAuditLogsInput, UserUncheckedUpdateWithoutAdminAuditLogsInput>
+  }
+
+  export type UserUpdateWithoutAdminAuditLogsInput = {
+    id?: StringFieldUpdateOperationsInput | string
+    email?: StringFieldUpdateOperationsInput | string
+    password?: StringFieldUpdateOperationsInput | string
+    name?: StringFieldUpdateOperationsInput | string
+    language?: StringFieldUpdateOperationsInput | string
+    country?: StringFieldUpdateOperationsInput | string
+    role?: StringFieldUpdateOperationsInput | string
+    registeredAt?: DateTimeFieldUpdateOperationsInput | Date | string
+    university?: NullableStringFieldUpdateOperationsInput | string | null
+    faculty?: NullableStringFieldUpdateOperationsInput | string | null
+    year?: NullableStringFieldUpdateOperationsInput | string | null
+    plan?: StringFieldUpdateOperationsInput | string
+    phone?: NullableStringFieldUpdateOperationsInput | string | null
+    gender?: NullableStringFieldUpdateOperationsInput | string | null
+    emailNotifications?: BoolFieldUpdateOperationsInput | boolean
+    timezone?: StringFieldUpdateOperationsInput | string
+    tokenVersion?: IntFieldUpdateOperationsInput | number
+    blockedAt?: NullableDateTimeFieldUpdateOperationsInput | Date | string | null
+    reminders?: ReminderUpdateManyWithoutUserNestedInput
+    notes?: NoteUpdateManyWithoutUserNestedInput
+    chatMessages?: ChatMessageUpdateManyWithoutUserNestedInput
+    profile?: ProfileUpdateOneWithoutUserNestedInput
+    supportTickets?: SupportTicketUpdateManyWithoutUserNestedInput
+    payments?: PaymentUpdateManyWithoutUserNestedInput
+    subscriptions?: SubscriptionUpdateManyWithoutUserNestedInput
+    userGrantApplications?: UserGrantApplicationUpdateManyWithoutUserNestedInput
+    questions?: QuestionUpdateManyWithoutAuthorNestedInput
+    answers?: AnswerUpdateManyWithoutAuthorNestedInput
+    questionLikes?: QuestionLikeUpdateManyWithoutUserNestedInput
+    reviews?: ReviewUpdateManyWithoutUserNestedInput
+    guideReads?: GuideReadUpdateManyWithoutUserNestedInput
+    passwordSetupTokens?: PasswordSetupTokenUpdateManyWithoutUserNestedInput
+    buddyApplications?: BuddyApplicationUpdateManyWithoutUserNestedInput
+    adminInboxReads?: AdminInboxReadUpdateManyWithoutAdminUserNestedInput
+    adminSupportResponses?: SupportResponseUpdateManyWithoutAdminUserNestedInput
+  }
+
+  export type UserUncheckedUpdateWithoutAdminAuditLogsInput = {
+    id?: StringFieldUpdateOperationsInput | string
+    email?: StringFieldUpdateOperationsInput | string
+    password?: StringFieldUpdateOperationsInput | string
+    name?: StringFieldUpdateOperationsInput | string
+    language?: StringFieldUpdateOperationsInput | string
+    country?: StringFieldUpdateOperationsInput | string
+    role?: StringFieldUpdateOperationsInput | string
+    registeredAt?: DateTimeFieldUpdateOperationsInput | Date | string
+    university?: NullableStringFieldUpdateOperationsInput | string | null
+    faculty?: NullableStringFieldUpdateOperationsInput | string | null
+    year?: NullableStringFieldUpdateOperationsInput | string | null
+    plan?: StringFieldUpdateOperationsInput | string
+    phone?: NullableStringFieldUpdateOperationsInput | string | null
+    gender?: NullableStringFieldUpdateOperationsInput | string | null
+    emailNotifications?: BoolFieldUpdateOperationsInput | boolean
+    timezone?: StringFieldUpdateOperationsInput | string
+    tokenVersion?: IntFieldUpdateOperationsInput | number
+    blockedAt?: NullableDateTimeFieldUpdateOperationsInput | Date | string | null
+    reminders?: ReminderUncheckedUpdateManyWithoutUserNestedInput
+    notes?: NoteUncheckedUpdateManyWithoutUserNestedInput
+    chatMessages?: ChatMessageUncheckedUpdateManyWithoutUserNestedInput
+    profile?: ProfileUncheckedUpdateOneWithoutUserNestedInput
+    supportTickets?: SupportTicketUncheckedUpdateManyWithoutUserNestedInput
+    payments?: PaymentUncheckedUpdateManyWithoutUserNestedInput
+    subscriptions?: SubscriptionUncheckedUpdateManyWithoutUserNestedInput
+    userGrantApplications?: UserGrantApplicationUncheckedUpdateManyWithoutUserNestedInput
+    questions?: QuestionUncheckedUpdateManyWithoutAuthorNestedInput
+    answers?: AnswerUncheckedUpdateManyWithoutAuthorNestedInput
+    questionLikes?: QuestionLikeUncheckedUpdateManyWithoutUserNestedInput
+    reviews?: ReviewUncheckedUpdateManyWithoutUserNestedInput
+    guideReads?: GuideReadUncheckedUpdateManyWithoutUserNestedInput
+    passwordSetupTokens?: PasswordSetupTokenUncheckedUpdateManyWithoutUserNestedInput
+    buddyApplications?: BuddyApplicationUncheckedUpdateManyWithoutUserNestedInput
+    adminInboxReads?: AdminInboxReadUncheckedUpdateManyWithoutAdminUserNestedInput
+    adminSupportResponses?: SupportResponseUncheckedUpdateManyWithoutAdminUserNestedInput
+  }
+
   export type SupportResponseCreateWithoutAdminInput = {
     id?: string
     content: string
     isAdmin?: boolean
+    readByUserAt?: Date | string | null
     createdAt?: Date | string
     ticket: SupportTicketCreateNestedOneWithoutResponsesInput
+    adminUser?: UserCreateNestedOneWithoutAdminSupportResponsesInput
   }
 
   export type SupportResponseUncheckedCreateWithoutAdminInput = {
     id?: string
     ticketId: string
+    adminUserId?: string | null
     content: string
     isAdmin?: boolean
+    readByUserAt?: Date | string | null
     createdAt?: Date | string
   }
 
@@ -34133,6 +37751,9 @@ export namespace Prisma {
     guideReads?: GuideReadCreateNestedManyWithoutUserInput
     passwordSetupTokens?: PasswordSetupTokenCreateNestedManyWithoutUserInput
     buddyApplications?: BuddyApplicationCreateNestedManyWithoutUserInput
+    adminInboxReads?: AdminInboxReadCreateNestedManyWithoutAdminUserInput
+    adminAuditLogs?: AdminAuditLogCreateNestedManyWithoutActorInput
+    adminSupportResponses?: SupportResponseCreateNestedManyWithoutAdminUserInput
   }
 
   export type UserUncheckedCreateWithoutPaymentsInput = {
@@ -34168,6 +37789,9 @@ export namespace Prisma {
     guideReads?: GuideReadUncheckedCreateNestedManyWithoutUserInput
     passwordSetupTokens?: PasswordSetupTokenUncheckedCreateNestedManyWithoutUserInput
     buddyApplications?: BuddyApplicationUncheckedCreateNestedManyWithoutUserInput
+    adminInboxReads?: AdminInboxReadUncheckedCreateNestedManyWithoutAdminUserInput
+    adminAuditLogs?: AdminAuditLogUncheckedCreateNestedManyWithoutActorInput
+    adminSupportResponses?: SupportResponseUncheckedCreateNestedManyWithoutAdminUserInput
   }
 
   export type UserCreateOrConnectWithoutPaymentsInput = {
@@ -34253,6 +37877,9 @@ export namespace Prisma {
     guideReads?: GuideReadUpdateManyWithoutUserNestedInput
     passwordSetupTokens?: PasswordSetupTokenUpdateManyWithoutUserNestedInput
     buddyApplications?: BuddyApplicationUpdateManyWithoutUserNestedInput
+    adminInboxReads?: AdminInboxReadUpdateManyWithoutAdminUserNestedInput
+    adminAuditLogs?: AdminAuditLogUpdateManyWithoutActorNestedInput
+    adminSupportResponses?: SupportResponseUpdateManyWithoutAdminUserNestedInput
   }
 
   export type UserUncheckedUpdateWithoutPaymentsInput = {
@@ -34288,6 +37915,9 @@ export namespace Prisma {
     guideReads?: GuideReadUncheckedUpdateManyWithoutUserNestedInput
     passwordSetupTokens?: PasswordSetupTokenUncheckedUpdateManyWithoutUserNestedInput
     buddyApplications?: BuddyApplicationUncheckedUpdateManyWithoutUserNestedInput
+    adminInboxReads?: AdminInboxReadUncheckedUpdateManyWithoutAdminUserNestedInput
+    adminAuditLogs?: AdminAuditLogUncheckedUpdateManyWithoutActorNestedInput
+    adminSupportResponses?: SupportResponseUncheckedUpdateManyWithoutAdminUserNestedInput
   }
 
   export type SubscriptionUpsertWithWhereUniqueWithoutPaymentInput = {
@@ -34339,6 +37969,9 @@ export namespace Prisma {
     guideReads?: GuideReadCreateNestedManyWithoutUserInput
     passwordSetupTokens?: PasswordSetupTokenCreateNestedManyWithoutUserInput
     buddyApplications?: BuddyApplicationCreateNestedManyWithoutUserInput
+    adminInboxReads?: AdminInboxReadCreateNestedManyWithoutAdminUserInput
+    adminAuditLogs?: AdminAuditLogCreateNestedManyWithoutActorInput
+    adminSupportResponses?: SupportResponseCreateNestedManyWithoutAdminUserInput
   }
 
   export type UserUncheckedCreateWithoutSubscriptionsInput = {
@@ -34374,6 +38007,9 @@ export namespace Prisma {
     guideReads?: GuideReadUncheckedCreateNestedManyWithoutUserInput
     passwordSetupTokens?: PasswordSetupTokenUncheckedCreateNestedManyWithoutUserInput
     buddyApplications?: BuddyApplicationUncheckedCreateNestedManyWithoutUserInput
+    adminInboxReads?: AdminInboxReadUncheckedCreateNestedManyWithoutAdminUserInput
+    adminAuditLogs?: AdminAuditLogUncheckedCreateNestedManyWithoutActorInput
+    adminSupportResponses?: SupportResponseUncheckedCreateNestedManyWithoutAdminUserInput
   }
 
   export type UserCreateOrConnectWithoutSubscriptionsInput = {
@@ -34487,6 +38123,9 @@ export namespace Prisma {
     guideReads?: GuideReadUpdateManyWithoutUserNestedInput
     passwordSetupTokens?: PasswordSetupTokenUpdateManyWithoutUserNestedInput
     buddyApplications?: BuddyApplicationUpdateManyWithoutUserNestedInput
+    adminInboxReads?: AdminInboxReadUpdateManyWithoutAdminUserNestedInput
+    adminAuditLogs?: AdminAuditLogUpdateManyWithoutActorNestedInput
+    adminSupportResponses?: SupportResponseUpdateManyWithoutAdminUserNestedInput
   }
 
   export type UserUncheckedUpdateWithoutSubscriptionsInput = {
@@ -34522,6 +38161,9 @@ export namespace Prisma {
     guideReads?: GuideReadUncheckedUpdateManyWithoutUserNestedInput
     passwordSetupTokens?: PasswordSetupTokenUncheckedUpdateManyWithoutUserNestedInput
     buddyApplications?: BuddyApplicationUncheckedUpdateManyWithoutUserNestedInput
+    adminInboxReads?: AdminInboxReadUncheckedUpdateManyWithoutAdminUserNestedInput
+    adminAuditLogs?: AdminAuditLogUncheckedUpdateManyWithoutActorNestedInput
+    adminSupportResponses?: SupportResponseUncheckedUpdateManyWithoutAdminUserNestedInput
   }
 
   export type SubscriptionPlanUpsertWithoutSubscriptionsInput = {
@@ -34679,6 +38321,9 @@ export namespace Prisma {
     guideReads?: GuideReadCreateNestedManyWithoutUserInput
     passwordSetupTokens?: PasswordSetupTokenCreateNestedManyWithoutUserInput
     buddyApplications?: BuddyApplicationCreateNestedManyWithoutUserInput
+    adminInboxReads?: AdminInboxReadCreateNestedManyWithoutAdminUserInput
+    adminAuditLogs?: AdminAuditLogCreateNestedManyWithoutActorInput
+    adminSupportResponses?: SupportResponseCreateNestedManyWithoutAdminUserInput
   }
 
   export type UserUncheckedCreateWithoutUserGrantApplicationsInput = {
@@ -34714,6 +38359,9 @@ export namespace Prisma {
     guideReads?: GuideReadUncheckedCreateNestedManyWithoutUserInput
     passwordSetupTokens?: PasswordSetupTokenUncheckedCreateNestedManyWithoutUserInput
     buddyApplications?: BuddyApplicationUncheckedCreateNestedManyWithoutUserInput
+    adminInboxReads?: AdminInboxReadUncheckedCreateNestedManyWithoutAdminUserInput
+    adminAuditLogs?: AdminAuditLogUncheckedCreateNestedManyWithoutActorInput
+    adminSupportResponses?: SupportResponseUncheckedCreateNestedManyWithoutAdminUserInput
   }
 
   export type UserCreateOrConnectWithoutUserGrantApplicationsInput = {
@@ -34814,6 +38462,9 @@ export namespace Prisma {
     guideReads?: GuideReadUpdateManyWithoutUserNestedInput
     passwordSetupTokens?: PasswordSetupTokenUpdateManyWithoutUserNestedInput
     buddyApplications?: BuddyApplicationUpdateManyWithoutUserNestedInput
+    adminInboxReads?: AdminInboxReadUpdateManyWithoutAdminUserNestedInput
+    adminAuditLogs?: AdminAuditLogUpdateManyWithoutActorNestedInput
+    adminSupportResponses?: SupportResponseUpdateManyWithoutAdminUserNestedInput
   }
 
   export type UserUncheckedUpdateWithoutUserGrantApplicationsInput = {
@@ -34849,6 +38500,9 @@ export namespace Prisma {
     guideReads?: GuideReadUncheckedUpdateManyWithoutUserNestedInput
     passwordSetupTokens?: PasswordSetupTokenUncheckedUpdateManyWithoutUserNestedInput
     buddyApplications?: BuddyApplicationUncheckedUpdateManyWithoutUserNestedInput
+    adminInboxReads?: AdminInboxReadUncheckedUpdateManyWithoutAdminUserNestedInput
+    adminAuditLogs?: AdminAuditLogUncheckedUpdateManyWithoutActorNestedInput
+    adminSupportResponses?: SupportResponseUncheckedUpdateManyWithoutAdminUserNestedInput
   }
 
   export type GrantUpsertWithoutApplicationsInput = {
@@ -34939,6 +38593,9 @@ export namespace Prisma {
     guideReads?: GuideReadCreateNestedManyWithoutUserInput
     passwordSetupTokens?: PasswordSetupTokenCreateNestedManyWithoutUserInput
     buddyApplications?: BuddyApplicationCreateNestedManyWithoutUserInput
+    adminInboxReads?: AdminInboxReadCreateNestedManyWithoutAdminUserInput
+    adminAuditLogs?: AdminAuditLogCreateNestedManyWithoutActorInput
+    adminSupportResponses?: SupportResponseCreateNestedManyWithoutAdminUserInput
   }
 
   export type UserUncheckedCreateWithoutQuestionsInput = {
@@ -34974,6 +38631,9 @@ export namespace Prisma {
     guideReads?: GuideReadUncheckedCreateNestedManyWithoutUserInput
     passwordSetupTokens?: PasswordSetupTokenUncheckedCreateNestedManyWithoutUserInput
     buddyApplications?: BuddyApplicationUncheckedCreateNestedManyWithoutUserInput
+    adminInboxReads?: AdminInboxReadUncheckedCreateNestedManyWithoutAdminUserInput
+    adminAuditLogs?: AdminAuditLogUncheckedCreateNestedManyWithoutActorInput
+    adminSupportResponses?: SupportResponseUncheckedCreateNestedManyWithoutAdminUserInput
   }
 
   export type UserCreateOrConnectWithoutQuestionsInput = {
@@ -35073,6 +38733,9 @@ export namespace Prisma {
     guideReads?: GuideReadUpdateManyWithoutUserNestedInput
     passwordSetupTokens?: PasswordSetupTokenUpdateManyWithoutUserNestedInput
     buddyApplications?: BuddyApplicationUpdateManyWithoutUserNestedInput
+    adminInboxReads?: AdminInboxReadUpdateManyWithoutAdminUserNestedInput
+    adminAuditLogs?: AdminAuditLogUpdateManyWithoutActorNestedInput
+    adminSupportResponses?: SupportResponseUpdateManyWithoutAdminUserNestedInput
   }
 
   export type UserUncheckedUpdateWithoutQuestionsInput = {
@@ -35108,6 +38771,9 @@ export namespace Prisma {
     guideReads?: GuideReadUncheckedUpdateManyWithoutUserNestedInput
     passwordSetupTokens?: PasswordSetupTokenUncheckedUpdateManyWithoutUserNestedInput
     buddyApplications?: BuddyApplicationUncheckedUpdateManyWithoutUserNestedInput
+    adminInboxReads?: AdminInboxReadUncheckedUpdateManyWithoutAdminUserNestedInput
+    adminAuditLogs?: AdminAuditLogUncheckedUpdateManyWithoutActorNestedInput
+    adminSupportResponses?: SupportResponseUncheckedUpdateManyWithoutAdminUserNestedInput
   }
 
   export type AnswerUpsertWithWhereUniqueWithoutQuestionInput = {
@@ -35204,6 +38870,9 @@ export namespace Prisma {
     guideReads?: GuideReadCreateNestedManyWithoutUserInput
     passwordSetupTokens?: PasswordSetupTokenCreateNestedManyWithoutUserInput
     buddyApplications?: BuddyApplicationCreateNestedManyWithoutUserInput
+    adminInboxReads?: AdminInboxReadCreateNestedManyWithoutAdminUserInput
+    adminAuditLogs?: AdminAuditLogCreateNestedManyWithoutActorInput
+    adminSupportResponses?: SupportResponseCreateNestedManyWithoutAdminUserInput
   }
 
   export type UserUncheckedCreateWithoutAnswersInput = {
@@ -35239,6 +38908,9 @@ export namespace Prisma {
     guideReads?: GuideReadUncheckedCreateNestedManyWithoutUserInput
     passwordSetupTokens?: PasswordSetupTokenUncheckedCreateNestedManyWithoutUserInput
     buddyApplications?: BuddyApplicationUncheckedCreateNestedManyWithoutUserInput
+    adminInboxReads?: AdminInboxReadUncheckedCreateNestedManyWithoutAdminUserInput
+    adminAuditLogs?: AdminAuditLogUncheckedCreateNestedManyWithoutActorInput
+    adminSupportResponses?: SupportResponseUncheckedCreateNestedManyWithoutAdminUserInput
   }
 
   export type UserCreateOrConnectWithoutAnswersInput = {
@@ -35325,6 +38997,9 @@ export namespace Prisma {
     guideReads?: GuideReadUpdateManyWithoutUserNestedInput
     passwordSetupTokens?: PasswordSetupTokenUpdateManyWithoutUserNestedInput
     buddyApplications?: BuddyApplicationUpdateManyWithoutUserNestedInput
+    adminInboxReads?: AdminInboxReadUpdateManyWithoutAdminUserNestedInput
+    adminAuditLogs?: AdminAuditLogUpdateManyWithoutActorNestedInput
+    adminSupportResponses?: SupportResponseUpdateManyWithoutAdminUserNestedInput
   }
 
   export type UserUncheckedUpdateWithoutAnswersInput = {
@@ -35360,6 +39035,9 @@ export namespace Prisma {
     guideReads?: GuideReadUncheckedUpdateManyWithoutUserNestedInput
     passwordSetupTokens?: PasswordSetupTokenUncheckedUpdateManyWithoutUserNestedInput
     buddyApplications?: BuddyApplicationUncheckedUpdateManyWithoutUserNestedInput
+    adminInboxReads?: AdminInboxReadUncheckedUpdateManyWithoutAdminUserNestedInput
+    adminAuditLogs?: AdminAuditLogUncheckedUpdateManyWithoutActorNestedInput
+    adminSupportResponses?: SupportResponseUncheckedUpdateManyWithoutAdminUserNestedInput
   }
 
   export type QuestionCreateWithoutLikesInput = {
@@ -35424,6 +39102,9 @@ export namespace Prisma {
     guideReads?: GuideReadCreateNestedManyWithoutUserInput
     passwordSetupTokens?: PasswordSetupTokenCreateNestedManyWithoutUserInput
     buddyApplications?: BuddyApplicationCreateNestedManyWithoutUserInput
+    adminInboxReads?: AdminInboxReadCreateNestedManyWithoutAdminUserInput
+    adminAuditLogs?: AdminAuditLogCreateNestedManyWithoutActorInput
+    adminSupportResponses?: SupportResponseCreateNestedManyWithoutAdminUserInput
   }
 
   export type UserUncheckedCreateWithoutQuestionLikesInput = {
@@ -35459,6 +39140,9 @@ export namespace Prisma {
     guideReads?: GuideReadUncheckedCreateNestedManyWithoutUserInput
     passwordSetupTokens?: PasswordSetupTokenUncheckedCreateNestedManyWithoutUserInput
     buddyApplications?: BuddyApplicationUncheckedCreateNestedManyWithoutUserInput
+    adminInboxReads?: AdminInboxReadUncheckedCreateNestedManyWithoutAdminUserInput
+    adminAuditLogs?: AdminAuditLogUncheckedCreateNestedManyWithoutActorInput
+    adminSupportResponses?: SupportResponseUncheckedCreateNestedManyWithoutAdminUserInput
   }
 
   export type UserCreateOrConnectWithoutQuestionLikesInput = {
@@ -35545,6 +39229,9 @@ export namespace Prisma {
     guideReads?: GuideReadUpdateManyWithoutUserNestedInput
     passwordSetupTokens?: PasswordSetupTokenUpdateManyWithoutUserNestedInput
     buddyApplications?: BuddyApplicationUpdateManyWithoutUserNestedInput
+    adminInboxReads?: AdminInboxReadUpdateManyWithoutAdminUserNestedInput
+    adminAuditLogs?: AdminAuditLogUpdateManyWithoutActorNestedInput
+    adminSupportResponses?: SupportResponseUpdateManyWithoutAdminUserNestedInput
   }
 
   export type UserUncheckedUpdateWithoutQuestionLikesInput = {
@@ -35580,6 +39267,9 @@ export namespace Prisma {
     guideReads?: GuideReadUncheckedUpdateManyWithoutUserNestedInput
     passwordSetupTokens?: PasswordSetupTokenUncheckedUpdateManyWithoutUserNestedInput
     buddyApplications?: BuddyApplicationUncheckedUpdateManyWithoutUserNestedInput
+    adminInboxReads?: AdminInboxReadUncheckedUpdateManyWithoutAdminUserNestedInput
+    adminAuditLogs?: AdminAuditLogUncheckedUpdateManyWithoutActorNestedInput
+    adminSupportResponses?: SupportResponseUncheckedUpdateManyWithoutAdminUserNestedInput
   }
 
   export type UserCreateWithoutGuideReadsInput = {
@@ -35615,6 +39305,9 @@ export namespace Prisma {
     reviews?: ReviewCreateNestedManyWithoutUserInput
     passwordSetupTokens?: PasswordSetupTokenCreateNestedManyWithoutUserInput
     buddyApplications?: BuddyApplicationCreateNestedManyWithoutUserInput
+    adminInboxReads?: AdminInboxReadCreateNestedManyWithoutAdminUserInput
+    adminAuditLogs?: AdminAuditLogCreateNestedManyWithoutActorInput
+    adminSupportResponses?: SupportResponseCreateNestedManyWithoutAdminUserInput
   }
 
   export type UserUncheckedCreateWithoutGuideReadsInput = {
@@ -35650,6 +39343,9 @@ export namespace Prisma {
     reviews?: ReviewUncheckedCreateNestedManyWithoutUserInput
     passwordSetupTokens?: PasswordSetupTokenUncheckedCreateNestedManyWithoutUserInput
     buddyApplications?: BuddyApplicationUncheckedCreateNestedManyWithoutUserInput
+    adminInboxReads?: AdminInboxReadUncheckedCreateNestedManyWithoutAdminUserInput
+    adminAuditLogs?: AdminAuditLogUncheckedCreateNestedManyWithoutActorInput
+    adminSupportResponses?: SupportResponseUncheckedCreateNestedManyWithoutAdminUserInput
   }
 
   export type UserCreateOrConnectWithoutGuideReadsInput = {
@@ -35701,6 +39397,9 @@ export namespace Prisma {
     reviews?: ReviewUpdateManyWithoutUserNestedInput
     passwordSetupTokens?: PasswordSetupTokenUpdateManyWithoutUserNestedInput
     buddyApplications?: BuddyApplicationUpdateManyWithoutUserNestedInput
+    adminInboxReads?: AdminInboxReadUpdateManyWithoutAdminUserNestedInput
+    adminAuditLogs?: AdminAuditLogUpdateManyWithoutActorNestedInput
+    adminSupportResponses?: SupportResponseUpdateManyWithoutAdminUserNestedInput
   }
 
   export type UserUncheckedUpdateWithoutGuideReadsInput = {
@@ -35736,6 +39435,9 @@ export namespace Prisma {
     reviews?: ReviewUncheckedUpdateManyWithoutUserNestedInput
     passwordSetupTokens?: PasswordSetupTokenUncheckedUpdateManyWithoutUserNestedInput
     buddyApplications?: BuddyApplicationUncheckedUpdateManyWithoutUserNestedInput
+    adminInboxReads?: AdminInboxReadUncheckedUpdateManyWithoutAdminUserNestedInput
+    adminAuditLogs?: AdminAuditLogUncheckedUpdateManyWithoutActorNestedInput
+    adminSupportResponses?: SupportResponseUncheckedUpdateManyWithoutAdminUserNestedInput
   }
 
   export type UserCreateWithoutReviewsInput = {
@@ -35771,6 +39473,9 @@ export namespace Prisma {
     guideReads?: GuideReadCreateNestedManyWithoutUserInput
     passwordSetupTokens?: PasswordSetupTokenCreateNestedManyWithoutUserInput
     buddyApplications?: BuddyApplicationCreateNestedManyWithoutUserInput
+    adminInboxReads?: AdminInboxReadCreateNestedManyWithoutAdminUserInput
+    adminAuditLogs?: AdminAuditLogCreateNestedManyWithoutActorInput
+    adminSupportResponses?: SupportResponseCreateNestedManyWithoutAdminUserInput
   }
 
   export type UserUncheckedCreateWithoutReviewsInput = {
@@ -35806,6 +39511,9 @@ export namespace Prisma {
     guideReads?: GuideReadUncheckedCreateNestedManyWithoutUserInput
     passwordSetupTokens?: PasswordSetupTokenUncheckedCreateNestedManyWithoutUserInput
     buddyApplications?: BuddyApplicationUncheckedCreateNestedManyWithoutUserInput
+    adminInboxReads?: AdminInboxReadUncheckedCreateNestedManyWithoutAdminUserInput
+    adminAuditLogs?: AdminAuditLogUncheckedCreateNestedManyWithoutActorInput
+    adminSupportResponses?: SupportResponseUncheckedCreateNestedManyWithoutAdminUserInput
   }
 
   export type UserCreateOrConnectWithoutReviewsInput = {
@@ -35857,6 +39565,9 @@ export namespace Prisma {
     guideReads?: GuideReadUpdateManyWithoutUserNestedInput
     passwordSetupTokens?: PasswordSetupTokenUpdateManyWithoutUserNestedInput
     buddyApplications?: BuddyApplicationUpdateManyWithoutUserNestedInput
+    adminInboxReads?: AdminInboxReadUpdateManyWithoutAdminUserNestedInput
+    adminAuditLogs?: AdminAuditLogUpdateManyWithoutActorNestedInput
+    adminSupportResponses?: SupportResponseUpdateManyWithoutAdminUserNestedInput
   }
 
   export type UserUncheckedUpdateWithoutReviewsInput = {
@@ -35892,6 +39603,9 @@ export namespace Prisma {
     guideReads?: GuideReadUncheckedUpdateManyWithoutUserNestedInput
     passwordSetupTokens?: PasswordSetupTokenUncheckedUpdateManyWithoutUserNestedInput
     buddyApplications?: BuddyApplicationUncheckedUpdateManyWithoutUserNestedInput
+    adminInboxReads?: AdminInboxReadUncheckedUpdateManyWithoutAdminUserNestedInput
+    adminAuditLogs?: AdminAuditLogUncheckedUpdateManyWithoutActorNestedInput
+    adminSupportResponses?: SupportResponseUncheckedUpdateManyWithoutAdminUserNestedInput
   }
 
   export type ReminderCreateManyUserInput = {
@@ -36048,6 +39762,32 @@ export namespace Prisma {
     internalNote?: string | null
     createdAt?: Date | string
     updatedAt?: Date | string
+  }
+
+  export type AdminInboxReadCreateManyAdminUserInput = {
+    id?: string
+    category: string
+    seenAt?: Date | string
+    updatedAt?: Date | string
+  }
+
+  export type AdminAuditLogCreateManyActorInput = {
+    id?: string
+    action: string
+    entityType: string
+    entityId: string
+    metadata?: NullableJsonNullValueInput | InputJsonValue
+    createdAt?: Date | string
+  }
+
+  export type SupportResponseCreateManyAdminUserInput = {
+    id?: string
+    ticketId: string
+    adminId?: string | null
+    content: string
+    isAdmin?: boolean
+    readByUserAt?: Date | string | null
+    createdAt?: Date | string
   }
 
   export type ReminderUpdateWithoutUserInput = {
@@ -36528,6 +40268,84 @@ export namespace Prisma {
     updatedAt?: DateTimeFieldUpdateOperationsInput | Date | string
   }
 
+  export type AdminInboxReadUpdateWithoutAdminUserInput = {
+    id?: StringFieldUpdateOperationsInput | string
+    category?: StringFieldUpdateOperationsInput | string
+    seenAt?: DateTimeFieldUpdateOperationsInput | Date | string
+    updatedAt?: DateTimeFieldUpdateOperationsInput | Date | string
+  }
+
+  export type AdminInboxReadUncheckedUpdateWithoutAdminUserInput = {
+    id?: StringFieldUpdateOperationsInput | string
+    category?: StringFieldUpdateOperationsInput | string
+    seenAt?: DateTimeFieldUpdateOperationsInput | Date | string
+    updatedAt?: DateTimeFieldUpdateOperationsInput | Date | string
+  }
+
+  export type AdminInboxReadUncheckedUpdateManyWithoutAdminUserInput = {
+    id?: StringFieldUpdateOperationsInput | string
+    category?: StringFieldUpdateOperationsInput | string
+    seenAt?: DateTimeFieldUpdateOperationsInput | Date | string
+    updatedAt?: DateTimeFieldUpdateOperationsInput | Date | string
+  }
+
+  export type AdminAuditLogUpdateWithoutActorInput = {
+    id?: StringFieldUpdateOperationsInput | string
+    action?: StringFieldUpdateOperationsInput | string
+    entityType?: StringFieldUpdateOperationsInput | string
+    entityId?: StringFieldUpdateOperationsInput | string
+    metadata?: NullableJsonNullValueInput | InputJsonValue
+    createdAt?: DateTimeFieldUpdateOperationsInput | Date | string
+  }
+
+  export type AdminAuditLogUncheckedUpdateWithoutActorInput = {
+    id?: StringFieldUpdateOperationsInput | string
+    action?: StringFieldUpdateOperationsInput | string
+    entityType?: StringFieldUpdateOperationsInput | string
+    entityId?: StringFieldUpdateOperationsInput | string
+    metadata?: NullableJsonNullValueInput | InputJsonValue
+    createdAt?: DateTimeFieldUpdateOperationsInput | Date | string
+  }
+
+  export type AdminAuditLogUncheckedUpdateManyWithoutActorInput = {
+    id?: StringFieldUpdateOperationsInput | string
+    action?: StringFieldUpdateOperationsInput | string
+    entityType?: StringFieldUpdateOperationsInput | string
+    entityId?: StringFieldUpdateOperationsInput | string
+    metadata?: NullableJsonNullValueInput | InputJsonValue
+    createdAt?: DateTimeFieldUpdateOperationsInput | Date | string
+  }
+
+  export type SupportResponseUpdateWithoutAdminUserInput = {
+    id?: StringFieldUpdateOperationsInput | string
+    content?: StringFieldUpdateOperationsInput | string
+    isAdmin?: BoolFieldUpdateOperationsInput | boolean
+    readByUserAt?: NullableDateTimeFieldUpdateOperationsInput | Date | string | null
+    createdAt?: DateTimeFieldUpdateOperationsInput | Date | string
+    ticket?: SupportTicketUpdateOneRequiredWithoutResponsesNestedInput
+    admin?: AdminUpdateOneWithoutSupportResponsesNestedInput
+  }
+
+  export type SupportResponseUncheckedUpdateWithoutAdminUserInput = {
+    id?: StringFieldUpdateOperationsInput | string
+    ticketId?: StringFieldUpdateOperationsInput | string
+    adminId?: NullableStringFieldUpdateOperationsInput | string | null
+    content?: StringFieldUpdateOperationsInput | string
+    isAdmin?: BoolFieldUpdateOperationsInput | boolean
+    readByUserAt?: NullableDateTimeFieldUpdateOperationsInput | Date | string | null
+    createdAt?: DateTimeFieldUpdateOperationsInput | Date | string
+  }
+
+  export type SupportResponseUncheckedUpdateManyWithoutAdminUserInput = {
+    id?: StringFieldUpdateOperationsInput | string
+    ticketId?: StringFieldUpdateOperationsInput | string
+    adminId?: NullableStringFieldUpdateOperationsInput | string | null
+    content?: StringFieldUpdateOperationsInput | string
+    isAdmin?: BoolFieldUpdateOperationsInput | boolean
+    readByUserAt?: NullableDateTimeFieldUpdateOperationsInput | Date | string | null
+    createdAt?: DateTimeFieldUpdateOperationsInput | Date | string
+  }
+
   export type ReminderCreateManyNoteInput = {
     id?: string
     userId: string
@@ -36591,8 +40409,10 @@ export namespace Prisma {
   export type SupportResponseCreateManyTicketInput = {
     id?: string
     adminId?: string | null
+    adminUserId?: string | null
     content: string
     isAdmin?: boolean
+    readByUserAt?: Date | string | null
     createdAt?: Date | string
   }
 
@@ -36600,31 +40420,39 @@ export namespace Prisma {
     id?: StringFieldUpdateOperationsInput | string
     content?: StringFieldUpdateOperationsInput | string
     isAdmin?: BoolFieldUpdateOperationsInput | boolean
+    readByUserAt?: NullableDateTimeFieldUpdateOperationsInput | Date | string | null
     createdAt?: DateTimeFieldUpdateOperationsInput | Date | string
     admin?: AdminUpdateOneWithoutSupportResponsesNestedInput
+    adminUser?: UserUpdateOneWithoutAdminSupportResponsesNestedInput
   }
 
   export type SupportResponseUncheckedUpdateWithoutTicketInput = {
     id?: StringFieldUpdateOperationsInput | string
     adminId?: NullableStringFieldUpdateOperationsInput | string | null
+    adminUserId?: NullableStringFieldUpdateOperationsInput | string | null
     content?: StringFieldUpdateOperationsInput | string
     isAdmin?: BoolFieldUpdateOperationsInput | boolean
+    readByUserAt?: NullableDateTimeFieldUpdateOperationsInput | Date | string | null
     createdAt?: DateTimeFieldUpdateOperationsInput | Date | string
   }
 
   export type SupportResponseUncheckedUpdateManyWithoutTicketInput = {
     id?: StringFieldUpdateOperationsInput | string
     adminId?: NullableStringFieldUpdateOperationsInput | string | null
+    adminUserId?: NullableStringFieldUpdateOperationsInput | string | null
     content?: StringFieldUpdateOperationsInput | string
     isAdmin?: BoolFieldUpdateOperationsInput | boolean
+    readByUserAt?: NullableDateTimeFieldUpdateOperationsInput | Date | string | null
     createdAt?: DateTimeFieldUpdateOperationsInput | Date | string
   }
 
   export type SupportResponseCreateManyAdminInput = {
     id?: string
     ticketId: string
+    adminUserId?: string | null
     content: string
     isAdmin?: boolean
+    readByUserAt?: Date | string | null
     createdAt?: Date | string
   }
 
@@ -36632,23 +40460,29 @@ export namespace Prisma {
     id?: StringFieldUpdateOperationsInput | string
     content?: StringFieldUpdateOperationsInput | string
     isAdmin?: BoolFieldUpdateOperationsInput | boolean
+    readByUserAt?: NullableDateTimeFieldUpdateOperationsInput | Date | string | null
     createdAt?: DateTimeFieldUpdateOperationsInput | Date | string
     ticket?: SupportTicketUpdateOneRequiredWithoutResponsesNestedInput
+    adminUser?: UserUpdateOneWithoutAdminSupportResponsesNestedInput
   }
 
   export type SupportResponseUncheckedUpdateWithoutAdminInput = {
     id?: StringFieldUpdateOperationsInput | string
     ticketId?: StringFieldUpdateOperationsInput | string
+    adminUserId?: NullableStringFieldUpdateOperationsInput | string | null
     content?: StringFieldUpdateOperationsInput | string
     isAdmin?: BoolFieldUpdateOperationsInput | boolean
+    readByUserAt?: NullableDateTimeFieldUpdateOperationsInput | Date | string | null
     createdAt?: DateTimeFieldUpdateOperationsInput | Date | string
   }
 
   export type SupportResponseUncheckedUpdateManyWithoutAdminInput = {
     id?: StringFieldUpdateOperationsInput | string
     ticketId?: StringFieldUpdateOperationsInput | string
+    adminUserId?: NullableStringFieldUpdateOperationsInput | string | null
     content?: StringFieldUpdateOperationsInput | string
     isAdmin?: BoolFieldUpdateOperationsInput | boolean
+    readByUserAt?: NullableDateTimeFieldUpdateOperationsInput | Date | string | null
     createdAt?: DateTimeFieldUpdateOperationsInput | Date | string
   }
 
@@ -36925,6 +40759,14 @@ export namespace Prisma {
      * @deprecated Use SupportResponseDefaultArgs instead
      */
     export type SupportResponseArgs<ExtArgs extends $Extensions.InternalArgs = $Extensions.DefaultArgs> = SupportResponseDefaultArgs<ExtArgs>
+    /**
+     * @deprecated Use AdminInboxReadDefaultArgs instead
+     */
+    export type AdminInboxReadArgs<ExtArgs extends $Extensions.InternalArgs = $Extensions.DefaultArgs> = AdminInboxReadDefaultArgs<ExtArgs>
+    /**
+     * @deprecated Use AdminAuditLogDefaultArgs instead
+     */
+    export type AdminAuditLogArgs<ExtArgs extends $Extensions.InternalArgs = $Extensions.DefaultArgs> = AdminAuditLogDefaultArgs<ExtArgs>
     /**
      * @deprecated Use AdminDefaultArgs instead
      */
