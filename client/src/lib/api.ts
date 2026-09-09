@@ -110,7 +110,7 @@ class ApiClient {
       DELETE_RATE_LIMITED: 'api.error.tooManyDeletes',
       PAYMENT_RATE_LIMITED: 'api.error.tooManyPayments',
     };
-    if (serverMessage === "LIMIT_FREEMIUM" || serverMessage === "LIMIT_PREMIUM") {
+    if (serverMessage === "LIMIT_FREEMIUM" || serverMessage === "LIMIT_PREMIUM" || serverMessage === "ACCOUNT_BLOCKED") {
       return serverMessage;
     }
 

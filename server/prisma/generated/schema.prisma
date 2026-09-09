@@ -36,12 +36,13 @@ model User {
   university         String?
   faculty            String?
   year               String?
-  plan               String  @default("FREEMIUM")
+  plan               String    @default("FREEMIUM")
   phone              String?
   gender             String?
-  emailNotifications Boolean @default(true)
-  timezone           String  @default("Europe/Moscow")
-  tokenVersion       Int     @default(0)
+  emailNotifications Boolean   @default(true)
+  timezone           String    @default("Europe/Moscow")
+  tokenVersion       Int       @default(0)
+  blockedAt          DateTime?
 
   // Связи
   reminders             Reminder[]
@@ -59,6 +60,11 @@ model User {
   guideReads            GuideRead[]
   passwordSetupTokens   PasswordSetupToken[]
   buddyApplications     BuddyApplication[]
+  adminInboxReads       AdminInboxRead[]
+  adminAuditLogs        AdminAuditLog[]
+  adminSupportResponses SupportResponse[]      @relation("SupportResponseAdminUser")
+  notifications         UserNotification[]     @relation("NotificationRecipient")
+  sentNotifications     UserNotification[]     @relation("NotificationActor")
 
   @@map("users")
 }
@@ -252,17 +258,75 @@ model SupportTicket {
 
 // Ответы на обращения в поддержку
 model SupportResponse {
-  id        String   @id @default(cuid())
-  ticketId  String
-  adminId   String?
-  content   String
-  isAdmin   Boolean  @default(false)
-  createdAt DateTime @default(now())
+  id           String    @id @default(cuid())
+  ticketId     String
+  adminId      String?
+  adminUserId  String?
+  content      String
+  isAdmin      Boolean   @default(false)
+  readByUserAt DateTime?
+  createdAt    DateTime  @default(now())
 
-  ticket SupportTicket @relation(fields: [ticketId], references: [id], onDelete: Cascade)
-  admin  Admin?        @relation(fields: [adminId], references: [id], onDelete: SetNull)
+  ticket    SupportTicket @relation(fields: [ticketId], references: [id], onDelete: Cascade)
+  admin     Admin?        @relation(fields: [adminId], references: [id], onDelete: SetNull)
+  adminUser User?         @relation("SupportResponseAdminUser", fields: [adminUserId], references: [id], onDelete: SetNull)
 
+  @@index([adminUserId])
+  @@index([readByUserAt])
   @@map("support_responses")
+}
+
+model AdminInboxRead {
+  id          String   @id @default(cuid())
+  adminUserId String
+  category    String
+  seenAt      DateTime @default(now())
+  updatedAt   DateTime @updatedAt
+
+  adminUser User @relation(fields: [adminUserId], references: [id], onDelete: Cascade)
+
+  @@unique([adminUserId, category])
+  @@index([adminUserId])
+  @@map("admin_inbox_reads")
+}
+
+model AdminAuditLog {
+  id          String   @id @default(cuid())
+  actorUserId String
+  action      String
+  entityType  String
+  entityId    String
+  metadata    Json?
+  createdAt   DateTime @default(now())
+
+  actor User @relation(fields: [actorUserId], references: [id], onDelete: Restrict)
+
+  @@index([actorUserId])
+  @@index([entityType, entityId])
+  @@index([createdAt])
+  @@map("admin_audit_logs")
+}
+
+model UserNotification {
+  id          String    @id @default(cuid())
+  userId      String
+  actorUserId String?
+  type        String
+  title       String
+  message     String
+  link        String?
+  entityType  String?
+  entityId    String?
+  readAt      DateTime?
+  createdAt   DateTime  @default(now())
+
+  user  User  @relation("NotificationRecipient", fields: [userId], references: [id], onDelete: Cascade)
+  actor User? @relation("NotificationActor", fields: [actorUserId], references: [id], onDelete: SetNull)
+
+  @@index([userId, readAt, createdAt])
+  @@index([userId, createdAt])
+  @@index([entityType, entityId])
+  @@map("user_notifications")
 }
 
 // Администраторы

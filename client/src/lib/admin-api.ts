@@ -57,6 +57,20 @@ export type AdminDashboardData = {
   topReads: GuideReadCount[];
 };
 
+export type AdminInboxSummary = {
+  openTickets: number;
+  pendingReviews: number;
+  newBuddyApplications: number;
+  unansweredQuestions: number;
+  total: number;
+  actionRequired: {
+    openTickets: number;
+    pendingReviews: number;
+    newBuddyApplications: number;
+    unansweredQuestions: number;
+  };
+};
+
 const emptyMetric = (): StatMetric => ({ value: 0, change: '0%' });
 
 type UnknownRecord = Record<string, unknown>;
@@ -145,6 +159,46 @@ export async function fetchAdminDashboard() {
   return normalizeDashboard(raw);
 }
 
+export async function fetchAdminInboxSummary(): Promise<AdminInboxSummary> {
+  const data = asRecord(await adminFetch<unknown>('/inbox-summary'));
+  const summary = {
+    openTickets: Number(data.openTickets ?? 0),
+    pendingReviews: Number(data.pendingReviews ?? 0),
+    newBuddyApplications: Number(data.newBuddyApplications ?? 0),
+    unansweredQuestions: Number(data.unansweredQuestions ?? 0),
+  };
+  const actionRequiredRaw = asRecord(data.actionRequired);
+  return {
+    ...summary,
+    total: Number(
+      data.total ??
+        summary.openTickets +
+          summary.pendingReviews +
+          summary.newBuddyApplications +
+          summary.unansweredQuestions,
+    ),
+    actionRequired: {
+      openTickets: Number(actionRequiredRaw.openTickets ?? summary.openTickets),
+      pendingReviews: Number(actionRequiredRaw.pendingReviews ?? summary.pendingReviews),
+      newBuddyApplications: Number(
+        actionRequiredRaw.newBuddyApplications ?? summary.newBuddyApplications,
+      ),
+      unansweredQuestions: Number(
+        actionRequiredRaw.unansweredQuestions ?? summary.unansweredQuestions,
+      ),
+    },
+  };
+}
+
+export function markAdminInboxSeen(
+  category: 'support' | 'reviews' | 'buddy' | 'community',
+) {
+  return adminMutate<{ category: string; seenAt: string }>(
+    `/inbox-summary/seen/${category}`,
+    'POST',
+  );
+}
+
 export function fetchAdminUsers() {
   return adminFetch<AdminUserRow[]>('/users');
 }
@@ -193,6 +247,20 @@ export function deleteAdminUser(userId: string, confirmEmail: string) {
     `/users/${encodeURIComponent(userId)}`,
     'DELETE',
     { confirmEmail },
+  );
+}
+
+export function blockAdminUser(userId: string) {
+  return adminMutate<{ user: AdminUserRow }>(
+    `/users/${encodeURIComponent(userId)}/block`,
+    'POST',
+  );
+}
+
+export function unblockAdminUser(userId: string) {
+  return adminMutate<{ user: AdminUserRow }>(
+    `/users/${encodeURIComponent(userId)}/unblock`,
+    'POST',
   );
 }
 

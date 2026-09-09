@@ -3,10 +3,28 @@ import { authMiddleware } from '../lib/auth';
 import { prisma } from '../lib/database';
 import { ApiResponse } from '../types/index.js';
 import { ACHIEVEMENT_CATALOG_SIZE } from './user';
+import { z } from 'zod';
+import { recordAdminAction } from '../lib/admin-audit';
 
 const router = Router();
 
 type AuthedRequest = Request & { user?: { userId: string; role: string } };
+const inboxCategorySchema = z.enum(['support', 'reviews', 'buddy', 'community']);
+const systemNotificationSchema = z.object({
+  audience: z.enum(['USER', 'ALL']),
+  email: z.string().email().optional(),
+  title: z.string().trim().min(2).max(120),
+  message: z.string().trim().min(2).max(2_000),
+  link: z.string().trim().regex(/^\/(?!\/)/, 'Разрешена только внутренняя ссылка').max(500).optional(),
+  confirmAll: z.boolean().optional(),
+}).superRefine((value, context) => {
+  if (value.audience === 'USER' && !value.email) {
+    context.addIssue({ code: z.ZodIssueCode.custom, path: ['email'], message: 'Укажите email пользователя' });
+  }
+  if (value.audience === 'ALL' && value.confirmAll !== true) {
+    context.addIssue({ code: z.ZodIssueCode.custom, path: ['confirmAll'], message: 'Подтвердите массовую отправку' });
+  }
+});
 
 function requireAdmin(req: AuthedRequest, res: Response, next: () => void) {
   if (req.user?.role !== 'ADMIN') {
@@ -22,6 +40,125 @@ function pctChange(current: number, previous: number): string {
   const delta = Math.round(((current - previous) / previous) * 100);
   return `${delta >= 0 ? '+' : ''}${delta}%`;
 }
+
+// Lightweight counters for the global admin notification bell.
+router.get('/inbox-summary', async (req: AuthedRequest, res) => {
+  try {
+    const reads = await prisma.adminInboxRead.findMany({
+      where: { adminUserId: req.user!.userId },
+      select: { category: true, seenAt: true },
+    });
+    const seenAt = new Map(reads.map((row) => [row.category, row.seenAt]));
+    const after = (category: string) =>
+      seenAt.has(category) ? { gt: seenAt.get(category)! } : undefined;
+
+    const [openTickets, pendingReviews, newBuddyApplications, unansweredQuestions,
+      unreadTickets, unreadReviews, unreadBuddyApplications, unreadQuestions] =
+      await Promise.all([
+        prisma.supportTicket.count({
+          where: { status: { in: ['OPEN', 'IN_PROGRESS'] } },
+        }),
+        prisma.review.count({ where: { status: 'PENDING' } }),
+        prisma.buddyApplication.count({ where: { status: 'NEW' } }),
+        prisma.question.count({ where: { isAnswered: false } }),
+        prisma.supportTicket.count({
+          where: { status: { in: ['OPEN', 'IN_PROGRESS'] }, createdAt: after('support') },
+        }),
+        prisma.review.count({
+          where: { status: 'PENDING', createdAt: after('reviews') },
+        }),
+        prisma.buddyApplication.count({
+          where: { status: 'NEW', createdAt: after('buddy') },
+        }),
+        prisma.question.count({
+          where: { isAnswered: false, createdAt: after('community') },
+        }),
+      ]);
+
+    res.json({
+      success: true,
+      data: {
+        openTickets: unreadTickets,
+        pendingReviews: unreadReviews,
+        newBuddyApplications: unreadBuddyApplications,
+        unansweredQuestions: unreadQuestions,
+        total: unreadTickets + unreadReviews + unreadBuddyApplications + unreadQuestions,
+        actionRequired: {
+          openTickets,
+          pendingReviews,
+          newBuddyApplications,
+          unansweredQuestions,
+        },
+      },
+    } as ApiResponse);
+  } catch (error) {
+    console.error('Admin inbox summary error:', error);
+    res.status(500).json({ success: false, error: 'Внутренняя ошибка сервера' } as ApiResponse);
+  }
+});
+
+router.post('/inbox-summary/seen/:category', async (req: AuthedRequest, res) => {
+  const parsed = inboxCategorySchema.safeParse(req.params.category);
+  if (!parsed.success) {
+    return res.status(422).json({ success: false, error: 'Неверная категория' } as ApiResponse);
+  }
+  try {
+    const row = await prisma.adminInboxRead.upsert({
+      where: {
+        adminUserId_category: {
+          adminUserId: req.user!.userId,
+          category: parsed.data,
+        },
+      },
+      create: { adminUserId: req.user!.userId, category: parsed.data },
+      update: { seenAt: new Date() },
+      select: { category: true, seenAt: true },
+    });
+    return res.json({ success: true, data: row } as ApiResponse);
+  } catch (error) {
+    console.error('Admin inbox seen error:', error);
+    return res.status(500).json({ success: false, error: 'Внутренняя ошибка сервера' } as ApiResponse);
+  }
+});
+
+router.post('/notifications', async (req: AuthedRequest, res) => {
+  const parsed = systemNotificationSchema.safeParse(req.body);
+  if (!parsed.success) {
+    return res.status(422).json({ success: false, error: 'Проверьте поля сообщения', details: parsed.error.errors } as ApiResponse);
+  }
+  try {
+    const recipients = await prisma.user.findMany({
+      where: parsed.data.audience === 'ALL'
+        ? { role: { not: 'ADMIN' }, blockedAt: null }
+        : { email: parsed.data.email!.toLowerCase(), role: { not: 'ADMIN' }, blockedAt: null },
+      select: { id: true },
+    });
+    if (recipients.length === 0) {
+      return res.status(404).json({ success: false, error: 'Получатели не найдены' } as ApiResponse);
+    }
+    const result = await prisma.userNotification.createMany({
+      data: recipients.map((recipient) => ({
+        userId: recipient.id,
+        actorUserId: req.user!.userId,
+        type: 'SYSTEM',
+        title: parsed.data.title,
+        message: parsed.data.message,
+        link: parsed.data.link,
+      })),
+    });
+    await recordAdminAction({
+      actorUserId: req.user!.userId,
+      action: 'notification.system.send',
+      entityType: 'UserNotification',
+      entityId: parsed.data.audience === 'ALL' ? 'all-users' : recipients[0].id,
+      metadata: { audience: parsed.data.audience, recipients: result.count },
+    });
+    return res.status(201).json({ success: true, data: { sent: result.count } } as ApiResponse);
+  } catch (error) {
+    console.error('System notification send error:', error);
+    return res.status(500).json({ success: false, error: 'Внутренняя ошибка сервера' } as ApiResponse);
+  }
+});
 
 // GET /api/admin/dashboard
 router.get('/dashboard', async (_req, res) => {
@@ -193,6 +330,7 @@ const adminUserListSelect = {
   passwordSetupTokens: {
     select: { usedAt: true, expiresAt: true, createdAt: true },
   },
+  blockedAt: true,
 };
 
 type AdminUserListRecord = {
@@ -210,6 +348,7 @@ type AdminUserListRecord = {
     expiresAt: Date;
     createdAt: Date;
   }>;
+  blockedAt: Date | null;
 };
 
 function toAdminUserRow(u: AdminUserListRecord) {
@@ -222,7 +361,7 @@ function toAdminUserRow(u: AdminUserListRecord) {
     country: u.country,
     language: u.language.toLowerCase(),
     role: u.role.toLowerCase(),
-    status: invitePending ? 'pending' : 'active',
+    status: u.blockedAt ? "blocked" : invitePending ? "pending" : "active",
     invitePending,
     registeredAt: u.registeredAt.toISOString().slice(0, 10),
     lastLogin: invitePending
@@ -342,6 +481,7 @@ router.post('/users/:id/revoke-invite', async (req: AuthedRequest, res) => {
 
     if (isStub) {
       await prisma.user.delete({ where: { id: target.id } });
+      await recordAdminAction({ actorUserId: req.user!.userId, action: 'user.invite.revoke', entityType: 'User', entityId: target.id, metadata: { deletedStub: true } });
       return res.json({
         success: true,
         data: { deleted: true, id: target.id },
@@ -350,6 +490,7 @@ router.post('/users/:id/revoke-invite', async (req: AuthedRequest, res) => {
     }
 
     const row = await loadAdminUserRow(target.id);
+    await recordAdminAction({ actorUserId: req.user!.userId, action: 'user.invite.revoke', entityType: 'User', entityId: target.id, metadata: { deletedStub: false } });
     return res.json({
       success: true,
       data: { deleted: false, user: row },
@@ -398,6 +539,7 @@ router.post('/users/:id/demote', async (req: AuthedRequest, res) => {
     });
 
     const row = await loadAdminUserRow(target.id);
+    await recordAdminAction({ actorUserId: req.user!.userId, action: 'user.demote', entityType: 'User', entityId: target.id });
     return res.json({
       success: true,
       data: { user: row },
@@ -447,6 +589,7 @@ router.delete('/users/:id', async (req: AuthedRequest, res) => {
     }
 
     await prisma.user.delete({ where: { id: target.id } });
+    await recordAdminAction({ actorUserId: req.user!.userId, action: 'user.delete', entityType: 'User', entityId: target.id });
     return res.json({
       success: true,
       data: { deleted: true, id: target.id },
@@ -454,6 +597,98 @@ router.delete('/users/:id', async (req: AuthedRequest, res) => {
     } as ApiResponse);
   } catch (error) {
     console.error('Admin delete user error:', error);
+    res.status(500).json({ success: false, error: 'Внутренняя ошибка сервера' } as ApiResponse);
+  }
+});
+
+// POST /api/admin/users/:id/block
+router.post('/users/:id/block', async (req: AuthedRequest, res) => {
+  try {
+    const targetId = String(req.params.id);
+    if (targetId === req.user?.userId) {
+      return res.status(400).json({
+        success: false,
+        error: 'Нельзя заблокировать свой аккаунт',
+      } as ApiResponse);
+    }
+
+    const target = await prisma.user.findUnique({
+      where: { id: targetId },
+      select: { id: true, role: true, blockedAt: true },
+    });
+    if (!target) {
+      return res.status(404).json({ success: false, error: 'Пользователь не найден' } as ApiResponse);
+    }
+    if (target.role === 'ADMIN') {
+      return res.status(400).json({
+        success: false,
+        error: 'Сначала снимите права администратора',
+      } as ApiResponse);
+    }
+    if (target.blockedAt) {
+      return res.status(400).json({
+        success: false,
+        error: 'Пользователь уже заблокирован',
+      } as ApiResponse);
+    }
+
+    await prisma.user.update({
+      where: { id: target.id },
+      data: { blockedAt: new Date(), tokenVersion: { increment: 1 } },
+    });
+
+    const row = await loadAdminUserRow(target.id);
+    await recordAdminAction({ actorUserId: req.user!.userId, action: 'user.block', entityType: 'User', entityId: target.id });
+    return res.json({
+      success: true,
+      data: { user: row },
+      message: 'Пользователь заблокирован',
+    } as ApiResponse);
+  } catch (error) {
+    console.error('Admin block user error:', error);
+    res.status(500).json({ success: false, error: 'Внутренняя ошибка сервера' } as ApiResponse);
+  }
+});
+
+// POST /api/admin/users/:id/unblock
+router.post('/users/:id/unblock', async (req: AuthedRequest, res) => {
+  try {
+    const targetId = String(req.params.id);
+    if (targetId === req.user?.userId) {
+      return res.status(400).json({
+        success: false,
+        error: 'Нельзя разблокировать свой аккаунт',
+      } as ApiResponse);
+    }
+
+    const target = await prisma.user.findUnique({
+      where: { id: targetId },
+      select: { id: true, blockedAt: true },
+    });
+    if (!target) {
+      return res.status(404).json({ success: false, error: 'Пользователь не найден' } as ApiResponse);
+    }
+    if (!target.blockedAt) {
+      return res.status(400).json({
+        success: false,
+        error: 'Пользователь не заблокирован',
+      } as ApiResponse);
+    }
+
+    await prisma.user.update({
+      where: { id: target.id },
+      data: { blockedAt: null, tokenVersion: { increment: 1 } },
+    });
+
+    const row = await loadAdminUserRow(target.id);
+    await recordAdminAction({ actorUserId: req.user!.userId, action: 'user.unblock', entityType: 'User', entityId: target.id });
+    return res.json({
+      success: true,
+      data: { user: row },
+      message: 'Пользователь разблокирован',
+    } as ApiResponse);
+  } catch (error) {
+    console.error('Admin unblock user error:', error);
     res.status(500).json({ success: false, error: 'Внутренняя ошибка сервера' } as ApiResponse);
   }
 });

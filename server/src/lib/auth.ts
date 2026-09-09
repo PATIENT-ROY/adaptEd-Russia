@@ -73,6 +73,7 @@ export async function authenticateUser(email: string, password: string) {
       gender: true,
       registeredAt: true,
       tokenVersion: true,
+      blockedAt: true,
     },
   });
 
@@ -85,7 +86,11 @@ export async function authenticateUser(email: string, password: string) {
     return null;
   }
 
-  const { password: _, ...userWithoutPassword } = user;
+  if (user.blockedAt) {
+    return { blocked: true as const };
+  }
+
+  const { password: _, blockedAt: _blockedAt, ...userWithoutPassword } = user;
   return userWithoutPassword;
 }
 
@@ -128,11 +133,15 @@ export async function authMiddleware(req: Request, res: Response, next: NextFunc
   try {
     const user = await prisma.user.findUnique({
       where: { id: payload.userId },
-      select: { tokenVersion: true },
+      select: { tokenVersion: true, blockedAt: true },
     });
 
     if (!user || user.tokenVersion !== payload.tokenVersion) {
       return res.status(401).json({ error: 'Сеанс завершён. Войдите снова.' });
+    }
+
+    if (user.blockedAt) {
+      return res.status(403).json({ error: 'ACCOUNT_BLOCKED' });
     }
 
     (req as any).user = payload;

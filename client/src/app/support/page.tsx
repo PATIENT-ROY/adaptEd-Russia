@@ -50,6 +50,7 @@ interface SupportTicket {
     content: string;
     isAdmin: boolean;
     createdAt: string;
+    readByUserAt?: string | null;
   }>;
 }
 
@@ -167,6 +168,43 @@ export default function SupportPage() {
         return <Badge>{status}</Badge>;
     }
   };
+
+  const openTicket = async (ticket: SupportTicket) => {
+    const nextId = expandedTicketId === ticket.id ? null : ticket.id;
+    setExpandedTicketId(nextId);
+    if (!nextId || !ticket.responses.some((response) => response.isAdmin && !response.readByUserAt)) return;
+    try {
+      const token = localStorage.getItem("token");
+      const response = await fetch(`${API_BASE_URL}/support/my-tickets/${ticket.id}/read`, {
+        method: "POST",
+        headers: { Authorization: `Bearer ${token}` },
+      });
+      if (response.ok) {
+        setMyTickets((current) => current.map((item) =>
+          item.id === ticket.id
+            ? {
+                ...item,
+                responses: item.responses.map((entry) =>
+                  entry.isAdmin ? { ...entry, readByUserAt: new Date().toISOString() } : entry,
+                ),
+              }
+            : item,
+        ));
+      }
+    } catch (error) {
+      console.error("Failed to mark support responses as read:", error);
+    }
+  };
+
+  useEffect(() => {
+    if (typeof window === "undefined" || myTickets.length === 0) return;
+    const ticketId = new URLSearchParams(window.location.search).get("ticket");
+    if (!ticketId || expandedTicketId === ticketId) return;
+    const ticket = myTickets.find((item) => item.id === ticketId);
+    if (ticket) void openTicket(ticket);
+    // Run when tickets arrive; openTicket deliberately stays local to this page.
+    // eslint-disable-next-line react-hooks/exhaustive-deps
+  }, [myTickets.length]);
 
   const handleSubmit = async (e: React.FormEvent) => {
     e.preventDefault();
@@ -572,7 +610,7 @@ export default function SupportPage() {
 
             {/* My Tickets */}
             {user && myTickets.length > 0 && (
-              <div className="mt-12">
+              <div id="my-tickets" className="mt-12 scroll-mt-20">
                 <h2 className="text-2xl font-bold text-gray-900 mb-6 flex items-center gap-2">
                   <Inbox className="h-6 w-6 text-blue-600" />
                   {t("support.tickets.title")}
@@ -582,9 +620,7 @@ export default function SupportPage() {
                     <Card key={ticket.id} className="overflow-hidden">
                       <div
                         className="p-4 cursor-pointer hover:bg-gray-50 transition-colors"
-                        onClick={() => setExpandedTicketId(
-                          expandedTicketId === ticket.id ? null : ticket.id
-                        )}
+                        onClick={() => void openTicket(ticket)}
                       >
                         <div className="flex items-center justify-between">
                           <div className="flex-1">

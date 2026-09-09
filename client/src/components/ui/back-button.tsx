@@ -1,9 +1,7 @@
 "use client";
 
 import { ArrowLeft } from "lucide-react";
-import Link from "next/link";
-import { useRouter } from "next/navigation";
-import { Button } from "@/components/ui/button";
+import { goBackInApp } from "@/components/layout/remember-path";
 import { cn } from "@/lib/utils";
 
 interface BackButtonProps {
@@ -11,39 +9,37 @@ interface BackButtonProps {
   className?: string;
   onClick?: () => void;
   href?: string;
+  fallbackHref?: string;
 }
 
 const backButtonClassName =
-  "h-8 min-h-0 w-fit gap-1 rounded-lg border border-slate-300 bg-white px-2.5 py-0 text-xs font-medium leading-none text-slate-700 shadow-none sm:h-9 sm:gap-1.5 sm:px-3 sm:text-sm hover:border-slate-400 hover:bg-slate-50 hover:text-slate-900 hover:shadow-none";
+  "inline-flex h-8 w-fit items-center gap-1.5 rounded-lg border border-slate-300 bg-white px-2.5 text-xs font-medium leading-none text-slate-700 sm:h-9 sm:px-3 sm:text-sm hover:border-slate-400 hover:bg-slate-50 hover:text-slate-900";
 
-export function BackButton({ label, className, onClick, href }: BackButtonProps) {
-  const router = useRouter();
-
-  if (href && !onClick) {
-    return (
-      <Link
-        href={href}
-        className={cn(
-          "inline-flex items-center justify-center",
-          backButtonClassName,
-          className,
-        )}
-      >
-        <ArrowLeft className="h-3.5 w-3.5 shrink-0 sm:h-4 sm:w-4" />
-        {label}
-      </Link>
-    );
-  }
+export function BackButton({
+  label,
+  className,
+  onClick,
+  href,
+  fallbackHref = "/",
+}: BackButtonProps) {
+  const classes = cn(backButtonClassName, className);
 
   return (
-    <Button
+    <button
       type="button"
-      variant="outline"
-      onClick={onClick ?? (() => (href ? router.push(href) : router.back()))}
-      className={cn(backButtonClassName, className)}
+      onClick={
+        onClick ??
+        (() => {
+          goBackInApp(href ?? fallbackHref);
+        })
+      }
+      className={classes}
     >
-      <ArrowLeft className="h-3.5 w-3.5 shrink-0 sm:h-4 sm:w-4" />
-      {label}
-    </Button>
+      <ArrowLeft
+        className="block size-3.5 shrink-0 sm:size-4 rtl:rotate-180"
+        aria-hidden
+      />
+      <span className="leading-none">{label}</span>
+    </button>
   );
 }

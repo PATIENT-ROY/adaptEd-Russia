@@ -84,23 +84,25 @@ function AdminSupportContent() {
   const [searchTerm, setSearchTerm] = useState("");
   const [statusFilter, setStatusFilter] = useState<string>("all");
   const [priorityFilter, setPriorityFilter] = useState<string>("all");
+  const [error, setError] = useState<string | null>(null);
   useBodyScrollLock(!!selectedTicket);
 
   const loadTickets = async () => {
     try {
       setLoading(true);
+      setError(null);
       const response = await fetch(`${API_BASE_URL}/support/admin/tickets`, {
         headers: {
           Authorization: `Bearer ${localStorage.getItem("token")}`,
         },
       });
 
-      if (response.ok) {
-        const data = await response.json();
-        setTickets(data.data);
-      }
+      const data = await response.json().catch(() => ({}));
+      if (!response.ok) throw new Error(data.error || "Не удалось загрузить обращения");
+      setTickets(data.data || []);
     } catch (error) {
       console.error("Error loading tickets:", error);
+      setError(error instanceof Error ? error.message : "Не удалось загрузить обращения");
     } finally {
       setLoading(false);
     }
@@ -198,11 +200,12 @@ function AdminSupportContent() {
         }
       );
 
-      if (response.ok) {
-        loadTickets();
-      }
+      const data = await response.json().catch(() => ({}));
+      if (!response.ok) throw new Error(data.error || "Не удалось изменить статус");
+      await loadTickets();
     } catch (error) {
       console.error("Error updating ticket status:", error);
+      setError(error instanceof Error ? error.message : "Не удалось изменить статус");
     }
   };
 
@@ -220,12 +223,13 @@ function AdminSupportContent() {
         }
       );
 
-      if (response.ok) {
-        loadTickets();
-        setSelectedTicket(null);
-      }
+      const data = await response.json().catch(() => ({}));
+      if (!response.ok) throw new Error(data.error || "Не удалось отправить ответ");
+      await loadTickets();
+      setSelectedTicket(null);
     } catch (error) {
       console.error("Error sending response:", error);
+      setError(error instanceof Error ? error.message : "Не удалось отправить ответ");
     }
   };
 
@@ -246,6 +250,11 @@ function AdminSupportContent() {
   return (
     <Layout>
       <div className="max-w-7xl mx-auto px-4 sm:px-6 lg:px-8 py-8">
+        {error && (
+          <div role="alert" className="mb-4 rounded-lg border border-red-200 bg-red-50 px-4 py-3 text-sm text-red-800">
+            {error}
+          </div>
+        )}
         {/* Header */}
         <div className="mb-8">
           <div className="flex items-center space-x-3 mb-4">

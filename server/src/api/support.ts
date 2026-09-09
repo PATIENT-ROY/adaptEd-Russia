@@ -2,6 +2,8 @@ import { Router, Request } from "express";
 import { z } from "zod";
 import { authMiddleware, JWTPayload, verifyToken } from "../lib/auth";
 import { prisma } from "../lib/database";
+import { recordAdminAction } from "../lib/admin-audit";
+import { createUserNotification } from "../lib/user-notifications";
 
 // Extend Express Request to include user property
 interface AuthenticatedRequest extends Request {
@@ -13,12 +15,18 @@ const router = Router();
 
 // Схема валидации для формы обратной связи
 const supportFormSchema = z.object({
-  name: z.string().min(2, "Имя должно содержать минимум 2 символа"),
+  name: z.string().trim().min(2, "Имя должно содержать минимум 2 символа").max(120),
   email: z.string().email("Некорректный email"),
   category: z.enum(["GENERAL", "CONTENT_ERROR"]).default("GENERAL"),
-  subject: z.string().min(5, "Тема должна содержать минимум 5 символов"),
-  message: z.string().min(10, "Сообщение должно содержать минимум 10 символов"),
+  subject: z.string().trim().min(5, "Тема должна содержать минимум 5 символов").max(240),
+  message: z.string().trim().min(10, "Сообщение должно содержать минимум 10 символов").max(10_000),
 });
+const ticketStatusSchema = z.object({
+  status: z.enum(["OPEN", "IN_PROGRESS", "RESOLVED", "CLOSED"]),
+}).strict();
+const adminResponseSchema = z.object({
+  content: z.string().trim().min(1).max(10_000),
+}).strict();
 
 // POST /api/support/contact - Отправка формы обратной связи
 router.post("/contact", async (req: AuthenticatedRequest, res) => {
@@ -197,6 +205,54 @@ router.get("/my-tickets", authMiddleware, async (req: AuthenticatedRequest, res)
   }
 });
 
+router.get("/unread-count", authMiddleware, async (req: AuthenticatedRequest, res) => {
+  try {
+    const count = await prisma.supportResponse.count({
+      where: {
+        isAdmin: true,
+        readByUserAt: null,
+        ticket: { userId: req.user!.userId },
+      },
+    });
+    return res.json({ success: true, data: { count } });
+  } catch (error) {
+    console.error("Ошибка счётчика ответов поддержки:", error);
+    return res.status(500).json({ success: false, message: "Внутренняя ошибка сервера" });
+  }
+});
+
+router.post("/my-tickets/:id/read", authMiddleware, async (req: AuthenticatedRequest, res) => {
+  try {
+    const ticket = await prisma.supportTicket.findFirst({
+      where: { id: req.params.id, userId: req.user!.userId },
+      select: { id: true },
+    });
+    if (!ticket) {
+      return res.status(404).json({ success: false, message: "Обращение не найдено" });
+    }
+    const readAt = new Date();
+    await prisma.$transaction([
+      prisma.supportResponse.updateMany({
+        where: { ticketId: ticket.id, isAdmin: true, readByUserAt: null },
+        data: { readByUserAt: readAt },
+      }),
+      prisma.userNotification.updateMany({
+        where: {
+          userId: req.user!.userId,
+          entityType: "SupportTicket",
+          entityId: ticket.id,
+          readAt: null,
+        },
+        data: { readAt },
+      }),
+    ]);
+    return res.json({ success: true });
+  } catch (error) {
+    console.error("Ошибка отметки ответов поддержки:", error);
+    return res.status(500).json({ success: false, message: "Внутренняя ошибка сервера" });
+  }
+});
+
 // ===== АДМИН ENDPOINTS =====
 
 // GET /api/support/admin/tickets - Получение всех обращений (для админов)
@@ -319,7 +375,7 @@ router.put("/admin/tickets/:id/status", authMiddleware, async (req: Authenticate
       });
     }
 
-    const { status } = req.body;
+    const { status } = ticketStatusSchema.parse(req.body);
 
     const ticket = await prisma.supportTicket.update({
       where: {
@@ -334,7 +390,17 @@ router.put("/admin/tickets/:id/status", authMiddleware, async (req: Authenticate
       success: true,
       data: ticket,
     });
+    await recordAdminAction({
+      actorUserId: req.user!.userId,
+      action: "support.status.update",
+      entityType: "SupportTicket",
+      entityId: ticket.id,
+      metadata: { status },
+    });
   } catch (error) {
+    if (error instanceof z.ZodError) {
+      return res.status(422).json({ success: false, message: "Неверный статус", errors: error.errors });
+    }
     console.error("Ошибка при обновлении статуса:", error);
     res.status(500).json({
       success: false,
@@ -353,32 +419,58 @@ router.post("/admin/tickets/:id/respond", authMiddleware, async (req: Authentica
       });
     }
 
-    const { content } = req.body;
+    const { content } = adminResponseSchema.parse(req.body);
 
-    const response = await prisma.supportResponse.create({
-      data: {
-        ticketId: req.params.id,
-        // adminId не указываем - пользователь из таблицы User, а не Admin
-        content,
-        isAdmin: true,
-      },
+    const response = await prisma.$transaction(async (tx) => {
+      const ticket = await tx.supportTicket.findUnique({
+        where: { id: req.params.id },
+        select: { id: true, userId: true, subject: true },
+      });
+      if (!ticket) return null;
+      const created = await tx.supportResponse.create({
+        data: {
+          ticketId: ticket.id,
+          adminUserId: req.user!.userId,
+          content,
+          isAdmin: true,
+        },
+      });
+      await tx.supportTicket.update({
+        where: { id: ticket.id },
+        data: { status: "IN_PROGRESS" },
+      });
+      return { created, ticket };
     });
+    if (!response) {
+      return res.status(404).json({ success: false, message: "Обращение не найдено" });
+    }
 
-    // Обновляем статус обращения на "IN_PROGRESS"
-    await prisma.supportTicket.update({
-      where: {
-        id: req.params.id,
-      },
-      data: {
-        status: "IN_PROGRESS",
-      },
+    if (response.ticket.userId) {
+      await createUserNotification({
+        userId: response.ticket.userId,
+        actorUserId: req.user!.userId,
+        type: "SUPPORT",
+        title: "Новый ответ поддержки",
+        message: `Поддержка ответила на обращение «${response.ticket.subject}»`,
+        link: `/support?ticket=${response.ticket.id}#my-tickets`,
+        entityType: "SupportTicket",
+        entityId: response.ticket.id,
+      });
+    }
+    await recordAdminAction({
+      actorUserId: req.user!.userId,
+      action: "support.response.create",
+      entityType: "SupportTicket",
+      entityId: req.params.id,
     });
-
-    res.status(200).json({
+    return res.status(200).json({
       success: true,
-      data: response,
+      data: response.created,
     });
   } catch (error) {
+    if (error instanceof z.ZodError) {
+      return res.status(422).json({ success: false, message: "Ответ не прошёл валидацию", errors: error.errors });
+    }
     console.error("Ошибка при создании ответа:", error);
     res.status(500).json({
       success: false,

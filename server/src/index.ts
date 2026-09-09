@@ -21,6 +21,7 @@ import noteRoutes from './api/notes.js';
 import guideProgressRoutes from './api/guide-progress.js';
 import adminRoutes from './api/admin.js';
 import buddyRoutes from './api/buddy.js';
+import notificationRoutes from './api/notifications.js';
 import { startReminderNotificationWorker } from './lib/reminder-notifications.js';
 
 // Загружаем переменные окружения
@@ -266,6 +267,7 @@ app.use('/api', reviewRoutes);
 app.use('/api/guide-progress', guideProgressRoutes);
 app.use('/api/admin', adminRoutes);
 app.use('/api/buddy', buddyRoutes);
+app.use('/api/notifications', notificationRoutes);
 
 // 404 handler
 app.use('*', (req, res) => {
