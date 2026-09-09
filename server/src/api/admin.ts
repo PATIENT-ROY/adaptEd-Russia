@@ -10,6 +10,21 @@ const router = Router();
 
 type AuthedRequest = Request & { user?: { userId: string; role: string } };
 const inboxCategorySchema = z.enum(['support', 'reviews', 'buddy', 'community']);
+const systemNotificationSchema = z.object({
+  audience: z.enum(['USER', 'ALL']),
+  email: z.string().email().optional(),
+  title: z.string().trim().min(2).max(120),
+  message: z.string().trim().min(2).max(2_000),
+  link: z.string().trim().regex(/^\/(?!\/)/, 'Разрешена только внутренняя ссылка').max(500).optional(),
+  confirmAll: z.boolean().optional(),
+}).superRefine((value, context) => {
+  if (value.audience === 'USER' && !value.email) {
+    context.addIssue({ code: z.ZodIssueCode.custom, path: ['email'], message: 'Укажите email пользователя' });
+  }
+  if (value.audience === 'ALL' && value.confirmAll !== true) {
+    context.addIssue({ code: z.ZodIssueCode.custom, path: ['confirmAll'], message: 'Подтвердите массовую отправку' });
+  }
+});
 
 function requireAdmin(req: AuthedRequest, res: Response, next: () => void) {
   if (req.user?.role !== 'ADMIN') {
@@ -102,6 +117,45 @@ router.post('/inbox-summary/seen/:category', async (req: AuthedRequest, res) => 
     return res.json({ success: true, data: row } as ApiResponse);
   } catch (error) {
     console.error('Admin inbox seen error:', error);
+    return res.status(500).json({ success: false, error: 'Внутренняя ошибка сервера' } as ApiResponse);
+  }
+});
+
+router.post('/notifications', async (req: AuthedRequest, res) => {
+  const parsed = systemNotificationSchema.safeParse(req.body);
+  if (!parsed.success) {
+    return res.status(422).json({ success: false, error: 'Проверьте поля сообщения', details: parsed.error.errors } as ApiResponse);
+  }
+  try {
+    const recipients = await prisma.user.findMany({
+      where: parsed.data.audience === 'ALL'
+        ? { role: { not: 'ADMIN' }, blockedAt: null }
+        : { email: parsed.data.email!.toLowerCase(), role: { not: 'ADMIN' }, blockedAt: null },
+      select: { id: true },
+    });
+    if (recipients.length === 0) {
+      return res.status(404).json({ success: false, error: 'Получатели не найдены' } as ApiResponse);
+    }
+    const result = await prisma.userNotification.createMany({
+      data: recipients.map((recipient) => ({
+        userId: recipient.id,
+        actorUserId: req.user!.userId,
+        type: 'SYSTEM',
+        title: parsed.data.title,
+        message: parsed.data.message,
+        link: parsed.data.link,
+      })),
+    });
+    await recordAdminAction({
+      actorUserId: req.user!.userId,
+      action: 'notification.system.send',
+      entityType: 'UserNotification',
+      entityId: parsed.data.audience === 'ALL' ? 'all-users' : recipients[0].id,
+      metadata: { audience: parsed.data.audience, recipients: result.count },
+    });
+    return res.status(201).json({ success: true, data: { sent: result.count } } as ApiResponse);
+  } catch (error) {
+    console.error('System notification send error:', error);
     return res.status(500).json({ success: false, error: 'Внутренняя ошибка сервера' } as ApiResponse);
   }
 });

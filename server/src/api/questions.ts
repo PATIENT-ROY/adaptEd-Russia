@@ -2,6 +2,7 @@ import { Router, Request } from "express";
 import { z } from "zod";
 import { authMiddleware, verifyToken, JWTPayload } from "../lib/auth.js";
 import { prisma } from "../lib/database.js";
+import { createUserNotification } from "../lib/user-notifications.js";
 
 interface AuthenticatedRequest extends Request {
   user?: JWTPayload;
@@ -301,6 +302,19 @@ router.post(
         data: { isAnswered: true },
       });
 
+      if (question.authorId !== req.user!.userId) {
+        await createUserNotification({
+          userId: question.authorId,
+          actorUserId: req.user!.userId,
+          type: "COMMUNITY",
+          title: "Новый ответ на ваш вопрос",
+          message: `На вопрос «${question.title}» появился новый ответ.`,
+          link: `/community/questions/${question.id}`,
+          entityType: "Question",
+          entityId: question.id,
+        });
+      }
+
       res.status(201).json({
         success: true,
         data: {
@@ -516,6 +530,19 @@ router.post(
           isAnswered: true,
         },
       });
+
+      if (nextAccepted && answer.authorId !== req.user!.userId) {
+        await createUserNotification({
+          userId: answer.authorId,
+          actorUserId: req.user!.userId,
+          type: "COMMUNITY",
+          title: "Ваш ответ выбран лучшим",
+          message: `Автор вопроса «${question.title}» отметил ваш ответ как лучший.`,
+          link: `/community/questions/${question.id}`,
+          entityType: "Answer",
+          entityId: answer.id,
+        });
+      }
 
       res.json({
         success: true,

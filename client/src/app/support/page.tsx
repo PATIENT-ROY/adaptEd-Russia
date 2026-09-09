@@ -196,6 +196,16 @@ export default function SupportPage() {
     }
   };
 
+  useEffect(() => {
+    if (typeof window === "undefined" || myTickets.length === 0) return;
+    const ticketId = new URLSearchParams(window.location.search).get("ticket");
+    if (!ticketId || expandedTicketId === ticketId) return;
+    const ticket = myTickets.find((item) => item.id === ticketId);
+    if (ticket) void openTicket(ticket);
+    // Run when tickets arrive; openTicket deliberately stays local to this page.
+    // eslint-disable-next-line react-hooks/exhaustive-deps
+  }, [myTickets.length]);
+
   const handleSubmit = async (e: React.FormEvent) => {
     e.preventDefault();
     setSubmitError(null);
