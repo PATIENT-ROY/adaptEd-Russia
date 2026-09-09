@@ -14,6 +14,7 @@ import {
   Star,
   ScanLine,
   HeartHandshake,
+  Send,
 } from "lucide-react";
 import Link from "next/link";
 import { useAuth } from "@/contexts/AuthContext";
@@ -148,6 +149,7 @@ export function AdminContent() {
     { title: t("admin.dashboard.actions.buddy"), description: t("admin.dashboard.actions.buddyDesc"), icon: HeartHandshake, href: "/admin/buddy", color: "from-cyan-500 to-indigo-600" },
     { title: t("admin.dashboard.actions.guides"), description: t("admin.dashboard.actions.guidesDesc"), icon: BookOpen, href: "/admin/guides", color: "from-green-500 to-green-600" },
     { title: t("admin.dashboard.actions.support"), description: t("admin.dashboard.actions.supportDesc"), icon: Bell, href: "/admin/support", color: "from-red-500 to-red-600" },
+    { title: "Сообщения пользователям", description: "Отправить внутреннее уведомление", icon: Send, href: "/admin/notifications", color: "from-blue-500 to-indigo-600" },
     { title: t("admin.dashboard.actions.ai"), description: t("admin.dashboard.actions.aiDesc"), icon: Sparkles, href: "/admin/ai-analytics", color: "from-violet-500 to-indigo-600" },
     { title: t("admin.dashboard.actions.docscan"), description: t("admin.dashboard.actions.docscanDesc"), icon: ScanLine, href: "/admin/docscan/analytics", color: "from-indigo-500 to-indigo-600" },
     { title: t("admin.dashboard.actions.community"), description: t("admin.dashboard.actions.communityDesc"), icon: Users, href: "/community/questions?status=unanswered", color: "from-pink-500 to-rose-600" },

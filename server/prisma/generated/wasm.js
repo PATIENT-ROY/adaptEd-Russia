@@ -283,6 +283,20 @@ exports.Prisma.AdminAuditLogScalarFieldEnum = {
   createdAt: 'createdAt'
 };
 
+exports.Prisma.UserNotificationScalarFieldEnum = {
+  id: 'id',
+  userId: 'userId',
+  actorUserId: 'actorUserId',
+  type: 'type',
+  title: 'title',
+  message: 'message',
+  link: 'link',
+  entityType: 'entityType',
+  entityId: 'entityId',
+  readAt: 'readAt',
+  createdAt: 'createdAt'
+};
+
 exports.Prisma.AdminScalarFieldEnum = {
   id: 'id',
   email: 'email',
@@ -466,6 +480,7 @@ exports.Prisma.ModelName = {
   SupportResponse: 'SupportResponse',
   AdminInboxRead: 'AdminInboxRead',
   AdminAuditLog: 'AdminAuditLog',
+  UserNotification: 'UserNotification',
   Admin: 'Admin',
   SubscriptionPlan: 'SubscriptionPlan',
   Payment: 'Payment',

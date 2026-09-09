@@ -3,6 +3,7 @@ import { z } from "zod";
 import { authMiddleware, JWTPayload, verifyToken } from "../lib/auth";
 import { prisma } from "../lib/database";
 import { recordAdminAction } from "../lib/admin-audit";
+import { createUserNotification } from "../lib/user-notifications";
 
 // Extend Express Request to include user property
 interface AuthenticatedRequest extends Request {
@@ -229,10 +230,22 @@ router.post("/my-tickets/:id/read", authMiddleware, async (req: AuthenticatedReq
     if (!ticket) {
       return res.status(404).json({ success: false, message: "Обращение не найдено" });
     }
-    await prisma.supportResponse.updateMany({
-      where: { ticketId: ticket.id, isAdmin: true, readByUserAt: null },
-      data: { readByUserAt: new Date() },
-    });
+    const readAt = new Date();
+    await prisma.$transaction([
+      prisma.supportResponse.updateMany({
+        where: { ticketId: ticket.id, isAdmin: true, readByUserAt: null },
+        data: { readByUserAt: readAt },
+      }),
+      prisma.userNotification.updateMany({
+        where: {
+          userId: req.user!.userId,
+          entityType: "SupportTicket",
+          entityId: ticket.id,
+          readAt: null,
+        },
+        data: { readAt },
+      }),
+    ]);
     return res.json({ success: true });
   } catch (error) {
     console.error("Ошибка отметки ответов поддержки:", error);
@@ -411,7 +424,7 @@ router.post("/admin/tickets/:id/respond", authMiddleware, async (req: Authentica
     const response = await prisma.$transaction(async (tx) => {
       const ticket = await tx.supportTicket.findUnique({
         where: { id: req.params.id },
-        select: { id: true },
+        select: { id: true, userId: true, subject: true },
       });
       if (!ticket) return null;
       const created = await tx.supportResponse.create({
@@ -426,21 +439,33 @@ router.post("/admin/tickets/:id/respond", authMiddleware, async (req: Authentica
         where: { id: ticket.id },
         data: { status: "IN_PROGRESS" },
       });
-      return created;
+      return { created, ticket };
     });
     if (!response) {
       return res.status(404).json({ success: false, message: "Обращение не найдено" });
     }
 
-    res.status(200).json({
-      success: true,
-      data: response,
-    });
+    if (response.ticket.userId) {
+      await createUserNotification({
+        userId: response.ticket.userId,
+        actorUserId: req.user!.userId,
+        type: "SUPPORT",
+        title: "Новый ответ поддержки",
+        message: `Поддержка ответила на обращение «${response.ticket.subject}»`,
+        link: `/support?ticket=${response.ticket.id}#my-tickets`,
+        entityType: "SupportTicket",
+        entityId: response.ticket.id,
+      });
+    }
     await recordAdminAction({
       actorUserId: req.user!.userId,
       action: "support.response.create",
       entityType: "SupportTicket",
       entityId: req.params.id,
+    });
+    return res.status(200).json({
+      success: true,
+      data: response.created,
     });
   } catch (error) {
     if (error instanceof z.ZodError) {

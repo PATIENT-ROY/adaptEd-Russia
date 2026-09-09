@@ -4,6 +4,7 @@ import { recordAdminAction } from "../lib/admin-audit";
 import { z } from "zod";
 import { authMiddleware } from "../lib/auth";
 import { prisma } from "../lib/database";
+import { createUserNotification } from "../lib/user-notifications";
 
 const router = Router();
 
@@ -336,6 +337,10 @@ router.patch(
     if (!parsed.success) return validationError(res, parsed.error);
 
     try {
+      const previous = await prisma.buddyApplication.findUnique({
+        where: { id: String(req.params.id) },
+        select: { status: true },
+      });
       const application = await prisma.buddyApplication.update({
         where: { id: String(req.params.id) },
         data: parsed.data,
@@ -348,6 +353,26 @@ router.patch(
         entityId: application.id,
         metadata: parsed.data,
       });
+      if (parsed.data.status && previous?.status !== application.status) {
+        const labels: Record<string, string> = {
+          NEW: "Новая",
+          UNDER_REVIEW: "На рассмотрении",
+          APPROVED: "Одобрена",
+          MATCHED: "Buddy найден",
+          REJECTED: "Отклонена",
+          CLOSED: "Закрыта",
+        };
+        await createUserNotification({
+          userId: application.userId,
+          actorUserId: req.user!.userId,
+          type: "BUDDY",
+          title: "Статус заявки Buddy изменён",
+          message: `Новый статус: ${labels[application.status] ?? application.status}`,
+          link: "/buddy#my-application",
+          entityType: "BuddyApplication",
+          entityId: application.id,
+        });
+      }
       return res.json({ success: true, data: application });
     } catch (error: unknown) {
       const code =

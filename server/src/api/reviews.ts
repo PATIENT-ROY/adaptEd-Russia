@@ -13,6 +13,7 @@ const router = Router();
 // Automatic country -> flag resolution for all 249 countries in any language
 import countries from 'i18n-iso-countries';
 import { recordAdminAction } from '../lib/admin-audit';
+import { createUserNotification } from '../lib/user-notifications';
 
 countries.registerLocale(require('i18n-iso-countries/langs/ru.json'));
 countries.registerLocale(require('i18n-iso-countries/langs/en.json'));
@@ -355,6 +356,10 @@ router.patch('/admin/reviews/:id', authMiddleware, async (req: AuthenticatedRequ
 
     const data = adminUpdateSchema.parse(req.body);
     const { id } = req.params;
+    const previous = await prisma.review.findUnique({
+      where: { id },
+      select: { userId: true, status: true },
+    });
 
     if (data.isFeatured === true) {
       const featuredCount = await prisma.review.count({ where: { isFeatured: true } });
@@ -380,6 +385,21 @@ router.patch('/admin/reviews/:id', authMiddleware, async (req: AuthenticatedRequ
       entityId: review.id,
       metadata: data,
     });
+    if (data.status && previous && previous.status !== review.status) {
+      const approved = review.status === ReviewStatus.APPROVED;
+      await createUserNotification({
+        userId: previous.userId,
+        actorUserId: req.user!.userId,
+        type: 'REVIEW',
+        title: approved ? 'Отзыв одобрен' : 'Статус отзыва изменён',
+        message: approved
+          ? 'Ваш отзыв прошёл модерацию и опубликован.'
+          : 'Ваш отзыв отклонён. Вы можете отредактировать его и отправить повторно.',
+        link: '/review',
+        entityType: 'Review',
+        entityId: review.id,
+      });
+    }
 
     res.json({ success: true, data: review, message: 'Отзыв обновлён' } as ApiResponse);
   } catch (error: unknown) {
