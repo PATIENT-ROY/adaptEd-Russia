@@ -119,7 +119,7 @@ export function AdminNotifications() {
       {open && (
         <div
           role="menu"
-          className="absolute end-0 top-full z-[70] mt-2 w-[min(20rem,calc(100vw-1.5rem))] overflow-hidden rounded-2xl border border-slate-200 bg-white shadow-2xl"
+          className="fixed inset-x-3 top-[3.75rem] z-[70] overflow-hidden rounded-2xl border border-slate-200 bg-white shadow-2xl sm:absolute sm:inset-x-auto sm:end-0 sm:top-full sm:mt-2 sm:w-80"
         >
           <div className="flex items-center justify-between border-b border-slate-100 px-4 py-3">
             <span className="font-semibold text-slate-900">{t("nav.admin")}</span>
