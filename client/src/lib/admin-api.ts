@@ -57,6 +57,14 @@ export type AdminDashboardData = {
   topReads: GuideReadCount[];
 };
 
+export type AdminInboxSummary = {
+  openTickets: number;
+  pendingReviews: number;
+  newBuddyApplications: number;
+  unansweredQuestions: number;
+  total: number;
+};
+
 const emptyMetric = (): StatMetric => ({ value: 0, change: '0%' });
 
 type UnknownRecord = Record<string, unknown>;
@@ -143,6 +151,26 @@ export type AdminGuidesPayload = {
 export async function fetchAdminDashboard() {
   const raw = await adminFetch<unknown>('/dashboard');
   return normalizeDashboard(raw);
+}
+
+export async function fetchAdminInboxSummary(): Promise<AdminInboxSummary> {
+  const data = asRecord(await adminFetch<unknown>('/inbox-summary'));
+  const summary = {
+    openTickets: Number(data.openTickets ?? 0),
+    pendingReviews: Number(data.pendingReviews ?? 0),
+    newBuddyApplications: Number(data.newBuddyApplications ?? 0),
+    unansweredQuestions: Number(data.unansweredQuestions ?? 0),
+  };
+  return {
+    ...summary,
+    total: Number(
+      data.total ??
+        summary.openTickets +
+          summary.pendingReviews +
+          summary.newBuddyApplications +
+          summary.unansweredQuestions,
+    ),
+  };
 }
 
 export function fetchAdminUsers() {

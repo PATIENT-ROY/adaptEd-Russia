@@ -23,6 +23,36 @@ function pctChange(current: number, previous: number): string {
   return `${delta >= 0 ? '+' : ''}${delta}%`;
 }
 
+// Lightweight counters for the global admin notification bell.
+router.get('/inbox-summary', async (_req, res) => {
+  try {
+    const [openTickets, pendingReviews, newBuddyApplications, unansweredQuestions] =
+      await Promise.all([
+        prisma.supportTicket.count({
+          where: { status: { in: ['OPEN', 'IN_PROGRESS'] } },
+        }),
+        prisma.review.count({ where: { status: 'PENDING' } }),
+        prisma.buddyApplication.count({ where: { status: 'NEW' } }),
+        prisma.question.count({ where: { isAnswered: false } }),
+      ]);
+
+    res.json({
+      success: true,
+      data: {
+        openTickets,
+        pendingReviews,
+        newBuddyApplications,
+        unansweredQuestions,
+        total:
+          openTickets + pendingReviews + newBuddyApplications + unansweredQuestions,
+      },
+    } as ApiResponse);
+  } catch (error) {
+    console.error('Admin inbox summary error:', error);
+    res.status(500).json({ success: false, error: 'Внутренняя ошибка сервера' } as ApiResponse);
+  }
+});
+
 // GET /api/admin/dashboard
 router.get('/dashboard', async (_req, res) => {
   try {
