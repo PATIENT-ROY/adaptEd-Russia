@@ -30,6 +30,7 @@ const localeByLanguage: Record<Language, string> = {
   [Language.FR]: "fr-FR",
   [Language.AR]: "ar",
   [Language.ZH]: "zh-CN",
+  [Language.ES]: "es-ES",
 };
 
 function groupByDate(items: ScheduleItem[]): Array<[string, ScheduleItem[]]> {

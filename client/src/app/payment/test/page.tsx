@@ -63,6 +63,8 @@ function getLocaleByLanguage(language?: Language): string {
       return "ar";
     case Language.ZH:
       return "zh-CN";
+    case Language.ES:
+      return "es-ES";
     case Language.RU:
     default:
       return "ru-RU";

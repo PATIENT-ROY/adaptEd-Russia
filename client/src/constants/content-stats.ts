@@ -14,4 +14,4 @@ export const LIFE_GUIDES_COUNT = lifeGuides.filter(
 
 export const TOTAL_GUIDES_COUNT = EDUCATION_GUIDES_COUNT + LIFE_GUIDES_COUNT;
 
-export const SUPPORTED_LANGUAGES_COUNT = 5;
+export const SUPPORTED_LANGUAGES_COUNT = 6;

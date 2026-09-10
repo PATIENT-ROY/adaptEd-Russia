@@ -10,6 +10,7 @@ export enum Language {
   FR = "FR",
   AR = "AR",
   ZH = "ZH",
+  ES = "ES",
 }
 
 export enum Plan {

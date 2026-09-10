@@ -32,6 +32,7 @@ const L = (
   [Language.FR]: fr,
   [Language.AR]: ar,
   [Language.ZH]: zh,
+  [Language.ES]: en,
 });
 
 export function pickLocalized(

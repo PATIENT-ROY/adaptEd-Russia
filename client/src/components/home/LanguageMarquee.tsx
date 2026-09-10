@@ -53,6 +53,12 @@ const ROW_PRIMARY: Phrase[] = [
     language: Language.ZH,
   },
   {
+    lang: "ES",
+    text: "Estudia y vive en Rusia",
+    href: "/education-guide",
+    language: Language.ES,
+  },
+  {
     lang: "RU",
     text: "Гайды без воды",
     href: "/education-guide",
@@ -123,6 +129,12 @@ const ROW_TOPICS: Phrase[] = [
     text: "落地就能用的指南",
     href: "/life-guide#life-guide-arrival",
     language: Language.ZH,
+  },
+  {
+    lang: "ES",
+    text: "Guía para tus primeros días en Rusia",
+    href: "/life-guide#life-guide-arrival",
+    language: Language.ES,
   },
   {
     lang: "EN",
