@@ -17,6 +17,7 @@ function pack(
     [L.FR]: fr,
     [L.AR]: ar,
     [L.ZH]: zh,
+    [L.ES]: en,
   };
 }
 

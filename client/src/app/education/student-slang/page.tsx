@@ -68,6 +68,7 @@ export default function StudentSlangPage() {
     [Language.FR]: "fr",
     [Language.AR]: "ar",
     [Language.ZH]: "zh",
+    [Language.ES]: "es",
   };
 
   const activePhoneticCode = phoneticLanguageMap[currentLanguage] ?? "en";

@@ -171,6 +171,7 @@ const dictionaries: Record<Language, BuddyDictionary> = {
   [Language.FR]: fr,
   [Language.AR]: ar,
   [Language.ZH]: zh,
+  [Language.ES]: en,
 };
 
 export function buddyT(language: Language, key: BuddyKey): string {

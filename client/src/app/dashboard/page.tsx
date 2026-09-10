@@ -152,6 +152,7 @@ function DashboardContent() {
       [Language.FR]: "fr-FR",
       [Language.AR]: "ar",
       [Language.ZH]: "zh-CN",
+      [Language.ES]: "es-ES",
     };
     return localeByLanguage[currentLanguage] ?? "ru-RU";
   }, [currentLanguage]);

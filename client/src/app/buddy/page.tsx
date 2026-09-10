@@ -105,6 +105,7 @@ function localeFor(language: Language) {
     [Language.FR]: "fr-FR",
     [Language.AR]: "ar",
     [Language.ZH]: "zh-CN",
+    [Language.ES]: "es-ES",
   }[language];
 }
 

@@ -92,6 +92,7 @@ const TIME_LOCALE: Record<Language, string> = {
   [Language.FR]: "fr-FR",
   [Language.AR]: "ar",
   [Language.ZH]: "zh-CN",
+  [Language.ES]: "es-ES",
 };
 
 interface ISpeechRecognition extends EventTarget {
@@ -253,16 +254,6 @@ export default function AiAssistantPage() {
       { title: t("aiHelper.guides.default.1"), url: "/guides/life/dorm", category: "life" },
       { title: t("aiHelper.guides.default.2"), url: "/guides/life/migration-registration", category: "life" },
       { title: t("aiHelper.guides.default.3"), url: "/guides/life/insurance-dms", category: "life" },
-    ],
-    [t],
-  );
-
-  const popularStudentQuestions = useMemo(
-    () => [
-      t("aiHelper.popular.1"),
-      t("aiHelper.popular.2"),
-      t("aiHelper.popular.3"),
-      t("aiHelper.popular.4"),
     ],
     [t],
   );
@@ -459,19 +450,6 @@ export default function AiAssistantPage() {
     }
   }, [sendMessage, currentMode]);
 
-  const handlePopularQuestionSend = useCallback(
-    async (question: string) => {
-      setInputMessage(question);
-      try {
-        await sendMessage(question, currentMode);
-        setInputMessage("");
-      } catch (err) {
-        console.error("Error sending popular question:", err);
-      }
-    },
-    [sendMessage, currentMode],
-  );
-
   const handleKeyDown = useCallback((e: React.KeyboardEvent) => {
     if (e.key === "Enter" && !e.shiftKey) {
       e.preventDefault();
@@ -607,7 +585,7 @@ export default function AiAssistantPage() {
           <div className="grid grid-cols-1 xl:grid-cols-4 gap-4 sm:gap-6 lg:gap-8">
             {/* Chat Section */}
             <div className="xl:col-span-3 order-1">
-              <Card className="h-[760px] min-h-0 sm:h-[calc(100dvh-180px)] sm:min-h-[720px] sm:max-h-[900px] flex flex-col relative">
+              <Card className="h-[min(820px,calc(100dvh-8rem))] min-h-0 sm:h-[calc(100dvh-160px)] sm:min-h-[760px] sm:max-h-[960px] flex flex-col relative">
                 {/* Limit Overlay */}
                 {limitError && (
                   <LimitOverlay
@@ -801,30 +779,6 @@ export default function AiAssistantPage() {
 
                   {/* Input */}
                   <div className="border-t p-2.5 sm:p-4 flex-shrink-0 space-y-2">
-                    {/* Popular questions */}
-                    <div className="rounded-xl border border-slate-200 bg-slate-50 p-2.5 sm:p-3">
-                      <p className="text-xs sm:text-sm font-semibold text-slate-800 mb-2">
-                        {t("aiHelper.popular.title")}
-                      </p>
-                      <div className="space-y-1.5 sm:space-y-2">
-                        {popularStudentQuestions.map((question) => (
-                          <button
-                            key={question}
-                            type="button"
-                            onClick={() => handlePopularQuestionSend(question)}
-                            disabled={loading || isAtLimit}
-                            className="flex w-full min-w-0 items-center justify-between gap-3 rounded-lg border border-slate-200 bg-white px-3 py-2 text-left text-xs leading-snug transition-colors hover:border-blue-300 hover:bg-blue-50 disabled:opacity-50 sm:text-sm"
-                            aria-label={`${t("aiHelper.input.send")}: ${question}`}
-                          >
-                            <span className="min-w-0 flex-1">
-                              {question}
-                            </span>
-                            <Send className="h-4 w-4 shrink-0 text-slate-600" />
-                          </button>
-                        ))}
-                      </div>
-                    </div>
-
                     {speechError && (
                       <p className="text-xs text-red-500 text-center" role="alert">
                         {speechError}

@@ -4,7 +4,8 @@ export enum Language {
   EN = 'EN',
   FR = 'FR',
   AR = 'AR',
-  ZH = 'ZH'
+  ZH = 'ZH',
+  ES = 'ES'
 }
 
 export enum Role {
@@ -279,4 +280,4 @@ export interface UpdateProfileRequest {
   year?: string;
   phone?: string;
   gender?: Gender;
-} 
+}

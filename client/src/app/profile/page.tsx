@@ -95,6 +95,7 @@ const getLocaleByLanguage = (language?: Language): string => {
     [Language.FR]: "fr-FR",
     [Language.AR]: "ar",
     [Language.ZH]: "zh-CN",
+    [Language.ES]: "es-ES",
     [Language.RU]: "ru-RU",
   };
   return (language && map[language]) || "ru-RU";
