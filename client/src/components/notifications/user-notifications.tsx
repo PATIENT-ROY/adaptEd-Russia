@@ -83,6 +83,10 @@ export function UserNotifications() {
     }
   };
 
+  // Keep the header uncluttered when there is nothing requiring attention.
+  // The bell appears as soon as the unread count reaches one.
+  if (count < 1) return null;
+
   return (
     <div ref={rootRef} className="relative">
       <button

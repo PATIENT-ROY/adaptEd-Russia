@@ -20,6 +20,7 @@ const languages: { code: Language; name: string; flag: string }[] = [
   { code: Language.FR, name: "Français", flag: "🇫🇷" },
   { code: Language.AR, name: "العربية", flag: "🇸🇦" },
   { code: Language.ZH, name: "中文", flag: "🇨🇳" },
+  { code: Language.ES, name: "Español", flag: "🇪🇸" },
 ];
 
 export function LanguageSwitcher({

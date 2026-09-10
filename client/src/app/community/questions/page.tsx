@@ -488,11 +488,11 @@ export default function CommunityQuestionsPage() {
               )}
             </div>
 
-            <div className="flex flex-col sm:flex-row sm:items-center gap-2 sm:gap-3">
+            <div className="flex flex-col sm:flex-row sm:items-start gap-2 sm:gap-3">
               <div
                 role="tablist"
                 aria-label={t("community.questions.filterAria")}
-                className="flex flex-1 min-w-0 overflow-x-auto gap-2"
+                className="flex flex-1 min-w-0 flex-wrap gap-2"
               >
                 {(
                   [
@@ -511,7 +511,7 @@ export default function CommunityQuestionsPage() {
                         setMineOnly(false);
                         setStatusFilter(value);
                       }}
-                      className={`px-3 py-2 rounded-xl border-2 text-xs sm:text-sm font-medium whitespace-nowrap transition-all ${
+                      className={`shrink-0 px-2.5 sm:px-3 py-2 rounded-xl border-2 text-xs sm:text-sm font-medium whitespace-nowrap transition-all ${
                         active
                           ? "bg-indigo-50 text-indigo-700 border-indigo-400"
                           : "bg-gray-50 text-gray-600 border-gray-200 hover:bg-gray-100"
@@ -528,7 +528,7 @@ export default function CommunityQuestionsPage() {
                     setMineOnly(true);
                     setStatusFilter("all");
                   }}
-                  className={`inline-flex items-center gap-1 px-3 py-2 rounded-xl border-2 text-xs sm:text-sm font-medium whitespace-nowrap transition-all ${
+                  className={`inline-flex shrink-0 items-center gap-1 px-2.5 sm:px-3 py-2 rounded-xl border-2 text-xs sm:text-sm font-medium whitespace-nowrap transition-all ${
                     mineOnly
                       ? "bg-indigo-50 text-indigo-700 border-indigo-400"
                       : "bg-gray-50 text-gray-600 border-gray-200 hover:bg-gray-100"
@@ -542,7 +542,7 @@ export default function CommunityQuestionsPage() {
               <div
                 role="tablist"
                 aria-label={t("community.questions.sortAria")}
-                className="flex gap-2"
+                className="flex flex-wrap gap-2"
               >
                 <button
                   role="tab"

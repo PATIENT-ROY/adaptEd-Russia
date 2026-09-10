@@ -12,6 +12,8 @@ export function getLocaleByLanguage(language?: Language): string {
       return "ar";
     case Language.ZH:
       return "zh-CN";
+    case Language.ES:
+      return "es-ES";
     case Language.RU:
     default:
       return "ru-RU";
@@ -73,7 +75,7 @@ export function formatAnswersCountLabel(
   if (lang === Language.AR || lang === Language.ZH) {
     return t("community.questions.answer.many");
   }
-  // EN
+  // EN / ES
   return count === 1
     ? t("community.questions.answer.one")
     : t("community.questions.answer.many");
