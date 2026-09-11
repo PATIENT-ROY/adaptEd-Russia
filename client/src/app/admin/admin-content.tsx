@@ -1,7 +1,7 @@
 "use client";
 
 import { Layout } from "@/components/layout/layout";
-import { Card, CardContent, CardHeader, CardTitle } from "@/components/ui/card";
+import { Card, CardContent, CardFooter, CardHeader, CardTitle } from "@/components/ui/card";
 import { Button } from "@/components/ui/button";
 import {
   Users,
@@ -257,7 +257,7 @@ export function AdminContent() {
         </div>
 
         <div className="grid grid-cols-1 lg:grid-cols-2 gap-6 sm:gap-8">
-          <Card className={cardClass}>
+          <Card className={`${cardClass} flex min-w-0 flex-col`}>
             <CardHeader>
               <CardTitle className="flex items-center space-x-2">
                 <Users className="h-5 w-5" />
@@ -289,15 +289,15 @@ export function AdminContent() {
                 ))
                 )}
               </div>
-              <div className="mt-4">
-                <Link href="/admin/users">
-                  <Button variant="outline" className="w-full">{t("admin.dashboard.viewAllUsers")}</Button>
-                </Link>
-              </div>
             </CardContent>
+            <CardFooter className="mt-auto">
+              <Link href="/admin/users" className="w-full">
+                <Button variant="outline" className="h-auto min-h-10 w-full whitespace-normal">{t("admin.dashboard.viewAllUsers")}</Button>
+              </Link>
+            </CardFooter>
           </Card>
 
-          <Card className={cardClass}>
+          <Card className={`${cardClass} flex min-w-0 flex-col`}>
             <CardHeader>
               <CardTitle className="flex items-center space-x-2">
                 <BookOpen className="h-5 w-5" />
@@ -331,12 +331,12 @@ export function AdminContent() {
                 ))
                 )}
               </div>
-              <div className="mt-4">
-                <Link href="/admin/guides">
-                  <Button variant="outline" className="w-full">{t("admin.dashboard.manageGuides")}</Button>
-                </Link>
-              </div>
             </CardContent>
+            <CardFooter className="mt-auto">
+              <Link href="/admin/guides" className="w-full">
+                <Button variant="outline" className="h-auto min-h-10 w-full whitespace-normal">{t("admin.dashboard.manageGuides")}</Button>
+              </Link>
+            </CardFooter>
           </Card>
         </div>
 
@@ -348,22 +348,22 @@ export function AdminContent() {
             </CardTitle>
           </CardHeader>
           <CardContent>
-            <div className="grid grid-cols-1 sm:grid-cols-2 lg:grid-cols-5 gap-4">
+            <div className="grid auto-rows-fr grid-cols-1 sm:grid-cols-2 lg:grid-cols-5 gap-4">
               {opsItems.map((item) => (
-                <Link key={item.label} href={item.href} className="block">
+                <Link key={item.label} href={item.href} className="block min-w-0 h-full">
                   <div
-                    className={`flex items-center space-x-3 p-3 rounded-lg ${
+                    className={`flex h-full items-center gap-3 p-3 rounded-lg ${
                       item.tone === "amber" ? "bg-amber-50" : "bg-green-50"
                     }`}
                   >
                     <div
-                      className={`w-3 h-3 rounded-full ${
+                      className={`w-3 h-3 shrink-0 rounded-full ${
                         item.tone === "amber" ? "bg-amber-500" : "bg-green-500"
                       }`}
                     />
-                    <div>
-                      <p className="font-medium text-gray-900">{item.label}</p>
-                      <p className="text-sm text-gray-600">{item.value}</p>
+                    <div className="flex h-full min-w-0 flex-1 flex-col">
+                      <p className="min-h-12 break-words font-medium leading-6 text-gray-900">{item.label}</p>
+                      <p className="mt-auto text-sm text-gray-600">{item.value}</p>
                     </div>
                   </div>
                 </Link>
