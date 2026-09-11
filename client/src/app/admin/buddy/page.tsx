@@ -2,7 +2,7 @@
 
 import { useCallback, useEffect, useState } from "react";
 import Link from "next/link";
-import { AlertCircle, ArrowLeft, HeartHandshake, Loader2, Save, Shield } from "lucide-react";
+import { AlertCircle, ArrowLeft, ChevronDown, HeartHandshake, Loader2, Save, Shield } from "lucide-react";
 import { Layout } from "@/components/layout/layout";
 import { Button } from "@/components/ui/button";
 import { useAuth } from "@/contexts/AuthContext";
@@ -165,17 +165,23 @@ export default function BuddyAdminPage() {
           <div className="rounded-3xl bg-white p-5 shadow-sm ring-1 ring-slate-200">
             <div className="grid gap-3 sm:grid-cols-3 lg:grid-cols-1 xl:grid-cols-3">
               <label className="text-sm font-semibold text-slate-700">{bt("admin.filter.type")}
-                <select data-testid="buddy-filter-type" value={type} onChange={(e) => setType(e.target.value as typeof type)} className="mt-1.5 w-full rounded-xl border border-slate-300 px-3 py-2.5 font-normal">
+                <span className="relative mt-1.5 block">
+                <select data-testid="buddy-filter-type" value={type} onChange={(e) => setType(e.target.value as typeof type)} className="w-full min-w-0 appearance-none rounded-xl border border-slate-300 bg-white py-2.5 ps-3 pe-10 font-normal">
                   <option value="">{bt("admin.filter.all")}</option>
                   <option value="STUDENT">{bt("application.student")}</option>
                   <option value="MENTOR">{bt("application.mentor")}</option>
                 </select>
+                <ChevronDown aria-hidden="true" className="pointer-events-none absolute end-3 top-1/2 h-4 w-4 -translate-y-1/2" />
+                </span>
               </label>
               <label className="text-sm font-semibold text-slate-700">{bt("admin.filter.status")}
-                <select data-testid="buddy-filter-status" value={status} onChange={(e) => setStatus(e.target.value as typeof status)} className="mt-1.5 w-full rounded-xl border border-slate-300 px-3 py-2.5 font-normal">
+                <span className="relative mt-1.5 block">
+                <select data-testid="buddy-filter-status" value={status} onChange={(e) => setStatus(e.target.value as typeof status)} className="w-full min-w-0 appearance-none rounded-xl border border-slate-300 bg-white py-2.5 ps-3 pe-10 font-normal">
                   <option value="">{bt("admin.filter.all")}</option>
                   {STATUSES.map((item) => <option key={item} value={item}>{bt(`application.${item}` as BuddyKey)}</option>)}
                 </select>
+                <ChevronDown aria-hidden="true" className="pointer-events-none absolute end-3 top-1/2 h-4 w-4 -translate-y-1/2" />
+                </span>
               </label>
               <label className="text-sm font-semibold text-slate-700">{bt("admin.filter.city")}
                 <input data-testid="buddy-filter-city" value={city} onChange={(e) => setCity(e.target.value)} maxLength={100} className="mt-1.5 w-full rounded-xl border border-slate-300 px-3 py-2.5 font-normal" />
@@ -224,9 +230,12 @@ export default function BuddyAdminPage() {
                 <div className="mt-7 border-t border-slate-200 pt-6">
                   <div className="grid gap-4 sm:grid-cols-2">
                     <label className="text-sm font-semibold text-slate-700">{bt("admin.field.status")}
-                      <select data-testid="buddy-admin-status" value={editStatus} onChange={(e) => setEditStatus(e.target.value as BuddyApplicationStatus)} className="mt-2 w-full rounded-xl border border-slate-300 px-3 py-3 font-normal">
+                      <span className="relative mt-2 block">
+                      <select data-testid="buddy-admin-status" value={editStatus} onChange={(e) => setEditStatus(e.target.value as BuddyApplicationStatus)} className="w-full min-w-0 appearance-none rounded-xl border border-slate-300 bg-white py-3 ps-3 pe-10 font-normal">
                         {STATUSES.map((item) => <option key={item} value={item}>{bt(`application.${item}` as BuddyKey)}</option>)}
                       </select>
+                      <ChevronDown aria-hidden="true" className="pointer-events-none absolute end-3 top-1/2 h-4 w-4 -translate-y-1/2" />
+                      </span>
                     </label>
                     <label className="text-sm font-semibold text-slate-700 sm:col-span-2">{bt("admin.field.note")}
                       <textarea data-testid="buddy-admin-note" value={note} onChange={(e) => setNote(e.target.value)} maxLength={2000} rows={5} className="mt-2 w-full rounded-xl border border-slate-300 px-3 py-3 font-normal" />

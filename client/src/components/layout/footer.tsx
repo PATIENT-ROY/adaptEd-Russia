@@ -42,7 +42,7 @@ export function Footer() {
 
   const socialLinks = [
     {
-      href: "https://web.telegram.org/a/",
+      href: "https://t.me/adaptEd_russia",
       type: "telegram" as const,
       labelKey: "footer.social.telegram",
     },
