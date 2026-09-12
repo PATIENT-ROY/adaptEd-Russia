@@ -128,13 +128,13 @@ export function useChat(userId: string) {
       let errorMessage = 'Не удалось отправить сообщение';
 
       if (err instanceof Error) {
-        if (err.message.includes('LIMIT_FREEMIUM') || err.message.includes('429')) {
+        if (err.message === 'LIMIT_FREEMIUM') {
           setLimitError('FREEMIUM');
           errorMessage = '';
           setMessages(prev => prev.filter(m => m.id !== userMessage.id));
           return;
         }
-        if (err.message.includes('LIMIT_PREMIUM')) {
+        if (err.message === 'LIMIT_PREMIUM') {
           setLimitError('PREMIUM');
           errorMessage = '';
           setMessages(prev => prev.filter(m => m.id !== userMessage.id));

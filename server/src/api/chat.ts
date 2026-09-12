@@ -3,18 +3,13 @@ import { z } from 'zod';
 import { prisma } from '../lib/database';
 import { authMiddleware } from '../lib/auth';
 import { ApiResponse } from '../types/index.js';
-import {
-  DEEPSEEK_API_URL,
-  DeepSeekConfigurationError,
-  getDeepSeekApiKey,
-} from '../lib/deepseek';
+import { DeepSeekConfigurationError, getDeepSeekApiKey } from '../lib/deepseek';
+import { ChatServiceError, generateAIResponse } from '../lib/chat-completion';
+import { findRelatedGuides, GuideSuggestion } from '../lib/chat-guides';
+import { chatUsageDay, getChatUsage, reserveChatQuota, releaseChatQuota } from '../lib/chat-quota';
+import { sendMessageSchema } from '../lib/chat-input';
 
 const router = Router();
-
-const sendMessageSchema = z.object({
-  content: z.string().min(1, 'Сообщение не может быть пустым').max(2000),
-  mode: z.enum(['study', 'life', 'generator']).optional().default('study'),
-});
 
 // ── Plan-based limits ───────────────────────────────────────────────
 
@@ -32,64 +27,6 @@ const MODE_TEMPERATURE: Record<string, number> = {
 };
 
 const CONVERSATION_HISTORY_LIMIT = 10;
-
-// ── Guide suggestions database ──────────────────────────────────────
-
-interface GuideSuggestion {
-  title: string;
-  url: string;
-  category: 'education' | 'life';
-  keywords: string[];
-  summary?: string;
-}
-
-const GUIDE_DATABASE: GuideSuggestion[] = [
-  { title: 'Словарь студенческого сленга', url: '/guides/education/slang-dictionary', category: 'education', keywords: ['сленг', 'слова', 'термин', 'пара', 'хвост', 'автомат', 'стипуха', 'slang'] },
-  { title: 'Как проходит обучение в вузе', url: '/guides/education/how-studies-work', category: 'education', keywords: ['обучение', 'семестр', 'лекция', 'семинар', 'учебный процесс', 'пары', 'университет', 'разобраться с университетом', 'как устроен вуз', 'международный отдел', 'деканат', 'кампус', 'структура вуза'], summary: 'В российском вузе обычно помогают: куратор, международный отдел, деканат/кафедра. Разберитесь с расписанием, личным кабинетом, правилами посещения и контактами поддержки.' },
-  { title: 'Разница между экзаменом и зачётом', url: '/guides/education/exam-vs-credit', category: 'education', keywords: ['экзамен', 'зачёт', 'зачет', 'оценка', 'балл', 'пятёрка'] },
-  { title: 'Как подготовиться к сессии', url: '/guides/education/session', category: 'education', keywords: ['сессия', 'подготовка', 'готовиться', 'конспект', 'шпаргалка', 'пересдача'] },
-  { title: 'Как написать курсовую работу', url: '/guides/education/coursework', category: 'education', keywords: ['курсовая', 'курсовой', 'научная работа', 'оформление', 'введение', 'заключение', 'диплом', 'дипломная'] },
-  { title: 'Оформление документов для вуза', url: '/guides/education/edu-academic-docs', category: 'education', keywords: ['справка', 'заявление', 'деканат', 'приёмная', 'ведомость'] },
-  { title: 'Как не быть отчисленным', url: '/guides/education/expulsion-academic', category: 'education', keywords: ['отчисление', 'отчислен', 'долг', 'задолженность', 'пропуск', 'академическ'] },
-  { title: 'Стипендии и гранты', url: '/education-guide?q=стипендия', category: 'education', keywords: ['стипендия', 'грант', 'финансовая помощь', 'выплата', 'бюджет'] },
-  { title: 'Расписание и учебный план', url: '/education-guide?q=расписание', category: 'education', keywords: ['расписание', 'график', 'учебный план', 'модуль', 'звонок'] },
-  { title: 'Как зарегистрироваться в общежитии', url: '/guides/life/dorm', category: 'life', keywords: ['общежитие', 'заселение', 'комната', 'жильё', 'проживание', 'dormitory', 'общага'] },
-  { title: 'Транспорт и проезд', url: '/guides/life/transport', category: 'life', keywords: ['транспорт', 'метро', 'автобус', 'троллейбус', 'проезд', 'карта тройка', 'маршрут'] },
-  { title: 'Медицинская помощь', url: '/guides/life/call-doctor', category: 'life', keywords: ['врач', 'больница', 'поликлиника', 'страховка', 'медицина', 'здоровье', 'аптека', 'лекарств'] },
-  { title: 'Банки и финансы', url: '/guides/life/bank', category: 'life', keywords: ['банк', 'карта', 'перевод', 'деньги', 'счёт', 'обмен', 'валюта', 'сбербанк'] },
-  { title: 'SIM-карта и связь', url: '/guides/life/sim-card', category: 'life', keywords: ['sim', 'телефон', 'связь', 'интернет', 'оператор', 'тариф', 'мтс', 'билайн', 'мегафон'] },
-  {
-    title: 'Регистрация и миграционный учёт',
-    url: '/guides/life/migration-registration',
-    category: 'life',
-    keywords: ['регистрация', 'миграц', 'виза', 'патент', 'разрешение', 'мвд', 'уфмс', 'учёт', 'migration'],
-    summary: 'После приезда иностранный студент обычно проходит миграционный учёт (регистрацию по месту пребывания) через вуз/общежитие/принимающую сторону. Сроки и список документов уточняйте в международном отделе вуза и на официальных ресурсах МВД/Госуслуг.',
-  },
-  {
-    title: 'Что делать после приезда',
-    url: '/life-guide#life-guide-arrival',
-    category: 'life',
-    keywords: ['после приезда', 'приехал', 'первый день', 'первые шаги', 'аэропорт', 'arrival'],
-    summary: 'Чеклист после приезда: куратор/международный отдел, заселение/адрес, миграционный учёт, SIM, банк, страховка, кампус. Конкретные сроки зависят от вуза и региона.',
-  },
-  {
-    title: 'Потеря паспорта',
-    url: '/guides/life/lost-passport',
-    category: 'life',
-    keywords: [
-      'потерял паспорт',
-      'потеря паспорта',
-      'украли паспорт',
-      'утеря паспорта',
-      'потерял документы',
-      'потеря документов',
-      'утеря документов',
-      'потерял документ',
-      'украли документы',
-    ],
-    summary: 'При потере паспорта/документов: заявление в полицию, консульство/миграционные органы, уведомление вуза. Не путать с обычной регистрацией после приезда.',
-  },
-];
 
 // ── Build contextual system prompt ──────────────────────────────────
 
@@ -157,52 +94,11 @@ ${relatedGuides
   return base + userCtx + platformCtx + guideCtx + (modeCtx[mode] || modeCtx.study) + styleCtx;
 }
 
-// ── Find related guides by keyword matching ─────────────────────────
-
-function findRelatedGuides(
-  userMessage: string,
-  aiResponse = '',
-): GuideSuggestion[] {
-  const combined = (userMessage + ' ' + aiResponse).toLowerCase();
-
-  const scored = GUIDE_DATABASE
-    .map(guide => {
-      let score = 0;
-      for (const kw of guide.keywords) {
-        if (combined.includes(kw)) score += kw.includes(' ') ? 2 : 1;
-      }
-      return { ...guide, score };
-    })
-    .filter(g => g.score > 0);
-
-  scored.sort((a, b) => b.score - a.score);
-
-  const seen = new Set<string>();
-  const unique = scored.filter(g => {
-    const key = g.title;
-    if (seen.has(key)) return false;
-    seen.add(key);
-    return true;
-  });
-
-  return unique.slice(0, 3);
-}
-
-// ── Helper: get today's start ───────────────────────────────────────
-
-function getTodayStart(): Date {
-  const d = new Date();
-  d.setHours(0, 0, 0, 0);
-  return d;
-}
-
 // ── Helper: get usage for user ──────────────────────────────────────
 
 async function getUserUsage(userId: string, plan: PlanKey) {
   const config = PLAN_CONFIG[plan] || PLAN_CONFIG.FREEMIUM;
-  const todayUsed = await prisma.chatMessage.count({
-    where: { userId, isUser: true, createdAt: { gte: getTodayStart() } },
-  });
+  const todayUsed = await getChatUsage(userId);
   return { used: todayUsed, limit: config.dailyMessages, plan };
 }
 
@@ -261,8 +157,10 @@ router.get('/messages', authMiddleware, async (req: Request, res: Response) => {
 // ── POST /messages — send message with plan limits ──────────────────
 
 router.post('/messages', authMiddleware, async (req: Request, res: Response) => {
+  const user = (req as any).user;
+  const usageDay = chatUsageDay();
+  let reserved = false;
   try {
-    const user = (req as any).user;
     const validatedData = sendMessageSchema.parse(req.body);
 
     // 1. Fetch user profile
@@ -274,27 +172,18 @@ router.post('/messages', authMiddleware, async (req: Request, res: Response) => 
     const plan = (userData?.plan || 'FREEMIUM') as PlanKey;
     const config = PLAN_CONFIG[plan] || PLAN_CONFIG.FREEMIUM;
 
-    // 2. Check daily limit
-    const todayUsed = await prisma.chatMessage.count({
-      where: { userId: user.userId, isUser: true, createdAt: { gte: getTodayStart() } },
-    });
-
-    if (todayUsed >= config.dailyMessages) {
+    // Validate configuration before consuming quota.
+    getDeepSeekApiKey();
+    reserved = await reserveChatQuota(user.userId, config.dailyMessages, usageDay);
+    if (!reserved) {
       return res.status(429).json({
         success: false,
-        error: plan === 'FREEMIUM'
-          ? 'LIMIT_FREEMIUM'
-          : 'LIMIT_PREMIUM',
-        usage: { used: todayUsed, limit: config.dailyMessages, plan },
+        error: plan === 'FREEMIUM' ? 'LIMIT_FREEMIUM' : 'LIMIT_PREMIUM',
+        usage: { used: await getChatUsage(user.userId, usageDay), limit: config.dailyMessages, plan },
       } as ApiResponse);
     }
 
-    // 3. Save user message
-    const userMessage = await prisma.chatMessage.create({
-      data: { userId: user.userId, content: validatedData.content, isUser: true },
-    });
-
-    // 4. Fetch conversation history for context
+    // Fetch history without persisting a message that may fail.
     const recentMessages = await prisma.chatMessage.findMany({
       where: { userId: user.userId },
       orderBy: { createdAt: 'desc' },
@@ -303,7 +192,6 @@ router.post('/messages', authMiddleware, async (req: Request, res: Response) => 
 
     const conversationHistory = recentMessages
       .reverse()
-      .filter(m => m.id !== userMessage.id)
       .map(msg => ({
         role: msg.isUser ? 'user' as const : 'assistant' as const,
         content: msg.content,
@@ -326,19 +214,19 @@ router.post('/messages', authMiddleware, async (req: Request, res: Response) => 
       temperature: MODE_TEMPERATURE[validatedData.mode] ?? 0.5,
     });
 
-    // 7. Save AI message
-    const aiMessage = await prisma.chatMessage.create({
-      data: { userId: user.userId, content: aiResponseText, isUser: false },
-    });
+    // Persist the pair atomically only after a real provider response.
+    const [userMessage, aiMessage] = await prisma.$transaction([
+      prisma.chatMessage.create({
+        data: { userId: user.userId, content: validatedData.content, isUser: true },
+      }),
+      prisma.chatMessage.create({
+        data: { userId: user.userId, content: aiResponseText, isUser: false },
+      }),
+    ]);
+    reserved = false; // Successful usage must survive history deletion.
+    const relatedGuides = matchedGuides.map(({ title, url, category }) => ({ title, url, category }));
 
-    // 8. Related guides for UI (prefer pre-match; enrich if empty)
-    const relatedGuides = (
-      matchedGuides.length > 0
-        ? matchedGuides
-        : findRelatedGuides(validatedData.content, aiResponseText)
-    ).map(({ title, url, category }) => ({ title, url, category }));
-
-    // 9. Return response
+    // Return response
     res.status(201).json({
       success: true,
       data: {
@@ -357,12 +245,31 @@ router.post('/messages', authMiddleware, async (req: Request, res: Response) => 
           timestamp: aiMessage.createdAt.toISOString(),
         },
         relatedGuides,
-        usage: { used: todayUsed + 1, limit: config.dailyMessages, plan },
+        usage: { used: await getChatUsage(user.userId), limit: config.dailyMessages, plan },
       },
       message: 'Сообщение отправлено успешно',
     } as ApiResponse);
   } catch (error) {
+    if (reserved) {
+      try {
+        await releaseChatQuota(user.userId, usageDay);
+      } catch {
+        console.error('[AI] Failed to release chat quota reservation');
+      }
+    }
+    if (error instanceof ChatServiceError) {
+      console.warn('[AI] Request failed', { code: error.code, status: error.providerStatus });
+      return res.status(error.code === 'AI_TIMEOUT' ? 504 : 503).json({
+        success: false,
+        error: error.code,
+      } as ApiResponse);
+    }
     if (error instanceof z.ZodError) {
+      const lengthError = error.issues.find(issue =>
+        issue.message === 'AI_INPUT_TOO_LONG' || issue.message === 'CHAT_INPUT_TOO_LONG');
+      if (lengthError) {
+        return res.status(400).json({ success: false, error: lengthError.message } as ApiResponse);
+      }
       return res.status(400).json({
         success: false,
         error: 'Ошибка валидации',
@@ -394,191 +301,5 @@ router.delete('/messages', authMiddleware, async (req: Request, res: Response) =
     res.status(500).json({ success: false, error: 'Внутренняя ошибка сервера' } as ApiResponse);
   }
 });
-
-// ── AI Generation with conversation history ─────────────────────────
-
-interface AIOptions {
-  systemPrompt: string;
-  conversationHistory: Array<{ role: 'user' | 'assistant'; content: string }>;
-  userMessage: string;
-  maxTokens: number;
-  temperature: number;
-}
-
-async function generateAIResponse(options: AIOptions): Promise<string> {
-  const MAX_RETRIES = 3;
-  const apiKey = getDeepSeekApiKey();
-
-  let lastError: Error | null = null;
-
-  const messages = [
-    { role: 'system', content: options.systemPrompt },
-    ...options.conversationHistory,
-    { role: 'user', content: options.userMessage },
-  ];
-
-  for (let attempt = 0; attempt < MAX_RETRIES; attempt++) {
-    try {
-      const response = await fetch(DEEPSEEK_API_URL, {
-        method: 'POST',
-        headers: {
-          'Content-Type': 'application/json',
-          'Authorization': `Bearer ${apiKey}`,
-        },
-        body: JSON.stringify({
-          model: 'deepseek-chat',
-          messages,
-          temperature: options.temperature,
-          max_tokens: options.maxTokens,
-        }),
-      });
-
-      if (!response.ok) {
-        const status = response.status;
-
-        if (status === 401 || status === 403) {
-          lastError = new Error(`Auth error (${status})`);
-          break;
-        }
-        if (status === 402 || status === 429) {
-          lastError = new Error(`Rate/payment error (${status})`);
-          continue;
-        }
-        lastError = new Error(`API error (${status})`);
-        continue;
-      }
-
-      const data = await response.json() as {
-        choices?: Array<{ message?: { content?: string } }>;
-      };
-
-      const aiResponse = data.choices?.[0]?.message?.content;
-      if (!aiResponse) {
-        throw new Error('Empty AI response');
-      }
-
-      return aiResponse;
-    } catch (error) {
-      lastError = error instanceof Error ? error : new Error(String(error));
-      console.warn(`[AI] Attempt ${attempt + 1}/${MAX_RETRIES} failed:`, error);
-    }
-  }
-
-  console.error('[AI] All attempts failed:', lastError);
-  return generateMockResponse(options.userMessage);
-}
-
-// ── Improved fallback responses ─────────────────────────────────────
-
-function generateMockResponse(userMessage: string): string {
-  const lower = userMessage.toLowerCase();
-  const matched = findRelatedGuides(userMessage);
-  const guideHint =
-    matched.length > 0
-      ? `\n\n💡 **Совет:** подробнее — «${matched[0].title}» в разделе гайдов AdaptEd (${matched[0].url}).`
-      : `\n\n💡 **Совет:** смотрите гайды AdaptEd в разделах «Учёба» и «Быт».`;
-
-  if (
-    /потерял паспорт|потеря паспорта|украли паспорт|утеря паспорта|потерял документы|потеря документов|утеря документов|потерял документ|украли документы/.test(
-      lower,
-    )
-  ) {
-    return `## 📋 Потеря документов / паспорта
-
-Действуйте быстро:
-
-1. **Заявление в полицию** (102/112) — получите справку об утере/краже
-2. **Обратитесь в консульство** вашей страны (для паспорта) и в миграционные органы при необходимости
-3. **Уведомите международный отдел / деканат** вуза — без документов могут быть ограничения по учёбе и проживанию
-4. Храните **сканы/копии** отдельно (телефон + облако)
-
-⚠️ **Важно:** список шагов зависит от типа документа и региона — уточните официально.${guideHint}`;
-  }
-
-  if (/после приезда|приехал|прибыл|первые шаги|первый день/.test(lower)) {
-    return `## 🛬 Что делать после приезда
-
-Базовый чеклист иностранного студента:
-
-1. Связаться с **куратором / международным отделом** вуза
-2. Решить вопрос **жилья/общежития** и адреса
-3. Пройти **миграционный учёт (регистрацию)** через принимающую сторону/вуз
-4. Оформить **SIM**, при необходимости **банк** и проверить **страховку**
-5. Уточнить расписание и документы для учёбы
-
-⚠️ Сроки и список документов зависят от вуза и региона — проверьте официально.${guideHint}`;
-  }
-
-  if (/регистрац|миграц|учёт|учет/.test(lower)) {
-    return `## 📋 Миграционный учёт (регистрация)
-
-После приезда иностранному студенту обычно нужно встать на **миграционный учёт** по месту пребывания.
-
-Типичные шаги:
-
-1. Уточнить в **международном отделе / общежитии**, кто подаёт уведомление
-2. Подготовить паспорт, миграционную карту и документы по списку вуза
-3. Убедиться, что регистрация оформлена в установленный срок
-4. Хранить копии документов отдельно
-
-⚠️ Не путайте это с восстановлением паспорта. Точные сроки и формы проверяйте в вузе и на официальных ресурсах МВД/Госуслуг.${guideHint}`;
-  }
-
-  if (/общежити|общага|комнат|жильё|заселен/.test(lower)) {
-    return `## 🏠 Общежитие
-
-Для заселения обычно нужно:
-
-1. **Подать заявление** через вуз / студенческий отдел
-2. Собрать документы по списку (часто: направление, медсправки, копия паспорта)
-3. Получить **направление** и заселиться
-
-📌 Сроки ограничены — уточните в своём вузе.${guideHint}`;
-  }
-
-  if (/сессия|экзамен|зачёт|зачет|подготов/.test(lower)) {
-    return `## 📚 Сессия и экзамены
-
-1. **Зимняя сессия** — обычно декабрь–январь, **летняя** — май–июнь
-2. **Зачёт** — сдал/не сдал; **экзамен** — оценка
-3. Начинайте готовиться заранее и ходите на консультации
-
-⚠️ Академические задолженности могут привести к отчислению.${guideHint}`;
-  }
-
-  if (/стипенди|грант|деньги|финанс/.test(lower)) {
-    return `## 💰 Стипендии и финансовая помощь
-
-**Академическая стипендия** обычно для бюджетников без долгов.
-**Гранты** и повышенные стипендии зависят от вуза и конкурсов.
-
-Следите за дедлайнами через напоминания AdaptEd.${guideHint}`;
-  }
-
-  if (/курсов|диплом|работа.*науч|реферат/.test(lower)) {
-    return `## 📝 Научные работы
-
-Типовая структура: титул → введение → теория → практика → заключение → литература (ГОСТ вуза).
-
-💡 Для текстов используйте режим «Генератор» на платформе.${guideHint}`;
-  }
-
-  if (/университет|вуз|деканат|кампус|разобраться с универ|учебн(ый|ом) процесс|международн(ый|ом) отдел/.test(lower)) {
-    return `## 🏫 Как разобраться с университетом
-
-Практичный старт для иностранного студента:
-
-1. Найдите контакты **международного отдела** и **куратора**
-2. Уточните, где смотреть **расписание**, оценки и объявления (личный кабинет / LMS)
-3. Узнайте правила **посещения**, сессии и продления документов
-4. Сохраните адреса: деканат, общежитие, поликлиника вуза
-
-⚠️ Процессы отличаются по вузам — опирайтесь на внутренние инструкции вашего университета.${guideHint}`;
-  }
-
-  return `## 👋 Помогу с адаптацией в России
-
-Задайте конкретный вопрос по учёбе, документам, общежитию, транспорту или сессии — отвечу по шагам на основе материалов AdaptEd.${guideHint}`;
-}
 
 export default router;
