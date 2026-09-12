@@ -24,6 +24,7 @@ import { lifeGuides } from "@/data/life-guides";
 import { HeroBackgroundImage } from "@/components/ui/hero-background-image";
 import { lifeGuidePath } from "@/lib/guide-routes";
 import { guideInLifeCategory, guideMatchesQuery } from "@/lib/guide-search";
+import { arrivalStepGuide } from "@/lib/life-guide-arrival";
 
 type ArrivalStep = {
   id: string;
@@ -242,6 +243,36 @@ export function LifeGuideContent() {
           </div>
         </section>
 
+        {/* Emergency */}
+        <section id="life-guide-emergency" aria-labelledby="life-guide-emergency-title" className="rounded-2xl sm:rounded-3xl border border-red-200 bg-red-50 p-4 sm:p-6">
+          <div className="flex flex-col gap-4 sm:flex-row sm:items-center sm:justify-between">
+            <div className="flex items-center gap-2.5 min-w-0">
+              <div className="flex h-10 w-10 flex-shrink-0 items-center justify-center rounded-xl bg-red-100 text-red-700">
+                <Phone className="h-5 w-5" aria-hidden />
+              </div>
+              <h2 id="life-guide-emergency-title" className="text-base sm:text-lg font-semibold text-red-900">
+                {t("lifeGuide.emergencyContacts.title")}
+              </h2>
+            </div>
+            <div className="grid grid-cols-2 sm:flex sm:flex-wrap gap-2 sm:gap-3">
+              {emergencyContacts.map((contact) => (
+                <a
+                  key={contact.id}
+                  href={`tel:${contact.number}`}
+                  className="flex min-w-0 items-center justify-between gap-2 rounded-xl bg-white px-3 py-2.5 border border-red-100 shadow-sm hover:border-red-300 hover:shadow transition-all"
+                >
+                  <span className="min-w-0 flex-1 text-xs sm:text-sm text-red-900/80 leading-snug break-words">
+                    {t(`lifeGuide.emergencyContacts.${contact.id}.title`)}
+                  </span>
+                  <span className="flex-shrink-0 text-base sm:text-lg font-bold tabular-nums text-red-600">
+                    {contact.number}
+                  </span>
+                </a>
+              ))}
+            </div>
+          </div>
+        </section>
+
         {/* Arrival checklist — «Я только приехал» */}
         <section
           id="life-guide-arrival"
@@ -276,9 +307,7 @@ export function LifeGuideContent() {
                 </div>
                 <div className="grid grid-cols-1 sm:grid-cols-2 lg:grid-cols-4 gap-2">
                   {phase.steps.map((step) => {
-                    const publishedGuide = step.guideId
-                      ? lifeGuides.find((g) => g.id === step.guideId && g.isPublished)
-                      : undefined;
+                    const publishedGuide = arrivalStepGuide(step, lifeGuides);
                     const className =
                       "group flex min-w-0 items-center justify-between gap-2 rounded-xl border border-slate-200 bg-slate-50/80 px-3.5 py-3 text-left text-sm font-medium text-slate-800 hover:border-emerald-300 hover:bg-emerald-50 transition-all";
                     const label = (
@@ -336,36 +365,6 @@ export function LifeGuideContent() {
                 </div>
               </div>
             ))}
-          </div>
-        </section>
-
-        {/* Emergency */}
-        <section className="rounded-2xl sm:rounded-3xl border border-red-200 bg-red-50 p-4 sm:p-6">
-          <div className="flex flex-col gap-4 sm:flex-row sm:items-center sm:justify-between">
-            <div className="flex items-center gap-2.5 min-w-0">
-              <div className="flex h-10 w-10 flex-shrink-0 items-center justify-center rounded-xl bg-red-100 text-red-700">
-                <Phone className="h-5 w-5" aria-hidden />
-              </div>
-              <h2 className="text-base sm:text-lg font-semibold text-red-900">
-                {t("lifeGuide.emergencyContacts.title")}
-              </h2>
-            </div>
-            <div className="grid grid-cols-2 sm:flex sm:flex-wrap gap-2 sm:gap-3">
-              {emergencyContacts.map((contact) => (
-                <a
-                  key={contact.id}
-                  href={`tel:${contact.number}`}
-                  className="flex min-w-0 items-center justify-between gap-2 rounded-xl bg-white px-3 py-2.5 border border-red-100 shadow-sm hover:border-red-300 hover:shadow transition-all"
-                >
-                  <span className="min-w-0 flex-1 text-xs sm:text-sm text-red-900/80 leading-snug break-words">
-                    {t(`lifeGuide.emergencyContacts.${contact.id}.title`)}
-                  </span>
-                  <span className="flex-shrink-0 text-base sm:text-lg font-bold tabular-nums text-red-600">
-                    {contact.number}
-                  </span>
-                </a>
-              ))}
-            </div>
           </div>
         </section>
 

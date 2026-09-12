@@ -48,6 +48,7 @@ model User {
   reminders             Reminder[]
   notes                 Note[]
   chatMessages          ChatMessage[]
+  chatDailyUsage        ChatDailyUsage[]
   profile               Profile?
   supportTickets        SupportTicket[]
   payments              Payment[]
@@ -219,6 +220,17 @@ model Guide {
 }
 
 // Сообщения чата с AI
+// Independent of deletable chat history. Days are UTC, shared by all workers.
+model ChatDailyUsage {
+  userId String
+  day    DateTime @db.Date
+  used   Int      @default(0)
+  user   User     @relation(fields: [userId], references: [id], onDelete: Cascade)
+
+  @@id([userId, day])
+  @@map("chat_daily_usage")
+}
+
 model ChatMessage {
   id        String   @id @default(cuid())
   userId    String

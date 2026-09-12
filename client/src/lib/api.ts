@@ -107,6 +107,11 @@ class ApiClient {
       RATE_LIMITED: 'api.error.tooManyRequests',
       AUTH_RATE_LIMITED: 'api.error.tooManyLogins',
       AI_RATE_LIMITED: 'api.error.tooManyAi',
+      AI_UNAVAILABLE: 'api.error.aiUnavailable',
+      AI_TIMEOUT: 'api.error.aiTimeout',
+      AI_SERVICE_NOT_CONFIGURED: 'api.error.aiUnavailable',
+      AI_INPUT_TOO_LONG: 'templates.inputTooLong',
+      CHAT_INPUT_TOO_LONG: 'api.error.chatInputTooLong',
       DELETE_RATE_LIMITED: 'api.error.tooManyDeletes',
       PAYMENT_RATE_LIMITED: 'api.error.tooManyPayments',
     };

@@ -249,15 +249,6 @@ export default function AiAssistantPage() {
     />
   );
 
-  const defaultRelatedGuides = useMemo(
-    () => [
-      { title: t("aiHelper.guides.default.1"), url: "/guides/life/dorm", category: "life" },
-      { title: t("aiHelper.guides.default.2"), url: "/guides/life/migration-registration", category: "life" },
-      { title: t("aiHelper.guides.default.3"), url: "/guides/life/insurance-dms", category: "life" },
-    ],
-    [t],
-  );
-
   const aiModes = useMemo<AIModeConfig[]>(() => [
     {
       id: "study",
@@ -748,17 +739,12 @@ export default function AiAssistantPage() {
                             {/* Related Guides — shown after the last AI message */}
                             {!message.isUser &&
                               message.id === lastAiMessageId &&
-                              (lastRelatedGuides.length > 0 ||
-                                defaultRelatedGuides.length > 0) && (
+                              lastRelatedGuides.length > 0 && (
                                 <div className="flex justify-start mt-1 ml-0">
                                   <div className="max-w-[90%] sm:max-w-[85%] lg:max-w-[75%]">
                                     <RelatedGuidesBlock
                                       t={t}
-                                      guides={
-                                        lastRelatedGuides.length > 0
-                                          ? lastRelatedGuides
-                                          : defaultRelatedGuides
-                                      }
+                                      guides={lastRelatedGuides}
                                     />
                                   </div>
                                 </div>

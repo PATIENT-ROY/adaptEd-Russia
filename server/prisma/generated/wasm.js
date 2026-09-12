@@ -232,6 +232,12 @@ exports.Prisma.GuideScalarFieldEnum = {
   likes: 'likes'
 };
 
+exports.Prisma.ChatDailyUsageScalarFieldEnum = {
+  userId: 'userId',
+  day: 'day',
+  used: 'used'
+};
+
 exports.Prisma.ChatMessageScalarFieldEnum = {
   id: 'id',
   userId: 'userId',
@@ -475,6 +481,7 @@ exports.Prisma.ModelName = {
   Note: 'Note',
   Reminder: 'Reminder',
   Guide: 'Guide',
+  ChatDailyUsage: 'ChatDailyUsage',
   ChatMessage: 'ChatMessage',
   SupportTicket: 'SupportTicket',
   SupportResponse: 'SupportResponse',

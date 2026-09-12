@@ -20,18 +20,21 @@ import { useState, useCallback, useEffect, useRef } from "react";
 import { useBodyScrollLock } from "@/hooks/useBodyScrollLock";
 import { useDropzone } from "react-dropzone";
 import type { FileRejection } from "react-dropzone";
+import type { Worker } from "tesseract.js";
+import { OCR_LANGUAGES, prepareOcrImage, recognizeDocumentImage, withTimeout, type OcrLanguage } from "@/lib/docscan-ocr";
+import { extractPdfPageText } from "@/lib/docscan-pdf";
 
 // eslint-disable-next-line @typescript-eslint/no-explicit-any
 let pdfjsLib: any = null;
 
 interface ScanResult {
   text: string;
-  confidence: number;
+  confidence: number | null;
+  textSource?: "pdf" | "ocr" | "mixed";
   detectedLanguage?: string;
 }
 
-// eslint-disable-next-line @typescript-eslint/no-explicit-any
-type OCRWorker = any;
+const MAX_FILE_SIZE = 20 * 1024 * 1024;
 
 const LANG_KEYS: Record<string, string> = {
   ru: "docscan.lang.ru",
@@ -39,6 +42,7 @@ const LANG_KEYS: Record<string, string> = {
   fr: "docscan.lang.fr",
   ar: "docscan.lang.ar",
   zh: "docscan.lang.zh",
+  es: "docscan.lang.es",
   unknown: "docscan.lang.unknown",
 };
 
@@ -53,6 +57,8 @@ export function DocScanContent() {
   const [selectedFile, setSelectedFile] = useState<File | null>(null);
   const [isProcessing, setIsProcessing] = useState(false);
   const [progress, setProgress] = useState(0);
+  const [sourceLanguage, setSourceLanguage] = useState<OcrLanguage>("ru");
+  const processingRef = useRef(false);
   const [result, setResult] = useState<ScanResult | null>(null);
   const [showModal, setShowModal] = useState(false);
   const [error, setError] = useState<string | null>(null);
@@ -72,8 +78,6 @@ export function DocScanContent() {
     (code: string) => t(LANG_KEYS[code] || LANG_KEYS.unknown),
     [t]
   );
-
-  const MAX_FILE_SIZE = 20 * 1024 * 1024;
 
   const onDrop = useCallback(
     (acceptedFiles: File[]) => {
@@ -118,6 +122,7 @@ export function DocScanContent() {
     },
     maxSize: MAX_FILE_SIZE,
     multiple: false,
+    disabled: isProcessing,
   });
 
   async function loadPdfjs() {
@@ -133,92 +138,6 @@ export function DocScanContent() {
     return pdfjsLib;
   }
 
-  const preprocessImage = async (imageUrl: string): Promise<string> => {
-    return new Promise((resolve, reject) => {
-      const img = new Image();
-      img.crossOrigin = "anonymous";
-
-      img.onload = () => {
-        try {
-          const canvas = document.createElement("canvas");
-          const ctx = canvas.getContext("2d");
-          if (!ctx) {
-            reject(new Error("Canvas context error"));
-            return;
-          }
-
-          canvas.width = img.width;
-          canvas.height = img.height;
-          ctx.imageSmoothingEnabled = true;
-          ctx.imageSmoothingQuality = "high";
-          ctx.drawImage(img, 0, 0);
-
-          const imageData = ctx.getImageData(0, 0, canvas.width, canvas.height);
-          const data = imageData.data;
-
-          let sumGray = 0;
-          let minGray = 255;
-          let maxGray = 0;
-          const grays: number[] = [];
-
-          for (let i = 0; i < data.length; i += 4) {
-            const gray = Math.round(
-              0.299 * data[i] + 0.587 * data[i + 1] + 0.114 * data[i + 2]
-            );
-            grays.push(gray);
-            sumGray += gray;
-            minGray = Math.min(minGray, gray);
-            maxGray = Math.max(maxGray, gray);
-          }
-
-          const avgGray = sumGray / (data.length / 4);
-          const range = maxGray - minGray;
-          const contrast = range < 100 ? 1.2 : range < 150 ? 1.3 : 1.4;
-          const brightnessAdjust = avgGray < 100 ? 20 : avgGray > 200 ? -10 : 0;
-
-          for (let i = 0; i < data.length; i += 4) {
-            const gray = grays[i / 4];
-            let adjusted = gray + brightnessAdjust;
-            adjusted = Math.max(0, Math.min(255, adjusted));
-            let enhanced = (adjusted - 128) * contrast + 128;
-            enhanced = Math.max(0, Math.min(255, enhanced));
-            const finalValue = Math.round(enhanced);
-            data[i] = finalValue;
-            data[i + 1] = finalValue;
-            data[i + 2] = finalValue;
-          }
-
-          ctx.putImageData(imageData, 0, 0);
-          resolve(canvas.toDataURL("image/png", 0.95));
-        } catch (error) {
-          reject(error);
-        }
-      };
-
-      img.onerror = () => reject(new Error("Image load error"));
-      img.src = imageUrl;
-    });
-  };
-
-  const pdfPageToImage = async (
-    // eslint-disable-next-line @typescript-eslint/no-explicit-any
-    pdf: any,
-    pageNum: number,
-    scale = 2
-  ): Promise<string> => {
-    const page = await pdf.getPage(pageNum);
-    const viewport = page.getViewport({ scale });
-    const canvas = document.createElement("canvas");
-    const context = canvas.getContext("2d");
-    if (!context) throw new Error("Canvas context error");
-    canvas.width = viewport.width;
-    canvas.height = viewport.height;
-    await page.render({ canvasContext: context, viewport } as Parameters<
-      typeof page.render
-    >[0]).promise;
-    return canvas.toDataURL("image/png");
-  };
-
   const detectLanguage = (text: string): string => {
     if (!text.trim()) return "unknown";
     const cyrillicRegex = /[а-яё]/i;
@@ -228,144 +147,145 @@ export function DocScanContent() {
     if (arabicRegex.test(text)) return "ar";
     if (chineseRegex.test(text)) return "zh";
     if (/[a-z]/i.test(text)) {
+      if (["en", "fr", "es"].includes(sourceLanguage)) return sourceLanguage;
       const commonFrench = /\b(le|la|les|de|du|des|et|ou|un|une|est|sont)\b/i;
       return commonFrench.test(text) ? "fr" : "en";
     }
     return "unknown";
   };
 
-  const processPdf = async (
-    file: File,
-    ocrWorker: OCRWorker
-  ) => {
+  const processPdf = async (file: File, getWorker: () => Promise<Worker>): Promise<ScanResult> => {
     const pdfjs = await loadPdfjs();
-    if (!pdfjs) throw new Error("PDF.js not loaded");
-    // eslint-disable-next-line @typescript-eslint/no-explicit-any
-    const pdfjsModule = pdfjs as any;
-    if (!pdfjsModule.getDocument) throw new Error("getDocument unavailable");
+    const pdf = await pdfjs.getDocument({ data: await file.arrayBuffer() }).promise;
+    const pages: string[] = [];
+    let weightedConfidence = 0;
+    let ocrCharacters = 0;
+    let nativePages = 0;
+    let ocrPages = 0;
+    const imageOperators = Object.entries(pdfjs.OPS || {})
+      .filter(([name]) => /paint.*Image/.test(name))
+      .map(([, value]) => Number(value));
 
-    const arrayBuffer = await file.arrayBuffer();
-    const pdf = await pdfjsModule.getDocument({ data: arrayBuffer }).promise;
-    const numPages = pdf.numPages;
-
-    let allText = "";
-    let totalConfidence = 0;
-    let processedPages = 0;
-
-    for (let pageNum = 1; pageNum <= numPages; pageNum++) {
-      setProgress(30 + Math.floor((pageNum / numPages) * 50));
-      // eslint-disable-next-line @typescript-eslint/no-explicit-any
-      const originalImageData = await pdfPageToImage(pdf as any, pageNum);
-      const processedImageData = await preprocessImage(originalImageData);
-      const ocrResult = await ocrWorker.recognize(processedImageData);
-      const pageText = ocrResult.data.text?.trim() || "";
-      const pageConfidence = ocrResult.data.confidence || 0;
-
-      if (pageText) {
-        allText += `\n\n--- Page ${pageNum} ---\n\n${pageText}`;
-        totalConfidence += pageConfidence;
-        processedPages++;
+    try {
+      for (let pageNum = 1; pageNum <= pdf.numPages; pageNum++) {
+        const page = await pdf.getPage(pageNum);
+        try {
+          let pageText = await extractPdfPageText(page, imageOperators);
+          if (pageText !== null) {
+            nativePages++;
+          } else {
+            // Render scans at up to 216 DPI, bounded for mobile canvas memory.
+            const base = page.getViewport({ scale: 1 });
+            const scale = Math.min(3, 4000 / base.width, 4000 / base.height,
+              Math.sqrt(4_800_000 / (base.width * base.height)));
+            const viewport = page.getViewport({ scale });
+            const canvas = document.createElement("canvas");
+            canvas.width = Math.ceil(viewport.width);
+            canvas.height = Math.ceil(viewport.height);
+            const context = canvas.getContext("2d");
+            if (!context) throw new Error("Canvas context error");
+            try {
+              await withTimeout(page.render({ canvasContext: context, viewport, background: "white" }).promise, 60000);
+              const worker = await getWorker();
+              const recognized = await withTimeout(recognizeDocumentImage(worker, canvas), 60000);
+              pageText = recognized.text;
+              if (pageText) {
+                weightedConfidence += recognized.confidence * pageText.length;
+                ocrCharacters += pageText.length;
+                ocrPages++;
+              }
+            } finally {
+              canvas.width = 0;
+              canvas.height = 0;
+            }
+          }
+          if (pageText) pages.push(`--- Page ${pageNum} ---\n\n${pageText}`);
+          setProgress(20 + Math.floor((pageNum / pdf.numPages) * 65));
+        } finally {
+          page.cleanup();
+        }
       }
+      const text = pages.join("\n\n");
+      return {
+        text,
+        confidence: ocrCharacters ? Math.round(weightedConfidence / ocrCharacters) : null,
+        detectedLanguage: detectLanguage(text),
+        textSource: nativePages && ocrPages ? "mixed" : nativePages ? "pdf" : "ocr",
+      };
+    } finally {
+      await pdf.destroy();
     }
-
-    return {
-      text: allText.trim(),
-      confidence: Math.round(processedPages > 0 ? totalConfidence / processedPages : 0),
-      detectedLanguage: detectLanguage(allText),
-    };
   };
 
   const processDocument = async (file: File) => {
-    setIsProcessing(true);
-    setProgress(0);
-    setError(null);
-
-    const maxSize = 20 * 1024 * 1024;
-    if (file.size > maxSize) {
+    if (processingRef.current) return;
+    if (file.size > MAX_FILE_SIZE) {
       setError(t("docscan.error.fileSize"));
-      setIsProcessing(false);
       return;
     }
+    processingRef.current = true;
+    setIsProcessing(true);
+    setProgress(5);
+    setError(null);
+    let ocrWorker: Worker | undefined;
+    let workerPromise: Promise<Worker> | undefined;
+    let finished = false;
 
-    let progressInterval: NodeJS.Timeout | null = null;
-    let ocrWorker: OCRWorker | undefined;
+    const getWorker = async () => {
+      if (!workerPromise) {
+        workerPromise = import("tesseract.js").then(({ createWorker }) =>
+          createWorker(OCR_LANGUAGES[sourceLanguage]));
+        // A loading timeout must not leave a late worker running in the background.
+        void workerPromise.then(worker => {
+          if (finished) void worker.terminate().catch(() => {});
+        }).catch(() => {});
+      }
+      ocrWorker = await withTimeout(workerPromise, 60000);
+      return ocrWorker;
+    };
 
     try {
-      setProgress(5);
-      // Динамический импорт tesseract.js только при необходимости
-      const { createWorker } = await import("tesseract.js");
-      ocrWorker = await Promise.race([
-        createWorker("rus+eng"),
-        new Promise<never>((_, reject) =>
-          setTimeout(() => reject(new Error("OCR load timeout")), 30000)
-        ),
-      ]);
-      setProgress(15);
-
-      progressInterval = setInterval(() => {
-        setProgress((prev) => (prev >= 85 ? prev : Math.min(prev + 1, 85)));
-      }, 300);
-
       let scanResult: ScanResult;
-
       if (file.type === "application/pdf") {
-        setProgress(20);
-        const pdfResult = await processPdf(file, ocrWorker);
-        if (!pdfResult.text) throw new Error(t("docscan.error.noText"));
-        scanResult = pdfResult;
+        scanResult = await processPdf(file, getWorker);
       } else {
         const originalImageUrl = URL.createObjectURL(file);
-        setProgress(25);
-        const processedImageUrl = await preprocessImage(originalImageUrl);
-        setProgress(35);
-        URL.revokeObjectURL(originalImageUrl);
-
-        const ocrResult = await Promise.race([
-          ocrWorker.recognize(processedImageUrl),
-          new Promise<never>((_, reject) =>
-            setTimeout(() => reject(new Error("OCR recognition timeout")), 60000)
-          ),
-        ]);
-
-        const text = ocrResult.data.text?.trim() || "";
-        if (!text) throw new Error(t("docscan.error.noText"));
-
-        scanResult = {
-          text,
-          confidence: Math.round(ocrResult.data.confidence || 0),
-          detectedLanguage: detectLanguage(text),
-        };
+        let image: HTMLCanvasElement | undefined;
+        try {
+          image = await prepareOcrImage(originalImageUrl);
+          setProgress(25);
+          const worker = await getWorker();
+          setProgress(40);
+          const recognized = await withTimeout(recognizeDocumentImage(worker, image), 60000);
+          scanResult = { ...recognized, confidence: Math.round(recognized.confidence), detectedLanguage: detectLanguage(recognized.text), textSource: "ocr" };
+        } finally {
+          URL.revokeObjectURL(originalImageUrl);
+          if (image) { image.width = 0; image.height = 0; }
+        }
       }
-
-      if (progressInterval) clearInterval(progressInterval);
-      setProgress(95);
-      if (ocrWorker) await ocrWorker.terminate();
+      if (!scanResult.text) throw new Error(t("docscan.error.noText"));
       setProgress(100);
-
       setResult(scanResult);
       setShowModal(true);
       setTranslatedText(null);
     } catch (err) {
       console.error("OCR Error:", err);
-      if (progressInterval) clearInterval(progressInterval);
-      if (ocrWorker) {
-        try { await ocrWorker.terminate(); } catch { /* ignore */ }
-      }
-      setError(
-        err instanceof Error && err.message === t("docscan.error.noText")
-          ? t("docscan.error.noText")
-          : t("docscan.error.ocr"),
-      );
+      setError(err instanceof Error && err.message === t("docscan.error.noText")
+        ? t("docscan.error.noText") : t("docscan.error.ocr"));
     } finally {
+      finished = true;
+      if (ocrWorker) {
+        try { await ocrWorker.terminate(); } catch { /* already stopped */ }
+      }
+      processingRef.current = false;
       setIsProcessing(false);
-      setTimeout(() => setProgress(0), 500);
+      setProgress(0);
     }
   };
 
-  const handleProcess = useCallback(() => {
-    if (selectedFile) processDocument(selectedFile);
-    // eslint-disable-next-line react-hooks/exhaustive-deps
-  }, [selectedFile]);
+  const handleProcess = () => {
+    if (selectedFile) void processDocument(selectedFile);
+  };
 
   const handleCloseModal = useCallback(() => {
     setShowModal(false);
@@ -442,7 +362,7 @@ export function DocScanContent() {
     } finally {
       setIsTranslating(false);
     }
-  }, [result, targetLanguage]);
+  }, [result, targetLanguage, t]);
 
   const handleRetranslate = useCallback(() => {
     setTranslatedText(null);
@@ -558,6 +478,21 @@ export function DocScanContent() {
                 </div>
               </div>
 
+              <div className="space-y-2">
+                <label htmlFor="docscan-source-language" className="block text-sm font-medium text-gray-700">
+                  {t("docscan.sourceLanguage")}
+                </label>
+                <select id="docscan-source-language" value={sourceLanguage}
+                  onChange={event => setSourceLanguage(event.target.value as OcrLanguage)}
+                  disabled={isProcessing}
+                  className="w-full rounded-xl border border-gray-300 bg-white px-3 py-3 text-sm"
+                  aria-describedby="docscan-quality-tip">
+                  {(Object.keys(OCR_LANGUAGES) as OcrLanguage[]).map(code =>
+                    <option key={code} value={code}>{getLangName(code)}</option>)}
+                </select>
+                <p id="docscan-quality-tip" className="text-sm text-gray-500">{t("docscan.qualityTip")}</p>
+              </div>
+
               {/* Action Buttons */}
               <div className="grid grid-cols-1 sm:grid-cols-2 gap-4">
                 <Button
@@ -646,7 +581,9 @@ export function DocScanContent() {
                   {t("docscan.result.title")}
                 </h3>
                 <p className="text-sm text-white/80 mt-1">
-                  {t("docscan.result.confidence")}: {result.confidence}%
+                  {result.confidence === null
+                    ? t("docscan.result.nativeText")
+                    : <>{t("docscan.result.confidence")}: {result.confidence}%</>}
                   {result.detectedLanguage &&
                     result.detectedLanguage !== "unknown" && (
                       <span className="ml-2">
@@ -670,6 +607,8 @@ export function DocScanContent() {
             {/* Modal Body */}
             <div className="flex-1 overflow-y-auto overscroll-contain p-4 sm:p-6">
               <div className="max-w-4xl mx-auto space-y-4">
+                <p className="text-sm text-gray-600">{t("docscan.result.confidenceNote")}</p>
+                {result.textSource === "mixed" && <p className="text-sm text-gray-500">{t("docscan.result.mixedText")}</p>}
                 {/* Original text */}
                 <div
                   className="bg-gray-50 rounded-2xl p-4 sm:p-6 border border-gray-200"

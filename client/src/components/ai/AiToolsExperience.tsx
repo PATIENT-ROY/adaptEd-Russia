@@ -8,6 +8,7 @@ import { AppToast } from "@/components/ui/app-toast";
 import { useAuth } from "@/contexts/AuthContext";
 import { useTranslation } from "@/hooks/useTranslation";
 import { apiClient } from "@/lib/api";
+import { AI_TOOLS_INPUT_LIMIT } from "@/lib/ai-tools-limits";
 import { Button } from "@/components/ui/button";
 import { BackButton } from "@/components/ui/back-button";
 import {
@@ -33,7 +34,6 @@ import {
   Copy,
   RefreshCw,
   Bot,
-  X,
   Pencil,
   Presentation,
   Puzzle,
@@ -361,6 +361,8 @@ export default function AiToolsExperience() {
   const [usage, setUsage] = useState<ChatUsage | null>(null);
   const [limitError, setLimitError] = useState<string | null>(null);
   const isAtLimit = Boolean(usage && usage.used >= usage.limit);
+  const promptLength = selectedTemplate ? selectedTemplate.promptBuilder(formValues).trim().length : 0;
+  const inputTooLong = promptLength > AI_TOOLS_INPUT_LIMIT;
   const unauthFallback = (
     <FeaturePreviewGate
       featureName={t("templates.page.title")}
@@ -413,7 +415,7 @@ export default function AiToolsExperience() {
   }, []);
 
   const handleGenerate = useCallback(async () => {
-    if (!selectedTemplate) return;
+    if (!selectedTemplate || isGenerating) return;
 
     const requiredFields = selectedTemplate.fields.filter((f) => f.required);
     const missing = requiredFields.filter((f) => !formValues[f.id]?.trim());
@@ -429,18 +431,25 @@ export default function AiToolsExperience() {
       return;
     }
 
+    const prompt = selectedTemplate.promptBuilder(formValues).trim();
+    if (prompt.length > AI_TOOLS_INPUT_LIMIT) {
+      showToast(t("templates.inputTooLong"), "error");
+      return;
+    }
+
     setFieldErrors(new Set());
     setIsGenerating(true);
     setLimitError(null);
     try {
-      const prompt = selectedTemplate.promptBuilder(formValues);
       const response = await apiClient.sendMessage(prompt, "generator");
 
       if (response.usage) setUsage(response.usage);
 
-      if (response.aiMessage?.content) {
-        setGeneratedContent(response.aiMessage.content);
-      }
+      const content = response.aiMessage?.content;
+      if (typeof content !== "string" || !content.trim()) throw new Error("EMPTY_AI_RESULT");
+      // Replace a previous result only after a successful, non-empty response.
+      setGeneratedContent(content);
+      setCopied(false);
     } catch (error) {
       const msg = error instanceof Error ? error.message : "";
       if (msg.includes("LIMIT_PREMIUM")) {
@@ -456,7 +465,7 @@ export default function AiToolsExperience() {
     } finally {
       setIsGenerating(false);
     }
-  }, [selectedTemplate, formValues, showToast, t, isAtLimit, usage?.plan]);
+  }, [selectedTemplate, formValues, showToast, t, isAtLimit, usage?.plan, isGenerating]);
 
   const handleCopy = useCallback(async () => {
     if (!generatedContent) return;
@@ -471,11 +480,11 @@ export default function AiToolsExperience() {
   }, [generatedContent, showToast, t]);
 
   const handleRegenerate = useCallback(() => {
-    setGeneratedContent(null);
     handleGenerate();
   }, [handleGenerate]);
 
   const handleBack = useCallback(() => {
+    if (isGenerating) return;
     if (generatedContent) {
       setGeneratedContent(null);
     } else {
@@ -483,11 +492,12 @@ export default function AiToolsExperience() {
       setFormValues({});
       setFieldErrors(new Set());
     }
-  }, [generatedContent]);
+  }, [generatedContent, isGenerating]);
 
   const handleEditFromResult = useCallback(() => {
+    if (isGenerating) return;
     setGeneratedContent(null);
-  }, []);
+  }, [isGenerating]);
 
   if (!user) {
     return (
@@ -649,6 +659,7 @@ export default function AiToolsExperience() {
                         {field.type === "textarea" ? (
                           <textarea
                             id={fieldId}
+                            aria-describedby="tools-input-limit"
                             className={`w-full min-h-[100px] px-3 py-2 text-sm rounded-md border bg-background ring-offset-background placeholder:text-muted-foreground focus-visible:outline-none focus-visible:ring-2 focus-visible:ring-ring focus-visible:ring-offset-2 disabled:cursor-not-allowed disabled:opacity-50 resize-y ${
                               hasError
                                 ? "border-red-500 focus-visible:ring-red-500"
@@ -661,6 +672,7 @@ export default function AiToolsExperience() {
                         ) : (
                           <Input
                             id={fieldId}
+                            aria-describedby="tools-input-limit"
                             placeholder={fieldPh(selectedTemplate.id, field.id)}
                             value={formValues[field.id] || ""}
                             onChange={(e) => handleFieldChange(field.id, e.target.value)}
@@ -677,10 +689,19 @@ export default function AiToolsExperience() {
                   })}
                 </fieldset>
 
+                <div id="tools-input-limit" className="space-y-1 text-sm">
+                  <p className={inputTooLong ? "text-red-600" : "text-slate-500"}>
+                    {t("templates.inputLength")
+                      .replace("{count}", String(promptLength))
+                      .replace("{limit}", String(AI_TOOLS_INPUT_LIMIT))}
+                  </p>
+                  {inputTooLong && <p role="alert" className="text-red-600">{t("templates.inputTooLong")}</p>}
+                </div>
+
                 <div className="pt-2">
                   <Button
                     onClick={handleGenerate}
-                    disabled={isGenerating || isAtLimit}
+                    disabled={isGenerating || isAtLimit || inputTooLong}
                     className="w-full bg-gradient-to-r from-purple-500 to-pink-500 hover:from-purple-600 hover:to-pink-600"
                   >
                     {isGenerating ? (
@@ -700,7 +721,8 @@ export default function AiToolsExperience() {
             </Card>
           ) : (
             /* Result */
-            <Card className="max-w-3xl mx-auto">
+            <Card className="max-w-3xl mx-auto relative" aria-busy={isGenerating}>
+              {limitError && <LimitOverlay plan={limitError} onDismiss={() => setLimitError(null)} t={t} />}
               <CardHeader>
                 <div className="flex flex-col sm:flex-row sm:items-center justify-between gap-3">
                   <div className="flex items-center space-x-3">
@@ -717,6 +739,7 @@ export default function AiToolsExperience() {
                       variant="outline"
                       size="sm"
                       onClick={handleEditFromResult}
+                      disabled={isGenerating}
                     >
                       <Pencil className="h-4 w-4 mr-2" />
                       {t("templates.edit")}
@@ -746,7 +769,7 @@ export default function AiToolsExperience() {
                       disabled={isGenerating || isAtLimit}
                     >
                       <RefreshCw className={`h-4 w-4 mr-2 ${isGenerating ? "animate-spin" : ""}`} />
-                      {t("templates.regenerate")}
+                      {isGenerating ? t("templates.generating") : t("templates.regenerate")}
                     </Button>
                   </div>
                 </div>

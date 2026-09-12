@@ -49,6 +49,11 @@ export type Reminder = $Result.DefaultSelection<Prisma.$ReminderPayload>
  */
 export type Guide = $Result.DefaultSelection<Prisma.$GuidePayload>
 /**
+ * Model ChatDailyUsage
+ * 
+ */
+export type ChatDailyUsage = $Result.DefaultSelection<Prisma.$ChatDailyUsagePayload>
+/**
  * Model ChatMessage
  * 
  */
@@ -359,6 +364,16 @@ export class PrismaClient<
     * ```
     */
   get guide(): Prisma.GuideDelegate<ExtArgs>;
+
+  /**
+   * `prisma.chatDailyUsage`: Exposes CRUD operations for the **ChatDailyUsage** model.
+    * Example usage:
+    * ```ts
+    * // Fetch zero or more ChatDailyUsages
+    * const chatDailyUsages = await prisma.chatDailyUsage.findMany()
+    * ```
+    */
+  get chatDailyUsage(): Prisma.ChatDailyUsageDelegate<ExtArgs>;
 
   /**
    * `prisma.chatMessage`: Exposes CRUD operations for the **ChatMessage** model.
@@ -977,6 +992,7 @@ export namespace Prisma {
     Note: 'Note',
     Reminder: 'Reminder',
     Guide: 'Guide',
+    ChatDailyUsage: 'ChatDailyUsage',
     ChatMessage: 'ChatMessage',
     SupportTicket: 'SupportTicket',
     SupportResponse: 'SupportResponse',
@@ -1009,7 +1025,7 @@ export namespace Prisma {
 
   export type TypeMap<ExtArgs extends $Extensions.InternalArgs = $Extensions.DefaultArgs, ClientOptions = {}> = {
     meta: {
-      modelProps: "user" | "buddyApplication" | "passwordSetupToken" | "profile" | "note" | "reminder" | "guide" | "chatMessage" | "supportTicket" | "supportResponse" | "adminInboxRead" | "adminAuditLog" | "userNotification" | "admin" | "subscriptionPlan" | "payment" | "subscription" | "grant" | "userGrantApplication" | "question" | "answer" | "questionLike" | "guideRead" | "review"
+      modelProps: "user" | "buddyApplication" | "passwordSetupToken" | "profile" | "note" | "reminder" | "guide" | "chatDailyUsage" | "chatMessage" | "supportTicket" | "supportResponse" | "adminInboxRead" | "adminAuditLog" | "userNotification" | "admin" | "subscriptionPlan" | "payment" | "subscription" | "grant" | "userGrantApplication" | "question" | "answer" | "questionLike" | "guideRead" | "review"
       txIsolationLevel: Prisma.TransactionIsolationLevel
     }
     model: {
@@ -1500,6 +1516,76 @@ export namespace Prisma {
           count: {
             args: Prisma.GuideCountArgs<ExtArgs>
             result: $Utils.Optional<GuideCountAggregateOutputType> | number
+          }
+        }
+      }
+      ChatDailyUsage: {
+        payload: Prisma.$ChatDailyUsagePayload<ExtArgs>
+        fields: Prisma.ChatDailyUsageFieldRefs
+        operations: {
+          findUnique: {
+            args: Prisma.ChatDailyUsageFindUniqueArgs<ExtArgs>
+            result: $Utils.PayloadToResult<Prisma.$ChatDailyUsagePayload> | null
+          }
+          findUniqueOrThrow: {
+            args: Prisma.ChatDailyUsageFindUniqueOrThrowArgs<ExtArgs>
+            result: $Utils.PayloadToResult<Prisma.$ChatDailyUsagePayload>
+          }
+          findFirst: {
+            args: Prisma.ChatDailyUsageFindFirstArgs<ExtArgs>
+            result: $Utils.PayloadToResult<Prisma.$ChatDailyUsagePayload> | null
+          }
+          findFirstOrThrow: {
+            args: Prisma.ChatDailyUsageFindFirstOrThrowArgs<ExtArgs>
+            result: $Utils.PayloadToResult<Prisma.$ChatDailyUsagePayload>
+          }
+          findMany: {
+            args: Prisma.ChatDailyUsageFindManyArgs<ExtArgs>
+            result: $Utils.PayloadToResult<Prisma.$ChatDailyUsagePayload>[]
+          }
+          create: {
+            args: Prisma.ChatDailyUsageCreateArgs<ExtArgs>
+            result: $Utils.PayloadToResult<Prisma.$ChatDailyUsagePayload>
+          }
+          createMany: {
+            args: Prisma.ChatDailyUsageCreateManyArgs<ExtArgs>
+            result: BatchPayload
+          }
+          createManyAndReturn: {
+            args: Prisma.ChatDailyUsageCreateManyAndReturnArgs<ExtArgs>
+            result: $Utils.PayloadToResult<Prisma.$ChatDailyUsagePayload>[]
+          }
+          delete: {
+            args: Prisma.ChatDailyUsageDeleteArgs<ExtArgs>
+            result: $Utils.PayloadToResult<Prisma.$ChatDailyUsagePayload>
+          }
+          update: {
+            args: Prisma.ChatDailyUsageUpdateArgs<ExtArgs>
+            result: $Utils.PayloadToResult<Prisma.$ChatDailyUsagePayload>
+          }
+          deleteMany: {
+            args: Prisma.ChatDailyUsageDeleteManyArgs<ExtArgs>
+            result: BatchPayload
+          }
+          updateMany: {
+            args: Prisma.ChatDailyUsageUpdateManyArgs<ExtArgs>
+            result: BatchPayload
+          }
+          upsert: {
+            args: Prisma.ChatDailyUsageUpsertArgs<ExtArgs>
+            result: $Utils.PayloadToResult<Prisma.$ChatDailyUsagePayload>
+          }
+          aggregate: {
+            args: Prisma.ChatDailyUsageAggregateArgs<ExtArgs>
+            result: $Utils.Optional<AggregateChatDailyUsage>
+          }
+          groupBy: {
+            args: Prisma.ChatDailyUsageGroupByArgs<ExtArgs>
+            result: $Utils.Optional<ChatDailyUsageGroupByOutputType>[]
+          }
+          count: {
+            args: Prisma.ChatDailyUsageCountArgs<ExtArgs>
+            result: $Utils.Optional<ChatDailyUsageCountAggregateOutputType> | number
           }
         }
       }
@@ -2857,6 +2943,7 @@ export namespace Prisma {
     reminders: number
     notes: number
     chatMessages: number
+    chatDailyUsage: number
     supportTickets: number
     payments: number
     subscriptions: number
@@ -2879,6 +2966,7 @@ export namespace Prisma {
     reminders?: boolean | UserCountOutputTypeCountRemindersArgs
     notes?: boolean | UserCountOutputTypeCountNotesArgs
     chatMessages?: boolean | UserCountOutputTypeCountChatMessagesArgs
+    chatDailyUsage?: boolean | UserCountOutputTypeCountChatDailyUsageArgs
     supportTickets?: boolean | UserCountOutputTypeCountSupportTicketsArgs
     payments?: boolean | UserCountOutputTypeCountPaymentsArgs
     subscriptions?: boolean | UserCountOutputTypeCountSubscriptionsArgs
@@ -2927,6 +3015,13 @@ export namespace Prisma {
    */
   export type UserCountOutputTypeCountChatMessagesArgs<ExtArgs extends $Extensions.InternalArgs = $Extensions.DefaultArgs> = {
     where?: ChatMessageWhereInput
+  }
+
+  /**
+   * UserCountOutputType without action
+   */
+  export type UserCountOutputTypeCountChatDailyUsageArgs<ExtArgs extends $Extensions.InternalArgs = $Extensions.DefaultArgs> = {
+    where?: ChatDailyUsageWhereInput
   }
 
   /**
@@ -3577,6 +3672,7 @@ export namespace Prisma {
     reminders?: boolean | User$remindersArgs<ExtArgs>
     notes?: boolean | User$notesArgs<ExtArgs>
     chatMessages?: boolean | User$chatMessagesArgs<ExtArgs>
+    chatDailyUsage?: boolean | User$chatDailyUsageArgs<ExtArgs>
     profile?: boolean | User$profileArgs<ExtArgs>
     supportTickets?: boolean | User$supportTicketsArgs<ExtArgs>
     payments?: boolean | User$paymentsArgs<ExtArgs>
@@ -3643,6 +3739,7 @@ export namespace Prisma {
     reminders?: boolean | User$remindersArgs<ExtArgs>
     notes?: boolean | User$notesArgs<ExtArgs>
     chatMessages?: boolean | User$chatMessagesArgs<ExtArgs>
+    chatDailyUsage?: boolean | User$chatDailyUsageArgs<ExtArgs>
     profile?: boolean | User$profileArgs<ExtArgs>
     supportTickets?: boolean | User$supportTicketsArgs<ExtArgs>
     payments?: boolean | User$paymentsArgs<ExtArgs>
@@ -3670,6 +3767,7 @@ export namespace Prisma {
       reminders: Prisma.$ReminderPayload<ExtArgs>[]
       notes: Prisma.$NotePayload<ExtArgs>[]
       chatMessages: Prisma.$ChatMessagePayload<ExtArgs>[]
+      chatDailyUsage: Prisma.$ChatDailyUsagePayload<ExtArgs>[]
       profile: Prisma.$ProfilePayload<ExtArgs> | null
       supportTickets: Prisma.$SupportTicketPayload<ExtArgs>[]
       payments: Prisma.$PaymentPayload<ExtArgs>[]
@@ -4074,6 +4172,7 @@ export namespace Prisma {
     reminders<T extends User$remindersArgs<ExtArgs> = {}>(args?: Subset<T, User$remindersArgs<ExtArgs>>): Prisma.PrismaPromise<$Result.GetResult<Prisma.$ReminderPayload<ExtArgs>, T, "findMany"> | Null>
     notes<T extends User$notesArgs<ExtArgs> = {}>(args?: Subset<T, User$notesArgs<ExtArgs>>): Prisma.PrismaPromise<$Result.GetResult<Prisma.$NotePayload<ExtArgs>, T, "findMany"> | Null>
     chatMessages<T extends User$chatMessagesArgs<ExtArgs> = {}>(args?: Subset<T, User$chatMessagesArgs<ExtArgs>>): Prisma.PrismaPromise<$Result.GetResult<Prisma.$ChatMessagePayload<ExtArgs>, T, "findMany"> | Null>
+    chatDailyUsage<T extends User$chatDailyUsageArgs<ExtArgs> = {}>(args?: Subset<T, User$chatDailyUsageArgs<ExtArgs>>): Prisma.PrismaPromise<$Result.GetResult<Prisma.$ChatDailyUsagePayload<ExtArgs>, T, "findMany"> | Null>
     profile<T extends User$profileArgs<ExtArgs> = {}>(args?: Subset<T, User$profileArgs<ExtArgs>>): Prisma__ProfileClient<$Result.GetResult<Prisma.$ProfilePayload<ExtArgs>, T, "findUniqueOrThrow"> | null, null, ExtArgs>
     supportTickets<T extends User$supportTicketsArgs<ExtArgs> = {}>(args?: Subset<T, User$supportTicketsArgs<ExtArgs>>): Prisma.PrismaPromise<$Result.GetResult<Prisma.$SupportTicketPayload<ExtArgs>, T, "findMany"> | Null>
     payments<T extends User$paymentsArgs<ExtArgs> = {}>(args?: Subset<T, User$paymentsArgs<ExtArgs>>): Prisma.PrismaPromise<$Result.GetResult<Prisma.$PaymentPayload<ExtArgs>, T, "findMany"> | Null>
@@ -4509,6 +4608,26 @@ export namespace Prisma {
     take?: number
     skip?: number
     distinct?: ChatMessageScalarFieldEnum | ChatMessageScalarFieldEnum[]
+  }
+
+  /**
+   * User.chatDailyUsage
+   */
+  export type User$chatDailyUsageArgs<ExtArgs extends $Extensions.InternalArgs = $Extensions.DefaultArgs> = {
+    /**
+     * Select specific fields to fetch from the ChatDailyUsage
+     */
+    select?: ChatDailyUsageSelect<ExtArgs> | null
+    /**
+     * Choose, which related nodes to fetch as well
+     */
+    include?: ChatDailyUsageInclude<ExtArgs> | null
+    where?: ChatDailyUsageWhereInput
+    orderBy?: ChatDailyUsageOrderByWithRelationInput | ChatDailyUsageOrderByWithRelationInput[]
+    cursor?: ChatDailyUsageWhereUniqueInput
+    take?: number
+    skip?: number
+    distinct?: ChatDailyUsageScalarFieldEnum | ChatDailyUsageScalarFieldEnum[]
   }
 
   /**
@@ -10970,6 +11089,949 @@ export namespace Prisma {
      * Select specific fields to fetch from the Guide
      */
     select?: GuideSelect<ExtArgs> | null
+  }
+
+
+  /**
+   * Model ChatDailyUsage
+   */
+
+  export type AggregateChatDailyUsage = {
+    _count: ChatDailyUsageCountAggregateOutputType | null
+    _avg: ChatDailyUsageAvgAggregateOutputType | null
+    _sum: ChatDailyUsageSumAggregateOutputType | null
+    _min: ChatDailyUsageMinAggregateOutputType | null
+    _max: ChatDailyUsageMaxAggregateOutputType | null
+  }
+
+  export type ChatDailyUsageAvgAggregateOutputType = {
+    used: number | null
+  }
+
+  export type ChatDailyUsageSumAggregateOutputType = {
+    used: number | null
+  }
+
+  export type ChatDailyUsageMinAggregateOutputType = {
+    userId: string | null
+    day: Date | null
+    used: number | null
+  }
+
+  export type ChatDailyUsageMaxAggregateOutputType = {
+    userId: string | null
+    day: Date | null
+    used: number | null
+  }
+
+  export type ChatDailyUsageCountAggregateOutputType = {
+    userId: number
+    day: number
+    used: number
+    _all: number
+  }
+
+
+  export type ChatDailyUsageAvgAggregateInputType = {
+    used?: true
+  }
+
+  export type ChatDailyUsageSumAggregateInputType = {
+    used?: true
+  }
+
+  export type ChatDailyUsageMinAggregateInputType = {
+    userId?: true
+    day?: true
+    used?: true
+  }
+
+  export type ChatDailyUsageMaxAggregateInputType = {
+    userId?: true
+    day?: true
+    used?: true
+  }
+
+  export type ChatDailyUsageCountAggregateInputType = {
+    userId?: true
+    day?: true
+    used?: true
+    _all?: true
+  }
+
+  export type ChatDailyUsageAggregateArgs<ExtArgs extends $Extensions.InternalArgs = $Extensions.DefaultArgs> = {
+    /**
+     * Filter which ChatDailyUsage to aggregate.
+     */
+    where?: ChatDailyUsageWhereInput
+    /**
+     * {@link https://www.prisma.io/docs/concepts/components/prisma-client/sorting Sorting Docs}
+     * 
+     * Determine the order of ChatDailyUsages to fetch.
+     */
+    orderBy?: ChatDailyUsageOrderByWithRelationInput | ChatDailyUsageOrderByWithRelationInput[]
+    /**
+     * {@link https://www.prisma.io/docs/concepts/components/prisma-client/pagination#cursor-based-pagination Cursor Docs}
+     * 
+     * Sets the start position
+     */
+    cursor?: ChatDailyUsageWhereUniqueInput
+    /**
+     * {@link https://www.prisma.io/docs/concepts/components/prisma-client/pagination Pagination Docs}
+     * 
+     * Take `±n` ChatDailyUsages from the position of the cursor.
+     */
+    take?: number
+    /**
+     * {@link https://www.prisma.io/docs/concepts/components/prisma-client/pagination Pagination Docs}
+     * 
+     * Skip the first `n` ChatDailyUsages.
+     */
+    skip?: number
+    /**
+     * {@link https://www.prisma.io/docs/concepts/components/prisma-client/aggregations Aggregation Docs}
+     * 
+     * Count returned ChatDailyUsages
+    **/
+    _count?: true | ChatDailyUsageCountAggregateInputType
+    /**
+     * {@link https://www.prisma.io/docs/concepts/components/prisma-client/aggregations Aggregation Docs}
+     * 
+     * Select which fields to average
+    **/
+    _avg?: ChatDailyUsageAvgAggregateInputType
+    /**
+     * {@link https://www.prisma.io/docs/concepts/components/prisma-client/aggregations Aggregation Docs}
+     * 
+     * Select which fields to sum
+    **/
+    _sum?: ChatDailyUsageSumAggregateInputType
+    /**
+     * {@link https://www.prisma.io/docs/concepts/components/prisma-client/aggregations Aggregation Docs}
+     * 
+     * Select which fields to find the minimum value
+    **/
+    _min?: ChatDailyUsageMinAggregateInputType
+    /**
+     * {@link https://www.prisma.io/docs/concepts/components/prisma-client/aggregations Aggregation Docs}
+     * 
+     * Select which fields to find the maximum value
+    **/
+    _max?: ChatDailyUsageMaxAggregateInputType
+  }
+
+  export type GetChatDailyUsageAggregateType<T extends ChatDailyUsageAggregateArgs> = {
+        [P in keyof T & keyof AggregateChatDailyUsage]: P extends '_count' | 'count'
+      ? T[P] extends true
+        ? number
+        : GetScalarType<T[P], AggregateChatDailyUsage[P]>
+      : GetScalarType<T[P], AggregateChatDailyUsage[P]>
+  }
+
+
+
+
+  export type ChatDailyUsageGroupByArgs<ExtArgs extends $Extensions.InternalArgs = $Extensions.DefaultArgs> = {
+    where?: ChatDailyUsageWhereInput
+    orderBy?: ChatDailyUsageOrderByWithAggregationInput | ChatDailyUsageOrderByWithAggregationInput[]
+    by: ChatDailyUsageScalarFieldEnum[] | ChatDailyUsageScalarFieldEnum
+    having?: ChatDailyUsageScalarWhereWithAggregatesInput
+    take?: number
+    skip?: number
+    _count?: ChatDailyUsageCountAggregateInputType | true
+    _avg?: ChatDailyUsageAvgAggregateInputType
+    _sum?: ChatDailyUsageSumAggregateInputType
+    _min?: ChatDailyUsageMinAggregateInputType
+    _max?: ChatDailyUsageMaxAggregateInputType
+  }
+
+  export type ChatDailyUsageGroupByOutputType = {
+    userId: string
+    day: Date
+    used: number
+    _count: ChatDailyUsageCountAggregateOutputType | null
+    _avg: ChatDailyUsageAvgAggregateOutputType | null
+    _sum: ChatDailyUsageSumAggregateOutputType | null
+    _min: ChatDailyUsageMinAggregateOutputType | null
+    _max: ChatDailyUsageMaxAggregateOutputType | null
+  }
+
+  type GetChatDailyUsageGroupByPayload<T extends ChatDailyUsageGroupByArgs> = Prisma.PrismaPromise<
+    Array<
+      PickEnumerable<ChatDailyUsageGroupByOutputType, T['by']> &
+        {
+          [P in ((keyof T) & (keyof ChatDailyUsageGroupByOutputType))]: P extends '_count'
+            ? T[P] extends boolean
+              ? number
+              : GetScalarType<T[P], ChatDailyUsageGroupByOutputType[P]>
+            : GetScalarType<T[P], ChatDailyUsageGroupByOutputType[P]>
+        }
+      >
+    >
+
+
+  export type ChatDailyUsageSelect<ExtArgs extends $Extensions.InternalArgs = $Extensions.DefaultArgs> = $Extensions.GetSelect<{
+    userId?: boolean
+    day?: boolean
+    used?: boolean
+    user?: boolean | UserDefaultArgs<ExtArgs>
+  }, ExtArgs["result"]["chatDailyUsage"]>
+
+  export type ChatDailyUsageSelectCreateManyAndReturn<ExtArgs extends $Extensions.InternalArgs = $Extensions.DefaultArgs> = $Extensions.GetSelect<{
+    userId?: boolean
+    day?: boolean
+    used?: boolean
+    user?: boolean | UserDefaultArgs<ExtArgs>
+  }, ExtArgs["result"]["chatDailyUsage"]>
+
+  export type ChatDailyUsageSelectScalar = {
+    userId?: boolean
+    day?: boolean
+    used?: boolean
+  }
+
+  export type ChatDailyUsageInclude<ExtArgs extends $Extensions.InternalArgs = $Extensions.DefaultArgs> = {
+    user?: boolean | UserDefaultArgs<ExtArgs>
+  }
+  export type ChatDailyUsageIncludeCreateManyAndReturn<ExtArgs extends $Extensions.InternalArgs = $Extensions.DefaultArgs> = {
+    user?: boolean | UserDefaultArgs<ExtArgs>
+  }
+
+  export type $ChatDailyUsagePayload<ExtArgs extends $Extensions.InternalArgs = $Extensions.DefaultArgs> = {
+    name: "ChatDailyUsage"
+    objects: {
+      user: Prisma.$UserPayload<ExtArgs>
+    }
+    scalars: $Extensions.GetPayloadResult<{
+      userId: string
+      day: Date
+      used: number
+    }, ExtArgs["result"]["chatDailyUsage"]>
+    composites: {}
+  }
+
+  type ChatDailyUsageGetPayload<S extends boolean | null | undefined | ChatDailyUsageDefaultArgs> = $Result.GetResult<Prisma.$ChatDailyUsagePayload, S>
+
+  type ChatDailyUsageCountArgs<ExtArgs extends $Extensions.InternalArgs = $Extensions.DefaultArgs> = 
+    Omit<ChatDailyUsageFindManyArgs, 'select' | 'include' | 'distinct'> & {
+      select?: ChatDailyUsageCountAggregateInputType | true
+    }
+
+  export interface ChatDailyUsageDelegate<ExtArgs extends $Extensions.InternalArgs = $Extensions.DefaultArgs> {
+    [K: symbol]: { types: Prisma.TypeMap<ExtArgs>['model']['ChatDailyUsage'], meta: { name: 'ChatDailyUsage' } }
+    /**
+     * Find zero or one ChatDailyUsage that matches the filter.
+     * @param {ChatDailyUsageFindUniqueArgs} args - Arguments to find a ChatDailyUsage
+     * @example
+     * // Get one ChatDailyUsage
+     * const chatDailyUsage = await prisma.chatDailyUsage.findUnique({
+     *   where: {
+     *     // ... provide filter here
+     *   }
+     * })
+     */
+    findUnique<T extends ChatDailyUsageFindUniqueArgs>(args: SelectSubset<T, ChatDailyUsageFindUniqueArgs<ExtArgs>>): Prisma__ChatDailyUsageClient<$Result.GetResult<Prisma.$ChatDailyUsagePayload<ExtArgs>, T, "findUnique"> | null, null, ExtArgs>
+
+    /**
+     * Find one ChatDailyUsage that matches the filter or throw an error with `error.code='P2025'` 
+     * if no matches were found.
+     * @param {ChatDailyUsageFindUniqueOrThrowArgs} args - Arguments to find a ChatDailyUsage
+     * @example
+     * // Get one ChatDailyUsage
+     * const chatDailyUsage = await prisma.chatDailyUsage.findUniqueOrThrow({
+     *   where: {
+     *     // ... provide filter here
+     *   }
+     * })
+     */
+    findUniqueOrThrow<T extends ChatDailyUsageFindUniqueOrThrowArgs>(args: SelectSubset<T, ChatDailyUsageFindUniqueOrThrowArgs<ExtArgs>>): Prisma__ChatDailyUsageClient<$Result.GetResult<Prisma.$ChatDailyUsagePayload<ExtArgs>, T, "findUniqueOrThrow">, never, ExtArgs>
+
+    /**
+     * Find the first ChatDailyUsage that matches the filter.
+     * Note, that providing `undefined` is treated as the value not being there.
+     * Read more here: https://pris.ly/d/null-undefined
+     * @param {ChatDailyUsageFindFirstArgs} args - Arguments to find a ChatDailyUsage
+     * @example
+     * // Get one ChatDailyUsage
+     * const chatDailyUsage = await prisma.chatDailyUsage.findFirst({
+     *   where: {
+     *     // ... provide filter here
+     *   }
+     * })
+     */
+    findFirst<T extends ChatDailyUsageFindFirstArgs>(args?: SelectSubset<T, ChatDailyUsageFindFirstArgs<ExtArgs>>): Prisma__ChatDailyUsageClient<$Result.GetResult<Prisma.$ChatDailyUsagePayload<ExtArgs>, T, "findFirst"> | null, null, ExtArgs>
+
+    /**
+     * Find the first ChatDailyUsage that matches the filter or
+     * throw `PrismaKnownClientError` with `P2025` code if no matches were found.
+     * Note, that providing `undefined` is treated as the value not being there.
+     * Read more here: https://pris.ly/d/null-undefined
+     * @param {ChatDailyUsageFindFirstOrThrowArgs} args - Arguments to find a ChatDailyUsage
+     * @example
+     * // Get one ChatDailyUsage
+     * const chatDailyUsage = await prisma.chatDailyUsage.findFirstOrThrow({
+     *   where: {
+     *     // ... provide filter here
+     *   }
+     * })
+     */
+    findFirstOrThrow<T extends ChatDailyUsageFindFirstOrThrowArgs>(args?: SelectSubset<T, ChatDailyUsageFindFirstOrThrowArgs<ExtArgs>>): Prisma__ChatDailyUsageClient<$Result.GetResult<Prisma.$ChatDailyUsagePayload<ExtArgs>, T, "findFirstOrThrow">, never, ExtArgs>
+
+    /**
+     * Find zero or more ChatDailyUsages that matches the filter.
+     * Note, that providing `undefined` is treated as the value not being there.
+     * Read more here: https://pris.ly/d/null-undefined
+     * @param {ChatDailyUsageFindManyArgs} args - Arguments to filter and select certain fields only.
+     * @example
+     * // Get all ChatDailyUsages
+     * const chatDailyUsages = await prisma.chatDailyUsage.findMany()
+     * 
+     * // Get first 10 ChatDailyUsages
+     * const chatDailyUsages = await prisma.chatDailyUsage.findMany({ take: 10 })
+     * 
+     * // Only select the `userId`
+     * const chatDailyUsageWithUserIdOnly = await prisma.chatDailyUsage.findMany({ select: { userId: true } })
+     * 
+     */
+    findMany<T extends ChatDailyUsageFindManyArgs>(args?: SelectSubset<T, ChatDailyUsageFindManyArgs<ExtArgs>>): Prisma.PrismaPromise<$Result.GetResult<Prisma.$ChatDailyUsagePayload<ExtArgs>, T, "findMany">>
+
+    /**
+     * Create a ChatDailyUsage.
+     * @param {ChatDailyUsageCreateArgs} args - Arguments to create a ChatDailyUsage.
+     * @example
+     * // Create one ChatDailyUsage
+     * const ChatDailyUsage = await prisma.chatDailyUsage.create({
+     *   data: {
+     *     // ... data to create a ChatDailyUsage
+     *   }
+     * })
+     * 
+     */
+    create<T extends ChatDailyUsageCreateArgs>(args: SelectSubset<T, ChatDailyUsageCreateArgs<ExtArgs>>): Prisma__ChatDailyUsageClient<$Result.GetResult<Prisma.$ChatDailyUsagePayload<ExtArgs>, T, "create">, never, ExtArgs>
+
+    /**
+     * Create many ChatDailyUsages.
+     * @param {ChatDailyUsageCreateManyArgs} args - Arguments to create many ChatDailyUsages.
+     * @example
+     * // Create many ChatDailyUsages
+     * const chatDailyUsage = await prisma.chatDailyUsage.createMany({
+     *   data: [
+     *     // ... provide data here
+     *   ]
+     * })
+     *     
+     */
+    createMany<T extends ChatDailyUsageCreateManyArgs>(args?: SelectSubset<T, ChatDailyUsageCreateManyArgs<ExtArgs>>): Prisma.PrismaPromise<BatchPayload>
+
+    /**
+     * Create many ChatDailyUsages and returns the data saved in the database.
+     * @param {ChatDailyUsageCreateManyAndReturnArgs} args - Arguments to create many ChatDailyUsages.
+     * @example
+     * // Create many ChatDailyUsages
+     * const chatDailyUsage = await prisma.chatDailyUsage.createManyAndReturn({
+     *   data: [
+     *     // ... provide data here
+     *   ]
+     * })
+     * 
+     * // Create many ChatDailyUsages and only return the `userId`
+     * const chatDailyUsageWithUserIdOnly = await prisma.chatDailyUsage.createManyAndReturn({ 
+     *   select: { userId: true },
+     *   data: [
+     *     // ... provide data here
+     *   ]
+     * })
+     * Note, that providing `undefined` is treated as the value not being there.
+     * Read more here: https://pris.ly/d/null-undefined
+     * 
+     */
+    createManyAndReturn<T extends ChatDailyUsageCreateManyAndReturnArgs>(args?: SelectSubset<T, ChatDailyUsageCreateManyAndReturnArgs<ExtArgs>>): Prisma.PrismaPromise<$Result.GetResult<Prisma.$ChatDailyUsagePayload<ExtArgs>, T, "createManyAndReturn">>
+
+    /**
+     * Delete a ChatDailyUsage.
+     * @param {ChatDailyUsageDeleteArgs} args - Arguments to delete one ChatDailyUsage.
+     * @example
+     * // Delete one ChatDailyUsage
+     * const ChatDailyUsage = await prisma.chatDailyUsage.delete({
+     *   where: {
+     *     // ... filter to delete one ChatDailyUsage
+     *   }
+     * })
+     * 
+     */
+    delete<T extends ChatDailyUsageDeleteArgs>(args: SelectSubset<T, ChatDailyUsageDeleteArgs<ExtArgs>>): Prisma__ChatDailyUsageClient<$Result.GetResult<Prisma.$ChatDailyUsagePayload<ExtArgs>, T, "delete">, never, ExtArgs>
+
+    /**
+     * Update one ChatDailyUsage.
+     * @param {ChatDailyUsageUpdateArgs} args - Arguments to update one ChatDailyUsage.
+     * @example
+     * // Update one ChatDailyUsage
+     * const chatDailyUsage = await prisma.chatDailyUsage.update({
+     *   where: {
+     *     // ... provide filter here
+     *   },
+     *   data: {
+     *     // ... provide data here
+     *   }
+     * })
+     * 
+     */
+    update<T extends ChatDailyUsageUpdateArgs>(args: SelectSubset<T, ChatDailyUsageUpdateArgs<ExtArgs>>): Prisma__ChatDailyUsageClient<$Result.GetResult<Prisma.$ChatDailyUsagePayload<ExtArgs>, T, "update">, never, ExtArgs>
+
+    /**
+     * Delete zero or more ChatDailyUsages.
+     * @param {ChatDailyUsageDeleteManyArgs} args - Arguments to filter ChatDailyUsages to delete.
+     * @example
+     * // Delete a few ChatDailyUsages
+     * const { count } = await prisma.chatDailyUsage.deleteMany({
+     *   where: {
+     *     // ... provide filter here
+     *   }
+     * })
+     * 
+     */
+    deleteMany<T extends ChatDailyUsageDeleteManyArgs>(args?: SelectSubset<T, ChatDailyUsageDeleteManyArgs<ExtArgs>>): Prisma.PrismaPromise<BatchPayload>
+
+    /**
+     * Update zero or more ChatDailyUsages.
+     * Note, that providing `undefined` is treated as the value not being there.
+     * Read more here: https://pris.ly/d/null-undefined
+     * @param {ChatDailyUsageUpdateManyArgs} args - Arguments to update one or more rows.
+     * @example
+     * // Update many ChatDailyUsages
+     * const chatDailyUsage = await prisma.chatDailyUsage.updateMany({
+     *   where: {
+     *     // ... provide filter here
+     *   },
+     *   data: {
+     *     // ... provide data here
+     *   }
+     * })
+     * 
+     */
+    updateMany<T extends ChatDailyUsageUpdateManyArgs>(args: SelectSubset<T, ChatDailyUsageUpdateManyArgs<ExtArgs>>): Prisma.PrismaPromise<BatchPayload>
+
+    /**
+     * Create or update one ChatDailyUsage.
+     * @param {ChatDailyUsageUpsertArgs} args - Arguments to update or create a ChatDailyUsage.
+     * @example
+     * // Update or create a ChatDailyUsage
+     * const chatDailyUsage = await prisma.chatDailyUsage.upsert({
+     *   create: {
+     *     // ... data to create a ChatDailyUsage
+     *   },
+     *   update: {
+     *     // ... in case it already exists, update
+     *   },
+     *   where: {
+     *     // ... the filter for the ChatDailyUsage we want to update
+     *   }
+     * })
+     */
+    upsert<T extends ChatDailyUsageUpsertArgs>(args: SelectSubset<T, ChatDailyUsageUpsertArgs<ExtArgs>>): Prisma__ChatDailyUsageClient<$Result.GetResult<Prisma.$ChatDailyUsagePayload<ExtArgs>, T, "upsert">, never, ExtArgs>
+
+
+    /**
+     * Count the number of ChatDailyUsages.
+     * Note, that providing `undefined` is treated as the value not being there.
+     * Read more here: https://pris.ly/d/null-undefined
+     * @param {ChatDailyUsageCountArgs} args - Arguments to filter ChatDailyUsages to count.
+     * @example
+     * // Count the number of ChatDailyUsages
+     * const count = await prisma.chatDailyUsage.count({
+     *   where: {
+     *     // ... the filter for the ChatDailyUsages we want to count
+     *   }
+     * })
+    **/
+    count<T extends ChatDailyUsageCountArgs>(
+      args?: Subset<T, ChatDailyUsageCountArgs>,
+    ): Prisma.PrismaPromise<
+      T extends $Utils.Record<'select', any>
+        ? T['select'] extends true
+          ? number
+          : GetScalarType<T['select'], ChatDailyUsageCountAggregateOutputType>
+        : number
+    >
+
+    /**
+     * Allows you to perform aggregations operations on a ChatDailyUsage.
+     * Note, that providing `undefined` is treated as the value not being there.
+     * Read more here: https://pris.ly/d/null-undefined
+     * @param {ChatDailyUsageAggregateArgs} args - Select which aggregations you would like to apply and on what fields.
+     * @example
+     * // Ordered by age ascending
+     * // Where email contains prisma.io
+     * // Limited to the 10 users
+     * const aggregations = await prisma.user.aggregate({
+     *   _avg: {
+     *     age: true,
+     *   },
+     *   where: {
+     *     email: {
+     *       contains: "prisma.io",
+     *     },
+     *   },
+     *   orderBy: {
+     *     age: "asc",
+     *   },
+     *   take: 10,
+     * })
+    **/
+    aggregate<T extends ChatDailyUsageAggregateArgs>(args: Subset<T, ChatDailyUsageAggregateArgs>): Prisma.PrismaPromise<GetChatDailyUsageAggregateType<T>>
+
+    /**
+     * Group by ChatDailyUsage.
+     * Note, that providing `undefined` is treated as the value not being there.
+     * Read more here: https://pris.ly/d/null-undefined
+     * @param {ChatDailyUsageGroupByArgs} args - Group by arguments.
+     * @example
+     * // Group by city, order by createdAt, get count
+     * const result = await prisma.user.groupBy({
+     *   by: ['city', 'createdAt'],
+     *   orderBy: {
+     *     createdAt: true
+     *   },
+     *   _count: {
+     *     _all: true
+     *   },
+     * })
+     * 
+    **/
+    groupBy<
+      T extends ChatDailyUsageGroupByArgs,
+      HasSelectOrTake extends Or<
+        Extends<'skip', Keys<T>>,
+        Extends<'take', Keys<T>>
+      >,
+      OrderByArg extends True extends HasSelectOrTake
+        ? { orderBy: ChatDailyUsageGroupByArgs['orderBy'] }
+        : { orderBy?: ChatDailyUsageGroupByArgs['orderBy'] },
+      OrderFields extends ExcludeUnderscoreKeys<Keys<MaybeTupleToUnion<T['orderBy']>>>,
+      ByFields extends MaybeTupleToUnion<T['by']>,
+      ByValid extends Has<ByFields, OrderFields>,
+      HavingFields extends GetHavingFields<T['having']>,
+      HavingValid extends Has<ByFields, HavingFields>,
+      ByEmpty extends T['by'] extends never[] ? True : False,
+      InputErrors extends ByEmpty extends True
+      ? `Error: "by" must not be empty.`
+      : HavingValid extends False
+      ? {
+          [P in HavingFields]: P extends ByFields
+            ? never
+            : P extends string
+            ? `Error: Field "${P}" used in "having" needs to be provided in "by".`
+            : [
+                Error,
+                'Field ',
+                P,
+                ` in "having" needs to be provided in "by"`,
+              ]
+        }[HavingFields]
+      : 'take' extends Keys<T>
+      ? 'orderBy' extends Keys<T>
+        ? ByValid extends True
+          ? {}
+          : {
+              [P in OrderFields]: P extends ByFields
+                ? never
+                : `Error: Field "${P}" in "orderBy" needs to be provided in "by"`
+            }[OrderFields]
+        : 'Error: If you provide "take", you also need to provide "orderBy"'
+      : 'skip' extends Keys<T>
+      ? 'orderBy' extends Keys<T>
+        ? ByValid extends True
+          ? {}
+          : {
+              [P in OrderFields]: P extends ByFields
+                ? never
+                : `Error: Field "${P}" in "orderBy" needs to be provided in "by"`
+            }[OrderFields]
+        : 'Error: If you provide "skip", you also need to provide "orderBy"'
+      : ByValid extends True
+      ? {}
+      : {
+          [P in OrderFields]: P extends ByFields
+            ? never
+            : `Error: Field "${P}" in "orderBy" needs to be provided in "by"`
+        }[OrderFields]
+    >(args: SubsetIntersection<T, ChatDailyUsageGroupByArgs, OrderByArg> & InputErrors): {} extends InputErrors ? GetChatDailyUsageGroupByPayload<T> : Prisma.PrismaPromise<InputErrors>
+  /**
+   * Fields of the ChatDailyUsage model
+   */
+  readonly fields: ChatDailyUsageFieldRefs;
+  }
+
+  /**
+   * The delegate class that acts as a "Promise-like" for ChatDailyUsage.
+   * Why is this prefixed with `Prisma__`?
+   * Because we want to prevent naming conflicts as mentioned in
+   * https://github.com/prisma/prisma-client-js/issues/707
+   */
+  export interface Prisma__ChatDailyUsageClient<T, Null = never, ExtArgs extends $Extensions.InternalArgs = $Extensions.DefaultArgs> extends Prisma.PrismaPromise<T> {
+    readonly [Symbol.toStringTag]: "PrismaPromise"
+    user<T extends UserDefaultArgs<ExtArgs> = {}>(args?: Subset<T, UserDefaultArgs<ExtArgs>>): Prisma__UserClient<$Result.GetResult<Prisma.$UserPayload<ExtArgs>, T, "findUniqueOrThrow"> | Null, Null, ExtArgs>
+    /**
+     * Attaches callbacks for the resolution and/or rejection of the Promise.
+     * @param onfulfilled The callback to execute when the Promise is resolved.
+     * @param onrejected The callback to execute when the Promise is rejected.
+     * @returns A Promise for the completion of which ever callback is executed.
+     */
+    then<TResult1 = T, TResult2 = never>(onfulfilled?: ((value: T) => TResult1 | PromiseLike<TResult1>) | undefined | null, onrejected?: ((reason: any) => TResult2 | PromiseLike<TResult2>) | undefined | null): $Utils.JsPromise<TResult1 | TResult2>
+    /**
+     * Attaches a callback for only the rejection of the Promise.
+     * @param onrejected The callback to execute when the Promise is rejected.
+     * @returns A Promise for the completion of the callback.
+     */
+    catch<TResult = never>(onrejected?: ((reason: any) => TResult | PromiseLike<TResult>) | undefined | null): $Utils.JsPromise<T | TResult>
+    /**
+     * Attaches a callback that is invoked when the Promise is settled (fulfilled or rejected). The
+     * resolved value cannot be modified from the callback.
+     * @param onfinally The callback to execute when the Promise is settled (fulfilled or rejected).
+     * @returns A Promise for the completion of the callback.
+     */
+    finally(onfinally?: (() => void) | undefined | null): $Utils.JsPromise<T>
+  }
+
+
+
+
+  /**
+   * Fields of the ChatDailyUsage model
+   */ 
+  interface ChatDailyUsageFieldRefs {
+    readonly userId: FieldRef<"ChatDailyUsage", 'String'>
+    readonly day: FieldRef<"ChatDailyUsage", 'DateTime'>
+    readonly used: FieldRef<"ChatDailyUsage", 'Int'>
+  }
+    
+
+  // Custom InputTypes
+  /**
+   * ChatDailyUsage findUnique
+   */
+  export type ChatDailyUsageFindUniqueArgs<ExtArgs extends $Extensions.InternalArgs = $Extensions.DefaultArgs> = {
+    /**
+     * Select specific fields to fetch from the ChatDailyUsage
+     */
+    select?: ChatDailyUsageSelect<ExtArgs> | null
+    /**
+     * Choose, which related nodes to fetch as well
+     */
+    include?: ChatDailyUsageInclude<ExtArgs> | null
+    /**
+     * Filter, which ChatDailyUsage to fetch.
+     */
+    where: ChatDailyUsageWhereUniqueInput
+  }
+
+  /**
+   * ChatDailyUsage findUniqueOrThrow
+   */
+  export type ChatDailyUsageFindUniqueOrThrowArgs<ExtArgs extends $Extensions.InternalArgs = $Extensions.DefaultArgs> = {
+    /**
+     * Select specific fields to fetch from the ChatDailyUsage
+     */
+    select?: ChatDailyUsageSelect<ExtArgs> | null
+    /**
+     * Choose, which related nodes to fetch as well
+     */
+    include?: ChatDailyUsageInclude<ExtArgs> | null
+    /**
+     * Filter, which ChatDailyUsage to fetch.
+     */
+    where: ChatDailyUsageWhereUniqueInput
+  }
+
+  /**
+   * ChatDailyUsage findFirst
+   */
+  export type ChatDailyUsageFindFirstArgs<ExtArgs extends $Extensions.InternalArgs = $Extensions.DefaultArgs> = {
+    /**
+     * Select specific fields to fetch from the ChatDailyUsage
+     */
+    select?: ChatDailyUsageSelect<ExtArgs> | null
+    /**
+     * Choose, which related nodes to fetch as well
+     */
+    include?: ChatDailyUsageInclude<ExtArgs> | null
+    /**
+     * Filter, which ChatDailyUsage to fetch.
+     */
+    where?: ChatDailyUsageWhereInput
+    /**
+     * {@link https://www.prisma.io/docs/concepts/components/prisma-client/sorting Sorting Docs}
+     * 
+     * Determine the order of ChatDailyUsages to fetch.
+     */
+    orderBy?: ChatDailyUsageOrderByWithRelationInput | ChatDailyUsageOrderByWithRelationInput[]
+    /**
+     * {@link https://www.prisma.io/docs/concepts/components/prisma-client/pagination#cursor-based-pagination Cursor Docs}
+     * 
+     * Sets the position for searching for ChatDailyUsages.
+     */
+    cursor?: ChatDailyUsageWhereUniqueInput
+    /**
+     * {@link https://www.prisma.io/docs/concepts/components/prisma-client/pagination Pagination Docs}
+     * 
+     * Take `±n` ChatDailyUsages from the position of the cursor.
+     */
+    take?: number
+    /**
+     * {@link https://www.prisma.io/docs/concepts/components/prisma-client/pagination Pagination Docs}
+     * 
+     * Skip the first `n` ChatDailyUsages.
+     */
+    skip?: number
+    /**
+     * {@link https://www.prisma.io/docs/concepts/components/prisma-client/distinct Distinct Docs}
+     * 
+     * Filter by unique combinations of ChatDailyUsages.
+     */
+    distinct?: ChatDailyUsageScalarFieldEnum | ChatDailyUsageScalarFieldEnum[]
+  }
+
+  /**
+   * ChatDailyUsage findFirstOrThrow
+   */
+  export type ChatDailyUsageFindFirstOrThrowArgs<ExtArgs extends $Extensions.InternalArgs = $Extensions.DefaultArgs> = {
+    /**
+     * Select specific fields to fetch from the ChatDailyUsage
+     */
+    select?: ChatDailyUsageSelect<ExtArgs> | null
+    /**
+     * Choose, which related nodes to fetch as well
+     */
+    include?: ChatDailyUsageInclude<ExtArgs> | null
+    /**
+     * Filter, which ChatDailyUsage to fetch.
+     */
+    where?: ChatDailyUsageWhereInput
+    /**
+     * {@link https://www.prisma.io/docs/concepts/components/prisma-client/sorting Sorting Docs}
+     * 
+     * Determine the order of ChatDailyUsages to fetch.
+     */
+    orderBy?: ChatDailyUsageOrderByWithRelationInput | ChatDailyUsageOrderByWithRelationInput[]
+    /**
+     * {@link https://www.prisma.io/docs/concepts/components/prisma-client/pagination#cursor-based-pagination Cursor Docs}
+     * 
+     * Sets the position for searching for ChatDailyUsages.
+     */
+    cursor?: ChatDailyUsageWhereUniqueInput
+    /**
+     * {@link https://www.prisma.io/docs/concepts/components/prisma-client/pagination Pagination Docs}
+     * 
+     * Take `±n` ChatDailyUsages from the position of the cursor.
+     */
+    take?: number
+    /**
+     * {@link https://www.prisma.io/docs/concepts/components/prisma-client/pagination Pagination Docs}
+     * 
+     * Skip the first `n` ChatDailyUsages.
+     */
+    skip?: number
+    /**
+     * {@link https://www.prisma.io/docs/concepts/components/prisma-client/distinct Distinct Docs}
+     * 
+     * Filter by unique combinations of ChatDailyUsages.
+     */
+    distinct?: ChatDailyUsageScalarFieldEnum | ChatDailyUsageScalarFieldEnum[]
+  }
+
+  /**
+   * ChatDailyUsage findMany
+   */
+  export type ChatDailyUsageFindManyArgs<ExtArgs extends $Extensions.InternalArgs = $Extensions.DefaultArgs> = {
+    /**
+     * Select specific fields to fetch from the ChatDailyUsage
+     */
+    select?: ChatDailyUsageSelect<ExtArgs> | null
+    /**
+     * Choose, which related nodes to fetch as well
+     */
+    include?: ChatDailyUsageInclude<ExtArgs> | null
+    /**
+     * Filter, which ChatDailyUsages to fetch.
+     */
+    where?: ChatDailyUsageWhereInput
+    /**
+     * {@link https://www.prisma.io/docs/concepts/components/prisma-client/sorting Sorting Docs}
+     * 
+     * Determine the order of ChatDailyUsages to fetch.
+     */
+    orderBy?: ChatDailyUsageOrderByWithRelationInput | ChatDailyUsageOrderByWithRelationInput[]
+    /**
+     * {@link https://www.prisma.io/docs/concepts/components/prisma-client/pagination#cursor-based-pagination Cursor Docs}
+     * 
+     * Sets the position for listing ChatDailyUsages.
+     */
+    cursor?: ChatDailyUsageWhereUniqueInput
+    /**
+     * {@link https://www.prisma.io/docs/concepts/components/prisma-client/pagination Pagination Docs}
+     * 
+     * Take `±n` ChatDailyUsages from the position of the cursor.
+     */
+    take?: number
+    /**
+     * {@link https://www.prisma.io/docs/concepts/components/prisma-client/pagination Pagination Docs}
+     * 
+     * Skip the first `n` ChatDailyUsages.
+     */
+    skip?: number
+    distinct?: ChatDailyUsageScalarFieldEnum | ChatDailyUsageScalarFieldEnum[]
+  }
+
+  /**
+   * ChatDailyUsage create
+   */
+  export type ChatDailyUsageCreateArgs<ExtArgs extends $Extensions.InternalArgs = $Extensions.DefaultArgs> = {
+    /**
+     * Select specific fields to fetch from the ChatDailyUsage
+     */
+    select?: ChatDailyUsageSelect<ExtArgs> | null
+    /**
+     * Choose, which related nodes to fetch as well
+     */
+    include?: ChatDailyUsageInclude<ExtArgs> | null
+    /**
+     * The data needed to create a ChatDailyUsage.
+     */
+    data: XOR<ChatDailyUsageCreateInput, ChatDailyUsageUncheckedCreateInput>
+  }
+
+  /**
+   * ChatDailyUsage createMany
+   */
+  export type ChatDailyUsageCreateManyArgs<ExtArgs extends $Extensions.InternalArgs = $Extensions.DefaultArgs> = {
+    /**
+     * The data used to create many ChatDailyUsages.
+     */
+    data: ChatDailyUsageCreateManyInput | ChatDailyUsageCreateManyInput[]
+    skipDuplicates?: boolean
+  }
+
+  /**
+   * ChatDailyUsage createManyAndReturn
+   */
+  export type ChatDailyUsageCreateManyAndReturnArgs<ExtArgs extends $Extensions.InternalArgs = $Extensions.DefaultArgs> = {
+    /**
+     * Select specific fields to fetch from the ChatDailyUsage
+     */
+    select?: ChatDailyUsageSelectCreateManyAndReturn<ExtArgs> | null
+    /**
+     * The data used to create many ChatDailyUsages.
+     */
+    data: ChatDailyUsageCreateManyInput | ChatDailyUsageCreateManyInput[]
+    skipDuplicates?: boolean
+    /**
+     * Choose, which related nodes to fetch as well
+     */
+    include?: ChatDailyUsageIncludeCreateManyAndReturn<ExtArgs> | null
+  }
+
+  /**
+   * ChatDailyUsage update
+   */
+  export type ChatDailyUsageUpdateArgs<ExtArgs extends $Extensions.InternalArgs = $Extensions.DefaultArgs> = {
+    /**
+     * Select specific fields to fetch from the ChatDailyUsage
+     */
+    select?: ChatDailyUsageSelect<ExtArgs> | null
+    /**
+     * Choose, which related nodes to fetch as well
+     */
+    include?: ChatDailyUsageInclude<ExtArgs> | null
+    /**
+     * The data needed to update a ChatDailyUsage.
+     */
+    data: XOR<ChatDailyUsageUpdateInput, ChatDailyUsageUncheckedUpdateInput>
+    /**
+     * Choose, which ChatDailyUsage to update.
+     */
+    where: ChatDailyUsageWhereUniqueInput
+  }
+
+  /**
+   * ChatDailyUsage updateMany
+   */
+  export type ChatDailyUsageUpdateManyArgs<ExtArgs extends $Extensions.InternalArgs = $Extensions.DefaultArgs> = {
+    /**
+     * The data used to update ChatDailyUsages.
+     */
+    data: XOR<ChatDailyUsageUpdateManyMutationInput, ChatDailyUsageUncheckedUpdateManyInput>
+    /**
+     * Filter which ChatDailyUsages to update
+     */
+    where?: ChatDailyUsageWhereInput
+  }
+
+  /**
+   * ChatDailyUsage upsert
+   */
+  export type ChatDailyUsageUpsertArgs<ExtArgs extends $Extensions.InternalArgs = $Extensions.DefaultArgs> = {
+    /**
+     * Select specific fields to fetch from the ChatDailyUsage
+     */
+    select?: ChatDailyUsageSelect<ExtArgs> | null
+    /**
+     * Choose, which related nodes to fetch as well
+     */
+    include?: ChatDailyUsageInclude<ExtArgs> | null
+    /**
+     * The filter to search for the ChatDailyUsage to update in case it exists.
+     */
+    where: ChatDailyUsageWhereUniqueInput
+    /**
+     * In case the ChatDailyUsage found by the `where` argument doesn't exist, create a new ChatDailyUsage with this data.
+     */
+    create: XOR<ChatDailyUsageCreateInput, ChatDailyUsageUncheckedCreateInput>
+    /**
+     * In case the ChatDailyUsage was found with the provided `where` argument, update it with this data.
+     */
+    update: XOR<ChatDailyUsageUpdateInput, ChatDailyUsageUncheckedUpdateInput>
+  }
+
+  /**
+   * ChatDailyUsage delete
+   */
+  export type ChatDailyUsageDeleteArgs<ExtArgs extends $Extensions.InternalArgs = $Extensions.DefaultArgs> = {
+    /**
+     * Select specific fields to fetch from the ChatDailyUsage
+     */
+    select?: ChatDailyUsageSelect<ExtArgs> | null
+    /**
+     * Choose, which related nodes to fetch as well
+     */
+    include?: ChatDailyUsageInclude<ExtArgs> | null
+    /**
+     * Filter which ChatDailyUsage to delete.
+     */
+    where: ChatDailyUsageWhereUniqueInput
+  }
+
+  /**
+   * ChatDailyUsage deleteMany
+   */
+  export type ChatDailyUsageDeleteManyArgs<ExtArgs extends $Extensions.InternalArgs = $Extensions.DefaultArgs> = {
+    /**
+     * Filter which ChatDailyUsages to delete
+     */
+    where?: ChatDailyUsageWhereInput
+  }
+
+  /**
+   * ChatDailyUsage without action
+   */
+  export type ChatDailyUsageDefaultArgs<ExtArgs extends $Extensions.InternalArgs = $Extensions.DefaultArgs> = {
+    /**
+     * Select specific fields to fetch from the ChatDailyUsage
+     */
+    select?: ChatDailyUsageSelect<ExtArgs> | null
+    /**
+     * Choose, which related nodes to fetch as well
+     */
+    include?: ChatDailyUsageInclude<ExtArgs> | null
   }
 
 
@@ -28101,6 +29163,15 @@ export namespace Prisma {
   export type GuideScalarFieldEnum = (typeof GuideScalarFieldEnum)[keyof typeof GuideScalarFieldEnum]
 
 
+  export const ChatDailyUsageScalarFieldEnum: {
+    userId: 'userId',
+    day: 'day',
+    used: 'used'
+  };
+
+  export type ChatDailyUsageScalarFieldEnum = (typeof ChatDailyUsageScalarFieldEnum)[keyof typeof ChatDailyUsageScalarFieldEnum]
+
+
   export const ChatMessageScalarFieldEnum: {
     id: 'id',
     userId: 'userId',
@@ -28520,6 +29591,7 @@ export namespace Prisma {
     reminders?: ReminderListRelationFilter
     notes?: NoteListRelationFilter
     chatMessages?: ChatMessageListRelationFilter
+    chatDailyUsage?: ChatDailyUsageListRelationFilter
     profile?: XOR<ProfileNullableRelationFilter, ProfileWhereInput> | null
     supportTickets?: SupportTicketListRelationFilter
     payments?: PaymentListRelationFilter
@@ -28561,6 +29633,7 @@ export namespace Prisma {
     reminders?: ReminderOrderByRelationAggregateInput
     notes?: NoteOrderByRelationAggregateInput
     chatMessages?: ChatMessageOrderByRelationAggregateInput
+    chatDailyUsage?: ChatDailyUsageOrderByRelationAggregateInput
     profile?: ProfileOrderByWithRelationInput
     supportTickets?: SupportTicketOrderByRelationAggregateInput
     payments?: PaymentOrderByRelationAggregateInput
@@ -28605,6 +29678,7 @@ export namespace Prisma {
     reminders?: ReminderListRelationFilter
     notes?: NoteListRelationFilter
     chatMessages?: ChatMessageListRelationFilter
+    chatDailyUsage?: ChatDailyUsageListRelationFilter
     profile?: XOR<ProfileNullableRelationFilter, ProfileWhereInput> | null
     supportTickets?: SupportTicketListRelationFilter
     payments?: PaymentListRelationFilter
@@ -29212,6 +30286,54 @@ export namespace Prisma {
     updatedAt?: DateTimeWithAggregatesFilter<"Guide"> | Date | string
     views?: IntWithAggregatesFilter<"Guide"> | number
     likes?: IntWithAggregatesFilter<"Guide"> | number
+  }
+
+  export type ChatDailyUsageWhereInput = {
+    AND?: ChatDailyUsageWhereInput | ChatDailyUsageWhereInput[]
+    OR?: ChatDailyUsageWhereInput[]
+    NOT?: ChatDailyUsageWhereInput | ChatDailyUsageWhereInput[]
+    userId?: StringFilter<"ChatDailyUsage"> | string
+    day?: DateTimeFilter<"ChatDailyUsage"> | Date | string
+    used?: IntFilter<"ChatDailyUsage"> | number
+    user?: XOR<UserRelationFilter, UserWhereInput>
+  }
+
+  export type ChatDailyUsageOrderByWithRelationInput = {
+    userId?: SortOrder
+    day?: SortOrder
+    used?: SortOrder
+    user?: UserOrderByWithRelationInput
+  }
+
+  export type ChatDailyUsageWhereUniqueInput = Prisma.AtLeast<{
+    userId_day?: ChatDailyUsageUserIdDayCompoundUniqueInput
+    AND?: ChatDailyUsageWhereInput | ChatDailyUsageWhereInput[]
+    OR?: ChatDailyUsageWhereInput[]
+    NOT?: ChatDailyUsageWhereInput | ChatDailyUsageWhereInput[]
+    userId?: StringFilter<"ChatDailyUsage"> | string
+    day?: DateTimeFilter<"ChatDailyUsage"> | Date | string
+    used?: IntFilter<"ChatDailyUsage"> | number
+    user?: XOR<UserRelationFilter, UserWhereInput>
+  }, "userId_day">
+
+  export type ChatDailyUsageOrderByWithAggregationInput = {
+    userId?: SortOrder
+    day?: SortOrder
+    used?: SortOrder
+    _count?: ChatDailyUsageCountOrderByAggregateInput
+    _avg?: ChatDailyUsageAvgOrderByAggregateInput
+    _max?: ChatDailyUsageMaxOrderByAggregateInput
+    _min?: ChatDailyUsageMinOrderByAggregateInput
+    _sum?: ChatDailyUsageSumOrderByAggregateInput
+  }
+
+  export type ChatDailyUsageScalarWhereWithAggregatesInput = {
+    AND?: ChatDailyUsageScalarWhereWithAggregatesInput | ChatDailyUsageScalarWhereWithAggregatesInput[]
+    OR?: ChatDailyUsageScalarWhereWithAggregatesInput[]
+    NOT?: ChatDailyUsageScalarWhereWithAggregatesInput | ChatDailyUsageScalarWhereWithAggregatesInput[]
+    userId?: StringWithAggregatesFilter<"ChatDailyUsage"> | string
+    day?: DateTimeWithAggregatesFilter<"ChatDailyUsage"> | Date | string
+    used?: IntWithAggregatesFilter<"ChatDailyUsage"> | number
   }
 
   export type ChatMessageWhereInput = {
@@ -30518,6 +31640,7 @@ export namespace Prisma {
     reminders?: ReminderCreateNestedManyWithoutUserInput
     notes?: NoteCreateNestedManyWithoutUserInput
     chatMessages?: ChatMessageCreateNestedManyWithoutUserInput
+    chatDailyUsage?: ChatDailyUsageCreateNestedManyWithoutUserInput
     profile?: ProfileCreateNestedOneWithoutUserInput
     supportTickets?: SupportTicketCreateNestedManyWithoutUserInput
     payments?: PaymentCreateNestedManyWithoutUserInput
@@ -30559,6 +31682,7 @@ export namespace Prisma {
     reminders?: ReminderUncheckedCreateNestedManyWithoutUserInput
     notes?: NoteUncheckedCreateNestedManyWithoutUserInput
     chatMessages?: ChatMessageUncheckedCreateNestedManyWithoutUserInput
+    chatDailyUsage?: ChatDailyUsageUncheckedCreateNestedManyWithoutUserInput
     profile?: ProfileUncheckedCreateNestedOneWithoutUserInput
     supportTickets?: SupportTicketUncheckedCreateNestedManyWithoutUserInput
     payments?: PaymentUncheckedCreateNestedManyWithoutUserInput
@@ -30600,6 +31724,7 @@ export namespace Prisma {
     reminders?: ReminderUpdateManyWithoutUserNestedInput
     notes?: NoteUpdateManyWithoutUserNestedInput
     chatMessages?: ChatMessageUpdateManyWithoutUserNestedInput
+    chatDailyUsage?: ChatDailyUsageUpdateManyWithoutUserNestedInput
     profile?: ProfileUpdateOneWithoutUserNestedInput
     supportTickets?: SupportTicketUpdateManyWithoutUserNestedInput
     payments?: PaymentUpdateManyWithoutUserNestedInput
@@ -30641,6 +31766,7 @@ export namespace Prisma {
     reminders?: ReminderUncheckedUpdateManyWithoutUserNestedInput
     notes?: NoteUncheckedUpdateManyWithoutUserNestedInput
     chatMessages?: ChatMessageUncheckedUpdateManyWithoutUserNestedInput
+    chatDailyUsage?: ChatDailyUsageUncheckedUpdateManyWithoutUserNestedInput
     profile?: ProfileUncheckedUpdateOneWithoutUserNestedInput
     supportTickets?: SupportTicketUncheckedUpdateManyWithoutUserNestedInput
     payments?: PaymentUncheckedUpdateManyWithoutUserNestedInput
@@ -31342,6 +32468,47 @@ export namespace Prisma {
     updatedAt?: DateTimeFieldUpdateOperationsInput | Date | string
     views?: IntFieldUpdateOperationsInput | number
     likes?: IntFieldUpdateOperationsInput | number
+  }
+
+  export type ChatDailyUsageCreateInput = {
+    day: Date | string
+    used?: number
+    user: UserCreateNestedOneWithoutChatDailyUsageInput
+  }
+
+  export type ChatDailyUsageUncheckedCreateInput = {
+    userId: string
+    day: Date | string
+    used?: number
+  }
+
+  export type ChatDailyUsageUpdateInput = {
+    day?: DateTimeFieldUpdateOperationsInput | Date | string
+    used?: IntFieldUpdateOperationsInput | number
+    user?: UserUpdateOneRequiredWithoutChatDailyUsageNestedInput
+  }
+
+  export type ChatDailyUsageUncheckedUpdateInput = {
+    userId?: StringFieldUpdateOperationsInput | string
+    day?: DateTimeFieldUpdateOperationsInput | Date | string
+    used?: IntFieldUpdateOperationsInput | number
+  }
+
+  export type ChatDailyUsageCreateManyInput = {
+    userId: string
+    day: Date | string
+    used?: number
+  }
+
+  export type ChatDailyUsageUpdateManyMutationInput = {
+    day?: DateTimeFieldUpdateOperationsInput | Date | string
+    used?: IntFieldUpdateOperationsInput | number
+  }
+
+  export type ChatDailyUsageUncheckedUpdateManyInput = {
+    userId?: StringFieldUpdateOperationsInput | string
+    day?: DateTimeFieldUpdateOperationsInput | Date | string
+    used?: IntFieldUpdateOperationsInput | number
   }
 
   export type ChatMessageCreateInput = {
@@ -32808,6 +33975,12 @@ export namespace Prisma {
     none?: ChatMessageWhereInput
   }
 
+  export type ChatDailyUsageListRelationFilter = {
+    every?: ChatDailyUsageWhereInput
+    some?: ChatDailyUsageWhereInput
+    none?: ChatDailyUsageWhereInput
+  }
+
   export type ProfileNullableRelationFilter = {
     is?: ProfileWhereInput | null
     isNot?: ProfileWhereInput | null
@@ -32917,6 +34090,10 @@ export namespace Prisma {
   }
 
   export type ChatMessageOrderByRelationAggregateInput = {
+    _count?: SortOrder
+  }
+
+  export type ChatDailyUsageOrderByRelationAggregateInput = {
     _count?: SortOrder
   }
 
@@ -33462,6 +34639,37 @@ export namespace Prisma {
   export type GuideSumOrderByAggregateInput = {
     views?: SortOrder
     likes?: SortOrder
+  }
+
+  export type ChatDailyUsageUserIdDayCompoundUniqueInput = {
+    userId: string
+    day: Date | string
+  }
+
+  export type ChatDailyUsageCountOrderByAggregateInput = {
+    userId?: SortOrder
+    day?: SortOrder
+    used?: SortOrder
+  }
+
+  export type ChatDailyUsageAvgOrderByAggregateInput = {
+    used?: SortOrder
+  }
+
+  export type ChatDailyUsageMaxOrderByAggregateInput = {
+    userId?: SortOrder
+    day?: SortOrder
+    used?: SortOrder
+  }
+
+  export type ChatDailyUsageMinOrderByAggregateInput = {
+    userId?: SortOrder
+    day?: SortOrder
+    used?: SortOrder
+  }
+
+  export type ChatDailyUsageSumOrderByAggregateInput = {
+    used?: SortOrder
   }
 
   export type ChatMessageCountOrderByAggregateInput = {
@@ -34228,6 +35436,13 @@ export namespace Prisma {
     connect?: ChatMessageWhereUniqueInput | ChatMessageWhereUniqueInput[]
   }
 
+  export type ChatDailyUsageCreateNestedManyWithoutUserInput = {
+    create?: XOR<ChatDailyUsageCreateWithoutUserInput, ChatDailyUsageUncheckedCreateWithoutUserInput> | ChatDailyUsageCreateWithoutUserInput[] | ChatDailyUsageUncheckedCreateWithoutUserInput[]
+    connectOrCreate?: ChatDailyUsageCreateOrConnectWithoutUserInput | ChatDailyUsageCreateOrConnectWithoutUserInput[]
+    createMany?: ChatDailyUsageCreateManyUserInputEnvelope
+    connect?: ChatDailyUsageWhereUniqueInput | ChatDailyUsageWhereUniqueInput[]
+  }
+
   export type ProfileCreateNestedOneWithoutUserInput = {
     create?: XOR<ProfileCreateWithoutUserInput, ProfileUncheckedCreateWithoutUserInput>
     connectOrCreate?: ProfileCreateOrConnectWithoutUserInput
@@ -34365,6 +35580,13 @@ export namespace Prisma {
     connectOrCreate?: ChatMessageCreateOrConnectWithoutUserInput | ChatMessageCreateOrConnectWithoutUserInput[]
     createMany?: ChatMessageCreateManyUserInputEnvelope
     connect?: ChatMessageWhereUniqueInput | ChatMessageWhereUniqueInput[]
+  }
+
+  export type ChatDailyUsageUncheckedCreateNestedManyWithoutUserInput = {
+    create?: XOR<ChatDailyUsageCreateWithoutUserInput, ChatDailyUsageUncheckedCreateWithoutUserInput> | ChatDailyUsageCreateWithoutUserInput[] | ChatDailyUsageUncheckedCreateWithoutUserInput[]
+    connectOrCreate?: ChatDailyUsageCreateOrConnectWithoutUserInput | ChatDailyUsageCreateOrConnectWithoutUserInput[]
+    createMany?: ChatDailyUsageCreateManyUserInputEnvelope
+    connect?: ChatDailyUsageWhereUniqueInput | ChatDailyUsageWhereUniqueInput[]
   }
 
   export type ProfileUncheckedCreateNestedOneWithoutUserInput = {
@@ -34553,6 +35775,20 @@ export namespace Prisma {
     update?: ChatMessageUpdateWithWhereUniqueWithoutUserInput | ChatMessageUpdateWithWhereUniqueWithoutUserInput[]
     updateMany?: ChatMessageUpdateManyWithWhereWithoutUserInput | ChatMessageUpdateManyWithWhereWithoutUserInput[]
     deleteMany?: ChatMessageScalarWhereInput | ChatMessageScalarWhereInput[]
+  }
+
+  export type ChatDailyUsageUpdateManyWithoutUserNestedInput = {
+    create?: XOR<ChatDailyUsageCreateWithoutUserInput, ChatDailyUsageUncheckedCreateWithoutUserInput> | ChatDailyUsageCreateWithoutUserInput[] | ChatDailyUsageUncheckedCreateWithoutUserInput[]
+    connectOrCreate?: ChatDailyUsageCreateOrConnectWithoutUserInput | ChatDailyUsageCreateOrConnectWithoutUserInput[]
+    upsert?: ChatDailyUsageUpsertWithWhereUniqueWithoutUserInput | ChatDailyUsageUpsertWithWhereUniqueWithoutUserInput[]
+    createMany?: ChatDailyUsageCreateManyUserInputEnvelope
+    set?: ChatDailyUsageWhereUniqueInput | ChatDailyUsageWhereUniqueInput[]
+    disconnect?: ChatDailyUsageWhereUniqueInput | ChatDailyUsageWhereUniqueInput[]
+    delete?: ChatDailyUsageWhereUniqueInput | ChatDailyUsageWhereUniqueInput[]
+    connect?: ChatDailyUsageWhereUniqueInput | ChatDailyUsageWhereUniqueInput[]
+    update?: ChatDailyUsageUpdateWithWhereUniqueWithoutUserInput | ChatDailyUsageUpdateWithWhereUniqueWithoutUserInput[]
+    updateMany?: ChatDailyUsageUpdateManyWithWhereWithoutUserInput | ChatDailyUsageUpdateManyWithWhereWithoutUserInput[]
+    deleteMany?: ChatDailyUsageScalarWhereInput | ChatDailyUsageScalarWhereInput[]
   }
 
   export type ProfileUpdateOneWithoutUserNestedInput = {
@@ -34829,6 +36065,20 @@ export namespace Prisma {
     update?: ChatMessageUpdateWithWhereUniqueWithoutUserInput | ChatMessageUpdateWithWhereUniqueWithoutUserInput[]
     updateMany?: ChatMessageUpdateManyWithWhereWithoutUserInput | ChatMessageUpdateManyWithWhereWithoutUserInput[]
     deleteMany?: ChatMessageScalarWhereInput | ChatMessageScalarWhereInput[]
+  }
+
+  export type ChatDailyUsageUncheckedUpdateManyWithoutUserNestedInput = {
+    create?: XOR<ChatDailyUsageCreateWithoutUserInput, ChatDailyUsageUncheckedCreateWithoutUserInput> | ChatDailyUsageCreateWithoutUserInput[] | ChatDailyUsageUncheckedCreateWithoutUserInput[]
+    connectOrCreate?: ChatDailyUsageCreateOrConnectWithoutUserInput | ChatDailyUsageCreateOrConnectWithoutUserInput[]
+    upsert?: ChatDailyUsageUpsertWithWhereUniqueWithoutUserInput | ChatDailyUsageUpsertWithWhereUniqueWithoutUserInput[]
+    createMany?: ChatDailyUsageCreateManyUserInputEnvelope
+    set?: ChatDailyUsageWhereUniqueInput | ChatDailyUsageWhereUniqueInput[]
+    disconnect?: ChatDailyUsageWhereUniqueInput | ChatDailyUsageWhereUniqueInput[]
+    delete?: ChatDailyUsageWhereUniqueInput | ChatDailyUsageWhereUniqueInput[]
+    connect?: ChatDailyUsageWhereUniqueInput | ChatDailyUsageWhereUniqueInput[]
+    update?: ChatDailyUsageUpdateWithWhereUniqueWithoutUserInput | ChatDailyUsageUpdateWithWhereUniqueWithoutUserInput[]
+    updateMany?: ChatDailyUsageUpdateManyWithWhereWithoutUserInput | ChatDailyUsageUpdateManyWithWhereWithoutUserInput[]
+    deleteMany?: ChatDailyUsageScalarWhereInput | ChatDailyUsageScalarWhereInput[]
   }
 
   export type ProfileUncheckedUpdateOneWithoutUserNestedInput = {
@@ -35217,6 +36467,20 @@ export namespace Prisma {
     delete?: NoteWhereInput | boolean
     connect?: NoteWhereUniqueInput
     update?: XOR<XOR<NoteUpdateToOneWithWhereWithoutRemindersInput, NoteUpdateWithoutRemindersInput>, NoteUncheckedUpdateWithoutRemindersInput>
+  }
+
+  export type UserCreateNestedOneWithoutChatDailyUsageInput = {
+    create?: XOR<UserCreateWithoutChatDailyUsageInput, UserUncheckedCreateWithoutChatDailyUsageInput>
+    connectOrCreate?: UserCreateOrConnectWithoutChatDailyUsageInput
+    connect?: UserWhereUniqueInput
+  }
+
+  export type UserUpdateOneRequiredWithoutChatDailyUsageNestedInput = {
+    create?: XOR<UserCreateWithoutChatDailyUsageInput, UserUncheckedCreateWithoutChatDailyUsageInput>
+    connectOrCreate?: UserCreateOrConnectWithoutChatDailyUsageInput
+    upsert?: UserUpsertWithoutChatDailyUsageInput
+    connect?: UserWhereUniqueInput
+    update?: XOR<XOR<UserUpdateToOneWithWhereWithoutChatDailyUsageInput, UserUpdateWithoutChatDailyUsageInput>, UserUncheckedUpdateWithoutChatDailyUsageInput>
   }
 
   export type UserCreateNestedOneWithoutChatMessagesInput = {
@@ -36181,6 +37445,26 @@ export namespace Prisma {
     skipDuplicates?: boolean
   }
 
+  export type ChatDailyUsageCreateWithoutUserInput = {
+    day: Date | string
+    used?: number
+  }
+
+  export type ChatDailyUsageUncheckedCreateWithoutUserInput = {
+    day: Date | string
+    used?: number
+  }
+
+  export type ChatDailyUsageCreateOrConnectWithoutUserInput = {
+    where: ChatDailyUsageWhereUniqueInput
+    create: XOR<ChatDailyUsageCreateWithoutUserInput, ChatDailyUsageUncheckedCreateWithoutUserInput>
+  }
+
+  export type ChatDailyUsageCreateManyUserInputEnvelope = {
+    data: ChatDailyUsageCreateManyUserInput | ChatDailyUsageCreateManyUserInput[]
+    skipDuplicates?: boolean
+  }
+
   export type ProfileCreateWithoutUserInput = {
     id?: string
     avatar?: string | null
@@ -36818,6 +38102,31 @@ export namespace Prisma {
     createdAt?: DateTimeFilter<"ChatMessage"> | Date | string
   }
 
+  export type ChatDailyUsageUpsertWithWhereUniqueWithoutUserInput = {
+    where: ChatDailyUsageWhereUniqueInput
+    update: XOR<ChatDailyUsageUpdateWithoutUserInput, ChatDailyUsageUncheckedUpdateWithoutUserInput>
+    create: XOR<ChatDailyUsageCreateWithoutUserInput, ChatDailyUsageUncheckedCreateWithoutUserInput>
+  }
+
+  export type ChatDailyUsageUpdateWithWhereUniqueWithoutUserInput = {
+    where: ChatDailyUsageWhereUniqueInput
+    data: XOR<ChatDailyUsageUpdateWithoutUserInput, ChatDailyUsageUncheckedUpdateWithoutUserInput>
+  }
+
+  export type ChatDailyUsageUpdateManyWithWhereWithoutUserInput = {
+    where: ChatDailyUsageScalarWhereInput
+    data: XOR<ChatDailyUsageUpdateManyMutationInput, ChatDailyUsageUncheckedUpdateManyWithoutUserInput>
+  }
+
+  export type ChatDailyUsageScalarWhereInput = {
+    AND?: ChatDailyUsageScalarWhereInput | ChatDailyUsageScalarWhereInput[]
+    OR?: ChatDailyUsageScalarWhereInput[]
+    NOT?: ChatDailyUsageScalarWhereInput | ChatDailyUsageScalarWhereInput[]
+    userId?: StringFilter<"ChatDailyUsage"> | string
+    day?: DateTimeFilter<"ChatDailyUsage"> | Date | string
+    used?: IntFilter<"ChatDailyUsage"> | number
+  }
+
   export type ProfileUpsertWithoutUserInput = {
     update: XOR<ProfileUpdateWithoutUserInput, ProfileUncheckedUpdateWithoutUserInput>
     create: XOR<ProfileCreateWithoutUserInput, ProfileUncheckedCreateWithoutUserInput>
@@ -37350,6 +38659,7 @@ export namespace Prisma {
     reminders?: ReminderCreateNestedManyWithoutUserInput
     notes?: NoteCreateNestedManyWithoutUserInput
     chatMessages?: ChatMessageCreateNestedManyWithoutUserInput
+    chatDailyUsage?: ChatDailyUsageCreateNestedManyWithoutUserInput
     profile?: ProfileCreateNestedOneWithoutUserInput
     supportTickets?: SupportTicketCreateNestedManyWithoutUserInput
     payments?: PaymentCreateNestedManyWithoutUserInput
@@ -37390,6 +38700,7 @@ export namespace Prisma {
     reminders?: ReminderUncheckedCreateNestedManyWithoutUserInput
     notes?: NoteUncheckedCreateNestedManyWithoutUserInput
     chatMessages?: ChatMessageUncheckedCreateNestedManyWithoutUserInput
+    chatDailyUsage?: ChatDailyUsageUncheckedCreateNestedManyWithoutUserInput
     profile?: ProfileUncheckedCreateNestedOneWithoutUserInput
     supportTickets?: SupportTicketUncheckedCreateNestedManyWithoutUserInput
     payments?: PaymentUncheckedCreateNestedManyWithoutUserInput
@@ -37446,6 +38757,7 @@ export namespace Prisma {
     reminders?: ReminderUpdateManyWithoutUserNestedInput
     notes?: NoteUpdateManyWithoutUserNestedInput
     chatMessages?: ChatMessageUpdateManyWithoutUserNestedInput
+    chatDailyUsage?: ChatDailyUsageUpdateManyWithoutUserNestedInput
     profile?: ProfileUpdateOneWithoutUserNestedInput
     supportTickets?: SupportTicketUpdateManyWithoutUserNestedInput
     payments?: PaymentUpdateManyWithoutUserNestedInput
@@ -37486,6 +38798,7 @@ export namespace Prisma {
     reminders?: ReminderUncheckedUpdateManyWithoutUserNestedInput
     notes?: NoteUncheckedUpdateManyWithoutUserNestedInput
     chatMessages?: ChatMessageUncheckedUpdateManyWithoutUserNestedInput
+    chatDailyUsage?: ChatDailyUsageUncheckedUpdateManyWithoutUserNestedInput
     profile?: ProfileUncheckedUpdateOneWithoutUserNestedInput
     supportTickets?: SupportTicketUncheckedUpdateManyWithoutUserNestedInput
     payments?: PaymentUncheckedUpdateManyWithoutUserNestedInput
@@ -37526,6 +38839,7 @@ export namespace Prisma {
     reminders?: ReminderCreateNestedManyWithoutUserInput
     notes?: NoteCreateNestedManyWithoutUserInput
     chatMessages?: ChatMessageCreateNestedManyWithoutUserInput
+    chatDailyUsage?: ChatDailyUsageCreateNestedManyWithoutUserInput
     profile?: ProfileCreateNestedOneWithoutUserInput
     supportTickets?: SupportTicketCreateNestedManyWithoutUserInput
     payments?: PaymentCreateNestedManyWithoutUserInput
@@ -37566,6 +38880,7 @@ export namespace Prisma {
     reminders?: ReminderUncheckedCreateNestedManyWithoutUserInput
     notes?: NoteUncheckedCreateNestedManyWithoutUserInput
     chatMessages?: ChatMessageUncheckedCreateNestedManyWithoutUserInput
+    chatDailyUsage?: ChatDailyUsageUncheckedCreateNestedManyWithoutUserInput
     profile?: ProfileUncheckedCreateNestedOneWithoutUserInput
     supportTickets?: SupportTicketUncheckedCreateNestedManyWithoutUserInput
     payments?: PaymentUncheckedCreateNestedManyWithoutUserInput
@@ -37622,6 +38937,7 @@ export namespace Prisma {
     reminders?: ReminderUpdateManyWithoutUserNestedInput
     notes?: NoteUpdateManyWithoutUserNestedInput
     chatMessages?: ChatMessageUpdateManyWithoutUserNestedInput
+    chatDailyUsage?: ChatDailyUsageUpdateManyWithoutUserNestedInput
     profile?: ProfileUpdateOneWithoutUserNestedInput
     supportTickets?: SupportTicketUpdateManyWithoutUserNestedInput
     payments?: PaymentUpdateManyWithoutUserNestedInput
@@ -37662,6 +38978,7 @@ export namespace Prisma {
     reminders?: ReminderUncheckedUpdateManyWithoutUserNestedInput
     notes?: NoteUncheckedUpdateManyWithoutUserNestedInput
     chatMessages?: ChatMessageUncheckedUpdateManyWithoutUserNestedInput
+    chatDailyUsage?: ChatDailyUsageUncheckedUpdateManyWithoutUserNestedInput
     profile?: ProfileUncheckedUpdateOneWithoutUserNestedInput
     supportTickets?: SupportTicketUncheckedUpdateManyWithoutUserNestedInput
     payments?: PaymentUncheckedUpdateManyWithoutUserNestedInput
@@ -37702,6 +39019,7 @@ export namespace Prisma {
     reminders?: ReminderCreateNestedManyWithoutUserInput
     notes?: NoteCreateNestedManyWithoutUserInput
     chatMessages?: ChatMessageCreateNestedManyWithoutUserInput
+    chatDailyUsage?: ChatDailyUsageCreateNestedManyWithoutUserInput
     supportTickets?: SupportTicketCreateNestedManyWithoutUserInput
     payments?: PaymentCreateNestedManyWithoutUserInput
     subscriptions?: SubscriptionCreateNestedManyWithoutUserInput
@@ -37742,6 +39060,7 @@ export namespace Prisma {
     reminders?: ReminderUncheckedCreateNestedManyWithoutUserInput
     notes?: NoteUncheckedCreateNestedManyWithoutUserInput
     chatMessages?: ChatMessageUncheckedCreateNestedManyWithoutUserInput
+    chatDailyUsage?: ChatDailyUsageUncheckedCreateNestedManyWithoutUserInput
     supportTickets?: SupportTicketUncheckedCreateNestedManyWithoutUserInput
     payments?: PaymentUncheckedCreateNestedManyWithoutUserInput
     subscriptions?: SubscriptionUncheckedCreateNestedManyWithoutUserInput
@@ -37798,6 +39117,7 @@ export namespace Prisma {
     reminders?: ReminderUpdateManyWithoutUserNestedInput
     notes?: NoteUpdateManyWithoutUserNestedInput
     chatMessages?: ChatMessageUpdateManyWithoutUserNestedInput
+    chatDailyUsage?: ChatDailyUsageUpdateManyWithoutUserNestedInput
     supportTickets?: SupportTicketUpdateManyWithoutUserNestedInput
     payments?: PaymentUpdateManyWithoutUserNestedInput
     subscriptions?: SubscriptionUpdateManyWithoutUserNestedInput
@@ -37838,6 +39158,7 @@ export namespace Prisma {
     reminders?: ReminderUncheckedUpdateManyWithoutUserNestedInput
     notes?: NoteUncheckedUpdateManyWithoutUserNestedInput
     chatMessages?: ChatMessageUncheckedUpdateManyWithoutUserNestedInput
+    chatDailyUsage?: ChatDailyUsageUncheckedUpdateManyWithoutUserNestedInput
     supportTickets?: SupportTicketUncheckedUpdateManyWithoutUserNestedInput
     payments?: PaymentUncheckedUpdateManyWithoutUserNestedInput
     subscriptions?: SubscriptionUncheckedUpdateManyWithoutUserNestedInput
@@ -37877,6 +39198,7 @@ export namespace Prisma {
     blockedAt?: Date | string | null
     reminders?: ReminderCreateNestedManyWithoutUserInput
     chatMessages?: ChatMessageCreateNestedManyWithoutUserInput
+    chatDailyUsage?: ChatDailyUsageCreateNestedManyWithoutUserInput
     profile?: ProfileCreateNestedOneWithoutUserInput
     supportTickets?: SupportTicketCreateNestedManyWithoutUserInput
     payments?: PaymentCreateNestedManyWithoutUserInput
@@ -37917,6 +39239,7 @@ export namespace Prisma {
     blockedAt?: Date | string | null
     reminders?: ReminderUncheckedCreateNestedManyWithoutUserInput
     chatMessages?: ChatMessageUncheckedCreateNestedManyWithoutUserInput
+    chatDailyUsage?: ChatDailyUsageUncheckedCreateNestedManyWithoutUserInput
     profile?: ProfileUncheckedCreateNestedOneWithoutUserInput
     supportTickets?: SupportTicketUncheckedCreateNestedManyWithoutUserInput
     payments?: PaymentUncheckedCreateNestedManyWithoutUserInput
@@ -38013,6 +39336,7 @@ export namespace Prisma {
     blockedAt?: NullableDateTimeFieldUpdateOperationsInput | Date | string | null
     reminders?: ReminderUpdateManyWithoutUserNestedInput
     chatMessages?: ChatMessageUpdateManyWithoutUserNestedInput
+    chatDailyUsage?: ChatDailyUsageUpdateManyWithoutUserNestedInput
     profile?: ProfileUpdateOneWithoutUserNestedInput
     supportTickets?: SupportTicketUpdateManyWithoutUserNestedInput
     payments?: PaymentUpdateManyWithoutUserNestedInput
@@ -38053,6 +39377,7 @@ export namespace Prisma {
     blockedAt?: NullableDateTimeFieldUpdateOperationsInput | Date | string | null
     reminders?: ReminderUncheckedUpdateManyWithoutUserNestedInput
     chatMessages?: ChatMessageUncheckedUpdateManyWithoutUserNestedInput
+    chatDailyUsage?: ChatDailyUsageUncheckedUpdateManyWithoutUserNestedInput
     profile?: ProfileUncheckedUpdateOneWithoutUserNestedInput
     supportTickets?: SupportTicketUncheckedUpdateManyWithoutUserNestedInput
     payments?: PaymentUncheckedUpdateManyWithoutUserNestedInput
@@ -38109,6 +39434,7 @@ export namespace Prisma {
     blockedAt?: Date | string | null
     notes?: NoteCreateNestedManyWithoutUserInput
     chatMessages?: ChatMessageCreateNestedManyWithoutUserInput
+    chatDailyUsage?: ChatDailyUsageCreateNestedManyWithoutUserInput
     profile?: ProfileCreateNestedOneWithoutUserInput
     supportTickets?: SupportTicketCreateNestedManyWithoutUserInput
     payments?: PaymentCreateNestedManyWithoutUserInput
@@ -38149,6 +39475,7 @@ export namespace Prisma {
     blockedAt?: Date | string | null
     notes?: NoteUncheckedCreateNestedManyWithoutUserInput
     chatMessages?: ChatMessageUncheckedCreateNestedManyWithoutUserInput
+    chatDailyUsage?: ChatDailyUsageUncheckedCreateNestedManyWithoutUserInput
     profile?: ProfileUncheckedCreateNestedOneWithoutUserInput
     supportTickets?: SupportTicketUncheckedCreateNestedManyWithoutUserInput
     payments?: PaymentUncheckedCreateNestedManyWithoutUserInput
@@ -38232,6 +39559,7 @@ export namespace Prisma {
     blockedAt?: NullableDateTimeFieldUpdateOperationsInput | Date | string | null
     notes?: NoteUpdateManyWithoutUserNestedInput
     chatMessages?: ChatMessageUpdateManyWithoutUserNestedInput
+    chatDailyUsage?: ChatDailyUsageUpdateManyWithoutUserNestedInput
     profile?: ProfileUpdateOneWithoutUserNestedInput
     supportTickets?: SupportTicketUpdateManyWithoutUserNestedInput
     payments?: PaymentUpdateManyWithoutUserNestedInput
@@ -38272,6 +39600,7 @@ export namespace Prisma {
     blockedAt?: NullableDateTimeFieldUpdateOperationsInput | Date | string | null
     notes?: NoteUncheckedUpdateManyWithoutUserNestedInput
     chatMessages?: ChatMessageUncheckedUpdateManyWithoutUserNestedInput
+    chatDailyUsage?: ChatDailyUsageUncheckedUpdateManyWithoutUserNestedInput
     profile?: ProfileUncheckedUpdateOneWithoutUserNestedInput
     supportTickets?: SupportTicketUncheckedUpdateManyWithoutUserNestedInput
     payments?: PaymentUncheckedUpdateManyWithoutUserNestedInput
@@ -38324,6 +39653,186 @@ export namespace Prisma {
     updatedAt?: DateTimeFieldUpdateOperationsInput | Date | string
   }
 
+  export type UserCreateWithoutChatDailyUsageInput = {
+    id?: string
+    email: string
+    password: string
+    name: string
+    language?: string
+    country: string
+    role?: string
+    registeredAt?: Date | string
+    university?: string | null
+    faculty?: string | null
+    year?: string | null
+    plan?: string
+    phone?: string | null
+    gender?: string | null
+    emailNotifications?: boolean
+    timezone?: string
+    tokenVersion?: number
+    blockedAt?: Date | string | null
+    reminders?: ReminderCreateNestedManyWithoutUserInput
+    notes?: NoteCreateNestedManyWithoutUserInput
+    chatMessages?: ChatMessageCreateNestedManyWithoutUserInput
+    profile?: ProfileCreateNestedOneWithoutUserInput
+    supportTickets?: SupportTicketCreateNestedManyWithoutUserInput
+    payments?: PaymentCreateNestedManyWithoutUserInput
+    subscriptions?: SubscriptionCreateNestedManyWithoutUserInput
+    userGrantApplications?: UserGrantApplicationCreateNestedManyWithoutUserInput
+    questions?: QuestionCreateNestedManyWithoutAuthorInput
+    answers?: AnswerCreateNestedManyWithoutAuthorInput
+    questionLikes?: QuestionLikeCreateNestedManyWithoutUserInput
+    reviews?: ReviewCreateNestedManyWithoutUserInput
+    guideReads?: GuideReadCreateNestedManyWithoutUserInput
+    passwordSetupTokens?: PasswordSetupTokenCreateNestedManyWithoutUserInput
+    buddyApplications?: BuddyApplicationCreateNestedManyWithoutUserInput
+    adminInboxReads?: AdminInboxReadCreateNestedManyWithoutAdminUserInput
+    adminAuditLogs?: AdminAuditLogCreateNestedManyWithoutActorInput
+    adminSupportResponses?: SupportResponseCreateNestedManyWithoutAdminUserInput
+    notifications?: UserNotificationCreateNestedManyWithoutUserInput
+    sentNotifications?: UserNotificationCreateNestedManyWithoutActorInput
+  }
+
+  export type UserUncheckedCreateWithoutChatDailyUsageInput = {
+    id?: string
+    email: string
+    password: string
+    name: string
+    language?: string
+    country: string
+    role?: string
+    registeredAt?: Date | string
+    university?: string | null
+    faculty?: string | null
+    year?: string | null
+    plan?: string
+    phone?: string | null
+    gender?: string | null
+    emailNotifications?: boolean
+    timezone?: string
+    tokenVersion?: number
+    blockedAt?: Date | string | null
+    reminders?: ReminderUncheckedCreateNestedManyWithoutUserInput
+    notes?: NoteUncheckedCreateNestedManyWithoutUserInput
+    chatMessages?: ChatMessageUncheckedCreateNestedManyWithoutUserInput
+    profile?: ProfileUncheckedCreateNestedOneWithoutUserInput
+    supportTickets?: SupportTicketUncheckedCreateNestedManyWithoutUserInput
+    payments?: PaymentUncheckedCreateNestedManyWithoutUserInput
+    subscriptions?: SubscriptionUncheckedCreateNestedManyWithoutUserInput
+    userGrantApplications?: UserGrantApplicationUncheckedCreateNestedManyWithoutUserInput
+    questions?: QuestionUncheckedCreateNestedManyWithoutAuthorInput
+    answers?: AnswerUncheckedCreateNestedManyWithoutAuthorInput
+    questionLikes?: QuestionLikeUncheckedCreateNestedManyWithoutUserInput
+    reviews?: ReviewUncheckedCreateNestedManyWithoutUserInput
+    guideReads?: GuideReadUncheckedCreateNestedManyWithoutUserInput
+    passwordSetupTokens?: PasswordSetupTokenUncheckedCreateNestedManyWithoutUserInput
+    buddyApplications?: BuddyApplicationUncheckedCreateNestedManyWithoutUserInput
+    adminInboxReads?: AdminInboxReadUncheckedCreateNestedManyWithoutAdminUserInput
+    adminAuditLogs?: AdminAuditLogUncheckedCreateNestedManyWithoutActorInput
+    adminSupportResponses?: SupportResponseUncheckedCreateNestedManyWithoutAdminUserInput
+    notifications?: UserNotificationUncheckedCreateNestedManyWithoutUserInput
+    sentNotifications?: UserNotificationUncheckedCreateNestedManyWithoutActorInput
+  }
+
+  export type UserCreateOrConnectWithoutChatDailyUsageInput = {
+    where: UserWhereUniqueInput
+    create: XOR<UserCreateWithoutChatDailyUsageInput, UserUncheckedCreateWithoutChatDailyUsageInput>
+  }
+
+  export type UserUpsertWithoutChatDailyUsageInput = {
+    update: XOR<UserUpdateWithoutChatDailyUsageInput, UserUncheckedUpdateWithoutChatDailyUsageInput>
+    create: XOR<UserCreateWithoutChatDailyUsageInput, UserUncheckedCreateWithoutChatDailyUsageInput>
+    where?: UserWhereInput
+  }
+
+  export type UserUpdateToOneWithWhereWithoutChatDailyUsageInput = {
+    where?: UserWhereInput
+    data: XOR<UserUpdateWithoutChatDailyUsageInput, UserUncheckedUpdateWithoutChatDailyUsageInput>
+  }
+
+  export type UserUpdateWithoutChatDailyUsageInput = {
+    id?: StringFieldUpdateOperationsInput | string
+    email?: StringFieldUpdateOperationsInput | string
+    password?: StringFieldUpdateOperationsInput | string
+    name?: StringFieldUpdateOperationsInput | string
+    language?: StringFieldUpdateOperationsInput | string
+    country?: StringFieldUpdateOperationsInput | string
+    role?: StringFieldUpdateOperationsInput | string
+    registeredAt?: DateTimeFieldUpdateOperationsInput | Date | string
+    university?: NullableStringFieldUpdateOperationsInput | string | null
+    faculty?: NullableStringFieldUpdateOperationsInput | string | null
+    year?: NullableStringFieldUpdateOperationsInput | string | null
+    plan?: StringFieldUpdateOperationsInput | string
+    phone?: NullableStringFieldUpdateOperationsInput | string | null
+    gender?: NullableStringFieldUpdateOperationsInput | string | null
+    emailNotifications?: BoolFieldUpdateOperationsInput | boolean
+    timezone?: StringFieldUpdateOperationsInput | string
+    tokenVersion?: IntFieldUpdateOperationsInput | number
+    blockedAt?: NullableDateTimeFieldUpdateOperationsInput | Date | string | null
+    reminders?: ReminderUpdateManyWithoutUserNestedInput
+    notes?: NoteUpdateManyWithoutUserNestedInput
+    chatMessages?: ChatMessageUpdateManyWithoutUserNestedInput
+    profile?: ProfileUpdateOneWithoutUserNestedInput
+    supportTickets?: SupportTicketUpdateManyWithoutUserNestedInput
+    payments?: PaymentUpdateManyWithoutUserNestedInput
+    subscriptions?: SubscriptionUpdateManyWithoutUserNestedInput
+    userGrantApplications?: UserGrantApplicationUpdateManyWithoutUserNestedInput
+    questions?: QuestionUpdateManyWithoutAuthorNestedInput
+    answers?: AnswerUpdateManyWithoutAuthorNestedInput
+    questionLikes?: QuestionLikeUpdateManyWithoutUserNestedInput
+    reviews?: ReviewUpdateManyWithoutUserNestedInput
+    guideReads?: GuideReadUpdateManyWithoutUserNestedInput
+    passwordSetupTokens?: PasswordSetupTokenUpdateManyWithoutUserNestedInput
+    buddyApplications?: BuddyApplicationUpdateManyWithoutUserNestedInput
+    adminInboxReads?: AdminInboxReadUpdateManyWithoutAdminUserNestedInput
+    adminAuditLogs?: AdminAuditLogUpdateManyWithoutActorNestedInput
+    adminSupportResponses?: SupportResponseUpdateManyWithoutAdminUserNestedInput
+    notifications?: UserNotificationUpdateManyWithoutUserNestedInput
+    sentNotifications?: UserNotificationUpdateManyWithoutActorNestedInput
+  }
+
+  export type UserUncheckedUpdateWithoutChatDailyUsageInput = {
+    id?: StringFieldUpdateOperationsInput | string
+    email?: StringFieldUpdateOperationsInput | string
+    password?: StringFieldUpdateOperationsInput | string
+    name?: StringFieldUpdateOperationsInput | string
+    language?: StringFieldUpdateOperationsInput | string
+    country?: StringFieldUpdateOperationsInput | string
+    role?: StringFieldUpdateOperationsInput | string
+    registeredAt?: DateTimeFieldUpdateOperationsInput | Date | string
+    university?: NullableStringFieldUpdateOperationsInput | string | null
+    faculty?: NullableStringFieldUpdateOperationsInput | string | null
+    year?: NullableStringFieldUpdateOperationsInput | string | null
+    plan?: StringFieldUpdateOperationsInput | string
+    phone?: NullableStringFieldUpdateOperationsInput | string | null
+    gender?: NullableStringFieldUpdateOperationsInput | string | null
+    emailNotifications?: BoolFieldUpdateOperationsInput | boolean
+    timezone?: StringFieldUpdateOperationsInput | string
+    tokenVersion?: IntFieldUpdateOperationsInput | number
+    blockedAt?: NullableDateTimeFieldUpdateOperationsInput | Date | string | null
+    reminders?: ReminderUncheckedUpdateManyWithoutUserNestedInput
+    notes?: NoteUncheckedUpdateManyWithoutUserNestedInput
+    chatMessages?: ChatMessageUncheckedUpdateManyWithoutUserNestedInput
+    profile?: ProfileUncheckedUpdateOneWithoutUserNestedInput
+    supportTickets?: SupportTicketUncheckedUpdateManyWithoutUserNestedInput
+    payments?: PaymentUncheckedUpdateManyWithoutUserNestedInput
+    subscriptions?: SubscriptionUncheckedUpdateManyWithoutUserNestedInput
+    userGrantApplications?: UserGrantApplicationUncheckedUpdateManyWithoutUserNestedInput
+    questions?: QuestionUncheckedUpdateManyWithoutAuthorNestedInput
+    answers?: AnswerUncheckedUpdateManyWithoutAuthorNestedInput
+    questionLikes?: QuestionLikeUncheckedUpdateManyWithoutUserNestedInput
+    reviews?: ReviewUncheckedUpdateManyWithoutUserNestedInput
+    guideReads?: GuideReadUncheckedUpdateManyWithoutUserNestedInput
+    passwordSetupTokens?: PasswordSetupTokenUncheckedUpdateManyWithoutUserNestedInput
+    buddyApplications?: BuddyApplicationUncheckedUpdateManyWithoutUserNestedInput
+    adminInboxReads?: AdminInboxReadUncheckedUpdateManyWithoutAdminUserNestedInput
+    adminAuditLogs?: AdminAuditLogUncheckedUpdateManyWithoutActorNestedInput
+    adminSupportResponses?: SupportResponseUncheckedUpdateManyWithoutAdminUserNestedInput
+    notifications?: UserNotificationUncheckedUpdateManyWithoutUserNestedInput
+    sentNotifications?: UserNotificationUncheckedUpdateManyWithoutActorNestedInput
+  }
+
   export type UserCreateWithoutChatMessagesInput = {
     id?: string
     email: string
@@ -38345,6 +39854,7 @@ export namespace Prisma {
     blockedAt?: Date | string | null
     reminders?: ReminderCreateNestedManyWithoutUserInput
     notes?: NoteCreateNestedManyWithoutUserInput
+    chatDailyUsage?: ChatDailyUsageCreateNestedManyWithoutUserInput
     profile?: ProfileCreateNestedOneWithoutUserInput
     supportTickets?: SupportTicketCreateNestedManyWithoutUserInput
     payments?: PaymentCreateNestedManyWithoutUserInput
@@ -38385,6 +39895,7 @@ export namespace Prisma {
     blockedAt?: Date | string | null
     reminders?: ReminderUncheckedCreateNestedManyWithoutUserInput
     notes?: NoteUncheckedCreateNestedManyWithoutUserInput
+    chatDailyUsage?: ChatDailyUsageUncheckedCreateNestedManyWithoutUserInput
     profile?: ProfileUncheckedCreateNestedOneWithoutUserInput
     supportTickets?: SupportTicketUncheckedCreateNestedManyWithoutUserInput
     payments?: PaymentUncheckedCreateNestedManyWithoutUserInput
@@ -38441,6 +39952,7 @@ export namespace Prisma {
     blockedAt?: NullableDateTimeFieldUpdateOperationsInput | Date | string | null
     reminders?: ReminderUpdateManyWithoutUserNestedInput
     notes?: NoteUpdateManyWithoutUserNestedInput
+    chatDailyUsage?: ChatDailyUsageUpdateManyWithoutUserNestedInput
     profile?: ProfileUpdateOneWithoutUserNestedInput
     supportTickets?: SupportTicketUpdateManyWithoutUserNestedInput
     payments?: PaymentUpdateManyWithoutUserNestedInput
@@ -38481,6 +39993,7 @@ export namespace Prisma {
     blockedAt?: NullableDateTimeFieldUpdateOperationsInput | Date | string | null
     reminders?: ReminderUncheckedUpdateManyWithoutUserNestedInput
     notes?: NoteUncheckedUpdateManyWithoutUserNestedInput
+    chatDailyUsage?: ChatDailyUsageUncheckedUpdateManyWithoutUserNestedInput
     profile?: ProfileUncheckedUpdateOneWithoutUserNestedInput
     supportTickets?: SupportTicketUncheckedUpdateManyWithoutUserNestedInput
     payments?: PaymentUncheckedUpdateManyWithoutUserNestedInput
@@ -38522,6 +40035,7 @@ export namespace Prisma {
     reminders?: ReminderCreateNestedManyWithoutUserInput
     notes?: NoteCreateNestedManyWithoutUserInput
     chatMessages?: ChatMessageCreateNestedManyWithoutUserInput
+    chatDailyUsage?: ChatDailyUsageCreateNestedManyWithoutUserInput
     profile?: ProfileCreateNestedOneWithoutUserInput
     payments?: PaymentCreateNestedManyWithoutUserInput
     subscriptions?: SubscriptionCreateNestedManyWithoutUserInput
@@ -38562,6 +40076,7 @@ export namespace Prisma {
     reminders?: ReminderUncheckedCreateNestedManyWithoutUserInput
     notes?: NoteUncheckedCreateNestedManyWithoutUserInput
     chatMessages?: ChatMessageUncheckedCreateNestedManyWithoutUserInput
+    chatDailyUsage?: ChatDailyUsageUncheckedCreateNestedManyWithoutUserInput
     profile?: ProfileUncheckedCreateNestedOneWithoutUserInput
     payments?: PaymentUncheckedCreateNestedManyWithoutUserInput
     subscriptions?: SubscriptionUncheckedCreateNestedManyWithoutUserInput
@@ -38648,6 +40163,7 @@ export namespace Prisma {
     reminders?: ReminderUpdateManyWithoutUserNestedInput
     notes?: NoteUpdateManyWithoutUserNestedInput
     chatMessages?: ChatMessageUpdateManyWithoutUserNestedInput
+    chatDailyUsage?: ChatDailyUsageUpdateManyWithoutUserNestedInput
     profile?: ProfileUpdateOneWithoutUserNestedInput
     payments?: PaymentUpdateManyWithoutUserNestedInput
     subscriptions?: SubscriptionUpdateManyWithoutUserNestedInput
@@ -38688,6 +40204,7 @@ export namespace Prisma {
     reminders?: ReminderUncheckedUpdateManyWithoutUserNestedInput
     notes?: NoteUncheckedUpdateManyWithoutUserNestedInput
     chatMessages?: ChatMessageUncheckedUpdateManyWithoutUserNestedInput
+    chatDailyUsage?: ChatDailyUsageUncheckedUpdateManyWithoutUserNestedInput
     profile?: ProfileUncheckedUpdateOneWithoutUserNestedInput
     payments?: PaymentUncheckedUpdateManyWithoutUserNestedInput
     subscriptions?: SubscriptionUncheckedUpdateManyWithoutUserNestedInput
@@ -38804,6 +40321,7 @@ export namespace Prisma {
     reminders?: ReminderCreateNestedManyWithoutUserInput
     notes?: NoteCreateNestedManyWithoutUserInput
     chatMessages?: ChatMessageCreateNestedManyWithoutUserInput
+    chatDailyUsage?: ChatDailyUsageCreateNestedManyWithoutUserInput
     profile?: ProfileCreateNestedOneWithoutUserInput
     supportTickets?: SupportTicketCreateNestedManyWithoutUserInput
     payments?: PaymentCreateNestedManyWithoutUserInput
@@ -38844,6 +40362,7 @@ export namespace Prisma {
     reminders?: ReminderUncheckedCreateNestedManyWithoutUserInput
     notes?: NoteUncheckedCreateNestedManyWithoutUserInput
     chatMessages?: ChatMessageUncheckedCreateNestedManyWithoutUserInput
+    chatDailyUsage?: ChatDailyUsageUncheckedCreateNestedManyWithoutUserInput
     profile?: ProfileUncheckedCreateNestedOneWithoutUserInput
     supportTickets?: SupportTicketUncheckedCreateNestedManyWithoutUserInput
     payments?: PaymentUncheckedCreateNestedManyWithoutUserInput
@@ -38972,6 +40491,7 @@ export namespace Prisma {
     reminders?: ReminderUpdateManyWithoutUserNestedInput
     notes?: NoteUpdateManyWithoutUserNestedInput
     chatMessages?: ChatMessageUpdateManyWithoutUserNestedInput
+    chatDailyUsage?: ChatDailyUsageUpdateManyWithoutUserNestedInput
     profile?: ProfileUpdateOneWithoutUserNestedInput
     supportTickets?: SupportTicketUpdateManyWithoutUserNestedInput
     payments?: PaymentUpdateManyWithoutUserNestedInput
@@ -39012,6 +40532,7 @@ export namespace Prisma {
     reminders?: ReminderUncheckedUpdateManyWithoutUserNestedInput
     notes?: NoteUncheckedUpdateManyWithoutUserNestedInput
     chatMessages?: ChatMessageUncheckedUpdateManyWithoutUserNestedInput
+    chatDailyUsage?: ChatDailyUsageUncheckedUpdateManyWithoutUserNestedInput
     profile?: ProfileUncheckedUpdateOneWithoutUserNestedInput
     supportTickets?: SupportTicketUncheckedUpdateManyWithoutUserNestedInput
     payments?: PaymentUncheckedUpdateManyWithoutUserNestedInput
@@ -39052,6 +40573,7 @@ export namespace Prisma {
     reminders?: ReminderCreateNestedManyWithoutUserInput
     notes?: NoteCreateNestedManyWithoutUserInput
     chatMessages?: ChatMessageCreateNestedManyWithoutUserInput
+    chatDailyUsage?: ChatDailyUsageCreateNestedManyWithoutUserInput
     profile?: ProfileCreateNestedOneWithoutUserInput
     supportTickets?: SupportTicketCreateNestedManyWithoutUserInput
     payments?: PaymentCreateNestedManyWithoutUserInput
@@ -39092,6 +40614,7 @@ export namespace Prisma {
     reminders?: ReminderUncheckedCreateNestedManyWithoutUserInput
     notes?: NoteUncheckedCreateNestedManyWithoutUserInput
     chatMessages?: ChatMessageUncheckedCreateNestedManyWithoutUserInput
+    chatDailyUsage?: ChatDailyUsageUncheckedCreateNestedManyWithoutUserInput
     profile?: ProfileUncheckedCreateNestedOneWithoutUserInput
     supportTickets?: SupportTicketUncheckedCreateNestedManyWithoutUserInput
     payments?: PaymentUncheckedCreateNestedManyWithoutUserInput
@@ -39148,6 +40671,7 @@ export namespace Prisma {
     reminders?: ReminderUpdateManyWithoutUserNestedInput
     notes?: NoteUpdateManyWithoutUserNestedInput
     chatMessages?: ChatMessageUpdateManyWithoutUserNestedInput
+    chatDailyUsage?: ChatDailyUsageUpdateManyWithoutUserNestedInput
     profile?: ProfileUpdateOneWithoutUserNestedInput
     supportTickets?: SupportTicketUpdateManyWithoutUserNestedInput
     payments?: PaymentUpdateManyWithoutUserNestedInput
@@ -39188,6 +40712,7 @@ export namespace Prisma {
     reminders?: ReminderUncheckedUpdateManyWithoutUserNestedInput
     notes?: NoteUncheckedUpdateManyWithoutUserNestedInput
     chatMessages?: ChatMessageUncheckedUpdateManyWithoutUserNestedInput
+    chatDailyUsage?: ChatDailyUsageUncheckedUpdateManyWithoutUserNestedInput
     profile?: ProfileUncheckedUpdateOneWithoutUserNestedInput
     supportTickets?: SupportTicketUncheckedUpdateManyWithoutUserNestedInput
     payments?: PaymentUncheckedUpdateManyWithoutUserNestedInput
@@ -39228,6 +40753,7 @@ export namespace Prisma {
     reminders?: ReminderCreateNestedManyWithoutUserInput
     notes?: NoteCreateNestedManyWithoutUserInput
     chatMessages?: ChatMessageCreateNestedManyWithoutUserInput
+    chatDailyUsage?: ChatDailyUsageCreateNestedManyWithoutUserInput
     profile?: ProfileCreateNestedOneWithoutUserInput
     supportTickets?: SupportTicketCreateNestedManyWithoutUserInput
     payments?: PaymentCreateNestedManyWithoutUserInput
@@ -39268,6 +40794,7 @@ export namespace Prisma {
     reminders?: ReminderUncheckedCreateNestedManyWithoutUserInput
     notes?: NoteUncheckedCreateNestedManyWithoutUserInput
     chatMessages?: ChatMessageUncheckedCreateNestedManyWithoutUserInput
+    chatDailyUsage?: ChatDailyUsageUncheckedCreateNestedManyWithoutUserInput
     profile?: ProfileUncheckedCreateNestedOneWithoutUserInput
     supportTickets?: SupportTicketUncheckedCreateNestedManyWithoutUserInput
     payments?: PaymentUncheckedCreateNestedManyWithoutUserInput
@@ -39324,6 +40851,7 @@ export namespace Prisma {
     reminders?: ReminderUpdateManyWithoutUserNestedInput
     notes?: NoteUpdateManyWithoutUserNestedInput
     chatMessages?: ChatMessageUpdateManyWithoutUserNestedInput
+    chatDailyUsage?: ChatDailyUsageUpdateManyWithoutUserNestedInput
     profile?: ProfileUpdateOneWithoutUserNestedInput
     supportTickets?: SupportTicketUpdateManyWithoutUserNestedInput
     payments?: PaymentUpdateManyWithoutUserNestedInput
@@ -39364,6 +40892,7 @@ export namespace Prisma {
     reminders?: ReminderUncheckedUpdateManyWithoutUserNestedInput
     notes?: NoteUncheckedUpdateManyWithoutUserNestedInput
     chatMessages?: ChatMessageUncheckedUpdateManyWithoutUserNestedInput
+    chatDailyUsage?: ChatDailyUsageUncheckedUpdateManyWithoutUserNestedInput
     profile?: ProfileUncheckedUpdateOneWithoutUserNestedInput
     supportTickets?: SupportTicketUncheckedUpdateManyWithoutUserNestedInput
     payments?: PaymentUncheckedUpdateManyWithoutUserNestedInput
@@ -39404,6 +40933,7 @@ export namespace Prisma {
     reminders?: ReminderCreateNestedManyWithoutUserInput
     notes?: NoteCreateNestedManyWithoutUserInput
     chatMessages?: ChatMessageCreateNestedManyWithoutUserInput
+    chatDailyUsage?: ChatDailyUsageCreateNestedManyWithoutUserInput
     profile?: ProfileCreateNestedOneWithoutUserInput
     supportTickets?: SupportTicketCreateNestedManyWithoutUserInput
     payments?: PaymentCreateNestedManyWithoutUserInput
@@ -39444,6 +40974,7 @@ export namespace Prisma {
     reminders?: ReminderUncheckedCreateNestedManyWithoutUserInput
     notes?: NoteUncheckedCreateNestedManyWithoutUserInput
     chatMessages?: ChatMessageUncheckedCreateNestedManyWithoutUserInput
+    chatDailyUsage?: ChatDailyUsageUncheckedCreateNestedManyWithoutUserInput
     profile?: ProfileUncheckedCreateNestedOneWithoutUserInput
     supportTickets?: SupportTicketUncheckedCreateNestedManyWithoutUserInput
     payments?: PaymentUncheckedCreateNestedManyWithoutUserInput
@@ -39489,6 +41020,7 @@ export namespace Prisma {
     reminders?: ReminderCreateNestedManyWithoutUserInput
     notes?: NoteCreateNestedManyWithoutUserInput
     chatMessages?: ChatMessageCreateNestedManyWithoutUserInput
+    chatDailyUsage?: ChatDailyUsageCreateNestedManyWithoutUserInput
     profile?: ProfileCreateNestedOneWithoutUserInput
     supportTickets?: SupportTicketCreateNestedManyWithoutUserInput
     payments?: PaymentCreateNestedManyWithoutUserInput
@@ -39529,6 +41061,7 @@ export namespace Prisma {
     reminders?: ReminderUncheckedCreateNestedManyWithoutUserInput
     notes?: NoteUncheckedCreateNestedManyWithoutUserInput
     chatMessages?: ChatMessageUncheckedCreateNestedManyWithoutUserInput
+    chatDailyUsage?: ChatDailyUsageUncheckedCreateNestedManyWithoutUserInput
     profile?: ProfileUncheckedCreateNestedOneWithoutUserInput
     supportTickets?: SupportTicketUncheckedCreateNestedManyWithoutUserInput
     payments?: PaymentUncheckedCreateNestedManyWithoutUserInput
@@ -39585,6 +41118,7 @@ export namespace Prisma {
     reminders?: ReminderUpdateManyWithoutUserNestedInput
     notes?: NoteUpdateManyWithoutUserNestedInput
     chatMessages?: ChatMessageUpdateManyWithoutUserNestedInput
+    chatDailyUsage?: ChatDailyUsageUpdateManyWithoutUserNestedInput
     profile?: ProfileUpdateOneWithoutUserNestedInput
     supportTickets?: SupportTicketUpdateManyWithoutUserNestedInput
     payments?: PaymentUpdateManyWithoutUserNestedInput
@@ -39625,6 +41159,7 @@ export namespace Prisma {
     reminders?: ReminderUncheckedUpdateManyWithoutUserNestedInput
     notes?: NoteUncheckedUpdateManyWithoutUserNestedInput
     chatMessages?: ChatMessageUncheckedUpdateManyWithoutUserNestedInput
+    chatDailyUsage?: ChatDailyUsageUncheckedUpdateManyWithoutUserNestedInput
     profile?: ProfileUncheckedUpdateOneWithoutUserNestedInput
     supportTickets?: SupportTicketUncheckedUpdateManyWithoutUserNestedInput
     payments?: PaymentUncheckedUpdateManyWithoutUserNestedInput
@@ -39676,6 +41211,7 @@ export namespace Prisma {
     reminders?: ReminderUpdateManyWithoutUserNestedInput
     notes?: NoteUpdateManyWithoutUserNestedInput
     chatMessages?: ChatMessageUpdateManyWithoutUserNestedInput
+    chatDailyUsage?: ChatDailyUsageUpdateManyWithoutUserNestedInput
     profile?: ProfileUpdateOneWithoutUserNestedInput
     supportTickets?: SupportTicketUpdateManyWithoutUserNestedInput
     payments?: PaymentUpdateManyWithoutUserNestedInput
@@ -39716,6 +41252,7 @@ export namespace Prisma {
     reminders?: ReminderUncheckedUpdateManyWithoutUserNestedInput
     notes?: NoteUncheckedUpdateManyWithoutUserNestedInput
     chatMessages?: ChatMessageUncheckedUpdateManyWithoutUserNestedInput
+    chatDailyUsage?: ChatDailyUsageUncheckedUpdateManyWithoutUserNestedInput
     profile?: ProfileUncheckedUpdateOneWithoutUserNestedInput
     supportTickets?: SupportTicketUncheckedUpdateManyWithoutUserNestedInput
     payments?: PaymentUncheckedUpdateManyWithoutUserNestedInput
@@ -39852,6 +41389,7 @@ export namespace Prisma {
     reminders?: ReminderCreateNestedManyWithoutUserInput
     notes?: NoteCreateNestedManyWithoutUserInput
     chatMessages?: ChatMessageCreateNestedManyWithoutUserInput
+    chatDailyUsage?: ChatDailyUsageCreateNestedManyWithoutUserInput
     profile?: ProfileCreateNestedOneWithoutUserInput
     supportTickets?: SupportTicketCreateNestedManyWithoutUserInput
     subscriptions?: SubscriptionCreateNestedManyWithoutUserInput
@@ -39892,6 +41430,7 @@ export namespace Prisma {
     reminders?: ReminderUncheckedCreateNestedManyWithoutUserInput
     notes?: NoteUncheckedCreateNestedManyWithoutUserInput
     chatMessages?: ChatMessageUncheckedCreateNestedManyWithoutUserInput
+    chatDailyUsage?: ChatDailyUsageUncheckedCreateNestedManyWithoutUserInput
     profile?: ProfileUncheckedCreateNestedOneWithoutUserInput
     supportTickets?: SupportTicketUncheckedCreateNestedManyWithoutUserInput
     subscriptions?: SubscriptionUncheckedCreateNestedManyWithoutUserInput
@@ -39982,6 +41521,7 @@ export namespace Prisma {
     reminders?: ReminderUpdateManyWithoutUserNestedInput
     notes?: NoteUpdateManyWithoutUserNestedInput
     chatMessages?: ChatMessageUpdateManyWithoutUserNestedInput
+    chatDailyUsage?: ChatDailyUsageUpdateManyWithoutUserNestedInput
     profile?: ProfileUpdateOneWithoutUserNestedInput
     supportTickets?: SupportTicketUpdateManyWithoutUserNestedInput
     subscriptions?: SubscriptionUpdateManyWithoutUserNestedInput
@@ -40022,6 +41562,7 @@ export namespace Prisma {
     reminders?: ReminderUncheckedUpdateManyWithoutUserNestedInput
     notes?: NoteUncheckedUpdateManyWithoutUserNestedInput
     chatMessages?: ChatMessageUncheckedUpdateManyWithoutUserNestedInput
+    chatDailyUsage?: ChatDailyUsageUncheckedUpdateManyWithoutUserNestedInput
     profile?: ProfileUncheckedUpdateOneWithoutUserNestedInput
     supportTickets?: SupportTicketUncheckedUpdateManyWithoutUserNestedInput
     subscriptions?: SubscriptionUncheckedUpdateManyWithoutUserNestedInput
@@ -40078,6 +41619,7 @@ export namespace Prisma {
     reminders?: ReminderCreateNestedManyWithoutUserInput
     notes?: NoteCreateNestedManyWithoutUserInput
     chatMessages?: ChatMessageCreateNestedManyWithoutUserInput
+    chatDailyUsage?: ChatDailyUsageCreateNestedManyWithoutUserInput
     profile?: ProfileCreateNestedOneWithoutUserInput
     supportTickets?: SupportTicketCreateNestedManyWithoutUserInput
     payments?: PaymentCreateNestedManyWithoutUserInput
@@ -40118,6 +41660,7 @@ export namespace Prisma {
     reminders?: ReminderUncheckedCreateNestedManyWithoutUserInput
     notes?: NoteUncheckedCreateNestedManyWithoutUserInput
     chatMessages?: ChatMessageUncheckedCreateNestedManyWithoutUserInput
+    chatDailyUsage?: ChatDailyUsageUncheckedCreateNestedManyWithoutUserInput
     profile?: ProfileUncheckedCreateNestedOneWithoutUserInput
     supportTickets?: SupportTicketUncheckedCreateNestedManyWithoutUserInput
     payments?: PaymentUncheckedCreateNestedManyWithoutUserInput
@@ -40236,6 +41779,7 @@ export namespace Prisma {
     reminders?: ReminderUpdateManyWithoutUserNestedInput
     notes?: NoteUpdateManyWithoutUserNestedInput
     chatMessages?: ChatMessageUpdateManyWithoutUserNestedInput
+    chatDailyUsage?: ChatDailyUsageUpdateManyWithoutUserNestedInput
     profile?: ProfileUpdateOneWithoutUserNestedInput
     supportTickets?: SupportTicketUpdateManyWithoutUserNestedInput
     payments?: PaymentUpdateManyWithoutUserNestedInput
@@ -40276,6 +41820,7 @@ export namespace Prisma {
     reminders?: ReminderUncheckedUpdateManyWithoutUserNestedInput
     notes?: NoteUncheckedUpdateManyWithoutUserNestedInput
     chatMessages?: ChatMessageUncheckedUpdateManyWithoutUserNestedInput
+    chatDailyUsage?: ChatDailyUsageUncheckedUpdateManyWithoutUserNestedInput
     profile?: ProfileUncheckedUpdateOneWithoutUserNestedInput
     supportTickets?: SupportTicketUncheckedUpdateManyWithoutUserNestedInput
     payments?: PaymentUncheckedUpdateManyWithoutUserNestedInput
@@ -40438,6 +41983,7 @@ export namespace Prisma {
     reminders?: ReminderCreateNestedManyWithoutUserInput
     notes?: NoteCreateNestedManyWithoutUserInput
     chatMessages?: ChatMessageCreateNestedManyWithoutUserInput
+    chatDailyUsage?: ChatDailyUsageCreateNestedManyWithoutUserInput
     profile?: ProfileCreateNestedOneWithoutUserInput
     supportTickets?: SupportTicketCreateNestedManyWithoutUserInput
     payments?: PaymentCreateNestedManyWithoutUserInput
@@ -40478,6 +42024,7 @@ export namespace Prisma {
     reminders?: ReminderUncheckedCreateNestedManyWithoutUserInput
     notes?: NoteUncheckedCreateNestedManyWithoutUserInput
     chatMessages?: ChatMessageUncheckedCreateNestedManyWithoutUserInput
+    chatDailyUsage?: ChatDailyUsageUncheckedCreateNestedManyWithoutUserInput
     profile?: ProfileUncheckedCreateNestedOneWithoutUserInput
     supportTickets?: SupportTicketUncheckedCreateNestedManyWithoutUserInput
     payments?: PaymentUncheckedCreateNestedManyWithoutUserInput
@@ -40583,6 +42130,7 @@ export namespace Prisma {
     reminders?: ReminderUpdateManyWithoutUserNestedInput
     notes?: NoteUpdateManyWithoutUserNestedInput
     chatMessages?: ChatMessageUpdateManyWithoutUserNestedInput
+    chatDailyUsage?: ChatDailyUsageUpdateManyWithoutUserNestedInput
     profile?: ProfileUpdateOneWithoutUserNestedInput
     supportTickets?: SupportTicketUpdateManyWithoutUserNestedInput
     payments?: PaymentUpdateManyWithoutUserNestedInput
@@ -40623,6 +42171,7 @@ export namespace Prisma {
     reminders?: ReminderUncheckedUpdateManyWithoutUserNestedInput
     notes?: NoteUncheckedUpdateManyWithoutUserNestedInput
     chatMessages?: ChatMessageUncheckedUpdateManyWithoutUserNestedInput
+    chatDailyUsage?: ChatDailyUsageUncheckedUpdateManyWithoutUserNestedInput
     profile?: ProfileUncheckedUpdateOneWithoutUserNestedInput
     supportTickets?: SupportTicketUncheckedUpdateManyWithoutUserNestedInput
     payments?: PaymentUncheckedUpdateManyWithoutUserNestedInput
@@ -40718,6 +42267,7 @@ export namespace Prisma {
     reminders?: ReminderCreateNestedManyWithoutUserInput
     notes?: NoteCreateNestedManyWithoutUserInput
     chatMessages?: ChatMessageCreateNestedManyWithoutUserInput
+    chatDailyUsage?: ChatDailyUsageCreateNestedManyWithoutUserInput
     profile?: ProfileCreateNestedOneWithoutUserInput
     supportTickets?: SupportTicketCreateNestedManyWithoutUserInput
     payments?: PaymentCreateNestedManyWithoutUserInput
@@ -40758,6 +42308,7 @@ export namespace Prisma {
     reminders?: ReminderUncheckedCreateNestedManyWithoutUserInput
     notes?: NoteUncheckedCreateNestedManyWithoutUserInput
     chatMessages?: ChatMessageUncheckedCreateNestedManyWithoutUserInput
+    chatDailyUsage?: ChatDailyUsageUncheckedCreateNestedManyWithoutUserInput
     profile?: ProfileUncheckedCreateNestedOneWithoutUserInput
     supportTickets?: SupportTicketUncheckedCreateNestedManyWithoutUserInput
     payments?: PaymentUncheckedCreateNestedManyWithoutUserInput
@@ -40862,6 +42413,7 @@ export namespace Prisma {
     reminders?: ReminderUpdateManyWithoutUserNestedInput
     notes?: NoteUpdateManyWithoutUserNestedInput
     chatMessages?: ChatMessageUpdateManyWithoutUserNestedInput
+    chatDailyUsage?: ChatDailyUsageUpdateManyWithoutUserNestedInput
     profile?: ProfileUpdateOneWithoutUserNestedInput
     supportTickets?: SupportTicketUpdateManyWithoutUserNestedInput
     payments?: PaymentUpdateManyWithoutUserNestedInput
@@ -40902,6 +42454,7 @@ export namespace Prisma {
     reminders?: ReminderUncheckedUpdateManyWithoutUserNestedInput
     notes?: NoteUncheckedUpdateManyWithoutUserNestedInput
     chatMessages?: ChatMessageUncheckedUpdateManyWithoutUserNestedInput
+    chatDailyUsage?: ChatDailyUsageUncheckedUpdateManyWithoutUserNestedInput
     profile?: ProfileUncheckedUpdateOneWithoutUserNestedInput
     supportTickets?: SupportTicketUncheckedUpdateManyWithoutUserNestedInput
     payments?: PaymentUncheckedUpdateManyWithoutUserNestedInput
@@ -41003,6 +42556,7 @@ export namespace Prisma {
     reminders?: ReminderCreateNestedManyWithoutUserInput
     notes?: NoteCreateNestedManyWithoutUserInput
     chatMessages?: ChatMessageCreateNestedManyWithoutUserInput
+    chatDailyUsage?: ChatDailyUsageCreateNestedManyWithoutUserInput
     profile?: ProfileCreateNestedOneWithoutUserInput
     supportTickets?: SupportTicketCreateNestedManyWithoutUserInput
     payments?: PaymentCreateNestedManyWithoutUserInput
@@ -41043,6 +42597,7 @@ export namespace Prisma {
     reminders?: ReminderUncheckedCreateNestedManyWithoutUserInput
     notes?: NoteUncheckedCreateNestedManyWithoutUserInput
     chatMessages?: ChatMessageUncheckedCreateNestedManyWithoutUserInput
+    chatDailyUsage?: ChatDailyUsageUncheckedCreateNestedManyWithoutUserInput
     profile?: ProfileUncheckedCreateNestedOneWithoutUserInput
     supportTickets?: SupportTicketUncheckedCreateNestedManyWithoutUserInput
     payments?: PaymentUncheckedCreateNestedManyWithoutUserInput
@@ -41134,6 +42689,7 @@ export namespace Prisma {
     reminders?: ReminderUpdateManyWithoutUserNestedInput
     notes?: NoteUpdateManyWithoutUserNestedInput
     chatMessages?: ChatMessageUpdateManyWithoutUserNestedInput
+    chatDailyUsage?: ChatDailyUsageUpdateManyWithoutUserNestedInput
     profile?: ProfileUpdateOneWithoutUserNestedInput
     supportTickets?: SupportTicketUpdateManyWithoutUserNestedInput
     payments?: PaymentUpdateManyWithoutUserNestedInput
@@ -41174,6 +42730,7 @@ export namespace Prisma {
     reminders?: ReminderUncheckedUpdateManyWithoutUserNestedInput
     notes?: NoteUncheckedUpdateManyWithoutUserNestedInput
     chatMessages?: ChatMessageUncheckedUpdateManyWithoutUserNestedInput
+    chatDailyUsage?: ChatDailyUsageUncheckedUpdateManyWithoutUserNestedInput
     profile?: ProfileUncheckedUpdateOneWithoutUserNestedInput
     supportTickets?: SupportTicketUncheckedUpdateManyWithoutUserNestedInput
     payments?: PaymentUncheckedUpdateManyWithoutUserNestedInput
@@ -41243,6 +42800,7 @@ export namespace Prisma {
     reminders?: ReminderCreateNestedManyWithoutUserInput
     notes?: NoteCreateNestedManyWithoutUserInput
     chatMessages?: ChatMessageCreateNestedManyWithoutUserInput
+    chatDailyUsage?: ChatDailyUsageCreateNestedManyWithoutUserInput
     profile?: ProfileCreateNestedOneWithoutUserInput
     supportTickets?: SupportTicketCreateNestedManyWithoutUserInput
     payments?: PaymentCreateNestedManyWithoutUserInput
@@ -41283,6 +42841,7 @@ export namespace Prisma {
     reminders?: ReminderUncheckedCreateNestedManyWithoutUserInput
     notes?: NoteUncheckedCreateNestedManyWithoutUserInput
     chatMessages?: ChatMessageUncheckedCreateNestedManyWithoutUserInput
+    chatDailyUsage?: ChatDailyUsageUncheckedCreateNestedManyWithoutUserInput
     profile?: ProfileUncheckedCreateNestedOneWithoutUserInput
     supportTickets?: SupportTicketUncheckedCreateNestedManyWithoutUserInput
     payments?: PaymentUncheckedCreateNestedManyWithoutUserInput
@@ -41374,6 +42933,7 @@ export namespace Prisma {
     reminders?: ReminderUpdateManyWithoutUserNestedInput
     notes?: NoteUpdateManyWithoutUserNestedInput
     chatMessages?: ChatMessageUpdateManyWithoutUserNestedInput
+    chatDailyUsage?: ChatDailyUsageUpdateManyWithoutUserNestedInput
     profile?: ProfileUpdateOneWithoutUserNestedInput
     supportTickets?: SupportTicketUpdateManyWithoutUserNestedInput
     payments?: PaymentUpdateManyWithoutUserNestedInput
@@ -41414,6 +42974,7 @@ export namespace Prisma {
     reminders?: ReminderUncheckedUpdateManyWithoutUserNestedInput
     notes?: NoteUncheckedUpdateManyWithoutUserNestedInput
     chatMessages?: ChatMessageUncheckedUpdateManyWithoutUserNestedInput
+    chatDailyUsage?: ChatDailyUsageUncheckedUpdateManyWithoutUserNestedInput
     profile?: ProfileUncheckedUpdateOneWithoutUserNestedInput
     supportTickets?: SupportTicketUncheckedUpdateManyWithoutUserNestedInput
     payments?: PaymentUncheckedUpdateManyWithoutUserNestedInput
@@ -41454,6 +43015,7 @@ export namespace Prisma {
     reminders?: ReminderCreateNestedManyWithoutUserInput
     notes?: NoteCreateNestedManyWithoutUserInput
     chatMessages?: ChatMessageCreateNestedManyWithoutUserInput
+    chatDailyUsage?: ChatDailyUsageCreateNestedManyWithoutUserInput
     profile?: ProfileCreateNestedOneWithoutUserInput
     supportTickets?: SupportTicketCreateNestedManyWithoutUserInput
     payments?: PaymentCreateNestedManyWithoutUserInput
@@ -41494,6 +43056,7 @@ export namespace Prisma {
     reminders?: ReminderUncheckedCreateNestedManyWithoutUserInput
     notes?: NoteUncheckedCreateNestedManyWithoutUserInput
     chatMessages?: ChatMessageUncheckedCreateNestedManyWithoutUserInput
+    chatDailyUsage?: ChatDailyUsageUncheckedCreateNestedManyWithoutUserInput
     profile?: ProfileUncheckedCreateNestedOneWithoutUserInput
     supportTickets?: SupportTicketUncheckedCreateNestedManyWithoutUserInput
     payments?: PaymentUncheckedCreateNestedManyWithoutUserInput
@@ -41550,6 +43113,7 @@ export namespace Prisma {
     reminders?: ReminderUpdateManyWithoutUserNestedInput
     notes?: NoteUpdateManyWithoutUserNestedInput
     chatMessages?: ChatMessageUpdateManyWithoutUserNestedInput
+    chatDailyUsage?: ChatDailyUsageUpdateManyWithoutUserNestedInput
     profile?: ProfileUpdateOneWithoutUserNestedInput
     supportTickets?: SupportTicketUpdateManyWithoutUserNestedInput
     payments?: PaymentUpdateManyWithoutUserNestedInput
@@ -41590,6 +43154,7 @@ export namespace Prisma {
     reminders?: ReminderUncheckedUpdateManyWithoutUserNestedInput
     notes?: NoteUncheckedUpdateManyWithoutUserNestedInput
     chatMessages?: ChatMessageUncheckedUpdateManyWithoutUserNestedInput
+    chatDailyUsage?: ChatDailyUsageUncheckedUpdateManyWithoutUserNestedInput
     profile?: ProfileUncheckedUpdateOneWithoutUserNestedInput
     supportTickets?: SupportTicketUncheckedUpdateManyWithoutUserNestedInput
     payments?: PaymentUncheckedUpdateManyWithoutUserNestedInput
@@ -41630,6 +43195,7 @@ export namespace Prisma {
     reminders?: ReminderCreateNestedManyWithoutUserInput
     notes?: NoteCreateNestedManyWithoutUserInput
     chatMessages?: ChatMessageCreateNestedManyWithoutUserInput
+    chatDailyUsage?: ChatDailyUsageCreateNestedManyWithoutUserInput
     profile?: ProfileCreateNestedOneWithoutUserInput
     supportTickets?: SupportTicketCreateNestedManyWithoutUserInput
     payments?: PaymentCreateNestedManyWithoutUserInput
@@ -41670,6 +43236,7 @@ export namespace Prisma {
     reminders?: ReminderUncheckedCreateNestedManyWithoutUserInput
     notes?: NoteUncheckedCreateNestedManyWithoutUserInput
     chatMessages?: ChatMessageUncheckedCreateNestedManyWithoutUserInput
+    chatDailyUsage?: ChatDailyUsageUncheckedCreateNestedManyWithoutUserInput
     profile?: ProfileUncheckedCreateNestedOneWithoutUserInput
     supportTickets?: SupportTicketUncheckedCreateNestedManyWithoutUserInput
     payments?: PaymentUncheckedCreateNestedManyWithoutUserInput
@@ -41726,6 +43293,7 @@ export namespace Prisma {
     reminders?: ReminderUpdateManyWithoutUserNestedInput
     notes?: NoteUpdateManyWithoutUserNestedInput
     chatMessages?: ChatMessageUpdateManyWithoutUserNestedInput
+    chatDailyUsage?: ChatDailyUsageUpdateManyWithoutUserNestedInput
     profile?: ProfileUpdateOneWithoutUserNestedInput
     supportTickets?: SupportTicketUpdateManyWithoutUserNestedInput
     payments?: PaymentUpdateManyWithoutUserNestedInput
@@ -41766,6 +43334,7 @@ export namespace Prisma {
     reminders?: ReminderUncheckedUpdateManyWithoutUserNestedInput
     notes?: NoteUncheckedUpdateManyWithoutUserNestedInput
     chatMessages?: ChatMessageUncheckedUpdateManyWithoutUserNestedInput
+    chatDailyUsage?: ChatDailyUsageUncheckedUpdateManyWithoutUserNestedInput
     profile?: ProfileUncheckedUpdateOneWithoutUserNestedInput
     supportTickets?: SupportTicketUncheckedUpdateManyWithoutUserNestedInput
     payments?: PaymentUncheckedUpdateManyWithoutUserNestedInput
@@ -41814,6 +43383,11 @@ export namespace Prisma {
     content: string
     isUser?: boolean
     createdAt?: Date | string
+  }
+
+  export type ChatDailyUsageCreateManyUserInput = {
+    day: Date | string
+    used?: number
   }
 
   export type SupportTicketCreateManyUserInput = {
@@ -42088,6 +43662,21 @@ export namespace Prisma {
     content?: StringFieldUpdateOperationsInput | string
     isUser?: BoolFieldUpdateOperationsInput | boolean
     createdAt?: DateTimeFieldUpdateOperationsInput | Date | string
+  }
+
+  export type ChatDailyUsageUpdateWithoutUserInput = {
+    day?: DateTimeFieldUpdateOperationsInput | Date | string
+    used?: IntFieldUpdateOperationsInput | number
+  }
+
+  export type ChatDailyUsageUncheckedUpdateWithoutUserInput = {
+    day?: DateTimeFieldUpdateOperationsInput | Date | string
+    used?: IntFieldUpdateOperationsInput | number
+  }
+
+  export type ChatDailyUsageUncheckedUpdateManyWithoutUserInput = {
+    day?: DateTimeFieldUpdateOperationsInput | Date | string
+    used?: IntFieldUpdateOperationsInput | number
   }
 
   export type SupportTicketUpdateWithoutUserInput = {
@@ -43027,6 +44616,10 @@ export namespace Prisma {
      * @deprecated Use GuideDefaultArgs instead
      */
     export type GuideArgs<ExtArgs extends $Extensions.InternalArgs = $Extensions.DefaultArgs> = GuideDefaultArgs<ExtArgs>
+    /**
+     * @deprecated Use ChatDailyUsageDefaultArgs instead
+     */
+    export type ChatDailyUsageArgs<ExtArgs extends $Extensions.InternalArgs = $Extensions.DefaultArgs> = ChatDailyUsageDefaultArgs<ExtArgs>
     /**
      * @deprecated Use ChatMessageDefaultArgs instead
      */
