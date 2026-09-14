@@ -25,6 +25,8 @@ import {
   CheckCircle2,
   Quote,
   Home,
+  ChevronLeft,
+  ChevronRight,
 } from "lucide-react";
 import Link from "next/link";
 import Image from "next/image";
@@ -34,7 +36,7 @@ import {
   organizationStructuredData,
 } from "@/components/seo/structured-data";
 import { useTranslation } from "@/hooks/useTranslation";
-import { useEffect, useState, useMemo } from "react";
+import { useEffect, useRef, useState, useMemo } from "react";
 import { API_BASE_URL } from "@/lib/api";
 import { PublicReview, TrustStats as TrustStatsType } from "@/types";
 import { HeroTypewriter } from "@/components/home/HeroTypewriter";
@@ -99,6 +101,9 @@ export default function HomePage() {
   const [trustStats, setTrustStats] = useState<TrustStatsType | null>(null);
   const [reviewsLoading, setReviewsLoading] = useState(true);
   const [premiumFeaturesExpanded, setPremiumFeaturesExpanded] = useState(false);
+  const [activeReviewIndex, setActiveReviewIndex] = useState(0);
+  const reviewCarouselRef = useRef<HTMLDivElement>(null);
+  const reviewCardRefs = useRef<Array<HTMLDivElement | null>>([]);
 
   useEffect(() => {
     const handleScroll = () => {
@@ -149,6 +154,43 @@ export default function HomePage() {
     Boolean(trustStats) && !reviewsLoading && reviews.length >= 3;
 
   const showContentProof = !reviewsLoading && !showTrustBar;
+
+  const scrollToReview = (index: number) => {
+    const reviewCount = reviews.length;
+    if (reviewCount === 0) return;
+
+    const nextIndex = (index + reviewCount) % reviewCount;
+    reviewCardRefs.current[nextIndex]?.scrollIntoView({
+      behavior: "smooth",
+      block: "nearest",
+      inline: "center",
+    });
+    setActiveReviewIndex(nextIndex);
+  };
+
+  const updateActiveReview = () => {
+    const carousel = reviewCarouselRef.current;
+    if (!carousel || reviewCardRefs.current.length === 0) return;
+
+    const viewportCenter = carousel.scrollLeft + carousel.clientWidth / 2;
+    const nearestIndex = reviewCardRefs.current.reduce(
+      (closestIndex, card, index) => {
+        if (!card) return closestIndex;
+        const closestCard = reviewCardRefs.current[closestIndex];
+        if (!closestCard) return index;
+
+        const cardCenter = card.offsetLeft + card.offsetWidth / 2;
+        const closestCenter = closestCard.offsetLeft + closestCard.offsetWidth / 2;
+        return Math.abs(cardCenter - viewportCenter) <
+          Math.abs(closestCenter - viewportCenter)
+          ? index
+          : closestIndex;
+      },
+      0,
+    );
+
+    setActiveReviewIndex(nearestIndex);
+  };
 
   const pricingTeaser = useMemo(
     () =>
@@ -898,13 +940,36 @@ export default function HomePage() {
           className="below-fold py-12 sm:py-16 md:py-20 bg-slate-50 rounded-2xl sm:rounded-3xl my-6 sm:my-8"
         >
           <div className="mx-auto max-w-6xl px-4 sm:px-6">
-            <div className="text-center mb-8 sm:mb-10">
-              <h2 className="text-2xl sm:text-3xl md:text-4xl font-bold text-slate-900 mb-4">
-                {t("home.section.testimonials.title")}
-              </h2>
-              <p className="text-base sm:text-lg text-slate-600 max-w-2xl mx-auto">
-                {t("home.section.testimonials.subtitle")}
-              </p>
+            <div className="mb-8 text-center sm:mb-10 sm:flex sm:items-end sm:justify-between sm:gap-8 sm:text-left">
+              <div>
+                <h2 className="mb-4 text-2xl font-bold text-slate-900 sm:text-3xl md:text-4xl">
+                  {t("home.section.testimonials.title")}
+                </h2>
+                <p className="mx-auto max-w-2xl text-base text-slate-600 sm:mx-0 sm:text-lg">
+                  {t("home.section.testimonials.subtitle")}
+                </p>
+              </div>
+
+              {!reviewsLoading && reviews.length > 1 && (
+                <div className="hidden shrink-0 items-center gap-4 sm:flex">
+                  <button
+                    type="button"
+                    onClick={() => scrollToReview(activeReviewIndex - 1)}
+                    className="flex h-12 w-12 items-center justify-center rounded-full border border-slate-200 bg-white text-slate-600 shadow-sm transition hover:border-blue-200 hover:bg-blue-50 hover:text-blue-600 focus-visible:outline-none focus-visible:ring-2 focus-visible:ring-blue-500 focus-visible:ring-offset-2"
+                    aria-label="Previous review"
+                  >
+                    <ChevronLeft className="h-5 w-5" aria-hidden />
+                  </button>
+                  <button
+                    type="button"
+                    onClick={() => scrollToReview(activeReviewIndex + 1)}
+                    className="flex h-12 w-12 items-center justify-center rounded-full border border-slate-200 bg-white text-slate-600 shadow-sm transition hover:border-blue-200 hover:bg-blue-50 hover:text-blue-600 focus-visible:outline-none focus-visible:ring-2 focus-visible:ring-blue-500 focus-visible:ring-offset-2"
+                    aria-label="Next review"
+                  >
+                    <ChevronRight className="h-5 w-5" aria-hidden />
+                  </button>
+                </div>
+              )}
             </div>
 
             {reviewsLoading ? (
@@ -918,19 +983,54 @@ export default function HomePage() {
                 ))}
               </div>
             ) : reviews.length > 0 ? (
-              <div className="grid grid-cols-1 md:grid-cols-3 gap-6">
-                {reviews.map((review) => (
-                  <ReviewCard
-                    key={review.id}
-                    review={review}
-                    starsLabel={t("home.section.testimonials.stars")}
-                    showMoreLabel={t("home.review.showMore")}
-                    showLessLabel={t("home.review.showLess")}
-                    publishedLabel={t("home.review.publishedAfterModeration")}
-                    premiumLabel={t("home.pricing.premium")}
-                  />
-                ))}
-              </div>
+              <>
+                <div
+                  ref={reviewCarouselRef}
+                  onScroll={updateActiveReview}
+                  className="-mx-4 flex snap-x snap-mandatory gap-4 overflow-x-auto px-4 pb-2 pt-1 sm:-mx-6 sm:gap-6 sm:px-6 [-ms-overflow-style:none] [scrollbar-width:none] [&::-webkit-scrollbar]:hidden"
+                  aria-label={t("home.section.testimonials.title")}
+                >
+                  {reviews.map((review, index) => (
+                    <div
+                      key={review.id}
+                      ref={(element) => {
+                        reviewCardRefs.current[index] = element;
+                      }}
+                      className="w-[calc(100%-2.75rem)] shrink-0 snap-center sm:w-[42%] lg:w-[30%]"
+                    >
+                    <ReviewCard
+                      review={review}
+                      starsLabel={t("home.section.testimonials.stars")}
+                      showMoreLabel={t("home.review.showMore")}
+                      showLessLabel={t("home.review.showLess")}
+                      publishedLabel={t("home.review.publishedAfterModeration")}
+                      premiumLabel={t("home.pricing.premium")}
+                    />
+                    </div>
+                  ))}
+                </div>
+
+                {reviews.length > 1 && (
+                  <div className="mt-5 flex items-center justify-center gap-4 sm:hidden">
+                    <button
+                      type="button"
+                      onClick={() => scrollToReview(activeReviewIndex - 1)}
+                      className="flex h-12 w-12 items-center justify-center rounded-full border border-slate-200 bg-white text-slate-600 shadow-sm transition hover:border-blue-200 hover:bg-blue-50 hover:text-blue-600 focus-visible:outline-none focus-visible:ring-2 focus-visible:ring-blue-500 focus-visible:ring-offset-2"
+                      aria-label="Previous review"
+                    >
+                      <ChevronLeft className="h-5 w-5" aria-hidden />
+                    </button>
+                    <button
+                      type="button"
+                      onClick={() => scrollToReview(activeReviewIndex + 1)}
+                      className="flex h-12 w-12 items-center justify-center rounded-full border border-slate-200 bg-white text-slate-600 shadow-sm transition hover:border-blue-200 hover:bg-blue-50 hover:text-blue-600 focus-visible:outline-none focus-visible:ring-2 focus-visible:ring-blue-500 focus-visible:ring-offset-2"
+                      aria-label="Next review"
+                    >
+                      <ChevronRight className="h-5 w-5" aria-hidden />
+                    </button>
+                  </div>
+                )}
+              </>
             ) : (
               <div className="mx-auto max-w-xl rounded-2xl border border-blue-100 bg-gradient-to-br from-blue-50 via-white to-indigo-50 px-6 py-10 sm:px-8 sm:py-12 text-center shadow-sm">
                 <div
