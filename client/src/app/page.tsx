@@ -540,11 +540,11 @@ export default function HomePage() {
                           {(
                             [
                               { key: "exams", icon: GraduationCap, active: true },
-                              { key: "papers", icon: BookOpen },
-                              { key: "documents", icon: FileText },
-                              { key: "structure", icon: Building2 },
-                              { key: "admission", icon: UserPlus },
-                              { key: "expulsion-risks", icon: AlertTriangle },
+                              { key: "papers", icon: BookOpen, active: false },
+                              { key: "documents", icon: FileText, active: false },
+                              { key: "structure", icon: Building2, active: false },
+                              { key: "admission", icon: UserPlus, active: false },
+                              { key: "expulsion-risks", icon: AlertTriangle, active: false },
                             ] as const
                           ).map((item) => {
                             const Icon = item.icon;
@@ -622,9 +622,9 @@ export default function HomePage() {
                           {(
                             [
                               { key: "housing", icon: Home, active: true },
-                              { key: "documents", icon: FileText },
-                              { key: "transport", icon: Bus },
-                              { key: "health", icon: HeartPulse },
+                              { key: "documents", icon: FileText, active: false },
+                              { key: "transport", icon: Bus, active: false },
+                              { key: "health", icon: HeartPulse, active: false },
                             ] as const
                           ).map((item) => {
                             const Icon = item.icon;
