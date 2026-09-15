@@ -27,6 +27,19 @@ import {
   Home,
   ChevronLeft,
   ChevronRight,
+  Bot,
+  FileText,
+  GraduationCap,
+  MessageCircle,
+  Send,
+  Plus,
+  Building2,
+  Bus,
+  HeartPulse,
+  Plane,
+  UserPlus,
+  AlertTriangle,
+  HeartHandshake,
 } from "lucide-react";
 import Link from "next/link";
 import Image from "next/image";
@@ -63,6 +76,27 @@ import {
 } from "@/constants/content-stats";
 import { formatCountedLabel } from "@/lib/pluralize";
 import { PREMIUM_CHECKOUT_PATH } from "@/constants/routes";
+import { buddyT } from "@/lib/buddy-i18n";
+
+function HowItWorksCardLink({
+  href,
+  label,
+  children,
+}: {
+  href: string;
+  label: string;
+  children: React.ReactNode;
+}) {
+  return (
+    <Link
+      href={href}
+      aria-label={label}
+      className="block h-full rounded-2xl focus:outline-none focus-visible:ring-2 focus-visible:ring-blue-500 focus-visible:ring-offset-2"
+    >
+      {children}
+    </Link>
+  );
+}
 
 const PREMIUM_FEATURES_VISIBLE = 6;
 
@@ -470,195 +504,331 @@ export default function HomePage() {
 
             <StaggerReveal className="home-how-it-works-grid grid grid-cols-1 sm:grid-cols-2 gap-5 sm:gap-6">
               <StaggerItem>
-                <Card className="no-hover border border-slate-200 shadow-sm h-full bg-gradient-to-b from-white to-slate-50">
+                <HowItWorksCardLink
+                  href="/education-guide"
+                  label={t("educationGuide.header.title")}
+                >
+                <Card className="no-hover border border-slate-200 shadow-sm h-full bg-gradient-to-b from-white to-slate-50 transition-shadow hover:shadow-md">
                   <CardContent className="p-5 h-full flex flex-col">
                     <HowItWorksStepHeader
                       step="01"
-                      title="AdaptEd AI"
+                      title={t("educationGuide.header.title")}
                       caption={t("home.section.howItWorks.step1.caption")}
                     />
-                    <div className="rounded-xl border border-slate-200 bg-slate-50 overflow-hidden flex-1">
+                    <div className="rounded-xl border border-slate-200 bg-slate-50 overflow-hidden flex-1 flex flex-col">
                       <div className="h-8 bg-slate-900 flex items-center px-3 gap-1.5">
                         <span className="w-2 h-2 rounded-full bg-red-400" />
                         <span className="w-2 h-2 rounded-full bg-yellow-400" />
                         <span className="w-2 h-2 rounded-full bg-green-400" />
                       </div>
-                      <div className="p-3 space-y-2">
-                        <div className="rounded-lg bg-white border border-slate-200 p-2">
-                          <p className="text-xs font-semibold text-slate-900">
-                            AdaptEd AI — {t("aiHelper.mode.study")}
-                          </p>
-                          <div className="mt-1.5 flex flex-wrap gap-1">
-                            <span className="text-xs px-2 py-0.5 rounded-md bg-blue-500 text-white">
-                              {t("aiHelper.mode.study")}
-                            </span>
-                            <span className="text-xs px-2 py-0.5 rounded-md bg-slate-100 text-slate-600">
-                              {t("aiHelper.mode.life")}
-                            </span>
+                      <div className="p-3 space-y-2 flex-1">
+                        <div className="rounded-2xl bg-white p-3 shadow-sm">
+                          <div className="flex items-center gap-2">
+                            <div className="flex h-8 w-8 shrink-0 items-center justify-center rounded-lg bg-indigo-50">
+                              <GraduationCap className="h-4 w-4 text-indigo-600" />
+                            </div>
+                            <div className="min-w-0">
+                              <p className="text-xs font-bold text-slate-900">
+                                {t("educationGuide.header.title")}
+                              </p>
+                              <p className="text-[11px] text-slate-500 line-clamp-1">
+                                {t("educationGuide.header.subtitle")}
+                              </p>
+                            </div>
                           </div>
-                        </div>
-                        <div className="ml-auto max-w-[85%] rounded-lg bg-blue-500 text-white text-xs p-2">
-                          {t("aiHelper.quickQuestions.study.1")}
-                        </div>
-                        <div className="max-w-[90%] rounded-lg bg-white border border-slate-200 text-xs p-2 text-slate-700">
-                          {t("aiHelper.tips.study.2")}
+                          <div className="mt-2 grid grid-cols-2 gap-1.5">
+                          {(
+                            [
+                              { key: "exams", icon: GraduationCap, active: true },
+                              { key: "papers", icon: BookOpen },
+                              { key: "documents", icon: FileText },
+                              { key: "structure", icon: Building2 },
+                              { key: "admission", icon: UserPlus },
+                              { key: "expulsion-risks", icon: AlertTriangle },
+                            ] as const
+                          ).map((item) => {
+                            const Icon = item.icon;
+                            return (
+                              <div
+                                key={item.key}
+                                className={
+                                  item.active
+                                    ? "flex items-center gap-1.5 rounded-xl border-2 border-indigo-400 bg-indigo-50 px-2 py-1.5"
+                                    : "flex items-center gap-1.5 rounded-xl border-2 border-gray-200 bg-gray-50 px-2 py-1.5"
+                                }
+                              >
+                                <Icon
+                                  className={`h-3.5 w-3.5 shrink-0 ${
+                                    item.active ? "text-indigo-600" : "text-slate-500"
+                                  }`}
+                                />
+                                <span
+                                  className={`text-[10px] font-semibold leading-tight line-clamp-1 ${
+                                    item.active ? "text-indigo-700" : "text-slate-700"
+                                  }`}
+                                >
+                                  {t(`educationGuide.categories.${item.key}`)}
+                                </span>
+                              </div>
+                            );
+                          })}
+                          </div>
                         </div>
                       </div>
                     </div>
                   </CardContent>
                 </Card>
+                </HowItWorksCardLink>
               </StaggerItem>
 
               <StaggerItem>
-                <Card className="no-hover border border-slate-200 shadow-sm h-full bg-gradient-to-b from-white to-slate-50">
+                <HowItWorksCardLink
+                  href="/life-guide"
+                  label={t("lifeGuide.header.title")}
+                >
+                <Card className="no-hover border border-slate-200 shadow-sm h-full bg-gradient-to-b from-white to-slate-50 transition-shadow hover:shadow-md">
                   <CardContent className="p-5 h-full flex flex-col">
                     <HowItWorksStepHeader
                       step="02"
-                      title={t("aiHelper.templates")}
+                      title={t("lifeGuide.header.title")}
                       caption={t("home.section.howItWorks.step2.caption")}
                     />
-                    <div className="rounded-xl border border-slate-200 bg-slate-50 overflow-hidden flex-1">
+                    <div className="rounded-xl border border-slate-200 bg-slate-50 overflow-hidden flex-1 flex flex-col">
                       <div className="h-8 bg-slate-900 flex items-center px-3 gap-1.5">
                         <span className="w-2 h-2 rounded-full bg-red-400" />
                         <span className="w-2 h-2 rounded-full bg-yellow-400" />
                         <span className="w-2 h-2 rounded-full bg-green-400" />
                       </div>
-                      <div className="p-3 space-y-2">
-                        <div className="rounded-lg bg-white border border-slate-200 p-2">
-                          <p className="text-xs font-semibold text-slate-900">
-                            {t("aiHelper.templates")}
-                          </p>
-                          <p className="mt-0.5 text-xs text-slate-500">
-                            {t("aiHelper.quickQuestions.generator.desc")}
-                          </p>
-                        </div>
-                        <div className="grid grid-cols-2 gap-1.5">
-                          {[
-                            { label: t("home.mock.tools.text"), active: true },
-                            { label: t("home.mock.tools.slides") },
-                            { label: t("home.mock.tools.tasks") },
-                            { label: t("home.mock.tools.topics") },
-                            { label: t("home.mock.tools.exams") },
-                            { label: t("home.mock.tools.notes") },
-                          ].map((item) => (
-                            <div
-                              key={item.label}
-                              className={
-                                item.active
-                                  ? "rounded-md bg-blue-500 p-2"
-                                  : "rounded-md border border-slate-200 bg-white p-2"
-                              }
-                            >
-                              <p
-                                className={`text-xs font-medium ${
-                                  item.active ? "text-white" : "text-slate-800"
-                                }`}
-                              >
-                                {item.label}
+                      <div className="p-3 space-y-2 flex-1">
+                        <div className="rounded-2xl bg-white p-3 shadow-sm">
+                          <div className="flex items-center gap-2">
+                            <div className="flex h-8 w-8 shrink-0 items-center justify-center rounded-lg bg-emerald-50">
+                              <Home className="h-4 w-4 text-emerald-600" />
+                            </div>
+                            <div className="min-w-0">
+                              <p className="text-xs font-bold text-slate-900">
+                                {t("lifeGuide.header.title")}
+                              </p>
+                              <p className="text-[11px] text-slate-500 line-clamp-1">
+                                {t("lifeGuide.header.subtitle")}
                               </p>
                             </div>
-                          ))}
+                          </div>
+                          <div className="mt-2 inline-flex items-center gap-1.5 rounded-xl border-2 border-emerald-200 bg-emerald-50 px-2 py-1 text-[10px] font-semibold text-emerald-700">
+                            <Plane className="h-3 w-3" />
+                            {t("lifeGuide.arrival.cta")}
+                          </div>
+                          <div className="mt-2 grid grid-cols-2 gap-1.5">
+                          {(
+                            [
+                              { key: "housing", icon: Home, active: true },
+                              { key: "documents", icon: FileText },
+                              { key: "transport", icon: Bus },
+                              { key: "health", icon: HeartPulse },
+                            ] as const
+                          ).map((item) => {
+                            const Icon = item.icon;
+                            return (
+                              <div
+                                key={item.key}
+                                className={
+                                  item.active
+                                    ? "flex items-center gap-1.5 rounded-xl border-2 border-indigo-400 bg-indigo-50 px-2 py-1.5"
+                                    : "flex items-center gap-1.5 rounded-xl border-2 border-gray-200 bg-gray-50 px-2 py-1.5"
+                                }
+                              >
+                                <Icon
+                                  className={`h-3.5 w-3.5 shrink-0 ${
+                                    item.active ? "text-indigo-600" : "text-slate-500"
+                                  }`}
+                                />
+                                <span
+                                  className={`text-[10px] font-semibold leading-tight line-clamp-1 ${
+                                    item.active ? "text-indigo-700" : "text-slate-700"
+                                  }`}
+                                >
+                                  {t(`lifeGuide.categories.${item.key}`)}
+                                </span>
+                              </div>
+                            );
+                          })}
+                          </div>
                         </div>
                       </div>
                     </div>
                   </CardContent>
                 </Card>
+                </HowItWorksCardLink>
               </StaggerItem>
 
               <StaggerItem>
-                <Card className="no-hover border border-slate-200 shadow-sm h-full bg-gradient-to-b from-white to-slate-50">
+                <HowItWorksCardLink href="/ai-helper" label="AdaptEd AI">
+                <Card className="no-hover border border-slate-200 shadow-sm h-full bg-gradient-to-b from-white to-slate-50 transition-shadow hover:shadow-md">
                   <CardContent className="p-5 h-full flex flex-col">
                     <HowItWorksStepHeader
                       step="03"
-                      title={t("educationGuide.header.title")}
+                      title="AdaptEd AI"
                       caption={t("home.section.howItWorks.step3.caption")}
                     />
-                    <div className="rounded-xl border border-slate-200 bg-slate-50 overflow-hidden flex-1">
+                    <div className="rounded-xl border border-slate-200 bg-slate-50 overflow-hidden flex-1 flex flex-col">
                       <div className="h-8 bg-slate-900 flex items-center px-3 gap-1.5">
                         <span className="w-2 h-2 rounded-full bg-red-400" />
                         <span className="w-2 h-2 rounded-full bg-yellow-400" />
                         <span className="w-2 h-2 rounded-full bg-green-400" />
                       </div>
-                      <div className="p-3 space-y-2">
-                        <div className="rounded-lg bg-white border border-slate-200 px-2 py-1.5">
-                          <p className="text-xs text-slate-400">
-                            {t("educationGuide.search.placeholder")}
-                          </p>
-                        </div>
-                        <div className="flex flex-wrap gap-1.5">
-                          <span className="text-xs px-2 py-1 rounded-md bg-blue-500 text-white">
-                            {t("educationGuide.categories.all")}
-                          </span>
-                          <span className="text-xs px-2 py-1 rounded-md bg-white border border-slate-200 text-slate-600">
-                            {t("educationGuide.categories.exams")}
-                          </span>
-                          <span className="text-xs px-2 py-1 rounded-md bg-white border border-slate-200 text-slate-600">
-                            {t("educationGuide.categories.documents")}
-                          </span>
-                        </div>
-                        <div className="space-y-1.5">
-                          {[
-                            t("educationGuide.header.subtitle"),
-                            t("studentSlang.title"),
-                            t("educationGuide.categories.documents"),
-                          ].map((label) => (
-                            <div
-                              key={label}
-                              className="rounded-md bg-white border border-slate-200 p-2"
-                            >
-                              <p className="text-xs font-medium text-slate-800 line-clamp-1">
-                                {label}
+                      <div className="p-3 space-y-2 flex-1">
+                        <div className="rounded-2xl bg-white p-3 shadow-sm">
+                          <div className="flex items-center gap-2">
+                            <div className="flex h-8 w-8 shrink-0 items-center justify-center rounded-lg bg-blue-50">
+                              <GraduationCap className="h-4 w-4 text-blue-600" />
+                            </div>
+                            <div className="min-w-0">
+                              <p className="text-xs font-bold text-slate-900">
+                                AdaptEd AI — {t("aiHelper.mode.study")}
+                              </p>
+                              <p className="text-[11px] text-slate-500 line-clamp-1">
+                                {t("aiHelper.mode.study.desc")}
                               </p>
                             </div>
-                          ))}
+                          </div>
+                          <div className="mt-2 flex flex-wrap gap-1.5">
+                            <span className="inline-flex items-center gap-1 rounded-xl border-2 border-blue-200 bg-blue-50 px-2 py-1 text-[11px] font-medium text-blue-600">
+                              <GraduationCap className="h-3 w-3" />
+                              {t("aiHelper.mode.study")}
+                            </span>
+                            <span className="inline-flex items-center gap-1 rounded-xl border-2 border-gray-200 bg-gray-50 px-2 py-1 text-[11px] font-medium text-gray-600">
+                              <Home className="h-3 w-3" />
+                              {t("aiHelper.mode.life")}
+                            </span>
+                            <span className="inline-flex items-center gap-1 rounded-xl border-2 border-purple-200 bg-purple-50 px-2 py-1 text-[11px] font-medium text-purple-700">
+                              <FileText className="h-3 w-3" />
+                              {t("aiHelper.templates")}
+                            </span>
+                          </div>
+                        </div>
+                        <div className="rounded-xl border border-slate-200 bg-white p-2">
+                          <div className="mb-2 flex items-center gap-2">
+                            <div className="flex h-6 w-6 items-center justify-center rounded-full bg-gradient-to-br from-blue-500 to-indigo-600">
+                              <Bot className="h-3 w-3 text-white" />
+                            </div>
+                            <p className="text-[11px] font-semibold text-slate-800">
+                              AI {t("aiHelper.mode.study")}
+                            </p>
+                          </div>
+                          <div className="ml-auto max-w-[90%] rounded-2xl bg-blue-500 px-3 py-2 text-[11px] text-white">
+                            {t("aiHelper.quickQuestions.study.1")}
+                          </div>
+                          <div className="mt-2 max-w-[92%] rounded-2xl bg-gray-100 px-3 py-2 text-[11px] text-slate-800">
+                            {t("aiHelper.tips.study.2")}
+                          </div>
+                          <div className="mt-2 flex items-center gap-1.5 rounded-xl border border-slate-200 bg-slate-50 px-2 py-1.5">
+                            <span className="flex-1 text-[11px] text-slate-400">
+                              {t("aiHelper.input.placeholder")}
+                            </span>
+                            <span className="flex h-6 w-6 items-center justify-center rounded-lg bg-gradient-to-r from-blue-500 to-purple-600">
+                              <Send className="h-3 w-3 text-white" />
+                            </span>
+                          </div>
                         </div>
                       </div>
                     </div>
                   </CardContent>
                 </Card>
+                </HowItWorksCardLink>
               </StaggerItem>
 
               <StaggerItem>
-                <Card className="no-hover border border-slate-200 shadow-sm h-full bg-gradient-to-b from-white to-slate-50">
+                <HowItWorksCardLink
+                  href="/community/questions"
+                  label={t("home.features.community")}
+                >
+                <Card className="no-hover border border-slate-200 shadow-sm h-full bg-gradient-to-b from-white to-slate-50 transition-shadow hover:shadow-md">
                   <CardContent className="p-5 h-full flex flex-col">
                     <HowItWorksStepHeader
                       step="04"
                       title={t("home.features.community")}
                       caption={t("home.section.howItWorks.step4.caption")}
                     />
-                    <div className="rounded-xl border border-slate-200 bg-slate-50 overflow-hidden flex-1">
+                    <div className="rounded-xl border border-slate-200 bg-slate-50 overflow-hidden flex-1 flex flex-col">
                       <div className="h-8 bg-slate-900 flex items-center px-3 gap-1.5">
                         <span className="w-2 h-2 rounded-full bg-red-400" />
                         <span className="w-2 h-2 rounded-full bg-yellow-400" />
                         <span className="w-2 h-2 rounded-full bg-green-400" />
                       </div>
-                      <div className="p-3 space-y-2">
-                        <div className="rounded-lg bg-gradient-to-r from-indigo-600 to-purple-600 text-white p-2">
-                          <p className="text-xs font-semibold">
-                            {t("home.features.community")}
-                          </p>
-                          <div className="mt-1.5 flex flex-wrap gap-1.5">
-                            <span className="text-xs px-2 py-0.5 rounded bg-white/20">
-                              {t("home.mock.community.tab.questions")}
-                            </span>
-                            <span className="text-xs px-2 py-0.5 rounded bg-white/20">
-                              {t("home.mock.community.tab.answers")}
-                            </span>
-                            <span className="text-xs px-2 py-0.5 rounded bg-white/20">
-                              {t("home.mock.community.tab.members")}
+                      <div className="p-3 space-y-2 flex-1">
+                        <div className="rounded-2xl bg-white p-3 shadow-sm">
+                          <div className="flex items-center gap-2">
+                            <div className="flex h-8 w-8 shrink-0 items-center justify-center rounded-lg bg-indigo-50">
+                              <MessageCircle className="h-4 w-4 text-indigo-600" />
+                            </div>
+                            <div className="min-w-0 flex-1">
+                              <p className="text-xs font-bold text-slate-900">
+                                {t("community.questions.title")}
+                              </p>
+                              <p className="text-[11px] text-slate-500 line-clamp-1">
+                                {t("community.questions.subtitle")}
+                              </p>
+                            </div>
+                            <span className="inline-flex items-center gap-1 rounded-lg bg-gradient-to-r from-blue-600 to-purple-600 px-2 py-1 text-[10px] font-semibold text-white">
+                              <Plus className="h-3 w-3" />
+                              {t("community.questions.ask")}
                             </span>
                           </div>
+                          <div className="mt-2 grid grid-cols-3 gap-1.5">
+                            <div className="rounded-xl border-2 border-indigo-500 bg-indigo-50 px-1.5 py-1.5 text-center">
+                              <p className="text-sm font-bold text-slate-900">24</p>
+                              <p className="text-[9px] text-slate-500 leading-tight">
+                                {t("community.questions.stats.total")}
+                              </p>
+                            </div>
+                            <div className="rounded-xl border-2 border-gray-100 bg-gray-50 px-1.5 py-1.5 text-center">
+                              <p className="text-sm font-bold text-emerald-700">18</p>
+                              <p className="text-[9px] text-slate-500 leading-tight">
+                                {t("community.questions.stats.answered")}
+                              </p>
+                            </div>
+                            <div className="rounded-xl border-2 border-gray-100 bg-gray-50 px-1.5 py-1.5 text-center">
+                              <p className="text-sm font-bold text-amber-700">6</p>
+                              <p className="text-[9px] text-slate-500 leading-tight">
+                                {t("community.questions.stats.waiting")}
+                              </p>
+                            </div>
+                          </div>
                         </div>
-                        <div className="rounded-lg bg-white border border-slate-200 px-2 py-1.5">
-                          <p className="text-xs text-slate-400">
-                            {t("aiHelper.input.placeholder")}
-                          </p>
+                        <div className="flex items-center gap-2 rounded-2xl bg-gradient-to-br from-indigo-50 to-emerald-50 p-2 ring-1 ring-indigo-100">
+                          <span className="flex h-7 w-7 shrink-0 items-center justify-center rounded-lg bg-gradient-to-br from-indigo-500 to-emerald-500 text-white">
+                            <HeartHandshake className="h-3.5 w-3.5" />
+                          </span>
+                          <div className="min-w-0 flex-1">
+                            <p className="text-[11px] font-bold text-slate-900">
+                              {buddyT(currentLanguage, "name")}
+                            </p>
+                            <p className="text-[9px] leading-tight text-slate-500 line-clamp-1">
+                              {buddyT(currentLanguage, "subtitle")} ·{" "}
+                              {buddyT(currentLanguage, "free")}
+                            </p>
+                          </div>
+                          <span className="inline-flex shrink-0 items-center gap-0.5 text-[9px] font-semibold text-indigo-700">
+                            {buddyT(currentLanguage, "openForm")}
+                            <ArrowRight className="h-3 w-3 rtl:rotate-180" />
+                          </span>
                         </div>
-                        <div className="rounded-lg bg-white border border-slate-200 p-2">
-                          <p className="text-xs font-medium text-slate-900">
-                            {t("aiHelper.quickQuestions.life.4")}
+                        <div className="flex flex-wrap gap-1.5">
+                          <span className="rounded-xl border-2 border-indigo-400 bg-indigo-50 px-2 py-1 text-[10px] font-medium text-indigo-700">
+                            {t("community.questions.filter.all")}
+                          </span>
+                          <span className="rounded-xl border-2 border-gray-200 bg-gray-50 px-2 py-1 text-[10px] font-medium text-gray-600">
+                            {t("community.questions.filter.answered")}
+                          </span>
+                          <span className="rounded-xl border-2 border-gray-200 bg-gray-50 px-2 py-1 text-[10px] font-medium text-gray-600">
+                            {t("community.questions.filter.unanswered")}
+                          </span>
+                        </div>
+                        <div className="rounded-2xl bg-white p-2.5 shadow-sm">
+                          <p className="text-[11px] font-semibold text-slate-900 line-clamp-2">
+                            {t("community.questions.pinned.visa")}
                           </p>
-                          <p className="text-xs text-slate-500 mt-1">
+                          <p className="mt-1.5 text-[10px] text-slate-500">
                             {t("home.mock.community.meta")}
                           </p>
                         </div>
@@ -666,6 +836,7 @@ export default function HomePage() {
                     </div>
                   </CardContent>
                 </Card>
+                </HowItWorksCardLink>
               </StaggerItem>
             </StaggerReveal>
           </div>

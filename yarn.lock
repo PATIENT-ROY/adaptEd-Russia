@@ -758,7 +758,7 @@ acorn-jsx@^5.3.2:
   resolved "https://registry.npmjs.org/acorn/-/acorn-8.15.0.tgz"
   integrity sha512-NZyJarBfL7nWwIq+FDL6Zp/yHEhePMNnnJ0y3qfieCrmNvYct8uvtiV41UvlSe6apAfk0fY1FbWx+NwfmpvtTg==
 
-"adapted-russia-client@file:/Users/patientmbaya/Desktop/AdaptEd-Russia 02/client":
+"adapted-russia-client@file:/Users/patientmbaya/Desktop/01 Проекты/AdaptEd-Russia 02/client":
   version "1.0.0"
   resolved "file:client"
   dependencies:
@@ -767,6 +767,7 @@ acorn-jsx@^5.3.2:
     clsx "^2.1.1"
     date-fns "^3.6.0"
     framer-motion "^11.10.16"
+    i18n-iso-countries "^7.14.0"
     lucide-react "^0.460.0"
     next "^15.5.12"
     pdfjs-dist "^5.4.296"
@@ -781,7 +782,7 @@ acorn-jsx@^5.3.2:
     tesseract.js "^6.0.1"
     zod "^3.23.8"
 
-"adapted-russia-server@file:/Users/patientmbaya/Desktop/AdaptEd-Russia 02/server":
+"adapted-russia-server@file:/Users/patientmbaya/Desktop/01 Проекты/AdaptEd-Russia 02/server":
   version "1.0.0"
   resolved "file:server"
   dependencies:
@@ -2224,10 +2225,15 @@ fs.realpath@^1.0.0:
   resolved "https://registry.npmjs.org/fs.realpath/-/fs.realpath-1.0.0.tgz"
   integrity sha512-OO0pH2lK6a0hZnAdau5ItzHPI6pUlvI7jMVnxUQRtw4owF2wk8lOSabtGDCTP4Ggrg2MbGnWO9X8K1t4+fGMDw==
 
-fsevents@~2.3.2, fsevents@~2.3.3, fsevents@2.3.2, fsevents@2.3.3:
+fsevents@~2.3.2, fsevents@~2.3.3, fsevents@2.3.3:
   version "2.3.3"
   resolved "https://registry.npmjs.org/fsevents/-/fsevents-2.3.3.tgz"
   integrity sha512-5xoDfX+fL7faATnagmWPpbFtwh/R77WmMMqqHGS65C3vvB0YHrgF+B1YmZ3441tMj5n63k0212XNoJwzlhffQw==
+
+fsevents@2.3.2:
+  version "2.3.2"
+  resolved "https://registry.npmjs.org/fsevents/-/fsevents-2.3.2.tgz"
+  integrity sha512-xiqMQR4xAeHTuB9uWm+fFRcIOgKBMiOBP+eXiyT7jsgVCq1bkVygt00oASowB7EdtpOHaaPgKt812P9ab+DDKA==
 
 function-bind@^1.1.2:
   version "1.1.2"
