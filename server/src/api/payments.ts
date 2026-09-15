@@ -2,7 +2,14 @@ import { Router } from 'express';
 import { prisma } from '../lib/database';
 import { authMiddleware } from '../lib/auth';
 import { createPayment, getPayment, cancelPayment, checkPaymentStatus, TEST_CARDS, TEST_SBP_PHONES } from '../lib/yookassa';
+import { canApplyFromYooKassaStatus, isPaymentTester } from '../lib/payment-test-access';
 import { v4 as uuidv4 } from 'uuid';
+
+function paymentTesterForbidden(req: { user?: { role?: string; email?: string } }, res: any) {
+  if (isPaymentTester(req.user)) return false;
+  res.status(403).json({ error: 'PAYMENT_TEST_ONLY' });
+  return true;
+}
 
 const router = Router();
 
@@ -24,6 +31,7 @@ router.get('/plans', async (req, res) => {
 // Создать платеж для подписки
 router.post('/create-payment', authMiddleware, async (req, res) => {
   try {
+    if (paymentTesterForbidden(req as any, res)) return;
     const { planId, paymentMethod } = req.body;
     const userId = (req as any).user.userId;
 
@@ -102,7 +110,7 @@ router.get('/payment/:paymentId', authMiddleware, async (req, res) => {
 
     // Получаем актуальный статус из YooKassa (или mock)
     let statusNormalized = (payment.status || '').toUpperCase();
-    if (payment.yooKassaPaymentId) {
+    if (payment.yooKassaPaymentId && canApplyFromYooKassaStatus((req as any).user, payment.yooKassaPaymentId)) {
       try {
         const yooKassaStatus = await checkPaymentStatus(payment.yooKassaPaymentId);
         
@@ -329,6 +337,7 @@ router.post('/webhook', async (req, res) => {
 // Принудительно применить Premium по оплаченному платежу текущего пользователя (без payment_id)
 router.post('/fix-my-plan', authMiddleware, async (req, res) => {
   try {
+    if (paymentTesterForbidden(req as any, res)) return;
     const userId = (req as any).user.userId;
 
     const recentPayments = await prisma.payment.findMany({
@@ -402,6 +411,7 @@ router.post('/fix-my-plan', authMiddleware, async (req, res) => {
 // Ручное применение Premium по payment_id (для случаев когда авто-применение не сработало)
 router.post('/apply-premium/:paymentId', authMiddleware, async (req, res) => {
   try {
+    if (paymentTesterForbidden(req as any, res)) return;
     const { paymentId } = req.params;
     const userId = (req as any).user.userId;
 
@@ -467,7 +477,8 @@ router.post('/apply-premium/:paymentId', authMiddleware, async (req, res) => {
 });
 
 // Получить тестовые данные для разработки
-router.get('/test-data', (req, res) => {
+router.get('/test-data', authMiddleware, async (req, res) => {
+  if (paymentTesterForbidden(req as any, res)) return;
   res.json({
     testCards: TEST_CARDS,
     testSbpPhones: TEST_SBP_PHONES,
