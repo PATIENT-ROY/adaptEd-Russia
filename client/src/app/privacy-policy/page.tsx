@@ -270,7 +270,7 @@ export default function PrivacyPolicyPage() {
                   <Phone className="h-5 w-5 text-green-600" />
                   <div>
                     <p className="font-medium text-green-900">Телефон</p>
-                    <p className="text-sm text-green-800">+7 (800) 555-0123</p>
+                    <p className="text-sm text-green-800">+7 (922) 100-69-83</p>
                   </div>
                 </div>
               </div>

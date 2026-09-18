@@ -46,11 +46,6 @@ export function Footer() {
       type: "telegram" as const,
       labelKey: "footer.social.telegram",
     },
-    {
-      href: "https://vk.ru/",
-      type: "vk" as const,
-      labelKey: "footer.social.vk",
-    },
   ];
 
   return (
@@ -258,6 +253,14 @@ export function Footer() {
                 rel="noopener noreferrer"
               >
                 {t("footer.privacy")}
+              </Link>
+              <Link
+                href="/offer"
+                className="col-span-2 min-h-0 leading-snug text-slate-400 transition-colors duration-300 hover:text-blue-400 sm:col-span-1"
+                target="_blank"
+                rel="noopener noreferrer"
+              >
+                {t("footer.offer")}
               </Link>
               <div className="flex items-center justify-center gap-2 whitespace-nowrap sm:contents">
                 <Link
