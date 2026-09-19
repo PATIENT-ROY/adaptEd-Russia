@@ -492,7 +492,11 @@ function ProfileContent() {
 
   const downloadInvoiceReceipt = useCallback(
     (invoice: ProfileBillingItem) => {
-      const desc = localizePaymentDescription(invoice.description, t);
+      const desc = localizePaymentDescription(
+        invoice.description,
+        t,
+        invoice.amount,
+      );
       const status = invoiceStatusLabel(invoice.status);
       const amount =
         invoice.status === "free"
@@ -1176,6 +1180,7 @@ function ProfileContent() {
                                   {localizePaymentDescription(
                                     invoice.description,
                                     t,
+                                    invoice.amount,
                                   )}
                                 </p>
                                 <div className="flex flex-col sm:flex-row sm:items-center gap-1 sm:gap-4 text-xs sm:text-sm text-slate-600">
@@ -1640,7 +1645,11 @@ function ProfileContent() {
                     {t("profile.billing.invoice.description")}
                   </span>
                   <span className="font-medium text-right text-slate-900">
-                    {localizePaymentDescription(viewingInvoice.description, t)}
+                    {localizePaymentDescription(
+                      viewingInvoice.description,
+                      t,
+                      viewingInvoice.amount,
+                    )}
                   </span>
                 </div>
                 <div className="flex justify-between gap-4 border-b border-slate-100 pb-2">

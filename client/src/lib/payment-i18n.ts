@@ -94,24 +94,62 @@ export function localizePlanFeatures(
 export function localizePaymentDescription(
   description: string | null | undefined,
   t: TFunc,
+  amount?: number | null,
 ): string {
-  if (!description?.trim()) return t("payment.test.history.generic");
-  const d = description.toLowerCase().replace(/ё/g, "е");
+  if (!description?.trim() && amount == null) {
+    return t("payment.test.history.generic");
+  }
+  const d = (description || "").toLowerCase().replace(/ё/g, "е");
 
-  const isMonthly =
-    d.includes("месячн") || d.includes("monthly") || d.includes("mois");
+  // Prefer amount when description was wrongly saved as "месячная" for 3/12-mo plans
+  if (amount === 549 || amount === 1499) {
+    return amount === 549
+      ? t("payment.test.history.premiumThreeMonths")
+      : t("payment.test.history.premiumSixMonths");
+  }
+  if (amount === 1990 || amount === 2990) {
+    return t("payment.test.history.premiumYearly");
+  }
+  if (amount === 199) {
+    return t("payment.test.history.premiumMonthly");
+  }
+
+  const isThreeMonths =
+    d.includes("3 месяц") ||
+    d.includes("3-month") ||
+    d.includes("three month") ||
+    d.includes("3 mois");
+  const isSixMonths =
+    d.includes("6 месяц") ||
+    d.includes("6-month") ||
+    d.includes("six month") ||
+    d.includes("6 mois");
   const isYearly =
-    d.includes("годов") ||
+    d.includes("год") ||
     d.includes("yearly") ||
     d.includes("annual") ||
     d.includes("annee") ||
-    d.includes("année");
+    d.includes("année") ||
+    /\byear\b/.test(d);
+  // "месячная" / monthly — but not "3 месяца" / "6 месяцев"
+  const isMonthly =
+    (d.includes("месячн") || d.includes("monthly") || d.includes("mois")) &&
+    !isThreeMonths &&
+    !isSixMonths;
 
-  if (d.includes("подписк") || d.includes("subscription") || d.includes("abonnement")) {
+  if (
+    d.includes("подписк") ||
+    d.includes("subscription") ||
+    d.includes("abonnement") ||
+    d.includes("премиум") ||
+    d.includes("premium")
+  ) {
+    if (isThreeMonths) return t("payment.test.history.premiumThreeMonths");
+    if (isSixMonths) return t("payment.test.history.premiumSixMonths");
     if (isYearly) return t("payment.test.history.premiumYearly");
     if (isMonthly) return t("payment.test.history.premiumMonthly");
     return t("payment.test.history.premium");
   }
 
-  return description;
+  return description?.trim() || t("payment.test.history.generic");
 }
