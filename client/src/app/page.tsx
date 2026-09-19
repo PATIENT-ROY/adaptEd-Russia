@@ -40,6 +40,7 @@ import {
   UserPlus,
   AlertTriangle,
   HeartHandshake,
+  Play,
 } from "lucide-react";
 import Link from "next/link";
 import Image from "next/image";
@@ -120,6 +121,75 @@ function HowItWorksStepHeader({
           <p className="mt-1 text-sm text-slate-600">{caption}</p>
         </div>
       </div>
+    </div>
+  );
+}
+
+function PromoVideo({
+  title,
+  playLabel,
+  watchLabel,
+}: {
+  title: string;
+  playLabel: string;
+  watchLabel: string;
+}) {
+  const [hasStarted, setHasStarted] = useState(false);
+  const videoRef = useRef<HTMLVideoElement>(null);
+  const videoUrl = "/video/AdaptEd-Russia-promo.mp4";
+
+  const startVideo = () => {
+    setHasStarted(true);
+    void videoRef.current?.play().catch(() => {
+      // Native controls remain available if a browser blocks the first attempt.
+    });
+  };
+
+  return (
+    <div className="mx-auto mt-8 max-w-4xl rounded-3xl border border-blue-100 bg-gradient-to-br from-blue-50 via-white to-indigo-50 p-3 shadow-[0_18px_45px_-28px_rgba(37,99,235,0.32)] sm:mt-10 sm:p-4">
+      <h3 className="px-2 pb-3 pt-1 text-center text-lg font-bold text-slate-900 sm:px-3 sm:pb-4 sm:text-2xl">
+        {title}
+      </h3>
+
+      <div className="relative aspect-video overflow-hidden rounded-2xl bg-slate-950 shadow-lg">
+        <video
+          ref={videoRef}
+          className="h-full w-full bg-black object-contain"
+          src={videoUrl}
+          poster="/video/AdaptEd-preview.jpg"
+          controls={hasStarted}
+          playsInline
+          preload="none"
+          onPlay={() => setHasStarted(true)}
+        >
+          <a href={videoUrl} target="_blank" rel="noopener noreferrer">
+            {watchLabel}
+          </a>
+        </video>
+
+        {!hasStarted && (
+          <button
+            type="button"
+            onClick={startVideo}
+            aria-label={playLabel}
+            className="group absolute inset-0 block h-full w-full overflow-hidden focus-visible:outline-none focus-visible:ring-4 focus-visible:ring-blue-400 focus-visible:ring-inset"
+          >
+            <span className="absolute inset-0 bg-gradient-to-t from-slate-950/30 via-transparent to-slate-950/10" />
+            <span className="absolute left-1/2 top-1/2 flex h-16 w-16 -translate-x-1/2 -translate-y-1/2 items-center justify-center rounded-full bg-white/95 text-blue-600 shadow-xl transition duration-300 group-hover:scale-110 group-hover:bg-white sm:h-20 sm:w-20">
+              <Play className="ml-1 h-7 w-7 fill-current sm:h-9 sm:w-9" aria-hidden />
+            </span>
+          </button>
+        )}
+      </div>
+
+      <a
+        href={videoUrl}
+        target="_blank"
+        rel="noopener noreferrer"
+        className="mt-3 inline-flex min-h-11 items-center justify-center rounded-xl px-4 text-sm font-semibold text-blue-700 transition hover:bg-blue-100 hover:text-blue-800 focus-visible:outline-none focus-visible:ring-2 focus-visible:ring-blue-500 focus-visible:ring-offset-2"
+      >
+        {watchLabel}
+      </a>
     </div>
   );
 }
@@ -839,6 +909,14 @@ export default function HomePage() {
                 </HowItWorksCardLink>
               </StaggerItem>
             </StaggerReveal>
+
+            <ScrollReveal delay={0.1}>
+              <PromoVideo
+                title={t("home.section.howItWorks.video.title")}
+                playLabel={t("home.section.howItWorks.video.play")}
+                watchLabel={t("home.section.howItWorks.video.watch")}
+              />
+            </ScrollReveal>
           </div>
         </section>
 
