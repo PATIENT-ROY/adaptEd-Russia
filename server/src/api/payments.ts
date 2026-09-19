@@ -14,7 +14,7 @@ import {
   canApplyFromYooKassaStatus,
   isPaymentTester,
 } from '../lib/payment-test-access';
-import { applyPremiumForPayment, resolvePlanForPayment } from '../lib/apply-premium';
+import { applyPremiumForPayment, resolvePlanForPayment, formatPremiumPaymentDescription, getPlanDurationMonths } from '../lib/apply-premium';
 import { v4 as uuidv4 } from 'uuid';
 
 const router = Router();
@@ -71,6 +71,8 @@ router.post('/create-payment', authMiddleware, async (req, res) => {
       return res.status(400).json({ error: 'Cannot checkout a free plan' });
     }
 
+    const description = formatPremiumPaymentDescription(plan);
+
     // Сначала локальный платёж — чтобы return_url содержал наш payment_id
     const paymentId = uuidv4();
     const payment = await prisma.payment.create({
@@ -80,7 +82,7 @@ router.post('/create-payment', authMiddleware, async (req, res) => {
         planId: plan.id,
         amount: plan.price,
         currency: plan.currency,
-        description: `Подписка ${plan.name}`,
+        description,
         status: 'PENDING',
         paymentMethod: String(paymentMethod || 'CARD'),
         yooKassaPaymentId: null,
@@ -92,7 +94,7 @@ router.post('/create-payment', authMiddleware, async (req, res) => {
       // Цена только из каталога — клиент не диктует amount
       yooKassaPayment = await createPayment(
         plan.price,
-        `Подписка ${plan.name}`,
+        description,
         {
           userId,
           planId: plan.id,
@@ -100,6 +102,7 @@ router.post('/create-payment', authMiddleware, async (req, res) => {
           paymentMethod: String(paymentMethod || 'CARD'),
           planName: plan.name,
           planInterval: plan.interval,
+          planMonths: String(getPlanDurationMonths(plan)),
         },
         { idempotenceKey: paymentId, returnUrlPaymentId: paymentId },
       );

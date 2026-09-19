@@ -21,6 +21,15 @@ export function getPlanDurationMonths(plan: PlanLike): number {
   return 1;
 }
 
+/** Human-readable payment / YooKassa description from plan duration. */
+export function formatPremiumPaymentDescription(plan: PlanLike): string {
+  const months = getPlanDurationMonths(plan);
+  if (months === 12) return 'Подписка Премиум — год';
+  if (months === 6) return 'Подписка Премиум — 6 месяцев';
+  if (months === 3) return 'Подписка Премиум — 3 месяца';
+  return 'Подписка Премиум — месяц';
+}
+
 export async function resolvePlanForPayment(payment: {
   planId: string | null;
   amount: number;

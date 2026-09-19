@@ -1908,8 +1908,10 @@ const translations: Record<Language, Record<string, string>> = {
     "payment.plan.feature.masterclasses": "Эксклюзивные мастер-классы",
     "payment.test.history.generic": "Платёж",
     "payment.test.history.premium": "Подписка Премиум",
-    "payment.test.history.premiumMonthly": "Подписка Премиум — месячная",
-    "payment.test.history.premiumYearly": "Подписка Премиум — годовая",
+    "payment.test.history.premiumMonthly": "Подписка Премиум — месяц",
+    "payment.test.history.premiumThreeMonths": "Подписка Премиум — 3 месяца",
+    "payment.test.history.premiumSixMonths": "Подписка Премиум — 6 месяцев",
+    "payment.test.history.premiumYearly": "Подписка Премиум — год",
 
     // Payment Callback Page
     "payment.callback.title": "Обработка платежа",
@@ -3826,8 +3828,10 @@ const translations: Record<Language, Record<string, string>> = {
     "payment.plan.feature.masterclasses": "Exclusive masterclasses",
     "payment.test.history.generic": "Payment",
     "payment.test.history.premium": "Premium subscription",
-    "payment.test.history.premiumMonthly": "Premium subscription — monthly",
-    "payment.test.history.premiumYearly": "Premium subscription — yearly",
+    "payment.test.history.premiumMonthly": "Premium subscription — 1 month",
+    "payment.test.history.premiumThreeMonths": "Premium subscription — 3 months",
+    "payment.test.history.premiumSixMonths": "Premium subscription — 6 months",
+    "payment.test.history.premiumYearly": "Premium subscription — 1 year",
 
     // Payment Callback Page
     "payment.callback.title": "Payment Processing",
@@ -5680,8 +5684,10 @@ const translations: Record<Language, Record<string, string>> = {
     "payment.plan.feature.masterclasses": "Masterclasses exclusives",
     "payment.test.history.generic": "Paiement",
     "payment.test.history.premium": "Abonnement Premium",
-    "payment.test.history.premiumMonthly": "Abonnement Premium — mensuel",
-    "payment.test.history.premiumYearly": "Abonnement Premium — annuel",
+    "payment.test.history.premiumMonthly": "Abonnement Premium — 1 mois",
+    "payment.test.history.premiumThreeMonths": "Abonnement Premium — 3 mois",
+    "payment.test.history.premiumSixMonths": "Abonnement Premium — 6 mois",
+    "payment.test.history.premiumYearly": "Abonnement Premium — 1 an",
 
     // Payment Callback Page
     "payment.callback.title": "Traitement du paiement",
@@ -7595,8 +7601,10 @@ const translations: Record<Language, Record<string, string>> = {
     "payment.plan.feature.masterclasses": "ورش عمل حصرية",
     "payment.test.history.generic": "دفعة",
     "payment.test.history.premium": "اشتراك بريميوم",
-    "payment.test.history.premiumMonthly": "اشتراك بريميوم — شهري",
-    "payment.test.history.premiumYearly": "اشتراك بريميوم — سنوي",
+    "payment.test.history.premiumMonthly": "اشتراك بريميوم — شهر واحد",
+    "payment.test.history.premiumThreeMonths": "اشتراك بريميوم — 3 أشهر",
+    "payment.test.history.premiumSixMonths": "اشتراك بريميوم — 6 أشهر",
+    "payment.test.history.premiumYearly": "اشتراك بريميوم — سنة",
 
     // Payment Callback Page
     "payment.callback.title": "معالجة الدفع",
@@ -9510,8 +9518,10 @@ const translations: Record<Language, Record<string, string>> = {
     "payment.plan.feature.masterclasses": "独家大师课",
     "payment.test.history.generic": "付款",
     "payment.test.history.premium": "高级版订阅",
-    "payment.test.history.premiumMonthly": "高级版订阅 — 月付",
-    "payment.test.history.premiumYearly": "高级版订阅 — 年付",
+    "payment.test.history.premiumMonthly": "高级版订阅 — 1 个月",
+    "payment.test.history.premiumThreeMonths": "高级版订阅 — 3 个月",
+    "payment.test.history.premiumSixMonths": "高级版订阅 — 6 个月",
+    "payment.test.history.premiumYearly": "高级版订阅 — 1 年",
 
     // Payment Callback Page
     "payment.callback.title": "支付处理",
@@ -11352,8 +11362,10 @@ const translations: Record<Language, Record<string, string>> = {
     "payment.plan.feature.masterclasses": "Clases magistrales exclusivas",
     "payment.test.history.generic": "Pago",
     "payment.test.history.premium": "Suscripción premium",
-    "payment.test.history.premiumMonthly": "Suscripción premium: mensual",
-    "payment.test.history.premiumYearly": "Suscripción premium: anual",
+    "payment.test.history.premiumMonthly": "Suscripción premium — 1 mes",
+    "payment.test.history.premiumThreeMonths": "Suscripción premium — 3 meses",
+    "payment.test.history.premiumSixMonths": "Suscripción premium — 6 meses",
+    "payment.test.history.premiumYearly": "Suscripción premium — 1 año",
     "payment.callback.title": "Procesamiento de pagos",
     "payment.callback.subtitle": "Comprobando el estado del pago...",
     "payment.callback.noPaymentId": "ID de pago no encontrado",
