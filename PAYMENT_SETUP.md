@@ -47,10 +47,12 @@ NODE_ENV=development
 # Client URL (for CORS and redirects)
 CLIENT_URL=http://localhost:3000
 
-# YooKassa Configuration (тестовые ключи)
+# YooKassa Configuration (тестовые ключи магазина)
 YOOKASSA_SHOP_ID="your-yookassa-shop-id"
 YOOKASSA_SECRET_KEY="your-yookassa-secret-key"
-```
+# YOOKASSA_USE_MOCK=true
+# YOOKASSA_WEBHOOK_SECRET="..."
+# PAYMENT_TEST_EMAILS="you@example.com"```
 
 ### 3. Получение тестовых ключей YooKassa
 
@@ -87,9 +89,9 @@ npm run dev
 
 ## 🧪 Тестирование
 
-### Доступ к тестовой странице
+### Доступ к странице оплаты
 
-Откройте в браузере: `http://localhost:3000/payment-test`
+Откройте в браузере: `http://localhost:3000/payment`
 
 ### Тестовые данные
 

@@ -537,7 +537,15 @@ export const createPayment = async (data: PaymentRequest): Promise<PaymentRespon
   }
   
   if (!response.ok) {
-    throw new Error(`Failed to create payment: ${response.status} ${response.statusText}`);
+    let detail = `${response.status} ${response.statusText}`;
+    try {
+      const body = await response.json();
+      if (body?.error) detail = body.error;
+      if (body?.message) detail = `${detail}: ${body.message}`;
+    } catch {
+      /* ignore */
+    }
+    throw new Error(`Failed to create payment: ${detail}`);
   }
   
   return response.json();
@@ -634,12 +642,15 @@ export const getPaymentHistory = async (): Promise<Payment[]> => {
 };
 
 export const getTestData = async (): Promise<TestData> => {
-  const response = await fetch(`${API_BASE_URL}/payments/test-data`);
-  
+  const token = typeof window !== 'undefined' ? localStorage.getItem('token') : null;
+  const response = await fetch(`${API_BASE_URL}/payments/test-data`, {
+    headers: token ? { Authorization: `Bearer ${token}` } : {},
+  });
+
   if (!response.ok) {
     throw new Error(`Failed to fetch test data: ${response.status}`);
   }
-  
+
   return response.json();
 };
 

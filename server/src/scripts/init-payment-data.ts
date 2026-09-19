@@ -2,11 +2,11 @@ import { PrismaClient } from '../../prisma/generated';
 
 const prisma = new PrismaClient();
 
+/** Catalog Variant 1: 199 / 549 (3 мес) / 1990 (год) */
 async function initPaymentData() {
   try {
-    console.log('🚀 Инициализация тестовых данных для платежной системы...');
+    console.log('🚀 Инициализация каталога подписок (Вариант 1)...');
 
-    // Создаем тестовые планы подписок
     const plans = [
       {
         name: 'Freemium',
@@ -46,8 +46,8 @@ async function initPaymentData() {
         isActive: true,
       },
       {
-        name: 'Премиум (6 месяцев)',
-        price: 1499,
+        name: 'Премиум (3 месяца)',
+        price: 549,
         currency: 'RUB',
         interval: 'MONTHLY',
         features: JSON.stringify([
@@ -64,15 +64,13 @@ async function initPaymentData() {
           'DocScan Pro: Объединение страниц',
           'DocScan Pro: Облачное хранение',
           'DocScan Pro: Без водяных знаков',
-          'Скидка 17% при оплате за 6 месяцев',
-          'Доступ к закрытым вебинарам',
-          'Персональный ментор',
+          'Скидка 8% при оплате за 3 месяца',
         ]),
         isActive: true,
       },
       {
         name: 'Премиум (год)',
-        price: 2990,
+        price: 1990,
         currency: 'RUB',
         interval: 'YEARLY',
         features: JSON.stringify([
@@ -98,25 +96,14 @@ async function initPaymentData() {
       },
     ];
 
-    // Удаляем существующие планы
     await prisma.subscriptionPlan.deleteMany();
 
-    // Создаем новые планы
     for (const plan of plans) {
-      await prisma.subscriptionPlan.create({
-        data: plan,
-      });
+      await prisma.subscriptionPlan.create({ data: plan });
       console.log(`✅ Создан план: ${plan.name} - ${plan.price} ${plan.currency}`);
     }
 
-    console.log('🎉 Тестовые данные успешно инициализированы!');
-    console.log('');
-    console.log('📋 Созданные планы:');
-    const createdPlans = await prisma.subscriptionPlan.findMany();
-    createdPlans.forEach((plan: any) => {
-      console.log(`  - ${plan.name}: ${plan.price} ${plan.currency} (${plan.interval})`);
-    });
-
+    console.log('🎉 Каталог обновлён: 199 / 549 (3 мес) / 1990 (год)');
   } catch (error) {
     console.error('❌ Ошибка при инициализации данных:', error);
   } finally {
@@ -124,5 +111,4 @@ async function initPaymentData() {
   }
 }
 
-// Запускаем скрипт
-initPaymentData(); 
+initPaymentData();
