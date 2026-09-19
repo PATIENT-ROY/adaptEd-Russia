@@ -1,6 +1,7 @@
 /**
  * Mock YooKassa checkout stays available for allowlisted testers.
  * Regular users must not receive Premium from mock status checks.
+ * Existing subscriptions are not revoked here.
  */
 export type PaymentActor = {
   role?: string | null;
