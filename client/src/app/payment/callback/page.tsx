@@ -34,17 +34,7 @@ function PaymentCallbackContent() {
   const [error, setError] = useState<string | null>(null);
 
   useEffect(() => {
-    const url = typeof window !== "undefined" ? window.location.href : "";
-    const urlObj = new URL(url);
-
     let id = searchParams.get("payment_id");
-
-    if (!id) {
-      const pathMatch = url.match(/payment[^/]*\/payment\/test/);
-      if (pathMatch) {
-        id = urlObj.searchParams.get("payment_id");
-      }
-    }
 
     if (!id) {
       id = searchParams.get("paymentId") || searchParams.get("id");
@@ -70,7 +60,7 @@ function PaymentCallbackContent() {
 
       if (payment.status === PaymentStatus.SUCCEEDED) {
         setTimeout(() => {
-          router.push("/payment/test?payment_id=" + id);
+          router.push("/payment?payment_id=" + id);
         }, 2000);
       }
     } catch (err) {
@@ -132,11 +122,11 @@ function PaymentCallbackContent() {
     }
   };
 
-  const handleGoToTestPage = () => {
+  const handleGoToPayment = () => {
     if (paymentId) {
-      router.push("/payment/test?payment_id=" + paymentId);
+      router.push("/payment?payment_id=" + paymentId);
     } else {
-      router.push("/payment/test");
+      router.push("/payment");
     }
   };
 
@@ -212,19 +202,28 @@ function PaymentCallbackContent() {
                 <div className="flex space-x-4 w-full">
                   <Button
                     variant="outline"
-                    onClick={() => router.push("/payment/test")}
+                    onClick={() => router.push("/payment")}
                     className="flex-1"
                   >
-                    {t("payment.callback.goToTestPage")}
+                    {t("payment.callback.goToPlans")}
                   </Button>
-                  {paymentId && (
+                  {paymentStatus === PaymentStatus.SUCCEEDED ? (
                     <Button
-                      onClick={handleGoToTestPage}
+                      onClick={() => router.push("/profile")}
                       className="flex-1"
-                      disabled={isLoading}
                     >
-                      {t("payment.callback.paymentDetails")}
+                      {t("payment.checkout.goProfile")}
                     </Button>
+                  ) : (
+                    paymentId && (
+                      <Button
+                        onClick={handleGoToPayment}
+                        className="flex-1"
+                        disabled={isLoading}
+                      >
+                        {t("payment.callback.paymentDetails")}
+                      </Button>
+                    )
                   )}
                 </div>
               </div>

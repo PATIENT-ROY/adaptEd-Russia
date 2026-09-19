@@ -33,6 +33,7 @@ const FEATURE_KEYS: Record<string, string> = {
   "DocScan Pro: Объединение страниц": "payment.plan.feature.docscanProMerge",
   "DocScan Pro: Облачное хранение": "payment.plan.feature.docscanProCloud",
   "DocScan Pro: Без водяных знаков": "payment.plan.feature.docscanProNoWatermark",
+  "Скидка 8% при оплате за 3 месяца": "payment.plan.feature.threeMonthDiscount",
   "Скидка 17% при оплате за 6 месяцев": "payment.plan.feature.sixMonthDiscount",
   "Доступ к закрытым вебинарам": "payment.plan.feature.webinars",
   "Персональный ментор": "payment.plan.feature.mentor",
@@ -52,11 +53,20 @@ export function localizePlanName(plan: SubscriptionPlan, t: TFunc): string {
     plan.interval === "YEARLY" ||
     n.includes("год") ||
     n.includes("year") ||
-    n.includes("annual")
+    n.includes("annual") ||
+    plan.price === 1990
   ) {
     return t("payment.plan.premiumYear");
   }
-  if (n.includes("6") || n.includes("шест")) {
+  if (
+    plan.price === 549 ||
+    n.includes("3") ||
+    n.includes("три") ||
+    n.includes("three")
+  ) {
+    return t("payment.plan.premiumThreeMonths");
+  }
+  if (n.includes("6") || n.includes("шест") || plan.price === 1499) {
     return t("payment.plan.premiumSixMonths");
   }
   return t("payment.plan.premium");
