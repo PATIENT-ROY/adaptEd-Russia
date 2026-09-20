@@ -14,6 +14,7 @@ const router = Router();
 import countries from 'i18n-iso-countries';
 import { recordAdminAction } from '../lib/admin-audit';
 import { createUserNotification } from '../lib/user-notifications';
+import { isPremiumActive } from '../lib/premium';
 
 countries.registerLocale(require('i18n-iso-countries/langs/ru.json'));
 countries.registerLocale(require('i18n-iso-countries/langs/en.json'));
@@ -216,6 +217,11 @@ router.get('/reviews', async (_req, res) => {
               university: true,
               plan: true,
               profile: { select: { avatar: true } },
+              subscriptions: {
+                where: { status: 'ACTIVE', endDate: { gte: new Date() } },
+                select: { endDate: true },
+                take: 1,
+              },
             },
           },
         },
@@ -261,12 +267,16 @@ router.get('/reviews', async (_req, res) => {
         university: string | null;
         plan: string;
         profile?: { avatar: string | null } | null;
+        subscriptions?: { endDate: Date }[];
       };
       return {
         id: r.id,
         text: r.text,
         rating: r.rating,
-        isPremium: user.plan === 'PREMIUM',
+        isPremium: isPremiumActive({
+          plan: user.plan,
+          premiumUntil: user.subscriptions?.[0]?.endDate ?? null,
+        }),
         countryFlag: countryToFlag(user.country),
         createdAt: r.createdAt.toISOString(),
         user: {

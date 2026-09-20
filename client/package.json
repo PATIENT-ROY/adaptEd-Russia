@@ -15,7 +15,8 @@
         "test:e2e:ui": "playwright test --ui",
         "test:chat-ui": "playwright test --config playwright.chat.config.ts",
         "test:docscan": "node --import tsx --test tests/docscan-*.test.ts",
-        "test:docscan-ui": "playwright test --config playwright.docscan.config.ts"
+        "test:docscan-ui": "playwright test --config playwright.docscan.config.ts",
+        "test:payment-ui": "playwright test --config playwright.payment.config.ts"
     },
     "dependencies": {
         "@hookform/resolvers": "^3.9.0",

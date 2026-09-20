@@ -10,6 +10,8 @@ async function initPaymentData() {
     const plans = [
       {
         name: 'Freemium',
+        code: 'freemium',
+        durationMonths: 1,
         price: 0,
         currency: 'RUB',
         interval: 'MONTHLY',
@@ -25,6 +27,8 @@ async function initPaymentData() {
       },
       {
         name: 'Премиум (месяц)',
+        code: 'premium-month',
+        durationMonths: 1,
         price: 199,
         currency: 'RUB',
         interval: 'MONTHLY',
@@ -47,6 +51,8 @@ async function initPaymentData() {
       },
       {
         name: 'Премиум (3 месяца)',
+        code: 'premium-3months',
+        durationMonths: 3,
         price: 549,
         currency: 'RUB',
         interval: 'MONTHLY',
@@ -70,6 +76,8 @@ async function initPaymentData() {
       },
       {
         name: 'Премиум (год)',
+        code: 'premium-year',
+        durationMonths: 12,
         price: 1990,
         currency: 'RUB',
         interval: 'YEARLY',
@@ -96,10 +104,12 @@ async function initPaymentData() {
       },
     ];
 
-    await prisma.subscriptionPlan.deleteMany();
-
     for (const plan of plans) {
-      await prisma.subscriptionPlan.create({ data: plan });
+      await prisma.subscriptionPlan.upsert({
+        where: { code: plan.code },
+        create: plan,
+        update: plan,
+      });
       console.log(`✅ Создан план: ${plan.name} - ${plan.price} ${plan.currency}`);
     }
 

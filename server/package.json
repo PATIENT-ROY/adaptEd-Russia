@@ -16,7 +16,8 @@
         "db:studio": "prisma studio",
         "db:migrate-sqlite-to-pg:generate": "prisma generate --schema=prisma/migrate-sqlite-to-postgres/schema.sqlite.prisma && prisma generate --schema=prisma/migrate-sqlite-to-postgres/schema.postgres.prisma",
         "db:migrate-sqlite-to-pg:push": "prisma db push --schema=prisma/migrate-sqlite-to-postgres/schema.postgres.prisma",
-        "db:migrate-sqlite-to-pg": "tsx prisma/migrate-sqlite-to-postgres/migrate.ts"
+        "db:migrate-sqlite-to-pg": "tsx prisma/migrate-sqlite-to-postgres/migrate.ts",
+        "test:payments": "node --import tsx --test src/lib/payment-test-access.test.ts src/lib/payment-integrity.test.ts src/lib/premium.test.ts"
     },
     "dependencies": {
         "@prisma/client": "^5.7.1",

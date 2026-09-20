@@ -1,6 +1,6 @@
 "use client";
 
-import { useState, useEffect, Suspense, useMemo } from "react";
+import { useState, useEffect, Suspense, useMemo, useRef } from "react";
 import { useSearchParams, useRouter } from "next/navigation";
 import { Layout } from "@/components/layout/layout";
 import { Button } from "@/components/ui/button";
@@ -29,6 +29,7 @@ import {
 } from "lucide-react";
 import {
   getSubscriptionPlans,
+  getPaymentAvailability,
   createPayment,
   getPayment,
   getSubscription,
@@ -55,9 +56,7 @@ type CatalogPlan = {
   id: string;
   nameKey: string;
   periodKey: string;
-  price: number;
-  pricePerMonth: number;
-  discount: string | null;
+  months: number;
   popular?: boolean;
   featureKeys: string[];
   extraFeatureKeys: string[];
@@ -68,9 +67,7 @@ const CATALOG_PLANS: CatalogPlan[] = [
     id: "premium-month",
     nameKey: "payment.plan.premium",
     periodKey: "payment.test.intervalMonthly",
-    price: 199,
-    pricePerMonth: 199,
-    discount: null,
+    months: 1,
     featureKeys: [
       "payment.plan.feature.allFreemium",
       "payment.plan.feature.unlimitedNotifications",
@@ -89,13 +86,10 @@ const CATALOG_PLANS: CatalogPlan[] = [
     id: "premium-3months",
     nameKey: "payment.plan.premiumThreeMonthsShort",
     periodKey: "payment.plan.intervalThreeMonths",
-    price: 549,
-    pricePerMonth: 183,
-    discount: "8%",
+    months: 3,
     popular: true,
     featureKeys: [
       "payment.plan.feature.allPremium",
-      "payment.plan.feature.threeMonthDiscount",
       "payment.plan.feature.prioritySupport",
       "payment.plan.feature.personalPlan",
     ],
@@ -111,12 +105,9 @@ const CATALOG_PLANS: CatalogPlan[] = [
     id: "premium-year",
     nameKey: "payment.plan.premiumYear",
     periodKey: "payment.test.intervalYearly",
-    price: 1990,
-    pricePerMonth: 166,
-    discount: "17%",
+    months: 12,
     featureKeys: [
       "payment.plan.feature.allPremium",
-      "payment.plan.feature.yearDiscount",
       "payment.plan.feature.prioritySupport",
       "payment.plan.feature.personalPlan",
     ],
@@ -171,15 +162,21 @@ function PaymentCheckoutContent() {
     Record<string, boolean>
   >({});
 
-  const selectedCatalog =
-    CATALOG_PLANS.find((p) => p.id === selectedCatalogId) || CATALOG_PLANS[1];
-
-  const selectedApiPlan = useMemo(() => {
-    return (
-      apiPlans.find((p) => Math.abs(p.price - selectedCatalog.price) < 0.01) ||
-      null
-    );
-  }, [apiPlans, selectedCatalog.price]);
+  const [checkoutAvailable, setCheckoutAvailable] = useState(false);
+  const checkoutInFlight = useRef(false);
+  const catalogPlans = useMemo(() => {
+    const monthlyPrice = apiPlans.find((p) => p.code === 'premium-month')?.price;
+    return CATALOG_PLANS.flatMap((template) => {
+      const plan = apiPlans.find((p) => p.code === template.id && p.durationMonths === template.months);
+      if (!plan) return [];
+      const discount = monthlyPrice ? Math.floor((1 - plan.price / (monthlyPrice * plan.durationMonths)) * 100) : 0;
+      return [{ ...template, apiPlan: plan, price: plan.price,
+        pricePerMonth: Number((plan.price / plan.durationMonths).toFixed(2)),
+        discount: discount > 0 ? `${discount}%` : null }];
+    });
+  }, [apiPlans]);
+  const selectedCatalog = catalogPlans.find((p) => p.id === selectedCatalogId) || catalogPlans[0];
+  const selectedApiPlan = selectedCatalog?.apiPlan;
 
   const [toastMessage, setToastMessage] = useState<string | null>(null);
   const [toastType, setToastType] = useState<"success" | "error" | "info">(
@@ -198,7 +195,8 @@ function PaymentCheckoutContent() {
   ) => {
     setToastMessage(message);
     setToastType(type);
-    setTimeout(() => setToastMessage(null), 4000);
+    const durationMs = type === "success" ? 8000 : 4000;
+    setTimeout(() => setToastMessage(null), durationMs);
   };
 
   const requestConfirm = (message: string, onConfirm: () => void) => {
@@ -209,7 +207,6 @@ function PaymentCheckoutContent() {
 
   useEffect(() => {
     loadData();
-    // eslint-disable-next-line react-hooks/exhaustive-deps
   }, []);
 
   useEffect(() => {
@@ -229,12 +226,14 @@ function PaymentCheckoutContent() {
   const loadData = async () => {
     try {
       setIsLoadingData(true);
-      const [plansData, subscriptionData, historyData] = await Promise.all([
+      const [plansData, subscriptionData, historyData, availability] = await Promise.all([
         getSubscriptionPlans().catch(() => [] as SubscriptionPlan[]),
         getSubscription().catch(() => null as Subscription | null),
         getPaymentHistory().catch(() => [] as Payment[]),
+        getPaymentAvailability().catch(() => ({ available: false })),
       ]);
-      setApiPlans(plansData.filter((plan) => plan.price > 0));
+      setApiPlans(plansData.filter((plan) => plan.isActive && plan.price > 0 && plan.currency === "RUB"));
+      setCheckoutAvailable(availability.available);
       setSubscription(subscriptionData);
       setPaymentHistory(historyData);
     } catch (error) {
@@ -249,6 +248,7 @@ function PaymentCheckoutContent() {
   };
 
   const handleCreatePayment = async () => {
+    if (checkoutInFlight.current || isLoadingData || !checkoutAvailable) return;
     if (!selectedApiPlan) {
       showToast(t("payment.checkout.planMissing"), "error");
       return;
@@ -261,6 +261,7 @@ function PaymentCheckoutContent() {
       return;
     }
 
+    checkoutInFlight.current = true;
     setIsLoading(true);
     try {
       const payment = await createPayment({
@@ -286,6 +287,7 @@ function PaymentCheckoutContent() {
         showToast(t("payment.test.createError"), "error");
       }
     } finally {
+      checkoutInFlight.current = false;
       setIsLoading(false);
     }
   };
@@ -324,6 +326,7 @@ function PaymentCheckoutContent() {
       }
     } catch (error) {
       console.error("Error loading payment:", error);
+      showToast(t("payment.callback.checkError"), "error");
     } finally {
       setIsLoading(false);
     }
@@ -341,6 +344,7 @@ function PaymentCheckoutContent() {
       }
     } catch (error) {
       console.error("Error checking payment:", error);
+      showToast(t("payment.callback.checkError"), "error");
     }
   };
 
@@ -372,7 +376,7 @@ function PaymentCheckoutContent() {
   const payButton = (
     <Button
       onClick={handleCreatePayment}
-      disabled={!selectedCatalog || isLoading}
+      disabled={!selectedApiPlan || !checkoutAvailable || isLoadingData || isLoading}
       className="w-full h-12 text-base font-semibold rounded-xl bg-indigo-600 hover:bg-indigo-700 text-white shadow-lg"
       size="lg"
     >
@@ -384,7 +388,7 @@ function PaymentCheckoutContent() {
       ) : (
         <>
           <CreditCard className="h-5 w-5 mr-2" />
-          {t("payment.test.createButton")} · {selectedCatalog.price}&nbsp;₽
+          {t(checkoutAvailable ? "payment.test.createButton" : "payment.checkout.unavailableButton")} · {selectedCatalog?.price ?? "—"}&nbsp;₽
         </>
       )}
     </Button>
@@ -449,8 +453,8 @@ function PaymentCheckoutContent() {
           ) : (
             <>
               <div className="grid grid-cols-1 md:grid-cols-3 gap-4 sm:gap-5 mb-8">
-                {CATALOG_PLANS.map((plan) => {
-                  const selected = selectedCatalogId === plan.id;
+                {catalogPlans.map((plan) => {
+                  const selected = selectedCatalog?.id === plan.id;
                   const expanded = !!featuresExpanded[plan.id];
                   const features = [
                     ...plan.featureKeys,
@@ -462,9 +466,10 @@ function PaymentCheckoutContent() {
                       key={plan.id}
                       role="button"
                       tabIndex={0}
+                      aria-pressed={selected}
                       onClick={() => setSelectedCatalogId(plan.id)}
                       onKeyDown={(e) => {
-                        if (e.key === "Enter" || e.key === " ") {
+                        if (e.target === e.currentTarget && (e.key === "Enter" || e.key === " ")) {
                           e.preventDefault();
                           setSelectedCatalogId(plan.id);
                         }
@@ -599,6 +604,7 @@ function PaymentCheckoutContent() {
                           key={method}
                           type="button"
                           onClick={() => setPaymentMethod(method)}
+                          aria-pressed={active}
                           className={`flex flex-col items-center gap-2 rounded-xl px-3 py-3.5 transition-all focus-visible:outline-none focus-visible:ring-2 focus-visible:ring-indigo-500 ${
                             active
                               ? "bg-indigo-50 ring-2 ring-indigo-500 text-indigo-700"
@@ -613,6 +619,12 @@ function PaymentCheckoutContent() {
                   </div>
                 </CardContent>
               </Card>
+
+              {!checkoutAvailable && (
+                <div role="status" className="mb-4 rounded-xl border border-amber-200 bg-amber-50 px-4 py-3 text-sm text-amber-900">
+                  {t("payment.checkout.unavailable")}
+                </div>
+              )}
 
               {!isAuthenticated && (
                 <div className="mb-4 flex items-start gap-2 rounded-xl border border-blue-200 bg-blue-50 px-4 py-3 text-sm text-blue-800">
@@ -655,7 +667,7 @@ function PaymentCheckoutContent() {
                           {getStatusIcon(
                             getPaymentStatus(currentPayment) || "",
                           )}
-                          {getPaymentStatus(currentPayment)}
+                          {t(`payment.callback.status${getPaymentStatus(currentPayment) === PaymentStatus.SUCCEEDED ? "Succeeded" : getPaymentStatus(currentPayment) === PaymentStatus.CANCELED ? "Canceled" : getPaymentStatus(currentPayment) === PaymentStatus.FAILED ? "Failed" : "Pending"}`)}
                         </span>
                       </Badge>
                     </div>
@@ -761,10 +773,10 @@ function PaymentCheckoutContent() {
         <div className="max-w-5xl mx-auto">
           <div className="mb-2 flex items-center justify-between text-sm text-gray-600">
             <span className="truncate font-medium text-gray-900">
-              {t(selectedCatalog.nameKey)}
+              {selectedCatalog ? t(selectedCatalog.nameKey) : t("payment.checkout.heroTitle")}
             </span>
             <span className="font-semibold text-gray-900">
-              {selectedCatalog.price}&nbsp;₽
+              {selectedCatalog?.price ?? "—"}&nbsp;₽
             </span>
           </div>
           {payButton}

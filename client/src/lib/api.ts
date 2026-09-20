@@ -506,6 +506,15 @@ export const fetchAchievementsOverview = () => apiClient.getAchievementsOverview
 export type { ApiResponse, AuthResponse, LoginRequest, RegisterRequest, User, UpdateProfileRequest }; 
 
 // Payment API functions
+export const getPaymentAvailability = async (): Promise<{ available: boolean }> => {
+  const token = typeof window !== "undefined" ? localStorage.getItem("token") : null;
+  const response = await fetch(`${API_BASE_URL}/payments/availability`, {
+    headers: token ? { Authorization: `Bearer ${token}` } : {},
+  });
+  if (!response.ok) throw new Error('Payment availability unavailable');
+  return response.json();
+};
+
 export const getSubscriptionPlans = async (): Promise<SubscriptionPlan[]> => {
   const response = await fetch(`${API_BASE_URL}/payments/plans`);
   

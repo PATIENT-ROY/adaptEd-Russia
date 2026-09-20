@@ -1,6 +1,5 @@
 import { Router, Request, Response } from 'express';
 import { z } from 'zod';
-import { v4 as uuidv4 } from 'uuid';
 import { prisma } from '../lib/database';
 import { authMiddleware, getUserById } from '../lib/auth';
 import { UpdateProfileRequest, ApiResponse } from '../types/index.js';
@@ -946,61 +945,32 @@ router.get('/profile/overview', authMiddleware, async (req: Request, res: Respon
       };
     });
 
-    // Если есть активная подписка или оплаченный платёж — показываем PREMIUM
-    let activeSubscription = await prisma.subscription.findFirst({
-      where: { userId: authUser.userId, status: 'ACTIVE' },
+    // Only an unexpired ACTIVE subscription grants Premium.
+    // Never resurrect access from an old SUCCEEDED/applied/refunded payment —
+    // that would re-activate after cancel/refund via profile loads.
+    const activeSubscription = await prisma.subscription.findFirst({
+      where: {
+        userId: authUser.userId,
+        status: 'ACTIVE',
+        endDate: { gte: new Date() },
+      },
     });
 
-    // Если подписки нет, но есть успешный платёж — создаём подписку (восстановление)
-    if (!activeSubscription) {
-      const succeededPayment = payments.find(
-        (p) => (p.status || '').toUpperCase() === 'SUCCEEDED'
-      );
-      if (succeededPayment) {
-        try {
-          const plan = succeededPayment.planId
-            ? await prisma.subscriptionPlan.findUnique({ where: { id: succeededPayment.planId } })
-            : await prisma.subscriptionPlan.findFirst({
-                where: { price: succeededPayment.amount, isActive: true },
-              }) || await prisma.subscriptionPlan.findFirst({
-                where: { isActive: true, price: { gt: 0 } },
-                orderBy: { price: 'asc' },
-              });
-          if (plan) {
-            const startDate = new Date();
-            const endDate = new Date();
-            endDate.setMonth(endDate.getMonth() + (plan.interval === 'MONTHLY' ? 1 : 12));
-            activeSubscription = await prisma.subscription.upsert({
-              where: { userId: authUser.userId },
-              update: { status: 'ACTIVE', startDate, endDate, paymentId: succeededPayment.id },
-              create: {
-                id: uuidv4(),
-                userId: authUser.userId,
-                planId: plan.id,
-                status: 'ACTIVE',
-                startDate,
-                endDate,
-                autoRenew: true,
-                paymentId: succeededPayment.id,
-              },
-            });
-            await prisma.user.update({
-              where: { id: authUser.userId },
-              data: { plan: 'PREMIUM' },
-            });
-          }
-        } catch (e) {
-          console.error('Auto-fix subscription:', e);
-        }
-      }
-    } else if (userData.plan !== 'PREMIUM') {
+    if (activeSubscription && userData.plan !== 'PREMIUM') {
       await prisma.user.update({
         where: { id: authUser.userId },
         data: { plan: 'PREMIUM' },
       }).catch(() => {});
+      userData.plan = 'PREMIUM';
+    } else if (!activeSubscription && userData.plan === 'PREMIUM') {
+      await prisma.user.update({
+        where: { id: authUser.userId },
+        data: { plan: 'FREEMIUM' },
+      }).catch(() => {});
+      userData.plan = 'FREEMIUM';
     }
 
-    const effectivePlan = activeSubscription ? 'PREMIUM' : (userData.plan || 'FREEMIUM');
+    const effectivePlan = activeSubscription ? 'PREMIUM' : 'FREEMIUM';
 
     const responsePayload: ProfileOverviewResponse = {
       user: {

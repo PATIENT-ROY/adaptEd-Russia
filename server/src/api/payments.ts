@@ -2,255 +2,121 @@ import { Router } from 'express';
 import { prisma } from '../lib/database';
 import { authMiddleware } from '../lib/auth';
 import {
-  createPayment,
-  cancelPayment,
-  checkPaymentStatus,
-  getPayment as getYooKassaPayment,
-  shouldUseMockYooKassa,
-  TEST_CARDS,
-  TEST_SBP_PHONES,
-} from '../lib/yookassa';
+  synchronizePayment, applyVerifiedPayment, applyVerifiedRefund, PaymentVerificationError,
+  formatPremiumPaymentDescription, getPlanDurationMonths,
+} from '../lib/apply-premium';
 import {
-  canApplyFromYooKassaStatus,
-  isPaymentTester,
-} from '../lib/payment-test-access';
-import { applyPremiumForPayment, resolvePlanForPayment, formatPremiumPaymentDescription, getPlanDurationMonths } from '../lib/apply-premium';
+  createPayment, cancelPayment, getPayment as getYooKassaPayment, getRefund,
+  shouldUseMockYooKassa, isTestPaymentMode, isCheckoutAvailable, TEST_CARDS, TEST_SBP_PHONES,
+} from '../lib/yookassa';
+import { isPaymentTester } from '../lib/payment-test-access';
+import { logWebhookEvent } from '../lib/webhook-log';
 import { v4 as uuidv4 } from 'uuid';
 
 const router = Router();
 
-function paymentTesterForbidden(
-  req: { user?: { role?: string; email?: string } },
-  res: { status: (code: number) => { json: (body: unknown) => void } },
-): boolean {
-  if (!shouldUseMockYooKassa()) return false;
-  if (isPaymentTester(req.user)) return false;
-  res.status(403).json({
-    error: 'PAYMENT_TEST_ONLY',
-    message: 'Пока подключены тестовые платежи. Доступ только для тестеров.',
-  });
-  return true;
-}
+router.get('/availability', (req, res, next) => {
+  if (req.headers.authorization) return authMiddleware(req, res, next);
+  next();
+}, (req, res) => {
+  res.json({ available: isCheckoutAvailable() || (isTestPaymentMode() && isPaymentTester((req as any).user)) });
+});
 
-function normalizeStatus(status: string | null | undefined): string {
-  return (status || '').toUpperCase();
-}
-
-// Получить все планы подписок
 router.get('/plans', async (_req, res) => {
   try {
-    const plans = await prisma.subscriptionPlan.findMany({
-      where: { isActive: true },
-      orderBy: { price: 'asc' },
-    });
-
-    res.json(plans);
+    res.json(await prisma.subscriptionPlan.findMany({
+      where: { isActive: true }, orderBy: { price: 'asc' },
+    }));
   } catch (error) {
     console.error('Error fetching subscription plans:', error);
     res.status(500).json({ error: 'Failed to fetch subscription plans' });
   }
 });
 
-// Создать платеж для подписки
 router.post('/create-payment', authMiddleware, async (req, res) => {
   try {
-    if (paymentTesterForbidden(req as any, res)) return;
-
-    const { planId, paymentMethod } = req.body;
-    const userId = (req as any).user.userId;
-
-    const plan = await prisma.subscriptionPlan.findUnique({
-      where: { id: planId },
-    });
-
-    if (!plan || !plan.isActive) {
-      return res.status(404).json({ error: 'Subscription plan not found' });
+    const user = (req as any).user;
+    if (isTestPaymentMode() && !isPaymentTester(user)) {
+      return res.status(403).json({ error: 'PAYMENT_TEST_ONLY' });
     }
-
-    if (plan.price <= 0) {
-      return res.status(400).json({ error: 'Cannot checkout a free plan' });
+    const { planId, paymentMethod = 'CARD' } = req.body || {};
+    if (typeof planId !== 'string' || !['CARD', 'SBP', 'WALLET'].includes(paymentMethod)) {
+      return res.status(400).json({ error: 'Invalid plan or payment method' });
     }
-
+    const plan = await prisma.subscriptionPlan.findUnique({ where: { id: planId } });
+    if (!plan?.isActive) return res.status(404).json({ error: 'Subscription plan not found' });
+    if (!Number.isFinite(plan.price) || plan.price <= 0 || plan.currency !== 'RUB') {
+      return res.status(400).json({ error: 'Invalid plan amount or currency' });
+    }
     const description = formatPremiumPaymentDescription(plan);
-
-    // Сначала локальный платёж — чтобы return_url содержал наш payment_id
     const paymentId = uuidv4();
-    const payment = await prisma.payment.create({
-      data: {
-        id: paymentId,
-        userId,
-        planId: plan.id,
-        amount: plan.price,
-        currency: plan.currency,
-        description,
-        status: 'PENDING',
-        paymentMethod: String(paymentMethod || 'CARD'),
-        yooKassaPaymentId: null,
-      },
-    });
-
-    let yooKassaPayment;
-    try {
-      // Цена только из каталога — клиент не диктует amount
-      yooKassaPayment = await createPayment(
-        plan.price,
-        description,
-        {
-          userId,
-          planId: plan.id,
-          paymentId,
-          paymentMethod: String(paymentMethod || 'CARD'),
-          planName: plan.name,
-          planInterval: plan.interval,
-          planMonths: String(getPlanDurationMonths(plan)),
-        },
-        { idempotenceKey: paymentId, returnUrlPaymentId: paymentId },
-      );
-    } catch (createErr) {
-      await prisma.payment.update({
-        where: { id: paymentId },
-        data: { status: 'CANCELED' },
-      });
-      throw createErr;
-    }
-
-    await prisma.payment.update({
-      where: { id: paymentId },
-      data: {
-        yooKassaPaymentId: yooKassaPayment.id,
-        description: yooKassaPayment.description || payment.description,
-      },
-    });
-
-    res.json({
-      paymentId: payment.id,
-      yooKassaPaymentId: yooKassaPayment.id,
-      confirmationUrl: yooKassaPayment.confirmation?.confirmation_url,
-      amount: yooKassaPayment.amount,
-      description: yooKassaPayment.description,
-      mock: shouldUseMockYooKassa() || yooKassaPayment.id.startsWith('test_'),
+    const payment = await prisma.payment.create({ data: {
+      id: paymentId, userId: user.userId, planId: plan.id,
+      amount: plan.price, currency: plan.currency, durationMonths: getPlanDurationMonths(plan),
+      description, status: 'PENDING', paymentMethod,
+    } });
+    // Keep an uncertain API request pending: a timeout does not prove cancellation.
+    const created = await createPayment(plan.price, description, {
+      userId: user.userId, planId: plan.id, paymentId,
+      planMonths: String(payment.durationMonths),
+    }, { idempotenceKey: paymentId, returnUrlPaymentId: paymentId, paymentMethod });
+    await prisma.payment.update({ where: { id: paymentId }, data: { yooKassaPaymentId: created.id } });
+    res.json({ paymentId, yooKassaPaymentId: created.id,
+      confirmationUrl: created.confirmation?.confirmation_url,
+      amount: created.amount, description: created.description,
+      mock: shouldUseMockYooKassa() || created.id.startsWith('test_'),
     });
   } catch (error) {
     console.error('Error creating payment:', error);
-    res.status(500).json({
-      error: 'Failed to create payment',
-      detail: error instanceof Error ? error.message : undefined,
-    });
+    res.status(502).json({ error: 'Failed to create payment' });
   }
 });
 
-// Получить информацию о платеже
+async function findOwnedPayment(id: string, userId: string) {
+  return prisma.payment.findFirst({ where: { userId, OR: [{ id }, { yooKassaPaymentId: id }] } });
+}
+
 router.get('/payment/:paymentId', authMiddleware, async (req, res) => {
   try {
-    const { paymentId } = req.params;
-    const user = (req as any).user;
-    const userId = user.userId;
-
-    let payment = await prisma.payment.findFirst({
-      where: { id: paymentId, userId },
-    });
-
-    if (!payment) {
-      payment = await prisma.payment.findFirst({
-        where: { yooKassaPaymentId: paymentId, userId },
-      });
-    }
-
-    if (!payment) {
-      return res.status(404).json({ error: 'Payment not found' });
-    }
-
-    let statusNormalized = normalizeStatus(payment.status);
-
-    if (payment.yooKassaPaymentId) {
-      try {
-        const yooKassaStatus = await checkPaymentStatus(payment.yooKassaPaymentId);
-        statusNormalized = normalizeStatus(yooKassaStatus.status);
-
-        if (statusNormalized !== payment.status) {
-          await prisma.payment.update({
-            where: { id: payment.id },
-            data: { status: statusNormalized },
-          });
-          payment.status = statusNormalized;
-        }
-
-        if (
-          statusNormalized === 'SUCCEEDED' &&
-          payment.userId &&
-          canApplyFromYooKassaStatus(user, payment.yooKassaPaymentId)
-        ) {
-          try {
-            const plan = await resolvePlanForPayment(payment);
-            if (plan) {
-              await applyPremiumForPayment({
-                userId: payment.userId,
-                paymentId: payment.id,
-                plan,
-              });
-            }
-          } catch (applyErr) {
-            console.error('Error applying subscription on payment check:', applyErr);
-          }
-        }
-      } catch (yooKassaError) {
-        console.error('Error checking YooKassa status:', yooKassaError);
-      }
-    }
-
-    res.json(payment);
+    const payment = await findOwnedPayment(req.params.paymentId, (req as any).user.userId);
+    if (!payment) return res.status(404).json({ error: 'Payment not found' });
+    // A local record with no provider id can be displayed, but never activated.
+    res.json(payment.yooKassaPaymentId ? await synchronizePayment(payment.id) : payment);
   } catch (error) {
-    console.error('Error fetching payment:', error);
-    res.status(500).json({ error: 'Failed to fetch payment' });
+    console.error('Error verifying payment:', error);
+    res.status(502).json({ error: 'Unable to verify payment' });
   }
 });
 
 router.post('/payment/:paymentId/cancel', authMiddleware, async (req, res) => {
   try {
-    const { paymentId } = req.params;
-    const userId = (req as any).user.userId;
-
-    const payment = await prisma.payment.findFirst({
-      where: { id: paymentId, userId },
-    });
-
-    if (!payment) {
-      return res.status(404).json({ error: 'Payment not found' });
+    const payment = await findOwnedPayment(req.params.paymentId, (req as any).user.userId);
+    if (!payment) return res.status(404).json({ error: 'Payment not found' });
+    if (payment.appliedAt || payment.status === 'SUCCEEDED' || !payment.yooKassaPaymentId) {
+      return res.status(400).json({ error: 'Payment cannot be canceled' });
     }
-
-    if (payment.yooKassaPaymentId) {
-      await cancelPayment(payment.yooKassaPaymentId);
-    }
-
-    await prisma.payment.update({
-      where: { id: paymentId },
+    const canceled = await cancelPayment(payment.yooKassaPaymentId);
+    if (canceled.status !== 'canceled') throw new Error('Cancellation not confirmed');
+    const result = await prisma.payment.updateMany({
+      where: { id: payment.id, appliedAt: null, status: { in: ['PENDING', 'WAITING_FOR_CAPTURE'] } },
       data: { status: 'CANCELED' },
     });
-
+    if (!result.count && payment.status !== 'CANCELED') {
+      return res.status(409).json({ error: 'Payment status changed' });
+    }
     res.json({ message: 'Payment canceled successfully' });
   } catch (error) {
     console.error('Error canceling payment:', error);
-    res.status(500).json({ error: 'Failed to cancel payment' });
+    res.status(502).json({ error: 'Failed to cancel payment' });
   }
 });
 
 router.get('/subscription', authMiddleware, async (req, res) => {
   try {
-    const userId = (req as any).user.userId;
-
-    const subscription = await prisma.subscription.findFirst({
-      where: {
-        userId,
-        status: 'ACTIVE',
-        endDate: { gte: new Date() },
-      },
-      include: {
-        plan: true,
-        payment: true,
-      },
-    });
-
-    res.json(subscription);
+    res.json(await prisma.subscription.findFirst({
+      where: { userId: (req as any).user.userId, status: 'ACTIVE', endDate: { gte: new Date() } },
+      include: { plan: true, payment: true },
+    }));
   } catch (error) {
     console.error('Error fetching subscription:', error);
     res.status(500).json({ error: 'Failed to fetch subscription' });
@@ -259,220 +125,116 @@ router.get('/subscription', authMiddleware, async (req, res) => {
 
 router.get('/history', authMiddleware, async (req, res) => {
   try {
-    const userId = (req as any).user.userId;
-
-    const payments = await prisma.payment.findMany({
-      where: { userId },
-      orderBy: { createdAt: 'desc' },
-      include: {
-        subscriptions: true,
-      },
-    });
-
-    res.json(payments);
+    res.json(await prisma.payment.findMany({
+      where: { userId: (req as any).user.userId }, orderBy: { createdAt: 'desc' },
+      include: { subscriptions: true },
+    }));
   } catch (error) {
     console.error('Error fetching payment history:', error);
     res.status(500).json({ error: 'Failed to fetch payment history' });
   }
 });
 
-/**
- * YooKassa HTTP notifications.
- * Verifies by re-fetching payment from API (no shared HMAC from YooKassa).
- * Optional YOOKASSA_WEBHOOK_SECRET as ?secret= or x-webhook-secret header.
- */
 router.post('/webhook', async (req, res) => {
+  const event = typeof req.body?.event === 'string' ? req.body.event : 'unknown';
+  const payload = req.body ?? {};
+
   try {
-    const webhookSecret = (process.env.YOOKASSA_WEBHOOK_SECRET || '').trim();
-    if (webhookSecret) {
-      const provided =
-        (typeof req.query.secret === 'string' && req.query.secret) ||
-        req.headers['x-webhook-secret'];
-      if (provided !== webhookSecret) {
-        return res.status(401).json({ error: 'Invalid webhook secret' });
-      }
-    } else if (process.env.NODE_ENV === 'production' && !shouldUseMockYooKassa()) {
-      console.warn(
-        'YOOKASSA_WEBHOOK_SECRET is empty — webhook accepted but verify-via-API only',
-      );
+    const secret = (process.env.YOOKASSA_WEBHOOK_SECRET || '').trim();
+    if (secret && (req.query.secret || req.headers['x-webhook-secret']) !== secret) {
+      await logWebhookEvent(event, payload, 'failed', 'Invalid webhook secret');
+      return res.status(401).json({ error: 'Invalid webhook secret' });
     }
 
-    const { event, object } = req.body || {};
-    if (!object?.id) {
+    const id = req.body?.object?.id;
+    if (typeof id !== 'string' || !id || id.length > 128) {
+      await logWebhookEvent(event, payload, 'failed', 'Invalid webhook payload');
       return res.status(400).json({ error: 'Invalid webhook payload' });
     }
 
-    // Always verify against YooKassa (or mock) before mutating
-    const verified = await getYooKassaPayment(object.id);
-    const status = normalizeStatus(verified.status);
+    // refund.succeeded: object.id is the refund id, payment is under payment_id.
+    if (event === 'refund.succeeded') {
+      const verifiedRefund = await getRefund(id);
+      if (verifiedRefund.id !== id || verifiedRefund.status !== 'succeeded') {
+        await logWebhookEvent(event, payload, 'failed', 'Refund verification failed');
+        return res.status(400).json({ error: 'Refund verification failed' });
+      }
+      const result = await applyVerifiedRefund(verifiedRefund);
+      await logWebhookEvent(
+        event,
+        payload,
+        result.matched ? 'processed' : 'skipped',
+        result.matched ? null : 'Payment not found for refund',
+      );
+      return res.json({ received: true, ...result });
+    }
 
-    const payment = await prisma.payment.findFirst({
-      where: { yooKassaPaymentId: verified.id },
-    });
-
+    // Never trust the status, amount, or owner sent by the webhook caller.
+    const verified = await getYooKassaPayment(id);
+    let payment = await prisma.payment.findFirst({ where: { yooKassaPaymentId: verified.id } });
+    // Recover the race where a provider notification arrives before create returns.
+    if (!payment && verified.metadata?.paymentId) {
+      await prisma.payment.updateMany({ where: {
+        id: verified.metadata.paymentId, yooKassaPaymentId: null,
+        userId: verified.metadata.userId || '', planId: verified.metadata.planId || '',
+      }, data: { yooKassaPaymentId: verified.id } });
+      payment = await prisma.payment.findFirst({ where: { yooKassaPaymentId: verified.id } });
+    }
     if (!payment) {
-      console.warn('Webhook payment not found locally:', verified.id);
+      await logWebhookEvent(event, payload, 'skipped', 'Payment not matched');
       return res.status(200).json({ received: true, matched: false });
     }
-
-    if (status !== payment.status) {
-      await prisma.payment.update({
-        where: { id: payment.id },
-        data: { status },
-      });
+    if (String(payment.status).toUpperCase() === 'REFUNDED') {
+      await logWebhookEvent(event, payload, 'skipped', 'Payment already refunded');
+      return res.json({ received: true, skipped: 'refunded' });
     }
-
-    const interesting =
-      event === 'payment.succeeded' ||
-      event === 'payment.waiting_for_capture' ||
-      event === 'payment.canceled' ||
-      !event;
-
-    if (interesting && status === 'SUCCEEDED' && payment.userId) {
-      const owner = await prisma.user.findUnique({
-        where: { id: payment.userId },
-        select: { email: true, role: true },
-      });
-      if (!canApplyFromYooKassaStatus(owner, payment.yooKassaPaymentId)) {
-        console.warn('Blocked mock Premium apply for non-tester', payment.userId);
-        return res.status(200).json({ received: true, applied: false });
-      }
-
-      const plan = await resolvePlanForPayment(payment);
-      if (plan) {
-        await applyPremiumForPayment({
-          userId: payment.userId,
-          paymentId: payment.id,
-          plan,
-        });
-      }
-    }
-
-    res.status(200).json({ received: true, status });
+    await applyVerifiedPayment(payment.id, verified);
+    await logWebhookEvent(event, payload, 'processed');
+    res.json({ received: true });
   } catch (error) {
     console.error('Webhook error:', error);
+    await logWebhookEvent(
+      event,
+      payload,
+      'failed',
+      error instanceof Error ? error.message : 'Webhook processing failed',
+    );
     res.status(500).json({ error: 'Webhook processing failed' });
   }
 });
 
 router.post('/fix-my-plan', authMiddleware, async (req, res) => {
   try {
-    if (paymentTesterForbidden(req as any, res)) return;
-
-    const user = (req as any).user;
-    const userId = user.userId;
-
-    const recentPayments = await prisma.payment.findMany({
-      where: { userId },
+    const payment = await prisma.payment.findFirst({
+      where: { userId: (req as any).user.userId, status: 'SUCCEEDED', yooKassaPaymentId: { not: null } },
       orderBy: { createdAt: 'desc' },
-      take: 50,
     });
-    const succeededPayment = recentPayments.find(
-      (payment) => normalizeStatus(payment.status) === 'SUCCEEDED',
-    );
-    if (!succeededPayment) {
-      return res.status(400).json({
-        error: 'Нет успешных платежей. Сначала оплатите подписку.',
-      });
-    }
-
-    if (!canApplyFromYooKassaStatus(user, succeededPayment.yooKassaPaymentId)) {
-      return res.status(403).json({ error: 'PAYMENT_TEST_ONLY' });
-    }
-
-    const plan = await resolvePlanForPayment(succeededPayment);
-    if (!plan) {
-      return res.status(400).json({
-        error: 'План не найден. Запустите: cd server && npx tsx src/scripts/init-payment-data.ts',
-      });
-    }
-
-    await applyPremiumForPayment({
-      userId,
-      paymentId: succeededPayment.id,
-      plan,
-    });
-
-    res.json({ success: true, message: 'Premium применён' });
+    if (!payment) return res.status(400).json({ error: 'No successful payment' });
+    const verified = await synchronizePayment(payment.id);
+    if (verified.status !== 'SUCCEEDED') return res.status(400).json({ error: 'Payment is not succeeded yet' });
+    res.json({ success: true, message: 'Premium applied' });
   } catch (error) {
     console.error('fix-my-plan error:', error);
-    res.status(500).json({ error: 'Ошибка: ' + (error instanceof Error ? error.message : 'Unknown') });
+    res.status(error instanceof PaymentVerificationError ? 400 : 502).json({ error: 'Unable to apply payment' });
   }
 });
 
 router.post('/apply-premium/:paymentId', authMiddleware, async (req, res) => {
   try {
-    if (paymentTesterForbidden(req as any, res)) return;
-
-    const { paymentId } = req.params;
-    const user = (req as any).user;
-    const userId = user.userId;
-
-    let payment = await prisma.payment.findFirst({
-      where: { id: paymentId, userId },
-    });
-    if (!payment) {
-      payment = await prisma.payment.findFirst({
-        where: { yooKassaPaymentId: paymentId, userId },
-      });
-    }
-    if (!payment) {
-      return res.status(404).json({ error: 'Payment not found' });
-    }
-
-    if (!canApplyFromYooKassaStatus(user, payment.yooKassaPaymentId)) {
-      return res.status(403).json({ error: 'PAYMENT_TEST_ONLY' });
-    }
-
-    // Prefer live status for real payments
-    if (payment.yooKassaPaymentId && !payment.yooKassaPaymentId.startsWith('test_')) {
-      const live = await checkPaymentStatus(payment.yooKassaPaymentId);
-      if (normalizeStatus(live.status) !== 'SUCCEEDED') {
-        return res.status(400).json({ error: 'Payment is not succeeded yet' });
-      }
-    }
-
-    const plan = await resolvePlanForPayment(payment);
-    if (!plan) {
-      return res.status(400).json({ error: 'No subscription plan found. Run: npx tsx src/scripts/init-payment-data.ts' });
-    }
-
-    await applyPremiumForPayment({
-      userId,
-      paymentId: payment.id,
-      plan,
-    });
-
+    const payment = await findOwnedPayment(req.params.paymentId, (req as any).user.userId);
+    if (!payment) return res.status(404).json({ error: 'Payment not found' });
+    const verified = await synchronizePayment(payment.id);
+    if (verified.status !== 'SUCCEEDED') return res.status(400).json({ error: 'Payment is not succeeded yet' });
     res.json({ success: true, message: 'Premium applied' });
   } catch (error) {
     console.error('Apply premium error:', error);
-    res.status(500).json({ error: 'Failed to apply premium' });
+    res.status(error instanceof PaymentVerificationError ? 400 : 502).json({ error: 'Unable to apply payment' });
   }
 });
 
 router.get('/test-data', authMiddleware, (req, res) => {
-  if (!isPaymentTester((req as any).user)) {
-    return res.status(403).json({ error: 'PAYMENT_TEST_ONLY' });
-  }
-
-  res.json({
-    mockMode: shouldUseMockYooKassa(),
-    testCards: TEST_CARDS,
-    testSbpPhones: TEST_SBP_PHONES,
-    instructions: {
-      cards: {
-        success: 'Используйте для успешных платежей',
-        failure: 'Используйте для неуспешных платежей',
-        insufficientFunds: 'Используйте для имитации недостатка средств',
-        expired: 'Используйте для имитации просроченной карты',
-        invalidCvc: 'Используйте для имитации неверного CVC',
-      },
-      sbp: {
-        success: 'Используйте для успешных СБП платежей',
-        failure: 'Используйте для неуспешных СБП платежей',
-      },
-    },
-  });
+  if (!isPaymentTester((req as any).user)) return res.status(403).json({ error: 'PAYMENT_TEST_ONLY' });
+  res.json({ mockMode: shouldUseMockYooKassa(), testCards: TEST_CARDS, testSbpPhones: TEST_SBP_PHONES });
 });
 
 export default router;
