@@ -398,11 +398,31 @@ model Payment {
   // Связи
   user          User?          @relation(fields: [userId], references: [id], onDelete: SetNull)
   subscriptions Subscription[]
+  refunds       PaymentRefund[]
 
   @@index([userId])
   @@index([status])
   @@index([createdAt])
   @@map("payments")
+}
+
+/// Verified YooKassa refunds. The provider refund id makes webhook retries idempotent.
+model PaymentRefund {
+  id                 String   @id @default(cuid())
+  paymentId          String
+  yooKassaRefundId   String   @unique
+  amount             Float
+  currency           String
+  status             String
+  providerCreatedAt  DateTime?
+  createdAt          DateTime @default(now())
+  updatedAt          DateTime @updatedAt
+
+  payment Payment @relation(fields: [paymentId], references: [id], onDelete: Cascade)
+
+  @@index([paymentId])
+  @@index([status])
+  @@map("payment_refunds")
 }
 
 /// Incoming YooKassa (and future) webhook delivery audit trail

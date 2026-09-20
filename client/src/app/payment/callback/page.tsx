@@ -55,7 +55,12 @@ function PaymentCallbackContent() {
         if (payment.status === PaymentStatus.SUCCEEDED) {
           // Give time to read success status before leaving the callback screen
           timer = setTimeout(() => router.replace("/payment?payment_id=" + encodeURIComponent(id)), 8000);
-        } else if (payment.status !== PaymentStatus.CANCELED && payment.status !== PaymentStatus.FAILED && ++attempts < 20) {
+        } else if (
+          payment.status !== PaymentStatus.CANCELED &&
+          payment.status !== PaymentStatus.FAILED &&
+          payment.status !== PaymentStatus.REFUNDED &&
+          ++attempts < 20
+        ) {
           timer = setTimeout(check, 3000);
         }
       } catch {
@@ -77,6 +82,7 @@ function PaymentCallbackContent() {
         return <CheckCircle className="h-8 w-8 text-green-600" />;
       case PaymentStatus.FAILED:
       case PaymentStatus.CANCELED:
+      case PaymentStatus.REFUNDED:
         return <XCircle className="h-8 w-8 text-red-600" />;
       default:
         return <Clock className="h-8 w-8 text-yellow-600" />;
@@ -93,6 +99,8 @@ function PaymentCallbackContent() {
         return "bg-red-100 text-red-800";
       case PaymentStatus.CANCELED:
         return "bg-gray-100 text-gray-800";
+      case PaymentStatus.REFUNDED:
+        return "bg-purple-100 text-purple-800";
       default:
         return "bg-yellow-100 text-yellow-800";
     }
@@ -108,6 +116,8 @@ function PaymentCallbackContent() {
         return t("payment.callback.statusFailed");
       case PaymentStatus.CANCELED:
         return t("payment.callback.statusCanceled");
+      case PaymentStatus.REFUNDED:
+        return t("payment.callback.statusRefunded");
       case PaymentStatus.PENDING:
         return t("payment.callback.statusPending");
       default:
