@@ -361,6 +361,8 @@ model Admin {
 
 // Планы подписок
 model SubscriptionPlan {
+  code      String?  @unique
+  durationMonths Int @default(1)
   id        String   @id @default(cuid())
   name      String
   price     Float
@@ -379,13 +381,15 @@ model SubscriptionPlan {
 
 // Платежи
 model Payment {
+  appliedAt         DateTime?
+  durationMonths    Int? // Snapshot of the purchased duration
   id                String   @id @default(cuid())
   userId            String?
   planId            String? // План подписки (для применения при успешной оплате)
   amount            Float
   currency          String   @default("RUB")
   description       String
-  status            String   @default("PENDING") // PENDING, SUCCEEDED, CANCELED, FAILED
+  status            String   @default("PENDING") // PENDING, SUCCEEDED, CANCELED, FAILED, REFUNDED
   paymentMethod     String   @default("CARD") // CARD, SBP, WALLET
   yooKassaPaymentId String?
   createdAt         DateTime @default(now())
@@ -399,6 +403,21 @@ model Payment {
   @@index([status])
   @@index([createdAt])
   @@map("payments")
+}
+
+/// Incoming YooKassa (and future) webhook delivery audit trail
+model WebhookLog {
+  id        String   @id @default(cuid())
+  event     String
+  payload   Json
+  status    String // processed | failed | skipped
+  error     String?
+  createdAt DateTime @default(now())
+
+  @@index([event])
+  @@index([status])
+  @@index([createdAt])
+  @@map("webhook_logs")
 }
 
 // Подписки

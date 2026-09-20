@@ -74,10 +74,11 @@ function zodPayload(error: z.ZodError) {
 router.post('/register', async (req: Request, res: Response) => {
   try {
     const validatedData = registerSchema.parse(req.body);
+    const normalizedEmail = validatedData.email.trim().toLowerCase();
 
     // Проверяем, существует ли пользователь с таким email
     const existingUser = await prisma.user.findUnique({
-      where: { email: validatedData.email },
+      where: { email: normalizedEmail },
     });
 
     if (existingUser) {
@@ -93,7 +94,7 @@ router.post('/register', async (req: Request, res: Response) => {
     // Создаем пользователя
     const user = await prisma.user.create({
       data: {
-        email: validatedData.email,
+        email: normalizedEmail,
         password: hashedPassword,
         name: validatedData.name,
         language: validatedData.language,

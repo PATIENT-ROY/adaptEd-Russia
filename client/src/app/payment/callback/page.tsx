@@ -34,46 +34,39 @@ function PaymentCallbackContent() {
   const [error, setError] = useState<string | null>(null);
 
   useEffect(() => {
-    let id = searchParams.get("payment_id");
-
+    const id = searchParams.get("payment_id") || searchParams.get("paymentId") || searchParams.get("id");
+    let active = true;
+    let timer: ReturnType<typeof setTimeout>;
+    let attempts = 0;
+    setPaymentId(id);
+    setPaymentStatus(null);
+    setError(null);
     if (!id) {
-      id = searchParams.get("paymentId") || searchParams.get("id");
-    }
-
-    if (id) {
-      setPaymentId(id);
-      checkPaymentStatus(id);
-    } else {
       setError(t("payment.callback.noPaymentId"));
       setIsLoading(false);
+      return;
     }
-    // eslint-disable-next-line react-hooks/exhaustive-deps
-  }, [searchParams]);
-
-  const checkPaymentStatus = async (id: string) => {
-    try {
+    const check = async () => {
       setIsLoading(true);
-      setError(null);
-
-      const payment = await getPayment(id);
-      setPaymentStatus(payment.status);
-
-      if (payment.status === PaymentStatus.SUCCEEDED) {
-        setTimeout(() => {
-          router.push("/payment?payment_id=" + id);
-        }, 2000);
+      try {
+        const payment = await getPayment(id);
+        if (!active) return;
+        setPaymentStatus(payment.status);
+        if (payment.status === PaymentStatus.SUCCEEDED) {
+          // Give time to read success status before leaving the callback screen
+          timer = setTimeout(() => router.replace("/payment?payment_id=" + encodeURIComponent(id)), 8000);
+        } else if (payment.status !== PaymentStatus.CANCELED && payment.status !== PaymentStatus.FAILED && ++attempts < 20) {
+          timer = setTimeout(check, 3000);
+        }
+      } catch {
+        if (active) setError(t("payment.callback.checkError"));
+      } finally {
+        if (active) setIsLoading(false);
       }
-    } catch (err) {
-      console.error("Error checking payment status:", err);
-      setError(
-        err instanceof Error
-          ? err.message
-          : t("payment.callback.checkError")
-      );
-    } finally {
-      setIsLoading(false);
-    }
-  };
+    };
+    void check();
+    return () => { active = false; clearTimeout(timer); };
+  }, [searchParams, router, t]);
 
   const getStatusIcon = (status: string | null) => {
     if (!status)
@@ -164,17 +157,17 @@ function PaymentCallbackContent() {
                 )}
 
                 {paymentId && (
-                  <div className="w-full space-y-4">
-                    <div className="flex items-center justify-between p-3 bg-gray-50 rounded-lg">
-                      <span className="text-sm text-gray-600">{t("payment.callback.paymentIdLabel")}:</span>
-                      <code className="text-xs font-mono bg-white px-2 py-1 rounded">
+                  <div className="w-full min-w-0 space-y-4">
+                    <div className="flex min-w-0 flex-col gap-2 p-3 bg-gray-50 rounded-lg sm:flex-row sm:items-center sm:justify-between">
+                      <span className="shrink-0 text-sm text-gray-600">{t("payment.callback.paymentIdLabel")}:</span>
+                      <code className="min-w-0 max-w-full break-all text-xs font-mono bg-white px-2 py-1 rounded">
                         {paymentId}
                       </code>
                     </div>
 
                     {paymentStatus && (
-                      <div className="flex items-center justify-between p-3 bg-gray-50 rounded-lg">
-                        <span className="text-sm text-gray-600">{t("payment.callback.statusLabel")}:</span>
+                      <div className="flex min-w-0 items-center justify-between gap-3 p-3 bg-gray-50 rounded-lg">
+                        <span className="shrink-0 text-sm text-gray-600">{t("payment.callback.statusLabel")}:</span>
                         <Badge className={getStatusColor(paymentStatus)}>
                           {getStatusLabel(paymentStatus)}
                         </Badge>
@@ -199,18 +192,18 @@ function PaymentCallbackContent() {
                   </div>
                 )}
 
-                <div className="flex space-x-4 w-full">
+                <div className="flex w-full min-w-0 flex-col gap-3 sm:flex-row sm:space-x-4 sm:gap-0">
                   <Button
                     variant="outline"
                     onClick={() => router.push("/payment")}
-                    className="flex-1"
+                    className="w-full sm:flex-1"
                   >
                     {t("payment.callback.goToPlans")}
                   </Button>
                   {paymentStatus === PaymentStatus.SUCCEEDED ? (
                     <Button
                       onClick={() => router.push("/profile")}
-                      className="flex-1"
+                      className="w-full sm:flex-1"
                     >
                       {t("payment.checkout.goProfile")}
                     </Button>
@@ -218,7 +211,7 @@ function PaymentCallbackContent() {
                     paymentId && (
                       <Button
                         onClick={handleGoToPayment}
-                        className="flex-1"
+                        className="w-full sm:flex-1"
                         disabled={isLoading}
                       >
                         {t("payment.callback.paymentDetails")}

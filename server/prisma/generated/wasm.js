@@ -315,6 +315,8 @@ exports.Prisma.AdminScalarFieldEnum = {
 };
 
 exports.Prisma.SubscriptionPlanScalarFieldEnum = {
+  code: 'code',
+  durationMonths: 'durationMonths',
   id: 'id',
   name: 'name',
   price: 'price',
@@ -327,6 +329,8 @@ exports.Prisma.SubscriptionPlanScalarFieldEnum = {
 };
 
 exports.Prisma.PaymentScalarFieldEnum = {
+  appliedAt: 'appliedAt',
+  durationMonths: 'durationMonths',
   id: 'id',
   userId: 'userId',
   planId: 'planId',
@@ -338,6 +342,15 @@ exports.Prisma.PaymentScalarFieldEnum = {
   yooKassaPaymentId: 'yooKassaPaymentId',
   createdAt: 'createdAt',
   updatedAt: 'updatedAt'
+};
+
+exports.Prisma.WebhookLogScalarFieldEnum = {
+  id: 'id',
+  event: 'event',
+  payload: 'payload',
+  status: 'status',
+  error: 'error',
+  createdAt: 'createdAt'
 };
 
 exports.Prisma.SubscriptionScalarFieldEnum = {
@@ -444,6 +457,10 @@ exports.Prisma.NullableJsonNullValueInput = {
   JsonNull: Prisma.JsonNull
 };
 
+exports.Prisma.JsonNullValueInput = {
+  JsonNull: Prisma.JsonNull
+};
+
 exports.Prisma.QueryMode = {
   default: 'default',
   insensitive: 'insensitive'
@@ -491,6 +508,7 @@ exports.Prisma.ModelName = {
   Admin: 'Admin',
   SubscriptionPlan: 'SubscriptionPlan',
   Payment: 'Payment',
+  WebhookLog: 'WebhookLog',
   Subscription: 'Subscription',
   Grant: 'Grant',
   UserGrantApplication: 'UserGrantApplication',

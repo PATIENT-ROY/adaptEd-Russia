@@ -99,6 +99,11 @@ export type SubscriptionPlan = $Result.DefaultSelection<Prisma.$SubscriptionPlan
  */
 export type Payment = $Result.DefaultSelection<Prisma.$PaymentPayload>
 /**
+ * Model WebhookLog
+ * Incoming YooKassa (and future) webhook delivery audit trail
+ */
+export type WebhookLog = $Result.DefaultSelection<Prisma.$WebhookLogPayload>
+/**
  * Model Subscription
  * 
  */
@@ -464,6 +469,16 @@ export class PrismaClient<
     * ```
     */
   get payment(): Prisma.PaymentDelegate<ExtArgs>;
+
+  /**
+   * `prisma.webhookLog`: Exposes CRUD operations for the **WebhookLog** model.
+    * Example usage:
+    * ```ts
+    * // Fetch zero or more WebhookLogs
+    * const webhookLogs = await prisma.webhookLog.findMany()
+    * ```
+    */
+  get webhookLog(): Prisma.WebhookLogDelegate<ExtArgs>;
 
   /**
    * `prisma.subscription`: Exposes CRUD operations for the **Subscription** model.
@@ -1002,6 +1017,7 @@ export namespace Prisma {
     Admin: 'Admin',
     SubscriptionPlan: 'SubscriptionPlan',
     Payment: 'Payment',
+    WebhookLog: 'WebhookLog',
     Subscription: 'Subscription',
     Grant: 'Grant',
     UserGrantApplication: 'UserGrantApplication',
@@ -1025,7 +1041,7 @@ export namespace Prisma {
 
   export type TypeMap<ExtArgs extends $Extensions.InternalArgs = $Extensions.DefaultArgs, ClientOptions = {}> = {
     meta: {
-      modelProps: "user" | "buddyApplication" | "passwordSetupToken" | "profile" | "note" | "reminder" | "guide" | "chatDailyUsage" | "chatMessage" | "supportTicket" | "supportResponse" | "adminInboxRead" | "adminAuditLog" | "userNotification" | "admin" | "subscriptionPlan" | "payment" | "subscription" | "grant" | "userGrantApplication" | "question" | "answer" | "questionLike" | "guideRead" | "review"
+      modelProps: "user" | "buddyApplication" | "passwordSetupToken" | "profile" | "note" | "reminder" | "guide" | "chatDailyUsage" | "chatMessage" | "supportTicket" | "supportResponse" | "adminInboxRead" | "adminAuditLog" | "userNotification" | "admin" | "subscriptionPlan" | "payment" | "webhookLog" | "subscription" | "grant" | "userGrantApplication" | "question" | "answer" | "questionLike" | "guideRead" | "review"
       txIsolationLevel: Prisma.TransactionIsolationLevel
     }
     model: {
@@ -2216,6 +2232,76 @@ export namespace Prisma {
           count: {
             args: Prisma.PaymentCountArgs<ExtArgs>
             result: $Utils.Optional<PaymentCountAggregateOutputType> | number
+          }
+        }
+      }
+      WebhookLog: {
+        payload: Prisma.$WebhookLogPayload<ExtArgs>
+        fields: Prisma.WebhookLogFieldRefs
+        operations: {
+          findUnique: {
+            args: Prisma.WebhookLogFindUniqueArgs<ExtArgs>
+            result: $Utils.PayloadToResult<Prisma.$WebhookLogPayload> | null
+          }
+          findUniqueOrThrow: {
+            args: Prisma.WebhookLogFindUniqueOrThrowArgs<ExtArgs>
+            result: $Utils.PayloadToResult<Prisma.$WebhookLogPayload>
+          }
+          findFirst: {
+            args: Prisma.WebhookLogFindFirstArgs<ExtArgs>
+            result: $Utils.PayloadToResult<Prisma.$WebhookLogPayload> | null
+          }
+          findFirstOrThrow: {
+            args: Prisma.WebhookLogFindFirstOrThrowArgs<ExtArgs>
+            result: $Utils.PayloadToResult<Prisma.$WebhookLogPayload>
+          }
+          findMany: {
+            args: Prisma.WebhookLogFindManyArgs<ExtArgs>
+            result: $Utils.PayloadToResult<Prisma.$WebhookLogPayload>[]
+          }
+          create: {
+            args: Prisma.WebhookLogCreateArgs<ExtArgs>
+            result: $Utils.PayloadToResult<Prisma.$WebhookLogPayload>
+          }
+          createMany: {
+            args: Prisma.WebhookLogCreateManyArgs<ExtArgs>
+            result: BatchPayload
+          }
+          createManyAndReturn: {
+            args: Prisma.WebhookLogCreateManyAndReturnArgs<ExtArgs>
+            result: $Utils.PayloadToResult<Prisma.$WebhookLogPayload>[]
+          }
+          delete: {
+            args: Prisma.WebhookLogDeleteArgs<ExtArgs>
+            result: $Utils.PayloadToResult<Prisma.$WebhookLogPayload>
+          }
+          update: {
+            args: Prisma.WebhookLogUpdateArgs<ExtArgs>
+            result: $Utils.PayloadToResult<Prisma.$WebhookLogPayload>
+          }
+          deleteMany: {
+            args: Prisma.WebhookLogDeleteManyArgs<ExtArgs>
+            result: BatchPayload
+          }
+          updateMany: {
+            args: Prisma.WebhookLogUpdateManyArgs<ExtArgs>
+            result: BatchPayload
+          }
+          upsert: {
+            args: Prisma.WebhookLogUpsertArgs<ExtArgs>
+            result: $Utils.PayloadToResult<Prisma.$WebhookLogPayload>
+          }
+          aggregate: {
+            args: Prisma.WebhookLogAggregateArgs<ExtArgs>
+            result: $Utils.Optional<AggregateWebhookLog>
+          }
+          groupBy: {
+            args: Prisma.WebhookLogGroupByArgs<ExtArgs>
+            result: $Utils.Optional<WebhookLogGroupByOutputType>[]
+          }
+          count: {
+            args: Prisma.WebhookLogCountArgs<ExtArgs>
+            result: $Utils.Optional<WebhookLogCountAggregateOutputType> | number
           }
         }
       }
@@ -18934,14 +19020,18 @@ export namespace Prisma {
   }
 
   export type SubscriptionPlanAvgAggregateOutputType = {
+    durationMonths: number | null
     price: number | null
   }
 
   export type SubscriptionPlanSumAggregateOutputType = {
+    durationMonths: number | null
     price: number | null
   }
 
   export type SubscriptionPlanMinAggregateOutputType = {
+    code: string | null
+    durationMonths: number | null
     id: string | null
     name: string | null
     price: number | null
@@ -18954,6 +19044,8 @@ export namespace Prisma {
   }
 
   export type SubscriptionPlanMaxAggregateOutputType = {
+    code: string | null
+    durationMonths: number | null
     id: string | null
     name: string | null
     price: number | null
@@ -18966,6 +19058,8 @@ export namespace Prisma {
   }
 
   export type SubscriptionPlanCountAggregateOutputType = {
+    code: number
+    durationMonths: number
     id: number
     name: number
     price: number
@@ -18980,14 +19074,18 @@ export namespace Prisma {
 
 
   export type SubscriptionPlanAvgAggregateInputType = {
+    durationMonths?: true
     price?: true
   }
 
   export type SubscriptionPlanSumAggregateInputType = {
+    durationMonths?: true
     price?: true
   }
 
   export type SubscriptionPlanMinAggregateInputType = {
+    code?: true
+    durationMonths?: true
     id?: true
     name?: true
     price?: true
@@ -19000,6 +19098,8 @@ export namespace Prisma {
   }
 
   export type SubscriptionPlanMaxAggregateInputType = {
+    code?: true
+    durationMonths?: true
     id?: true
     name?: true
     price?: true
@@ -19012,6 +19112,8 @@ export namespace Prisma {
   }
 
   export type SubscriptionPlanCountAggregateInputType = {
+    code?: true
+    durationMonths?: true
     id?: true
     name?: true
     price?: true
@@ -19111,6 +19213,8 @@ export namespace Prisma {
   }
 
   export type SubscriptionPlanGroupByOutputType = {
+    code: string | null
+    durationMonths: number
     id: string
     name: string
     price: number
@@ -19142,6 +19246,8 @@ export namespace Prisma {
 
 
   export type SubscriptionPlanSelect<ExtArgs extends $Extensions.InternalArgs = $Extensions.DefaultArgs> = $Extensions.GetSelect<{
+    code?: boolean
+    durationMonths?: boolean
     id?: boolean
     name?: boolean
     price?: boolean
@@ -19156,6 +19262,8 @@ export namespace Prisma {
   }, ExtArgs["result"]["subscriptionPlan"]>
 
   export type SubscriptionPlanSelectCreateManyAndReturn<ExtArgs extends $Extensions.InternalArgs = $Extensions.DefaultArgs> = $Extensions.GetSelect<{
+    code?: boolean
+    durationMonths?: boolean
     id?: boolean
     name?: boolean
     price?: boolean
@@ -19168,6 +19276,8 @@ export namespace Prisma {
   }, ExtArgs["result"]["subscriptionPlan"]>
 
   export type SubscriptionPlanSelectScalar = {
+    code?: boolean
+    durationMonths?: boolean
     id?: boolean
     name?: boolean
     price?: boolean
@@ -19191,6 +19301,8 @@ export namespace Prisma {
       subscriptions: Prisma.$SubscriptionPayload<ExtArgs>[]
     }
     scalars: $Extensions.GetPayloadResult<{
+      code: string | null
+      durationMonths: number
       id: string
       name: string
       price: number
@@ -19283,8 +19395,8 @@ export namespace Prisma {
      * // Get first 10 SubscriptionPlans
      * const subscriptionPlans = await prisma.subscriptionPlan.findMany({ take: 10 })
      * 
-     * // Only select the `id`
-     * const subscriptionPlanWithIdOnly = await prisma.subscriptionPlan.findMany({ select: { id: true } })
+     * // Only select the `code`
+     * const subscriptionPlanWithCodeOnly = await prisma.subscriptionPlan.findMany({ select: { code: true } })
      * 
      */
     findMany<T extends SubscriptionPlanFindManyArgs>(args?: SelectSubset<T, SubscriptionPlanFindManyArgs<ExtArgs>>): Prisma.PrismaPromise<$Result.GetResult<Prisma.$SubscriptionPlanPayload<ExtArgs>, T, "findMany">>
@@ -19328,9 +19440,9 @@ export namespace Prisma {
      *   ]
      * })
      * 
-     * // Create many SubscriptionPlans and only return the `id`
-     * const subscriptionPlanWithIdOnly = await prisma.subscriptionPlan.createManyAndReturn({ 
-     *   select: { id: true },
+     * // Create many SubscriptionPlans and only return the `code`
+     * const subscriptionPlanWithCodeOnly = await prisma.subscriptionPlan.createManyAndReturn({ 
+     *   select: { code: true },
      *   data: [
      *     // ... provide data here
      *   ]
@@ -19594,6 +19706,8 @@ export namespace Prisma {
    * Fields of the SubscriptionPlan model
    */ 
   interface SubscriptionPlanFieldRefs {
+    readonly code: FieldRef<"SubscriptionPlan", 'String'>
+    readonly durationMonths: FieldRef<"SubscriptionPlan", 'Int'>
     readonly id: FieldRef<"SubscriptionPlan", 'String'>
     readonly name: FieldRef<"SubscriptionPlan", 'String'>
     readonly price: FieldRef<"SubscriptionPlan", 'Float'>
@@ -19964,14 +20078,18 @@ export namespace Prisma {
   }
 
   export type PaymentAvgAggregateOutputType = {
+    durationMonths: number | null
     amount: number | null
   }
 
   export type PaymentSumAggregateOutputType = {
+    durationMonths: number | null
     amount: number | null
   }
 
   export type PaymentMinAggregateOutputType = {
+    appliedAt: Date | null
+    durationMonths: number | null
     id: string | null
     userId: string | null
     planId: string | null
@@ -19986,6 +20104,8 @@ export namespace Prisma {
   }
 
   export type PaymentMaxAggregateOutputType = {
+    appliedAt: Date | null
+    durationMonths: number | null
     id: string | null
     userId: string | null
     planId: string | null
@@ -20000,6 +20120,8 @@ export namespace Prisma {
   }
 
   export type PaymentCountAggregateOutputType = {
+    appliedAt: number
+    durationMonths: number
     id: number
     userId: number
     planId: number
@@ -20016,14 +20138,18 @@ export namespace Prisma {
 
 
   export type PaymentAvgAggregateInputType = {
+    durationMonths?: true
     amount?: true
   }
 
   export type PaymentSumAggregateInputType = {
+    durationMonths?: true
     amount?: true
   }
 
   export type PaymentMinAggregateInputType = {
+    appliedAt?: true
+    durationMonths?: true
     id?: true
     userId?: true
     planId?: true
@@ -20038,6 +20164,8 @@ export namespace Prisma {
   }
 
   export type PaymentMaxAggregateInputType = {
+    appliedAt?: true
+    durationMonths?: true
     id?: true
     userId?: true
     planId?: true
@@ -20052,6 +20180,8 @@ export namespace Prisma {
   }
 
   export type PaymentCountAggregateInputType = {
+    appliedAt?: true
+    durationMonths?: true
     id?: true
     userId?: true
     planId?: true
@@ -20153,6 +20283,8 @@ export namespace Prisma {
   }
 
   export type PaymentGroupByOutputType = {
+    appliedAt: Date | null
+    durationMonths: number | null
     id: string
     userId: string | null
     planId: string | null
@@ -20186,6 +20318,8 @@ export namespace Prisma {
 
 
   export type PaymentSelect<ExtArgs extends $Extensions.InternalArgs = $Extensions.DefaultArgs> = $Extensions.GetSelect<{
+    appliedAt?: boolean
+    durationMonths?: boolean
     id?: boolean
     userId?: boolean
     planId?: boolean
@@ -20203,6 +20337,8 @@ export namespace Prisma {
   }, ExtArgs["result"]["payment"]>
 
   export type PaymentSelectCreateManyAndReturn<ExtArgs extends $Extensions.InternalArgs = $Extensions.DefaultArgs> = $Extensions.GetSelect<{
+    appliedAt?: boolean
+    durationMonths?: boolean
     id?: boolean
     userId?: boolean
     planId?: boolean
@@ -20218,6 +20354,8 @@ export namespace Prisma {
   }, ExtArgs["result"]["payment"]>
 
   export type PaymentSelectScalar = {
+    appliedAt?: boolean
+    durationMonths?: boolean
     id?: boolean
     userId?: boolean
     planId?: boolean
@@ -20247,6 +20385,8 @@ export namespace Prisma {
       subscriptions: Prisma.$SubscriptionPayload<ExtArgs>[]
     }
     scalars: $Extensions.GetPayloadResult<{
+      appliedAt: Date | null
+      durationMonths: number | null
       id: string
       userId: string | null
       planId: string | null
@@ -20341,8 +20481,8 @@ export namespace Prisma {
      * // Get first 10 Payments
      * const payments = await prisma.payment.findMany({ take: 10 })
      * 
-     * // Only select the `id`
-     * const paymentWithIdOnly = await prisma.payment.findMany({ select: { id: true } })
+     * // Only select the `appliedAt`
+     * const paymentWithAppliedAtOnly = await prisma.payment.findMany({ select: { appliedAt: true } })
      * 
      */
     findMany<T extends PaymentFindManyArgs>(args?: SelectSubset<T, PaymentFindManyArgs<ExtArgs>>): Prisma.PrismaPromise<$Result.GetResult<Prisma.$PaymentPayload<ExtArgs>, T, "findMany">>
@@ -20386,9 +20526,9 @@ export namespace Prisma {
      *   ]
      * })
      * 
-     * // Create many Payments and only return the `id`
-     * const paymentWithIdOnly = await prisma.payment.createManyAndReturn({ 
-     *   select: { id: true },
+     * // Create many Payments and only return the `appliedAt`
+     * const paymentWithAppliedAtOnly = await prisma.payment.createManyAndReturn({ 
+     *   select: { appliedAt: true },
      *   data: [
      *     // ... provide data here
      *   ]
@@ -20653,6 +20793,8 @@ export namespace Prisma {
    * Fields of the Payment model
    */ 
   interface PaymentFieldRefs {
+    readonly appliedAt: FieldRef<"Payment", 'DateTime'>
+    readonly durationMonths: FieldRef<"Payment", 'Int'>
     readonly id: FieldRef<"Payment", 'String'>
     readonly userId: FieldRef<"Payment", 'String'>
     readonly planId: FieldRef<"Payment", 'String'>
@@ -21028,6 +21170,892 @@ export namespace Prisma {
      * Choose, which related nodes to fetch as well
      */
     include?: PaymentInclude<ExtArgs> | null
+  }
+
+
+  /**
+   * Model WebhookLog
+   */
+
+  export type AggregateWebhookLog = {
+    _count: WebhookLogCountAggregateOutputType | null
+    _min: WebhookLogMinAggregateOutputType | null
+    _max: WebhookLogMaxAggregateOutputType | null
+  }
+
+  export type WebhookLogMinAggregateOutputType = {
+    id: string | null
+    event: string | null
+    status: string | null
+    error: string | null
+    createdAt: Date | null
+  }
+
+  export type WebhookLogMaxAggregateOutputType = {
+    id: string | null
+    event: string | null
+    status: string | null
+    error: string | null
+    createdAt: Date | null
+  }
+
+  export type WebhookLogCountAggregateOutputType = {
+    id: number
+    event: number
+    payload: number
+    status: number
+    error: number
+    createdAt: number
+    _all: number
+  }
+
+
+  export type WebhookLogMinAggregateInputType = {
+    id?: true
+    event?: true
+    status?: true
+    error?: true
+    createdAt?: true
+  }
+
+  export type WebhookLogMaxAggregateInputType = {
+    id?: true
+    event?: true
+    status?: true
+    error?: true
+    createdAt?: true
+  }
+
+  export type WebhookLogCountAggregateInputType = {
+    id?: true
+    event?: true
+    payload?: true
+    status?: true
+    error?: true
+    createdAt?: true
+    _all?: true
+  }
+
+  export type WebhookLogAggregateArgs<ExtArgs extends $Extensions.InternalArgs = $Extensions.DefaultArgs> = {
+    /**
+     * Filter which WebhookLog to aggregate.
+     */
+    where?: WebhookLogWhereInput
+    /**
+     * {@link https://www.prisma.io/docs/concepts/components/prisma-client/sorting Sorting Docs}
+     * 
+     * Determine the order of WebhookLogs to fetch.
+     */
+    orderBy?: WebhookLogOrderByWithRelationInput | WebhookLogOrderByWithRelationInput[]
+    /**
+     * {@link https://www.prisma.io/docs/concepts/components/prisma-client/pagination#cursor-based-pagination Cursor Docs}
+     * 
+     * Sets the start position
+     */
+    cursor?: WebhookLogWhereUniqueInput
+    /**
+     * {@link https://www.prisma.io/docs/concepts/components/prisma-client/pagination Pagination Docs}
+     * 
+     * Take `±n` WebhookLogs from the position of the cursor.
+     */
+    take?: number
+    /**
+     * {@link https://www.prisma.io/docs/concepts/components/prisma-client/pagination Pagination Docs}
+     * 
+     * Skip the first `n` WebhookLogs.
+     */
+    skip?: number
+    /**
+     * {@link https://www.prisma.io/docs/concepts/components/prisma-client/aggregations Aggregation Docs}
+     * 
+     * Count returned WebhookLogs
+    **/
+    _count?: true | WebhookLogCountAggregateInputType
+    /**
+     * {@link https://www.prisma.io/docs/concepts/components/prisma-client/aggregations Aggregation Docs}
+     * 
+     * Select which fields to find the minimum value
+    **/
+    _min?: WebhookLogMinAggregateInputType
+    /**
+     * {@link https://www.prisma.io/docs/concepts/components/prisma-client/aggregations Aggregation Docs}
+     * 
+     * Select which fields to find the maximum value
+    **/
+    _max?: WebhookLogMaxAggregateInputType
+  }
+
+  export type GetWebhookLogAggregateType<T extends WebhookLogAggregateArgs> = {
+        [P in keyof T & keyof AggregateWebhookLog]: P extends '_count' | 'count'
+      ? T[P] extends true
+        ? number
+        : GetScalarType<T[P], AggregateWebhookLog[P]>
+      : GetScalarType<T[P], AggregateWebhookLog[P]>
+  }
+
+
+
+
+  export type WebhookLogGroupByArgs<ExtArgs extends $Extensions.InternalArgs = $Extensions.DefaultArgs> = {
+    where?: WebhookLogWhereInput
+    orderBy?: WebhookLogOrderByWithAggregationInput | WebhookLogOrderByWithAggregationInput[]
+    by: WebhookLogScalarFieldEnum[] | WebhookLogScalarFieldEnum
+    having?: WebhookLogScalarWhereWithAggregatesInput
+    take?: number
+    skip?: number
+    _count?: WebhookLogCountAggregateInputType | true
+    _min?: WebhookLogMinAggregateInputType
+    _max?: WebhookLogMaxAggregateInputType
+  }
+
+  export type WebhookLogGroupByOutputType = {
+    id: string
+    event: string
+    payload: JsonValue
+    status: string
+    error: string | null
+    createdAt: Date
+    _count: WebhookLogCountAggregateOutputType | null
+    _min: WebhookLogMinAggregateOutputType | null
+    _max: WebhookLogMaxAggregateOutputType | null
+  }
+
+  type GetWebhookLogGroupByPayload<T extends WebhookLogGroupByArgs> = Prisma.PrismaPromise<
+    Array<
+      PickEnumerable<WebhookLogGroupByOutputType, T['by']> &
+        {
+          [P in ((keyof T) & (keyof WebhookLogGroupByOutputType))]: P extends '_count'
+            ? T[P] extends boolean
+              ? number
+              : GetScalarType<T[P], WebhookLogGroupByOutputType[P]>
+            : GetScalarType<T[P], WebhookLogGroupByOutputType[P]>
+        }
+      >
+    >
+
+
+  export type WebhookLogSelect<ExtArgs extends $Extensions.InternalArgs = $Extensions.DefaultArgs> = $Extensions.GetSelect<{
+    id?: boolean
+    event?: boolean
+    payload?: boolean
+    status?: boolean
+    error?: boolean
+    createdAt?: boolean
+  }, ExtArgs["result"]["webhookLog"]>
+
+  export type WebhookLogSelectCreateManyAndReturn<ExtArgs extends $Extensions.InternalArgs = $Extensions.DefaultArgs> = $Extensions.GetSelect<{
+    id?: boolean
+    event?: boolean
+    payload?: boolean
+    status?: boolean
+    error?: boolean
+    createdAt?: boolean
+  }, ExtArgs["result"]["webhookLog"]>
+
+  export type WebhookLogSelectScalar = {
+    id?: boolean
+    event?: boolean
+    payload?: boolean
+    status?: boolean
+    error?: boolean
+    createdAt?: boolean
+  }
+
+
+  export type $WebhookLogPayload<ExtArgs extends $Extensions.InternalArgs = $Extensions.DefaultArgs> = {
+    name: "WebhookLog"
+    objects: {}
+    scalars: $Extensions.GetPayloadResult<{
+      id: string
+      event: string
+      payload: Prisma.JsonValue
+      status: string
+      error: string | null
+      createdAt: Date
+    }, ExtArgs["result"]["webhookLog"]>
+    composites: {}
+  }
+
+  type WebhookLogGetPayload<S extends boolean | null | undefined | WebhookLogDefaultArgs> = $Result.GetResult<Prisma.$WebhookLogPayload, S>
+
+  type WebhookLogCountArgs<ExtArgs extends $Extensions.InternalArgs = $Extensions.DefaultArgs> = 
+    Omit<WebhookLogFindManyArgs, 'select' | 'include' | 'distinct'> & {
+      select?: WebhookLogCountAggregateInputType | true
+    }
+
+  export interface WebhookLogDelegate<ExtArgs extends $Extensions.InternalArgs = $Extensions.DefaultArgs> {
+    [K: symbol]: { types: Prisma.TypeMap<ExtArgs>['model']['WebhookLog'], meta: { name: 'WebhookLog' } }
+    /**
+     * Find zero or one WebhookLog that matches the filter.
+     * @param {WebhookLogFindUniqueArgs} args - Arguments to find a WebhookLog
+     * @example
+     * // Get one WebhookLog
+     * const webhookLog = await prisma.webhookLog.findUnique({
+     *   where: {
+     *     // ... provide filter here
+     *   }
+     * })
+     */
+    findUnique<T extends WebhookLogFindUniqueArgs>(args: SelectSubset<T, WebhookLogFindUniqueArgs<ExtArgs>>): Prisma__WebhookLogClient<$Result.GetResult<Prisma.$WebhookLogPayload<ExtArgs>, T, "findUnique"> | null, null, ExtArgs>
+
+    /**
+     * Find one WebhookLog that matches the filter or throw an error with `error.code='P2025'` 
+     * if no matches were found.
+     * @param {WebhookLogFindUniqueOrThrowArgs} args - Arguments to find a WebhookLog
+     * @example
+     * // Get one WebhookLog
+     * const webhookLog = await prisma.webhookLog.findUniqueOrThrow({
+     *   where: {
+     *     // ... provide filter here
+     *   }
+     * })
+     */
+    findUniqueOrThrow<T extends WebhookLogFindUniqueOrThrowArgs>(args: SelectSubset<T, WebhookLogFindUniqueOrThrowArgs<ExtArgs>>): Prisma__WebhookLogClient<$Result.GetResult<Prisma.$WebhookLogPayload<ExtArgs>, T, "findUniqueOrThrow">, never, ExtArgs>
+
+    /**
+     * Find the first WebhookLog that matches the filter.
+     * Note, that providing `undefined` is treated as the value not being there.
+     * Read more here: https://pris.ly/d/null-undefined
+     * @param {WebhookLogFindFirstArgs} args - Arguments to find a WebhookLog
+     * @example
+     * // Get one WebhookLog
+     * const webhookLog = await prisma.webhookLog.findFirst({
+     *   where: {
+     *     // ... provide filter here
+     *   }
+     * })
+     */
+    findFirst<T extends WebhookLogFindFirstArgs>(args?: SelectSubset<T, WebhookLogFindFirstArgs<ExtArgs>>): Prisma__WebhookLogClient<$Result.GetResult<Prisma.$WebhookLogPayload<ExtArgs>, T, "findFirst"> | null, null, ExtArgs>
+
+    /**
+     * Find the first WebhookLog that matches the filter or
+     * throw `PrismaKnownClientError` with `P2025` code if no matches were found.
+     * Note, that providing `undefined` is treated as the value not being there.
+     * Read more here: https://pris.ly/d/null-undefined
+     * @param {WebhookLogFindFirstOrThrowArgs} args - Arguments to find a WebhookLog
+     * @example
+     * // Get one WebhookLog
+     * const webhookLog = await prisma.webhookLog.findFirstOrThrow({
+     *   where: {
+     *     // ... provide filter here
+     *   }
+     * })
+     */
+    findFirstOrThrow<T extends WebhookLogFindFirstOrThrowArgs>(args?: SelectSubset<T, WebhookLogFindFirstOrThrowArgs<ExtArgs>>): Prisma__WebhookLogClient<$Result.GetResult<Prisma.$WebhookLogPayload<ExtArgs>, T, "findFirstOrThrow">, never, ExtArgs>
+
+    /**
+     * Find zero or more WebhookLogs that matches the filter.
+     * Note, that providing `undefined` is treated as the value not being there.
+     * Read more here: https://pris.ly/d/null-undefined
+     * @param {WebhookLogFindManyArgs} args - Arguments to filter and select certain fields only.
+     * @example
+     * // Get all WebhookLogs
+     * const webhookLogs = await prisma.webhookLog.findMany()
+     * 
+     * // Get first 10 WebhookLogs
+     * const webhookLogs = await prisma.webhookLog.findMany({ take: 10 })
+     * 
+     * // Only select the `id`
+     * const webhookLogWithIdOnly = await prisma.webhookLog.findMany({ select: { id: true } })
+     * 
+     */
+    findMany<T extends WebhookLogFindManyArgs>(args?: SelectSubset<T, WebhookLogFindManyArgs<ExtArgs>>): Prisma.PrismaPromise<$Result.GetResult<Prisma.$WebhookLogPayload<ExtArgs>, T, "findMany">>
+
+    /**
+     * Create a WebhookLog.
+     * @param {WebhookLogCreateArgs} args - Arguments to create a WebhookLog.
+     * @example
+     * // Create one WebhookLog
+     * const WebhookLog = await prisma.webhookLog.create({
+     *   data: {
+     *     // ... data to create a WebhookLog
+     *   }
+     * })
+     * 
+     */
+    create<T extends WebhookLogCreateArgs>(args: SelectSubset<T, WebhookLogCreateArgs<ExtArgs>>): Prisma__WebhookLogClient<$Result.GetResult<Prisma.$WebhookLogPayload<ExtArgs>, T, "create">, never, ExtArgs>
+
+    /**
+     * Create many WebhookLogs.
+     * @param {WebhookLogCreateManyArgs} args - Arguments to create many WebhookLogs.
+     * @example
+     * // Create many WebhookLogs
+     * const webhookLog = await prisma.webhookLog.createMany({
+     *   data: [
+     *     // ... provide data here
+     *   ]
+     * })
+     *     
+     */
+    createMany<T extends WebhookLogCreateManyArgs>(args?: SelectSubset<T, WebhookLogCreateManyArgs<ExtArgs>>): Prisma.PrismaPromise<BatchPayload>
+
+    /**
+     * Create many WebhookLogs and returns the data saved in the database.
+     * @param {WebhookLogCreateManyAndReturnArgs} args - Arguments to create many WebhookLogs.
+     * @example
+     * // Create many WebhookLogs
+     * const webhookLog = await prisma.webhookLog.createManyAndReturn({
+     *   data: [
+     *     // ... provide data here
+     *   ]
+     * })
+     * 
+     * // Create many WebhookLogs and only return the `id`
+     * const webhookLogWithIdOnly = await prisma.webhookLog.createManyAndReturn({ 
+     *   select: { id: true },
+     *   data: [
+     *     // ... provide data here
+     *   ]
+     * })
+     * Note, that providing `undefined` is treated as the value not being there.
+     * Read more here: https://pris.ly/d/null-undefined
+     * 
+     */
+    createManyAndReturn<T extends WebhookLogCreateManyAndReturnArgs>(args?: SelectSubset<T, WebhookLogCreateManyAndReturnArgs<ExtArgs>>): Prisma.PrismaPromise<$Result.GetResult<Prisma.$WebhookLogPayload<ExtArgs>, T, "createManyAndReturn">>
+
+    /**
+     * Delete a WebhookLog.
+     * @param {WebhookLogDeleteArgs} args - Arguments to delete one WebhookLog.
+     * @example
+     * // Delete one WebhookLog
+     * const WebhookLog = await prisma.webhookLog.delete({
+     *   where: {
+     *     // ... filter to delete one WebhookLog
+     *   }
+     * })
+     * 
+     */
+    delete<T extends WebhookLogDeleteArgs>(args: SelectSubset<T, WebhookLogDeleteArgs<ExtArgs>>): Prisma__WebhookLogClient<$Result.GetResult<Prisma.$WebhookLogPayload<ExtArgs>, T, "delete">, never, ExtArgs>
+
+    /**
+     * Update one WebhookLog.
+     * @param {WebhookLogUpdateArgs} args - Arguments to update one WebhookLog.
+     * @example
+     * // Update one WebhookLog
+     * const webhookLog = await prisma.webhookLog.update({
+     *   where: {
+     *     // ... provide filter here
+     *   },
+     *   data: {
+     *     // ... provide data here
+     *   }
+     * })
+     * 
+     */
+    update<T extends WebhookLogUpdateArgs>(args: SelectSubset<T, WebhookLogUpdateArgs<ExtArgs>>): Prisma__WebhookLogClient<$Result.GetResult<Prisma.$WebhookLogPayload<ExtArgs>, T, "update">, never, ExtArgs>
+
+    /**
+     * Delete zero or more WebhookLogs.
+     * @param {WebhookLogDeleteManyArgs} args - Arguments to filter WebhookLogs to delete.
+     * @example
+     * // Delete a few WebhookLogs
+     * const { count } = await prisma.webhookLog.deleteMany({
+     *   where: {
+     *     // ... provide filter here
+     *   }
+     * })
+     * 
+     */
+    deleteMany<T extends WebhookLogDeleteManyArgs>(args?: SelectSubset<T, WebhookLogDeleteManyArgs<ExtArgs>>): Prisma.PrismaPromise<BatchPayload>
+
+    /**
+     * Update zero or more WebhookLogs.
+     * Note, that providing `undefined` is treated as the value not being there.
+     * Read more here: https://pris.ly/d/null-undefined
+     * @param {WebhookLogUpdateManyArgs} args - Arguments to update one or more rows.
+     * @example
+     * // Update many WebhookLogs
+     * const webhookLog = await prisma.webhookLog.updateMany({
+     *   where: {
+     *     // ... provide filter here
+     *   },
+     *   data: {
+     *     // ... provide data here
+     *   }
+     * })
+     * 
+     */
+    updateMany<T extends WebhookLogUpdateManyArgs>(args: SelectSubset<T, WebhookLogUpdateManyArgs<ExtArgs>>): Prisma.PrismaPromise<BatchPayload>
+
+    /**
+     * Create or update one WebhookLog.
+     * @param {WebhookLogUpsertArgs} args - Arguments to update or create a WebhookLog.
+     * @example
+     * // Update or create a WebhookLog
+     * const webhookLog = await prisma.webhookLog.upsert({
+     *   create: {
+     *     // ... data to create a WebhookLog
+     *   },
+     *   update: {
+     *     // ... in case it already exists, update
+     *   },
+     *   where: {
+     *     // ... the filter for the WebhookLog we want to update
+     *   }
+     * })
+     */
+    upsert<T extends WebhookLogUpsertArgs>(args: SelectSubset<T, WebhookLogUpsertArgs<ExtArgs>>): Prisma__WebhookLogClient<$Result.GetResult<Prisma.$WebhookLogPayload<ExtArgs>, T, "upsert">, never, ExtArgs>
+
+
+    /**
+     * Count the number of WebhookLogs.
+     * Note, that providing `undefined` is treated as the value not being there.
+     * Read more here: https://pris.ly/d/null-undefined
+     * @param {WebhookLogCountArgs} args - Arguments to filter WebhookLogs to count.
+     * @example
+     * // Count the number of WebhookLogs
+     * const count = await prisma.webhookLog.count({
+     *   where: {
+     *     // ... the filter for the WebhookLogs we want to count
+     *   }
+     * })
+    **/
+    count<T extends WebhookLogCountArgs>(
+      args?: Subset<T, WebhookLogCountArgs>,
+    ): Prisma.PrismaPromise<
+      T extends $Utils.Record<'select', any>
+        ? T['select'] extends true
+          ? number
+          : GetScalarType<T['select'], WebhookLogCountAggregateOutputType>
+        : number
+    >
+
+    /**
+     * Allows you to perform aggregations operations on a WebhookLog.
+     * Note, that providing `undefined` is treated as the value not being there.
+     * Read more here: https://pris.ly/d/null-undefined
+     * @param {WebhookLogAggregateArgs} args - Select which aggregations you would like to apply and on what fields.
+     * @example
+     * // Ordered by age ascending
+     * // Where email contains prisma.io
+     * // Limited to the 10 users
+     * const aggregations = await prisma.user.aggregate({
+     *   _avg: {
+     *     age: true,
+     *   },
+     *   where: {
+     *     email: {
+     *       contains: "prisma.io",
+     *     },
+     *   },
+     *   orderBy: {
+     *     age: "asc",
+     *   },
+     *   take: 10,
+     * })
+    **/
+    aggregate<T extends WebhookLogAggregateArgs>(args: Subset<T, WebhookLogAggregateArgs>): Prisma.PrismaPromise<GetWebhookLogAggregateType<T>>
+
+    /**
+     * Group by WebhookLog.
+     * Note, that providing `undefined` is treated as the value not being there.
+     * Read more here: https://pris.ly/d/null-undefined
+     * @param {WebhookLogGroupByArgs} args - Group by arguments.
+     * @example
+     * // Group by city, order by createdAt, get count
+     * const result = await prisma.user.groupBy({
+     *   by: ['city', 'createdAt'],
+     *   orderBy: {
+     *     createdAt: true
+     *   },
+     *   _count: {
+     *     _all: true
+     *   },
+     * })
+     * 
+    **/
+    groupBy<
+      T extends WebhookLogGroupByArgs,
+      HasSelectOrTake extends Or<
+        Extends<'skip', Keys<T>>,
+        Extends<'take', Keys<T>>
+      >,
+      OrderByArg extends True extends HasSelectOrTake
+        ? { orderBy: WebhookLogGroupByArgs['orderBy'] }
+        : { orderBy?: WebhookLogGroupByArgs['orderBy'] },
+      OrderFields extends ExcludeUnderscoreKeys<Keys<MaybeTupleToUnion<T['orderBy']>>>,
+      ByFields extends MaybeTupleToUnion<T['by']>,
+      ByValid extends Has<ByFields, OrderFields>,
+      HavingFields extends GetHavingFields<T['having']>,
+      HavingValid extends Has<ByFields, HavingFields>,
+      ByEmpty extends T['by'] extends never[] ? True : False,
+      InputErrors extends ByEmpty extends True
+      ? `Error: "by" must not be empty.`
+      : HavingValid extends False
+      ? {
+          [P in HavingFields]: P extends ByFields
+            ? never
+            : P extends string
+            ? `Error: Field "${P}" used in "having" needs to be provided in "by".`
+            : [
+                Error,
+                'Field ',
+                P,
+                ` in "having" needs to be provided in "by"`,
+              ]
+        }[HavingFields]
+      : 'take' extends Keys<T>
+      ? 'orderBy' extends Keys<T>
+        ? ByValid extends True
+          ? {}
+          : {
+              [P in OrderFields]: P extends ByFields
+                ? never
+                : `Error: Field "${P}" in "orderBy" needs to be provided in "by"`
+            }[OrderFields]
+        : 'Error: If you provide "take", you also need to provide "orderBy"'
+      : 'skip' extends Keys<T>
+      ? 'orderBy' extends Keys<T>
+        ? ByValid extends True
+          ? {}
+          : {
+              [P in OrderFields]: P extends ByFields
+                ? never
+                : `Error: Field "${P}" in "orderBy" needs to be provided in "by"`
+            }[OrderFields]
+        : 'Error: If you provide "skip", you also need to provide "orderBy"'
+      : ByValid extends True
+      ? {}
+      : {
+          [P in OrderFields]: P extends ByFields
+            ? never
+            : `Error: Field "${P}" in "orderBy" needs to be provided in "by"`
+        }[OrderFields]
+    >(args: SubsetIntersection<T, WebhookLogGroupByArgs, OrderByArg> & InputErrors): {} extends InputErrors ? GetWebhookLogGroupByPayload<T> : Prisma.PrismaPromise<InputErrors>
+  /**
+   * Fields of the WebhookLog model
+   */
+  readonly fields: WebhookLogFieldRefs;
+  }
+
+  /**
+   * The delegate class that acts as a "Promise-like" for WebhookLog.
+   * Why is this prefixed with `Prisma__`?
+   * Because we want to prevent naming conflicts as mentioned in
+   * https://github.com/prisma/prisma-client-js/issues/707
+   */
+  export interface Prisma__WebhookLogClient<T, Null = never, ExtArgs extends $Extensions.InternalArgs = $Extensions.DefaultArgs> extends Prisma.PrismaPromise<T> {
+    readonly [Symbol.toStringTag]: "PrismaPromise"
+    /**
+     * Attaches callbacks for the resolution and/or rejection of the Promise.
+     * @param onfulfilled The callback to execute when the Promise is resolved.
+     * @param onrejected The callback to execute when the Promise is rejected.
+     * @returns A Promise for the completion of which ever callback is executed.
+     */
+    then<TResult1 = T, TResult2 = never>(onfulfilled?: ((value: T) => TResult1 | PromiseLike<TResult1>) | undefined | null, onrejected?: ((reason: any) => TResult2 | PromiseLike<TResult2>) | undefined | null): $Utils.JsPromise<TResult1 | TResult2>
+    /**
+     * Attaches a callback for only the rejection of the Promise.
+     * @param onrejected The callback to execute when the Promise is rejected.
+     * @returns A Promise for the completion of the callback.
+     */
+    catch<TResult = never>(onrejected?: ((reason: any) => TResult | PromiseLike<TResult>) | undefined | null): $Utils.JsPromise<T | TResult>
+    /**
+     * Attaches a callback that is invoked when the Promise is settled (fulfilled or rejected). The
+     * resolved value cannot be modified from the callback.
+     * @param onfinally The callback to execute when the Promise is settled (fulfilled or rejected).
+     * @returns A Promise for the completion of the callback.
+     */
+    finally(onfinally?: (() => void) | undefined | null): $Utils.JsPromise<T>
+  }
+
+
+
+
+  /**
+   * Fields of the WebhookLog model
+   */ 
+  interface WebhookLogFieldRefs {
+    readonly id: FieldRef<"WebhookLog", 'String'>
+    readonly event: FieldRef<"WebhookLog", 'String'>
+    readonly payload: FieldRef<"WebhookLog", 'Json'>
+    readonly status: FieldRef<"WebhookLog", 'String'>
+    readonly error: FieldRef<"WebhookLog", 'String'>
+    readonly createdAt: FieldRef<"WebhookLog", 'DateTime'>
+  }
+    
+
+  // Custom InputTypes
+  /**
+   * WebhookLog findUnique
+   */
+  export type WebhookLogFindUniqueArgs<ExtArgs extends $Extensions.InternalArgs = $Extensions.DefaultArgs> = {
+    /**
+     * Select specific fields to fetch from the WebhookLog
+     */
+    select?: WebhookLogSelect<ExtArgs> | null
+    /**
+     * Filter, which WebhookLog to fetch.
+     */
+    where: WebhookLogWhereUniqueInput
+  }
+
+  /**
+   * WebhookLog findUniqueOrThrow
+   */
+  export type WebhookLogFindUniqueOrThrowArgs<ExtArgs extends $Extensions.InternalArgs = $Extensions.DefaultArgs> = {
+    /**
+     * Select specific fields to fetch from the WebhookLog
+     */
+    select?: WebhookLogSelect<ExtArgs> | null
+    /**
+     * Filter, which WebhookLog to fetch.
+     */
+    where: WebhookLogWhereUniqueInput
+  }
+
+  /**
+   * WebhookLog findFirst
+   */
+  export type WebhookLogFindFirstArgs<ExtArgs extends $Extensions.InternalArgs = $Extensions.DefaultArgs> = {
+    /**
+     * Select specific fields to fetch from the WebhookLog
+     */
+    select?: WebhookLogSelect<ExtArgs> | null
+    /**
+     * Filter, which WebhookLog to fetch.
+     */
+    where?: WebhookLogWhereInput
+    /**
+     * {@link https://www.prisma.io/docs/concepts/components/prisma-client/sorting Sorting Docs}
+     * 
+     * Determine the order of WebhookLogs to fetch.
+     */
+    orderBy?: WebhookLogOrderByWithRelationInput | WebhookLogOrderByWithRelationInput[]
+    /**
+     * {@link https://www.prisma.io/docs/concepts/components/prisma-client/pagination#cursor-based-pagination Cursor Docs}
+     * 
+     * Sets the position for searching for WebhookLogs.
+     */
+    cursor?: WebhookLogWhereUniqueInput
+    /**
+     * {@link https://www.prisma.io/docs/concepts/components/prisma-client/pagination Pagination Docs}
+     * 
+     * Take `±n` WebhookLogs from the position of the cursor.
+     */
+    take?: number
+    /**
+     * {@link https://www.prisma.io/docs/concepts/components/prisma-client/pagination Pagination Docs}
+     * 
+     * Skip the first `n` WebhookLogs.
+     */
+    skip?: number
+    /**
+     * {@link https://www.prisma.io/docs/concepts/components/prisma-client/distinct Distinct Docs}
+     * 
+     * Filter by unique combinations of WebhookLogs.
+     */
+    distinct?: WebhookLogScalarFieldEnum | WebhookLogScalarFieldEnum[]
+  }
+
+  /**
+   * WebhookLog findFirstOrThrow
+   */
+  export type WebhookLogFindFirstOrThrowArgs<ExtArgs extends $Extensions.InternalArgs = $Extensions.DefaultArgs> = {
+    /**
+     * Select specific fields to fetch from the WebhookLog
+     */
+    select?: WebhookLogSelect<ExtArgs> | null
+    /**
+     * Filter, which WebhookLog to fetch.
+     */
+    where?: WebhookLogWhereInput
+    /**
+     * {@link https://www.prisma.io/docs/concepts/components/prisma-client/sorting Sorting Docs}
+     * 
+     * Determine the order of WebhookLogs to fetch.
+     */
+    orderBy?: WebhookLogOrderByWithRelationInput | WebhookLogOrderByWithRelationInput[]
+    /**
+     * {@link https://www.prisma.io/docs/concepts/components/prisma-client/pagination#cursor-based-pagination Cursor Docs}
+     * 
+     * Sets the position for searching for WebhookLogs.
+     */
+    cursor?: WebhookLogWhereUniqueInput
+    /**
+     * {@link https://www.prisma.io/docs/concepts/components/prisma-client/pagination Pagination Docs}
+     * 
+     * Take `±n` WebhookLogs from the position of the cursor.
+     */
+    take?: number
+    /**
+     * {@link https://www.prisma.io/docs/concepts/components/prisma-client/pagination Pagination Docs}
+     * 
+     * Skip the first `n` WebhookLogs.
+     */
+    skip?: number
+    /**
+     * {@link https://www.prisma.io/docs/concepts/components/prisma-client/distinct Distinct Docs}
+     * 
+     * Filter by unique combinations of WebhookLogs.
+     */
+    distinct?: WebhookLogScalarFieldEnum | WebhookLogScalarFieldEnum[]
+  }
+
+  /**
+   * WebhookLog findMany
+   */
+  export type WebhookLogFindManyArgs<ExtArgs extends $Extensions.InternalArgs = $Extensions.DefaultArgs> = {
+    /**
+     * Select specific fields to fetch from the WebhookLog
+     */
+    select?: WebhookLogSelect<ExtArgs> | null
+    /**
+     * Filter, which WebhookLogs to fetch.
+     */
+    where?: WebhookLogWhereInput
+    /**
+     * {@link https://www.prisma.io/docs/concepts/components/prisma-client/sorting Sorting Docs}
+     * 
+     * Determine the order of WebhookLogs to fetch.
+     */
+    orderBy?: WebhookLogOrderByWithRelationInput | WebhookLogOrderByWithRelationInput[]
+    /**
+     * {@link https://www.prisma.io/docs/concepts/components/prisma-client/pagination#cursor-based-pagination Cursor Docs}
+     * 
+     * Sets the position for listing WebhookLogs.
+     */
+    cursor?: WebhookLogWhereUniqueInput
+    /**
+     * {@link https://www.prisma.io/docs/concepts/components/prisma-client/pagination Pagination Docs}
+     * 
+     * Take `±n` WebhookLogs from the position of the cursor.
+     */
+    take?: number
+    /**
+     * {@link https://www.prisma.io/docs/concepts/components/prisma-client/pagination Pagination Docs}
+     * 
+     * Skip the first `n` WebhookLogs.
+     */
+    skip?: number
+    distinct?: WebhookLogScalarFieldEnum | WebhookLogScalarFieldEnum[]
+  }
+
+  /**
+   * WebhookLog create
+   */
+  export type WebhookLogCreateArgs<ExtArgs extends $Extensions.InternalArgs = $Extensions.DefaultArgs> = {
+    /**
+     * Select specific fields to fetch from the WebhookLog
+     */
+    select?: WebhookLogSelect<ExtArgs> | null
+    /**
+     * The data needed to create a WebhookLog.
+     */
+    data: XOR<WebhookLogCreateInput, WebhookLogUncheckedCreateInput>
+  }
+
+  /**
+   * WebhookLog createMany
+   */
+  export type WebhookLogCreateManyArgs<ExtArgs extends $Extensions.InternalArgs = $Extensions.DefaultArgs> = {
+    /**
+     * The data used to create many WebhookLogs.
+     */
+    data: WebhookLogCreateManyInput | WebhookLogCreateManyInput[]
+    skipDuplicates?: boolean
+  }
+
+  /**
+   * WebhookLog createManyAndReturn
+   */
+  export type WebhookLogCreateManyAndReturnArgs<ExtArgs extends $Extensions.InternalArgs = $Extensions.DefaultArgs> = {
+    /**
+     * Select specific fields to fetch from the WebhookLog
+     */
+    select?: WebhookLogSelectCreateManyAndReturn<ExtArgs> | null
+    /**
+     * The data used to create many WebhookLogs.
+     */
+    data: WebhookLogCreateManyInput | WebhookLogCreateManyInput[]
+    skipDuplicates?: boolean
+  }
+
+  /**
+   * WebhookLog update
+   */
+  export type WebhookLogUpdateArgs<ExtArgs extends $Extensions.InternalArgs = $Extensions.DefaultArgs> = {
+    /**
+     * Select specific fields to fetch from the WebhookLog
+     */
+    select?: WebhookLogSelect<ExtArgs> | null
+    /**
+     * The data needed to update a WebhookLog.
+     */
+    data: XOR<WebhookLogUpdateInput, WebhookLogUncheckedUpdateInput>
+    /**
+     * Choose, which WebhookLog to update.
+     */
+    where: WebhookLogWhereUniqueInput
+  }
+
+  /**
+   * WebhookLog updateMany
+   */
+  export type WebhookLogUpdateManyArgs<ExtArgs extends $Extensions.InternalArgs = $Extensions.DefaultArgs> = {
+    /**
+     * The data used to update WebhookLogs.
+     */
+    data: XOR<WebhookLogUpdateManyMutationInput, WebhookLogUncheckedUpdateManyInput>
+    /**
+     * Filter which WebhookLogs to update
+     */
+    where?: WebhookLogWhereInput
+  }
+
+  /**
+   * WebhookLog upsert
+   */
+  export type WebhookLogUpsertArgs<ExtArgs extends $Extensions.InternalArgs = $Extensions.DefaultArgs> = {
+    /**
+     * Select specific fields to fetch from the WebhookLog
+     */
+    select?: WebhookLogSelect<ExtArgs> | null
+    /**
+     * The filter to search for the WebhookLog to update in case it exists.
+     */
+    where: WebhookLogWhereUniqueInput
+    /**
+     * In case the WebhookLog found by the `where` argument doesn't exist, create a new WebhookLog with this data.
+     */
+    create: XOR<WebhookLogCreateInput, WebhookLogUncheckedCreateInput>
+    /**
+     * In case the WebhookLog was found with the provided `where` argument, update it with this data.
+     */
+    update: XOR<WebhookLogUpdateInput, WebhookLogUncheckedUpdateInput>
+  }
+
+  /**
+   * WebhookLog delete
+   */
+  export type WebhookLogDeleteArgs<ExtArgs extends $Extensions.InternalArgs = $Extensions.DefaultArgs> = {
+    /**
+     * Select specific fields to fetch from the WebhookLog
+     */
+    select?: WebhookLogSelect<ExtArgs> | null
+    /**
+     * Filter which WebhookLog to delete.
+     */
+    where: WebhookLogWhereUniqueInput
+  }
+
+  /**
+   * WebhookLog deleteMany
+   */
+  export type WebhookLogDeleteManyArgs<ExtArgs extends $Extensions.InternalArgs = $Extensions.DefaultArgs> = {
+    /**
+     * Filter which WebhookLogs to delete
+     */
+    where?: WebhookLogWhereInput
+  }
+
+  /**
+   * WebhookLog without action
+   */
+  export type WebhookLogDefaultArgs<ExtArgs extends $Extensions.InternalArgs = $Extensions.DefaultArgs> = {
+    /**
+     * Select specific fields to fetch from the WebhookLog
+     */
+    select?: WebhookLogSelect<ExtArgs> | null
   }
 
 
@@ -29270,6 +30298,8 @@ export namespace Prisma {
 
 
   export const SubscriptionPlanScalarFieldEnum: {
+    code: 'code',
+    durationMonths: 'durationMonths',
     id: 'id',
     name: 'name',
     price: 'price',
@@ -29285,6 +30315,8 @@ export namespace Prisma {
 
 
   export const PaymentScalarFieldEnum: {
+    appliedAt: 'appliedAt',
+    durationMonths: 'durationMonths',
     id: 'id',
     userId: 'userId',
     planId: 'planId',
@@ -29299,6 +30331,18 @@ export namespace Prisma {
   };
 
   export type PaymentScalarFieldEnum = (typeof PaymentScalarFieldEnum)[keyof typeof PaymentScalarFieldEnum]
+
+
+  export const WebhookLogScalarFieldEnum: {
+    id: 'id',
+    event: 'event',
+    payload: 'payload',
+    status: 'status',
+    error: 'error',
+    createdAt: 'createdAt'
+  };
+
+  export type WebhookLogScalarFieldEnum = (typeof WebhookLogScalarFieldEnum)[keyof typeof WebhookLogScalarFieldEnum]
 
 
   export const SubscriptionScalarFieldEnum: {
@@ -29433,6 +30477,13 @@ export namespace Prisma {
   };
 
   export type NullableJsonNullValueInput = (typeof NullableJsonNullValueInput)[keyof typeof NullableJsonNullValueInput]
+
+
+  export const JsonNullValueInput: {
+    JsonNull: typeof JsonNull
+  };
+
+  export type JsonNullValueInput = (typeof JsonNullValueInput)[keyof typeof JsonNullValueInput]
 
 
   export const QueryMode: {
@@ -30838,6 +31889,8 @@ export namespace Prisma {
     AND?: SubscriptionPlanWhereInput | SubscriptionPlanWhereInput[]
     OR?: SubscriptionPlanWhereInput[]
     NOT?: SubscriptionPlanWhereInput | SubscriptionPlanWhereInput[]
+    code?: StringNullableFilter<"SubscriptionPlan"> | string | null
+    durationMonths?: IntFilter<"SubscriptionPlan"> | number
     id?: StringFilter<"SubscriptionPlan"> | string
     name?: StringFilter<"SubscriptionPlan"> | string
     price?: FloatFilter<"SubscriptionPlan"> | number
@@ -30851,6 +31904,8 @@ export namespace Prisma {
   }
 
   export type SubscriptionPlanOrderByWithRelationInput = {
+    code?: SortOrderInput | SortOrder
+    durationMonths?: SortOrder
     id?: SortOrder
     name?: SortOrder
     price?: SortOrder
@@ -30864,10 +31919,12 @@ export namespace Prisma {
   }
 
   export type SubscriptionPlanWhereUniqueInput = Prisma.AtLeast<{
+    code?: string
     id?: string
     AND?: SubscriptionPlanWhereInput | SubscriptionPlanWhereInput[]
     OR?: SubscriptionPlanWhereInput[]
     NOT?: SubscriptionPlanWhereInput | SubscriptionPlanWhereInput[]
+    durationMonths?: IntFilter<"SubscriptionPlan"> | number
     name?: StringFilter<"SubscriptionPlan"> | string
     price?: FloatFilter<"SubscriptionPlan"> | number
     currency?: StringFilter<"SubscriptionPlan"> | string
@@ -30877,9 +31934,11 @@ export namespace Prisma {
     createdAt?: DateTimeFilter<"SubscriptionPlan"> | Date | string
     updatedAt?: DateTimeFilter<"SubscriptionPlan"> | Date | string
     subscriptions?: SubscriptionListRelationFilter
-  }, "id">
+  }, "id" | "code">
 
   export type SubscriptionPlanOrderByWithAggregationInput = {
+    code?: SortOrderInput | SortOrder
+    durationMonths?: SortOrder
     id?: SortOrder
     name?: SortOrder
     price?: SortOrder
@@ -30900,6 +31959,8 @@ export namespace Prisma {
     AND?: SubscriptionPlanScalarWhereWithAggregatesInput | SubscriptionPlanScalarWhereWithAggregatesInput[]
     OR?: SubscriptionPlanScalarWhereWithAggregatesInput[]
     NOT?: SubscriptionPlanScalarWhereWithAggregatesInput | SubscriptionPlanScalarWhereWithAggregatesInput[]
+    code?: StringNullableWithAggregatesFilter<"SubscriptionPlan"> | string | null
+    durationMonths?: IntWithAggregatesFilter<"SubscriptionPlan"> | number
     id?: StringWithAggregatesFilter<"SubscriptionPlan"> | string
     name?: StringWithAggregatesFilter<"SubscriptionPlan"> | string
     price?: FloatWithAggregatesFilter<"SubscriptionPlan"> | number
@@ -30915,6 +31976,8 @@ export namespace Prisma {
     AND?: PaymentWhereInput | PaymentWhereInput[]
     OR?: PaymentWhereInput[]
     NOT?: PaymentWhereInput | PaymentWhereInput[]
+    appliedAt?: DateTimeNullableFilter<"Payment"> | Date | string | null
+    durationMonths?: IntNullableFilter<"Payment"> | number | null
     id?: StringFilter<"Payment"> | string
     userId?: StringNullableFilter<"Payment"> | string | null
     planId?: StringNullableFilter<"Payment"> | string | null
@@ -30931,6 +31994,8 @@ export namespace Prisma {
   }
 
   export type PaymentOrderByWithRelationInput = {
+    appliedAt?: SortOrderInput | SortOrder
+    durationMonths?: SortOrderInput | SortOrder
     id?: SortOrder
     userId?: SortOrderInput | SortOrder
     planId?: SortOrderInput | SortOrder
@@ -30951,6 +32016,8 @@ export namespace Prisma {
     AND?: PaymentWhereInput | PaymentWhereInput[]
     OR?: PaymentWhereInput[]
     NOT?: PaymentWhereInput | PaymentWhereInput[]
+    appliedAt?: DateTimeNullableFilter<"Payment"> | Date | string | null
+    durationMonths?: IntNullableFilter<"Payment"> | number | null
     userId?: StringNullableFilter<"Payment"> | string | null
     planId?: StringNullableFilter<"Payment"> | string | null
     amount?: FloatFilter<"Payment"> | number
@@ -30966,6 +32033,8 @@ export namespace Prisma {
   }, "id">
 
   export type PaymentOrderByWithAggregationInput = {
+    appliedAt?: SortOrderInput | SortOrder
+    durationMonths?: SortOrderInput | SortOrder
     id?: SortOrder
     userId?: SortOrderInput | SortOrder
     planId?: SortOrderInput | SortOrder
@@ -30988,6 +32057,8 @@ export namespace Prisma {
     AND?: PaymentScalarWhereWithAggregatesInput | PaymentScalarWhereWithAggregatesInput[]
     OR?: PaymentScalarWhereWithAggregatesInput[]
     NOT?: PaymentScalarWhereWithAggregatesInput | PaymentScalarWhereWithAggregatesInput[]
+    appliedAt?: DateTimeNullableWithAggregatesFilter<"Payment"> | Date | string | null
+    durationMonths?: IntNullableWithAggregatesFilter<"Payment"> | number | null
     id?: StringWithAggregatesFilter<"Payment"> | string
     userId?: StringNullableWithAggregatesFilter<"Payment"> | string | null
     planId?: StringNullableWithAggregatesFilter<"Payment"> | string | null
@@ -30999,6 +32070,63 @@ export namespace Prisma {
     yooKassaPaymentId?: StringNullableWithAggregatesFilter<"Payment"> | string | null
     createdAt?: DateTimeWithAggregatesFilter<"Payment"> | Date | string
     updatedAt?: DateTimeWithAggregatesFilter<"Payment"> | Date | string
+  }
+
+  export type WebhookLogWhereInput = {
+    AND?: WebhookLogWhereInput | WebhookLogWhereInput[]
+    OR?: WebhookLogWhereInput[]
+    NOT?: WebhookLogWhereInput | WebhookLogWhereInput[]
+    id?: StringFilter<"WebhookLog"> | string
+    event?: StringFilter<"WebhookLog"> | string
+    payload?: JsonFilter<"WebhookLog">
+    status?: StringFilter<"WebhookLog"> | string
+    error?: StringNullableFilter<"WebhookLog"> | string | null
+    createdAt?: DateTimeFilter<"WebhookLog"> | Date | string
+  }
+
+  export type WebhookLogOrderByWithRelationInput = {
+    id?: SortOrder
+    event?: SortOrder
+    payload?: SortOrder
+    status?: SortOrder
+    error?: SortOrderInput | SortOrder
+    createdAt?: SortOrder
+  }
+
+  export type WebhookLogWhereUniqueInput = Prisma.AtLeast<{
+    id?: string
+    AND?: WebhookLogWhereInput | WebhookLogWhereInput[]
+    OR?: WebhookLogWhereInput[]
+    NOT?: WebhookLogWhereInput | WebhookLogWhereInput[]
+    event?: StringFilter<"WebhookLog"> | string
+    payload?: JsonFilter<"WebhookLog">
+    status?: StringFilter<"WebhookLog"> | string
+    error?: StringNullableFilter<"WebhookLog"> | string | null
+    createdAt?: DateTimeFilter<"WebhookLog"> | Date | string
+  }, "id">
+
+  export type WebhookLogOrderByWithAggregationInput = {
+    id?: SortOrder
+    event?: SortOrder
+    payload?: SortOrder
+    status?: SortOrder
+    error?: SortOrderInput | SortOrder
+    createdAt?: SortOrder
+    _count?: WebhookLogCountOrderByAggregateInput
+    _max?: WebhookLogMaxOrderByAggregateInput
+    _min?: WebhookLogMinOrderByAggregateInput
+  }
+
+  export type WebhookLogScalarWhereWithAggregatesInput = {
+    AND?: WebhookLogScalarWhereWithAggregatesInput | WebhookLogScalarWhereWithAggregatesInput[]
+    OR?: WebhookLogScalarWhereWithAggregatesInput[]
+    NOT?: WebhookLogScalarWhereWithAggregatesInput | WebhookLogScalarWhereWithAggregatesInput[]
+    id?: StringWithAggregatesFilter<"WebhookLog"> | string
+    event?: StringWithAggregatesFilter<"WebhookLog"> | string
+    payload?: JsonWithAggregatesFilter<"WebhookLog">
+    status?: StringWithAggregatesFilter<"WebhookLog"> | string
+    error?: StringNullableWithAggregatesFilter<"WebhookLog"> | string | null
+    createdAt?: DateTimeWithAggregatesFilter<"WebhookLog"> | Date | string
   }
 
   export type SubscriptionWhereInput = {
@@ -33043,6 +34171,8 @@ export namespace Prisma {
   }
 
   export type SubscriptionPlanCreateInput = {
+    code?: string | null
+    durationMonths?: number
     id?: string
     name: string
     price: number
@@ -33056,6 +34186,8 @@ export namespace Prisma {
   }
 
   export type SubscriptionPlanUncheckedCreateInput = {
+    code?: string | null
+    durationMonths?: number
     id?: string
     name: string
     price: number
@@ -33069,6 +34201,8 @@ export namespace Prisma {
   }
 
   export type SubscriptionPlanUpdateInput = {
+    code?: NullableStringFieldUpdateOperationsInput | string | null
+    durationMonths?: IntFieldUpdateOperationsInput | number
     id?: StringFieldUpdateOperationsInput | string
     name?: StringFieldUpdateOperationsInput | string
     price?: FloatFieldUpdateOperationsInput | number
@@ -33082,6 +34216,8 @@ export namespace Prisma {
   }
 
   export type SubscriptionPlanUncheckedUpdateInput = {
+    code?: NullableStringFieldUpdateOperationsInput | string | null
+    durationMonths?: IntFieldUpdateOperationsInput | number
     id?: StringFieldUpdateOperationsInput | string
     name?: StringFieldUpdateOperationsInput | string
     price?: FloatFieldUpdateOperationsInput | number
@@ -33095,6 +34231,8 @@ export namespace Prisma {
   }
 
   export type SubscriptionPlanCreateManyInput = {
+    code?: string | null
+    durationMonths?: number
     id?: string
     name: string
     price: number
@@ -33107,6 +34245,8 @@ export namespace Prisma {
   }
 
   export type SubscriptionPlanUpdateManyMutationInput = {
+    code?: NullableStringFieldUpdateOperationsInput | string | null
+    durationMonths?: IntFieldUpdateOperationsInput | number
     id?: StringFieldUpdateOperationsInput | string
     name?: StringFieldUpdateOperationsInput | string
     price?: FloatFieldUpdateOperationsInput | number
@@ -33119,6 +34259,8 @@ export namespace Prisma {
   }
 
   export type SubscriptionPlanUncheckedUpdateManyInput = {
+    code?: NullableStringFieldUpdateOperationsInput | string | null
+    durationMonths?: IntFieldUpdateOperationsInput | number
     id?: StringFieldUpdateOperationsInput | string
     name?: StringFieldUpdateOperationsInput | string
     price?: FloatFieldUpdateOperationsInput | number
@@ -33131,6 +34273,8 @@ export namespace Prisma {
   }
 
   export type PaymentCreateInput = {
+    appliedAt?: Date | string | null
+    durationMonths?: number | null
     id?: string
     planId?: string | null
     amount: number
@@ -33146,6 +34290,8 @@ export namespace Prisma {
   }
 
   export type PaymentUncheckedCreateInput = {
+    appliedAt?: Date | string | null
+    durationMonths?: number | null
     id?: string
     userId?: string | null
     planId?: string | null
@@ -33161,6 +34307,8 @@ export namespace Prisma {
   }
 
   export type PaymentUpdateInput = {
+    appliedAt?: NullableDateTimeFieldUpdateOperationsInput | Date | string | null
+    durationMonths?: NullableIntFieldUpdateOperationsInput | number | null
     id?: StringFieldUpdateOperationsInput | string
     planId?: NullableStringFieldUpdateOperationsInput | string | null
     amount?: FloatFieldUpdateOperationsInput | number
@@ -33176,6 +34324,8 @@ export namespace Prisma {
   }
 
   export type PaymentUncheckedUpdateInput = {
+    appliedAt?: NullableDateTimeFieldUpdateOperationsInput | Date | string | null
+    durationMonths?: NullableIntFieldUpdateOperationsInput | number | null
     id?: StringFieldUpdateOperationsInput | string
     userId?: NullableStringFieldUpdateOperationsInput | string | null
     planId?: NullableStringFieldUpdateOperationsInput | string | null
@@ -33191,6 +34341,8 @@ export namespace Prisma {
   }
 
   export type PaymentCreateManyInput = {
+    appliedAt?: Date | string | null
+    durationMonths?: number | null
     id?: string
     userId?: string | null
     planId?: string | null
@@ -33205,6 +34357,8 @@ export namespace Prisma {
   }
 
   export type PaymentUpdateManyMutationInput = {
+    appliedAt?: NullableDateTimeFieldUpdateOperationsInput | Date | string | null
+    durationMonths?: NullableIntFieldUpdateOperationsInput | number | null
     id?: StringFieldUpdateOperationsInput | string
     planId?: NullableStringFieldUpdateOperationsInput | string | null
     amount?: FloatFieldUpdateOperationsInput | number
@@ -33218,6 +34372,8 @@ export namespace Prisma {
   }
 
   export type PaymentUncheckedUpdateManyInput = {
+    appliedAt?: NullableDateTimeFieldUpdateOperationsInput | Date | string | null
+    durationMonths?: NullableIntFieldUpdateOperationsInput | number | null
     id?: StringFieldUpdateOperationsInput | string
     userId?: NullableStringFieldUpdateOperationsInput | string | null
     planId?: NullableStringFieldUpdateOperationsInput | string | null
@@ -33229,6 +34385,69 @@ export namespace Prisma {
     yooKassaPaymentId?: NullableStringFieldUpdateOperationsInput | string | null
     createdAt?: DateTimeFieldUpdateOperationsInput | Date | string
     updatedAt?: DateTimeFieldUpdateOperationsInput | Date | string
+  }
+
+  export type WebhookLogCreateInput = {
+    id?: string
+    event: string
+    payload: JsonNullValueInput | InputJsonValue
+    status: string
+    error?: string | null
+    createdAt?: Date | string
+  }
+
+  export type WebhookLogUncheckedCreateInput = {
+    id?: string
+    event: string
+    payload: JsonNullValueInput | InputJsonValue
+    status: string
+    error?: string | null
+    createdAt?: Date | string
+  }
+
+  export type WebhookLogUpdateInput = {
+    id?: StringFieldUpdateOperationsInput | string
+    event?: StringFieldUpdateOperationsInput | string
+    payload?: JsonNullValueInput | InputJsonValue
+    status?: StringFieldUpdateOperationsInput | string
+    error?: NullableStringFieldUpdateOperationsInput | string | null
+    createdAt?: DateTimeFieldUpdateOperationsInput | Date | string
+  }
+
+  export type WebhookLogUncheckedUpdateInput = {
+    id?: StringFieldUpdateOperationsInput | string
+    event?: StringFieldUpdateOperationsInput | string
+    payload?: JsonNullValueInput | InputJsonValue
+    status?: StringFieldUpdateOperationsInput | string
+    error?: NullableStringFieldUpdateOperationsInput | string | null
+    createdAt?: DateTimeFieldUpdateOperationsInput | Date | string
+  }
+
+  export type WebhookLogCreateManyInput = {
+    id?: string
+    event: string
+    payload: JsonNullValueInput | InputJsonValue
+    status: string
+    error?: string | null
+    createdAt?: Date | string
+  }
+
+  export type WebhookLogUpdateManyMutationInput = {
+    id?: StringFieldUpdateOperationsInput | string
+    event?: StringFieldUpdateOperationsInput | string
+    payload?: JsonNullValueInput | InputJsonValue
+    status?: StringFieldUpdateOperationsInput | string
+    error?: NullableStringFieldUpdateOperationsInput | string | null
+    createdAt?: DateTimeFieldUpdateOperationsInput | Date | string
+  }
+
+  export type WebhookLogUncheckedUpdateManyInput = {
+    id?: StringFieldUpdateOperationsInput | string
+    event?: StringFieldUpdateOperationsInput | string
+    payload?: JsonNullValueInput | InputJsonValue
+    status?: StringFieldUpdateOperationsInput | string
+    error?: NullableStringFieldUpdateOperationsInput | string | null
+    createdAt?: DateTimeFieldUpdateOperationsInput | Date | string
   }
 
   export type SubscriptionCreateInput = {
@@ -34977,6 +36196,8 @@ export namespace Prisma {
   }
 
   export type SubscriptionPlanCountOrderByAggregateInput = {
+    code?: SortOrder
+    durationMonths?: SortOrder
     id?: SortOrder
     name?: SortOrder
     price?: SortOrder
@@ -34989,10 +36210,13 @@ export namespace Prisma {
   }
 
   export type SubscriptionPlanAvgOrderByAggregateInput = {
+    durationMonths?: SortOrder
     price?: SortOrder
   }
 
   export type SubscriptionPlanMaxOrderByAggregateInput = {
+    code?: SortOrder
+    durationMonths?: SortOrder
     id?: SortOrder
     name?: SortOrder
     price?: SortOrder
@@ -35005,6 +36229,8 @@ export namespace Prisma {
   }
 
   export type SubscriptionPlanMinOrderByAggregateInput = {
+    code?: SortOrder
+    durationMonths?: SortOrder
     id?: SortOrder
     name?: SortOrder
     price?: SortOrder
@@ -35017,6 +36243,7 @@ export namespace Prisma {
   }
 
   export type SubscriptionPlanSumOrderByAggregateInput = {
+    durationMonths?: SortOrder
     price?: SortOrder
   }
 
@@ -35036,7 +36263,20 @@ export namespace Prisma {
     _max?: NestedFloatFilter<$PrismaModel>
   }
 
+  export type IntNullableFilter<$PrismaModel = never> = {
+    equals?: number | IntFieldRefInput<$PrismaModel> | null
+    in?: number[] | ListIntFieldRefInput<$PrismaModel> | null
+    notIn?: number[] | ListIntFieldRefInput<$PrismaModel> | null
+    lt?: number | IntFieldRefInput<$PrismaModel>
+    lte?: number | IntFieldRefInput<$PrismaModel>
+    gt?: number | IntFieldRefInput<$PrismaModel>
+    gte?: number | IntFieldRefInput<$PrismaModel>
+    not?: NestedIntNullableFilter<$PrismaModel> | number | null
+  }
+
   export type PaymentCountOrderByAggregateInput = {
+    appliedAt?: SortOrder
+    durationMonths?: SortOrder
     id?: SortOrder
     userId?: SortOrder
     planId?: SortOrder
@@ -35051,10 +36291,13 @@ export namespace Prisma {
   }
 
   export type PaymentAvgOrderByAggregateInput = {
+    durationMonths?: SortOrder
     amount?: SortOrder
   }
 
   export type PaymentMaxOrderByAggregateInput = {
+    appliedAt?: SortOrder
+    durationMonths?: SortOrder
     id?: SortOrder
     userId?: SortOrder
     planId?: SortOrder
@@ -35069,6 +36312,8 @@ export namespace Prisma {
   }
 
   export type PaymentMinOrderByAggregateInput = {
+    appliedAt?: SortOrder
+    durationMonths?: SortOrder
     id?: SortOrder
     userId?: SortOrder
     planId?: SortOrder
@@ -35083,7 +36328,96 @@ export namespace Prisma {
   }
 
   export type PaymentSumOrderByAggregateInput = {
+    durationMonths?: SortOrder
     amount?: SortOrder
+  }
+
+  export type IntNullableWithAggregatesFilter<$PrismaModel = never> = {
+    equals?: number | IntFieldRefInput<$PrismaModel> | null
+    in?: number[] | ListIntFieldRefInput<$PrismaModel> | null
+    notIn?: number[] | ListIntFieldRefInput<$PrismaModel> | null
+    lt?: number | IntFieldRefInput<$PrismaModel>
+    lte?: number | IntFieldRefInput<$PrismaModel>
+    gt?: number | IntFieldRefInput<$PrismaModel>
+    gte?: number | IntFieldRefInput<$PrismaModel>
+    not?: NestedIntNullableWithAggregatesFilter<$PrismaModel> | number | null
+    _count?: NestedIntNullableFilter<$PrismaModel>
+    _avg?: NestedFloatNullableFilter<$PrismaModel>
+    _sum?: NestedIntNullableFilter<$PrismaModel>
+    _min?: NestedIntNullableFilter<$PrismaModel>
+    _max?: NestedIntNullableFilter<$PrismaModel>
+  }
+  export type JsonFilter<$PrismaModel = never> = 
+    | PatchUndefined<
+        Either<Required<JsonFilterBase<$PrismaModel>>, Exclude<keyof Required<JsonFilterBase<$PrismaModel>>, 'path'>>,
+        Required<JsonFilterBase<$PrismaModel>>
+      >
+    | OptionalFlat<Omit<Required<JsonFilterBase<$PrismaModel>>, 'path'>>
+
+  export type JsonFilterBase<$PrismaModel = never> = {
+    equals?: InputJsonValue | JsonFieldRefInput<$PrismaModel> | JsonNullValueFilter
+    path?: string[]
+    string_contains?: string | StringFieldRefInput<$PrismaModel>
+    string_starts_with?: string | StringFieldRefInput<$PrismaModel>
+    string_ends_with?: string | StringFieldRefInput<$PrismaModel>
+    array_contains?: InputJsonValue | JsonFieldRefInput<$PrismaModel> | null
+    array_starts_with?: InputJsonValue | JsonFieldRefInput<$PrismaModel> | null
+    array_ends_with?: InputJsonValue | JsonFieldRefInput<$PrismaModel> | null
+    lt?: InputJsonValue | JsonFieldRefInput<$PrismaModel>
+    lte?: InputJsonValue | JsonFieldRefInput<$PrismaModel>
+    gt?: InputJsonValue | JsonFieldRefInput<$PrismaModel>
+    gte?: InputJsonValue | JsonFieldRefInput<$PrismaModel>
+    not?: InputJsonValue | JsonFieldRefInput<$PrismaModel> | JsonNullValueFilter
+  }
+
+  export type WebhookLogCountOrderByAggregateInput = {
+    id?: SortOrder
+    event?: SortOrder
+    payload?: SortOrder
+    status?: SortOrder
+    error?: SortOrder
+    createdAt?: SortOrder
+  }
+
+  export type WebhookLogMaxOrderByAggregateInput = {
+    id?: SortOrder
+    event?: SortOrder
+    status?: SortOrder
+    error?: SortOrder
+    createdAt?: SortOrder
+  }
+
+  export type WebhookLogMinOrderByAggregateInput = {
+    id?: SortOrder
+    event?: SortOrder
+    status?: SortOrder
+    error?: SortOrder
+    createdAt?: SortOrder
+  }
+  export type JsonWithAggregatesFilter<$PrismaModel = never> = 
+    | PatchUndefined<
+        Either<Required<JsonWithAggregatesFilterBase<$PrismaModel>>, Exclude<keyof Required<JsonWithAggregatesFilterBase<$PrismaModel>>, 'path'>>,
+        Required<JsonWithAggregatesFilterBase<$PrismaModel>>
+      >
+    | OptionalFlat<Omit<Required<JsonWithAggregatesFilterBase<$PrismaModel>>, 'path'>>
+
+  export type JsonWithAggregatesFilterBase<$PrismaModel = never> = {
+    equals?: InputJsonValue | JsonFieldRefInput<$PrismaModel> | JsonNullValueFilter
+    path?: string[]
+    string_contains?: string | StringFieldRefInput<$PrismaModel>
+    string_starts_with?: string | StringFieldRefInput<$PrismaModel>
+    string_ends_with?: string | StringFieldRefInput<$PrismaModel>
+    array_contains?: InputJsonValue | JsonFieldRefInput<$PrismaModel> | null
+    array_starts_with?: InputJsonValue | JsonFieldRefInput<$PrismaModel> | null
+    array_ends_with?: InputJsonValue | JsonFieldRefInput<$PrismaModel> | null
+    lt?: InputJsonValue | JsonFieldRefInput<$PrismaModel>
+    lte?: InputJsonValue | JsonFieldRefInput<$PrismaModel>
+    gt?: InputJsonValue | JsonFieldRefInput<$PrismaModel>
+    gte?: InputJsonValue | JsonFieldRefInput<$PrismaModel>
+    not?: InputJsonValue | JsonFieldRefInput<$PrismaModel> | JsonNullValueFilter
+    _count?: NestedIntFilter<$PrismaModel>
+    _min?: NestedJsonFilter<$PrismaModel>
+    _max?: NestedJsonFilter<$PrismaModel>
   }
 
   export type SubscriptionPlanRelationFilter = {
@@ -36771,6 +38105,14 @@ export namespace Prisma {
     connect?: SubscriptionWhereUniqueInput | SubscriptionWhereUniqueInput[]
   }
 
+  export type NullableIntFieldUpdateOperationsInput = {
+    set?: number | null
+    increment?: number
+    decrement?: number
+    multiply?: number
+    divide?: number
+  }
+
   export type UserUpdateOneWithoutPaymentsNestedInput = {
     create?: XOR<UserCreateWithoutPaymentsInput, UserUncheckedCreateWithoutPaymentsInput>
     connectOrCreate?: UserCreateOrConnectWithoutPaymentsInput
@@ -37349,6 +38691,55 @@ export namespace Prisma {
     _max?: NestedFloatFilter<$PrismaModel>
   }
 
+  export type NestedIntNullableWithAggregatesFilter<$PrismaModel = never> = {
+    equals?: number | IntFieldRefInput<$PrismaModel> | null
+    in?: number[] | ListIntFieldRefInput<$PrismaModel> | null
+    notIn?: number[] | ListIntFieldRefInput<$PrismaModel> | null
+    lt?: number | IntFieldRefInput<$PrismaModel>
+    lte?: number | IntFieldRefInput<$PrismaModel>
+    gt?: number | IntFieldRefInput<$PrismaModel>
+    gte?: number | IntFieldRefInput<$PrismaModel>
+    not?: NestedIntNullableWithAggregatesFilter<$PrismaModel> | number | null
+    _count?: NestedIntNullableFilter<$PrismaModel>
+    _avg?: NestedFloatNullableFilter<$PrismaModel>
+    _sum?: NestedIntNullableFilter<$PrismaModel>
+    _min?: NestedIntNullableFilter<$PrismaModel>
+    _max?: NestedIntNullableFilter<$PrismaModel>
+  }
+
+  export type NestedFloatNullableFilter<$PrismaModel = never> = {
+    equals?: number | FloatFieldRefInput<$PrismaModel> | null
+    in?: number[] | ListFloatFieldRefInput<$PrismaModel> | null
+    notIn?: number[] | ListFloatFieldRefInput<$PrismaModel> | null
+    lt?: number | FloatFieldRefInput<$PrismaModel>
+    lte?: number | FloatFieldRefInput<$PrismaModel>
+    gt?: number | FloatFieldRefInput<$PrismaModel>
+    gte?: number | FloatFieldRefInput<$PrismaModel>
+    not?: NestedFloatNullableFilter<$PrismaModel> | number | null
+  }
+  export type NestedJsonFilter<$PrismaModel = never> = 
+    | PatchUndefined<
+        Either<Required<NestedJsonFilterBase<$PrismaModel>>, Exclude<keyof Required<NestedJsonFilterBase<$PrismaModel>>, 'path'>>,
+        Required<NestedJsonFilterBase<$PrismaModel>>
+      >
+    | OptionalFlat<Omit<Required<NestedJsonFilterBase<$PrismaModel>>, 'path'>>
+
+  export type NestedJsonFilterBase<$PrismaModel = never> = {
+    equals?: InputJsonValue | JsonFieldRefInput<$PrismaModel> | JsonNullValueFilter
+    path?: string[]
+    string_contains?: string | StringFieldRefInput<$PrismaModel>
+    string_starts_with?: string | StringFieldRefInput<$PrismaModel>
+    string_ends_with?: string | StringFieldRefInput<$PrismaModel>
+    array_contains?: InputJsonValue | JsonFieldRefInput<$PrismaModel> | null
+    array_starts_with?: InputJsonValue | JsonFieldRefInput<$PrismaModel> | null
+    array_ends_with?: InputJsonValue | JsonFieldRefInput<$PrismaModel> | null
+    lt?: InputJsonValue | JsonFieldRefInput<$PrismaModel>
+    lte?: InputJsonValue | JsonFieldRefInput<$PrismaModel>
+    gt?: InputJsonValue | JsonFieldRefInput<$PrismaModel>
+    gte?: InputJsonValue | JsonFieldRefInput<$PrismaModel>
+    not?: InputJsonValue | JsonFieldRefInput<$PrismaModel> | JsonNullValueFilter
+  }
+
   export type ReminderCreateWithoutUserInput = {
     id?: string
     title: string
@@ -37529,6 +38920,8 @@ export namespace Prisma {
   }
 
   export type PaymentCreateWithoutUserInput = {
+    appliedAt?: Date | string | null
+    durationMonths?: number | null
     id?: string
     planId?: string | null
     amount: number
@@ -37543,6 +38936,8 @@ export namespace Prisma {
   }
 
   export type PaymentUncheckedCreateWithoutUserInput = {
+    appliedAt?: Date | string | null
+    durationMonths?: number | null
     id?: string
     planId?: string | null
     amount: number
@@ -38211,6 +39606,8 @@ export namespace Prisma {
     AND?: PaymentScalarWhereInput | PaymentScalarWhereInput[]
     OR?: PaymentScalarWhereInput[]
     NOT?: PaymentScalarWhereInput | PaymentScalarWhereInput[]
+    appliedAt?: DateTimeNullableFilter<"Payment"> | Date | string | null
+    durationMonths?: IntNullableFilter<"Payment"> | number | null
     id?: StringFilter<"Payment"> | string
     userId?: StringNullableFilter<"Payment"> | string | null
     planId?: StringNullableFilter<"Payment"> | string | null
@@ -41685,6 +43082,8 @@ export namespace Prisma {
   }
 
   export type SubscriptionPlanCreateWithoutSubscriptionsInput = {
+    code?: string | null
+    durationMonths?: number
     id?: string
     name: string
     price: number
@@ -41697,6 +43096,8 @@ export namespace Prisma {
   }
 
   export type SubscriptionPlanUncheckedCreateWithoutSubscriptionsInput = {
+    code?: string | null
+    durationMonths?: number
     id?: string
     name: string
     price: number
@@ -41714,6 +43115,8 @@ export namespace Prisma {
   }
 
   export type PaymentCreateWithoutSubscriptionsInput = {
+    appliedAt?: Date | string | null
+    durationMonths?: number | null
     id?: string
     planId?: string | null
     amount: number
@@ -41728,6 +43131,8 @@ export namespace Prisma {
   }
 
   export type PaymentUncheckedCreateWithoutSubscriptionsInput = {
+    appliedAt?: Date | string | null
+    durationMonths?: number | null
     id?: string
     userId?: string | null
     planId?: string | null
@@ -41851,6 +43256,8 @@ export namespace Prisma {
   }
 
   export type SubscriptionPlanUpdateWithoutSubscriptionsInput = {
+    code?: NullableStringFieldUpdateOperationsInput | string | null
+    durationMonths?: IntFieldUpdateOperationsInput | number
     id?: StringFieldUpdateOperationsInput | string
     name?: StringFieldUpdateOperationsInput | string
     price?: FloatFieldUpdateOperationsInput | number
@@ -41863,6 +43270,8 @@ export namespace Prisma {
   }
 
   export type SubscriptionPlanUncheckedUpdateWithoutSubscriptionsInput = {
+    code?: NullableStringFieldUpdateOperationsInput | string | null
+    durationMonths?: IntFieldUpdateOperationsInput | number
     id?: StringFieldUpdateOperationsInput | string
     name?: StringFieldUpdateOperationsInput | string
     price?: FloatFieldUpdateOperationsInput | number
@@ -41886,6 +43295,8 @@ export namespace Prisma {
   }
 
   export type PaymentUpdateWithoutSubscriptionsInput = {
+    appliedAt?: NullableDateTimeFieldUpdateOperationsInput | Date | string | null
+    durationMonths?: NullableIntFieldUpdateOperationsInput | number | null
     id?: StringFieldUpdateOperationsInput | string
     planId?: NullableStringFieldUpdateOperationsInput | string | null
     amount?: FloatFieldUpdateOperationsInput | number
@@ -41900,6 +43311,8 @@ export namespace Prisma {
   }
 
   export type PaymentUncheckedUpdateWithoutSubscriptionsInput = {
+    appliedAt?: NullableDateTimeFieldUpdateOperationsInput | Date | string | null
+    durationMonths?: NullableIntFieldUpdateOperationsInput | number | null
     id?: StringFieldUpdateOperationsInput | string
     userId?: NullableStringFieldUpdateOperationsInput | string | null
     planId?: NullableStringFieldUpdateOperationsInput | string | null
@@ -43404,6 +44817,8 @@ export namespace Prisma {
   }
 
   export type PaymentCreateManyUserInput = {
+    appliedAt?: Date | string | null
+    durationMonths?: number | null
     id?: string
     planId?: string | null
     amount: number
@@ -43721,6 +45136,8 @@ export namespace Prisma {
   }
 
   export type PaymentUpdateWithoutUserInput = {
+    appliedAt?: NullableDateTimeFieldUpdateOperationsInput | Date | string | null
+    durationMonths?: NullableIntFieldUpdateOperationsInput | number | null
     id?: StringFieldUpdateOperationsInput | string
     planId?: NullableStringFieldUpdateOperationsInput | string | null
     amount?: FloatFieldUpdateOperationsInput | number
@@ -43735,6 +45152,8 @@ export namespace Prisma {
   }
 
   export type PaymentUncheckedUpdateWithoutUserInput = {
+    appliedAt?: NullableDateTimeFieldUpdateOperationsInput | Date | string | null
+    durationMonths?: NullableIntFieldUpdateOperationsInput | number | null
     id?: StringFieldUpdateOperationsInput | string
     planId?: NullableStringFieldUpdateOperationsInput | string | null
     amount?: FloatFieldUpdateOperationsInput | number
@@ -43749,6 +45168,8 @@ export namespace Prisma {
   }
 
   export type PaymentUncheckedUpdateManyWithoutUserInput = {
+    appliedAt?: NullableDateTimeFieldUpdateOperationsInput | Date | string | null
+    durationMonths?: NullableIntFieldUpdateOperationsInput | number | null
     id?: StringFieldUpdateOperationsInput | string
     planId?: NullableStringFieldUpdateOperationsInput | string | null
     amount?: FloatFieldUpdateOperationsInput | number
@@ -44656,6 +46077,10 @@ export namespace Prisma {
      * @deprecated Use PaymentDefaultArgs instead
      */
     export type PaymentArgs<ExtArgs extends $Extensions.InternalArgs = $Extensions.DefaultArgs> = PaymentDefaultArgs<ExtArgs>
+    /**
+     * @deprecated Use WebhookLogDefaultArgs instead
+     */
+    export type WebhookLogArgs<ExtArgs extends $Extensions.InternalArgs = $Extensions.DefaultArgs> = WebhookLogDefaultArgs<ExtArgs>
     /**
      * @deprecated Use SubscriptionDefaultArgs instead
      */

@@ -8,6 +8,7 @@ import { ChatServiceError, generateAIResponse } from '../lib/chat-completion';
 import { findRelatedGuides, GuideSuggestion } from '../lib/chat-guides';
 import { chatUsageDay, getChatUsage, reserveChatQuota, releaseChatQuota } from '../lib/chat-quota';
 import { sendMessageSchema } from '../lib/chat-input';
+import { getEffectivePlan } from '../lib/premium';
 
 const router = Router();
 
@@ -134,11 +135,7 @@ router.get('/messages', authMiddleware, async (req: Request, res: Response) => {
       timestamp: msg.createdAt.toISOString(),
     }));
 
-    const userData = await prisma.user.findUnique({
-      where: { id: user.userId },
-      select: { plan: true },
-    });
-    const plan = (userData?.plan || 'FREEMIUM') as PlanKey;
+    const plan = (await getEffectivePlan(user.userId)) as PlanKey;
     const usage = await getUserUsage(user.userId, plan);
 
     res.json({
@@ -163,13 +160,15 @@ router.post('/messages', authMiddleware, async (req: Request, res: Response) => 
   try {
     const validatedData = sendMessageSchema.parse(req.body);
 
-    // 1. Fetch user profile
-    const userData = await prisma.user.findUnique({
-      where: { id: user.userId },
-      select: { plan: true, university: true, faculty: true, year: true, country: true },
-    });
+    // 1. Fetch user profile + effective Premium (subscription endDate, not stale plan flag)
+    const [userData, plan] = await Promise.all([
+      prisma.user.findUnique({
+        where: { id: user.userId },
+        select: { university: true, faculty: true, year: true, country: true },
+      }),
+      getEffectivePlan(user.userId) as Promise<PlanKey>,
+    ]);
 
-    const plan = (userData?.plan || 'FREEMIUM') as PlanKey;
     const config = PLAN_CONFIG[plan] || PLAN_CONFIG.FREEMIUM;
 
     // Validate configuration before consuming quota.

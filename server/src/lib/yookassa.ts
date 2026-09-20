@@ -24,6 +24,16 @@ export type YooKassaPayment = {
   metadata?: Record<string, string>;
   paid?: boolean;
   test?: boolean;
+  refunded_amount?: { value: string; currency: string };
+};
+
+export type YooKassaRefund = {
+  id: string;
+  status: string;
+  amount: { value: string; currency: string };
+  payment_id: string;
+  created_at?: string;
+  test?: boolean;
 };
 
 function shopId(): string {
@@ -45,6 +55,14 @@ export function shouldUseMockYooKassa(): boolean {
     return true;
   }
   return false;
+}
+
+export function isTestPaymentMode(): boolean {
+  return shouldUseMockYooKassa() || secretKey().startsWith('test_');
+}
+
+export function isCheckoutAvailable(): boolean {
+  return !!shopId() && !!secretKey() && !isTestPaymentMode();
 }
 
 function authHeader(): string {
@@ -89,6 +107,7 @@ async function yooKassaFetch<T>(
   const response = await fetch(`${YOOKASSA_API}${path}`, {
     ...rest,
     headers,
+    signal: AbortSignal.timeout(15000),
   });
 
   const text = await response.text();
@@ -141,7 +160,7 @@ export const createPayment = async (
   amount: number,
   description: string,
   metadata?: Record<string, string>,
-  options?: { idempotenceKey?: string; returnUrlPaymentId?: string },
+  options?: { idempotenceKey?: string; returnUrlPaymentId?: string; paymentMethod?: 'CARD' | 'SBP' | 'WALLET' },
 ): Promise<YooKassaPayment> => {
   const meta = stringifyMetadata(metadata);
   const returnUrl = clientReturnUrl(options?.returnUrlPaymentId);
@@ -167,6 +186,7 @@ export const createPayment = async (
         currency: 'RUB',
       },
       capture: true,
+      payment_method_data: { type: { CARD: 'bank_card', SBP: 'sbp', WALLET: 'yoo_money' }[options?.paymentMethod || 'CARD'] },
       confirmation: {
         type: 'redirect',
         return_url: returnUrl,
@@ -178,18 +198,21 @@ export const createPayment = async (
 };
 
 export const getPayment = async (paymentId: string): Promise<YooKassaPayment> => {
-  if (shouldUseMockYooKassa() || paymentId.startsWith('test_')) {
-    await new Promise((resolve) => setTimeout(resolve, 100));
+  if (paymentId.startsWith('test_')) {
+    const { prisma } = await import('./database.js');
+    const payment = await prisma.payment.findFirst({ where: { yooKassaPaymentId: paymentId } });
+    if (!payment) throw new Error('Mock payment not found');
+    const canceled = payment.status === 'CANCELED';
     return {
       id: paymentId,
-      status: 'succeeded',
-      amount: { value: '199.00', currency: 'RUB' },
-      description: 'Test payment',
-      metadata: { test_mode: 'true' },
+      status: canceled ? 'canceled' : 'succeeded',
+      amount: { value: payment.amount.toFixed(2), currency: payment.currency },
+      description: payment.description,
       test: true,
-      paid: true,
+      paid: !canceled,
     };
   }
+  if (shouldUseMockYooKassa()) throw new Error('Real payment verification is not configured');
 
   return yooKassaFetch<YooKassaPayment>(`/payments/${encodeURIComponent(paymentId)}`);
 };
@@ -197,11 +220,15 @@ export const getPayment = async (paymentId: string): Promise<YooKassaPayment> =>
 export const cancelPayment = async (
   paymentId: string,
 ): Promise<Pick<YooKassaPayment, 'id' | 'status'>> => {
-  if (shouldUseMockYooKassa() || paymentId.startsWith('test_')) {
+  if (paymentId.startsWith('test_')) {
     await new Promise((resolve) => setTimeout(resolve, 100));
+    const { prisma } = await import('./database.js');
+    const payment = await prisma.payment.findFirst({ where: { yooKassaPaymentId: paymentId } });
+    if (!payment || payment.status !== 'PENDING') throw new Error('Payment cannot be canceled');
     return { id: paymentId, status: 'canceled' };
   }
 
+  if (shouldUseMockYooKassa()) throw new Error('Real payment cancellation is not configured');
   return yooKassaFetch<YooKassaPayment>(`/payments/${encodeURIComponent(paymentId)}/cancel`, {
     method: 'POST',
     idempotenceKey: randomUUID(),
@@ -213,10 +240,26 @@ export const checkPaymentStatus = async (paymentId: string): Promise<YooKassaPay
   return getPayment(paymentId);
 };
 
+export const getRefund = async (refundId: string): Promise<YooKassaRefund> => {
+  if (refundId.startsWith('test_refund_')) {
+    const paymentId = refundId.replace(/^test_refund_/, 'test_');
+    return {
+      id: refundId,
+      status: 'succeeded',
+      amount: { value: '0.00', currency: 'RUB' },
+      payment_id: paymentId,
+      test: true,
+    };
+  }
+  if (shouldUseMockYooKassa()) throw new Error('Real refund verification is not configured');
+  return yooKassaFetch<YooKassaRefund>(`/refunds/${encodeURIComponent(refundId)}`);
+};
+
 export default {
   createPayment,
   getPayment,
   cancelPayment,
   checkPaymentStatus,
+  getRefund,
   shouldUseMockYooKassa,
 };

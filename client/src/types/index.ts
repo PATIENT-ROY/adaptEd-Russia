@@ -532,6 +532,8 @@ export interface Subscription {
 }
 
 export interface SubscriptionPlan {
+  code: string | null;
+  durationMonths: number;
   id: string;
   name: string;
   price: number;

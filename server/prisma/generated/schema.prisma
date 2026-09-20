@@ -2,8 +2,10 @@
 // learn more about it in the docs: https://pris.ly/d/prisma-schema
 
 generator client {
-  provider = "prisma-client-js"
-  output   = "./generated"
+  provider      = "prisma-client-js"
+  output        = "./generated"
+  // native = local Mac/dev; debian = NetAngels production
+  binaryTargets = ["native", "debian-openssl-3.0.x"]
 }
 
 datasource db {
@@ -359,15 +361,17 @@ model Admin {
 
 // Планы подписок
 model SubscriptionPlan {
-  id        String   @id @default(cuid())
-  name      String
-  price     Float
-  currency  String   @default("RUB")
-  interval  String   @default("MONTHLY") // MONTHLY, YEARLY
-  features  String // JSON string
-  isActive  Boolean  @default(true)
-  createdAt DateTime @default(now())
-  updatedAt DateTime @updatedAt
+  code           String?  @unique
+  durationMonths Int      @default(1)
+  id             String   @id @default(cuid())
+  name           String
+  price          Float
+  currency       String   @default("RUB")
+  interval       String   @default("MONTHLY") // MONTHLY, YEARLY
+  features       String // JSON string
+  isActive       Boolean  @default(true)
+  createdAt      DateTime @default(now())
+  updatedAt      DateTime @updatedAt
 
   // Связи
   subscriptions Subscription[]
@@ -377,17 +381,19 @@ model SubscriptionPlan {
 
 // Платежи
 model Payment {
-  id                String   @id @default(cuid())
+  appliedAt         DateTime?
+  durationMonths    Int? // Snapshot of the purchased duration
+  id                String    @id @default(cuid())
   userId            String?
   planId            String? // План подписки (для применения при успешной оплате)
   amount            Float
-  currency          String   @default("RUB")
+  currency          String    @default("RUB")
   description       String
-  status            String   @default("PENDING") // PENDING, SUCCEEDED, CANCELED, FAILED
-  paymentMethod     String   @default("CARD") // CARD, SBP, WALLET
+  status            String    @default("PENDING") // PENDING, SUCCEEDED, CANCELED, FAILED, REFUNDED
+  paymentMethod     String    @default("CARD") // CARD, SBP, WALLET
   yooKassaPaymentId String?
-  createdAt         DateTime @default(now())
-  updatedAt         DateTime @updatedAt
+  createdAt         DateTime  @default(now())
+  updatedAt         DateTime  @updatedAt
 
   // Связи
   user          User?          @relation(fields: [userId], references: [id], onDelete: SetNull)
@@ -397,6 +403,21 @@ model Payment {
   @@index([status])
   @@index([createdAt])
   @@map("payments")
+}
+
+/// Incoming YooKassa (and future) webhook delivery audit trail
+model WebhookLog {
+  id        String   @id @default(cuid())
+  event     String
+  payload   Json
+  status    String // processed | failed | skipped
+  error     String?
+  createdAt DateTime @default(now())
+
+  @@index([event])
+  @@index([status])
+  @@index([createdAt])
+  @@map("webhook_logs")
 }
 
 // Подписки

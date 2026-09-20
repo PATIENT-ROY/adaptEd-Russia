@@ -1,5 +1,8 @@
 import { prisma } from './database';
 import { sendReminderEmail } from './email';
+import { getEffectivePlan } from './premium';
+
+export { getEffectivePlan } from './premium';
 
 export const FREEMIUM_MONTHLY_NOTIFICATIONS = 2;
 
@@ -11,25 +14,6 @@ export interface ReminderQuota {
 
 function monthStart(now = new Date()) {
   return new Date(Date.UTC(now.getUTCFullYear(), now.getUTCMonth(), 1));
-}
-
-export async function getEffectivePlan(userId: string): Promise<'FREEMIUM' | 'PREMIUM'> {
-  const user = await prisma.user.findUnique({
-    where: { id: userId },
-    select: { plan: true },
-  });
-  if (user?.plan === 'PREMIUM') return 'PREMIUM';
-
-  const subscription = await prisma.subscription.findFirst({
-    where: {
-      userId,
-      status: 'ACTIVE',
-      endDate: { gte: new Date() },
-    },
-    select: { id: true },
-  });
-
-  return subscription ? 'PREMIUM' : 'FREEMIUM';
 }
 
 export async function getReminderQuota(userId: string): Promise<ReminderQuota> {

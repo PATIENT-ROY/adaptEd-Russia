@@ -22,7 +22,16 @@ describe('payment-test-access', () => {
     process.env.PAYMENT_TEST_EMAILS = 'tester@adaptedrussia.ru';
     try {
       assert.equal(isPaymentTester({ role: 'STUDENT', email: 'tester@adaptedrussia.ru' }), true);
-      assert.equal(isPaymentTester({ role: 'STUDENT', email: 'other@adaptedrussia.ru' }), false);
+      assert.equal(isPaymentTester({ role: 'STUDENT', email: 'Tester@AdaptedRussia.ru' }), true);
+      assert.equal(isPaymentTester({ role: 'STUDENT', email: ' other@adaptedrussia.ru ' }), false);
+      assert.equal(
+        isPaymentTester({ role: 'STUDENT', email: 'tester@adaptedrussia.ru', emailVerified: false }),
+        false,
+      );
+      assert.equal(
+        isPaymentTester({ role: 'STUDENT', email: 'tester@adaptedrussia.ru', emailVerified: true }),
+        true,
+      );
     } finally {
       if (prev === undefined) delete process.env.PAYMENT_TEST_EMAILS;
       else process.env.PAYMENT_TEST_EMAILS = prev;
@@ -30,6 +39,8 @@ describe('payment-test-access', () => {
   });
 
   it('blocks mock apply for regular users', () => {
+    assert.equal(canApplyFromYooKassaStatus({ role: 'ADMIN' }, null), false);
+    assert.equal(canApplyFromYooKassaStatus({ role: 'STUDENT' }, ''), false);
     assert.equal(isMockYooKassaPaymentId('test_123'), true);
     assert.equal(isMockYooKassaPaymentId('2c8a-live'), false);
     assert.equal(
