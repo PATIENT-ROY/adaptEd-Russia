@@ -243,10 +243,15 @@ export const checkPaymentStatus = async (paymentId: string): Promise<YooKassaPay
 export const getRefund = async (refundId: string): Promise<YooKassaRefund> => {
   if (refundId.startsWith('test_refund_')) {
     const paymentId = refundId.replace(/^test_refund_/, 'test_');
+    const { prisma } = await import('./database.js');
+    const payment = await prisma.payment.findFirst({
+      where: { yooKassaPaymentId: paymentId },
+    });
+    if (!payment) throw new Error('Mock refund payment not found');
     return {
       id: refundId,
       status: 'succeeded',
-      amount: { value: '0.00', currency: 'RUB' },
+      amount: { value: payment.amount.toFixed(2), currency: payment.currency },
       payment_id: paymentId,
       test: true,
     };

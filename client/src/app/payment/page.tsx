@@ -356,6 +356,8 @@ function PaymentCheckoutContent() {
         return "bg-red-100 text-red-800";
       case PaymentStatus.CANCELED:
         return "bg-gray-100 text-gray-800";
+      case PaymentStatus.REFUNDED:
+        return "bg-purple-100 text-purple-800";
       default:
         return "bg-yellow-100 text-yellow-800";
     }
@@ -367,6 +369,7 @@ function PaymentCheckoutContent() {
         return <CheckCircle className="h-4 w-4" />;
       case PaymentStatus.FAILED:
       case PaymentStatus.CANCELED:
+      case PaymentStatus.REFUNDED:
         return <XCircle className="h-4 w-4" />;
       default:
         return <Clock className="h-4 w-4" />;
@@ -667,7 +670,7 @@ function PaymentCheckoutContent() {
                           {getStatusIcon(
                             getPaymentStatus(currentPayment) || "",
                           )}
-                          {t(`payment.callback.status${getPaymentStatus(currentPayment) === PaymentStatus.SUCCEEDED ? "Succeeded" : getPaymentStatus(currentPayment) === PaymentStatus.CANCELED ? "Canceled" : getPaymentStatus(currentPayment) === PaymentStatus.FAILED ? "Failed" : "Pending"}`)}
+                          {t(`payment.callback.status${getPaymentStatus(currentPayment) === PaymentStatus.SUCCEEDED ? "Succeeded" : getPaymentStatus(currentPayment) === PaymentStatus.CANCELED ? "Canceled" : getPaymentStatus(currentPayment) === PaymentStatus.FAILED ? "Failed" : getPaymentStatus(currentPayment) === PaymentStatus.REFUNDED ? "Refunded" : "Pending"}`)}
                         </span>
                       </Badge>
                     </div>

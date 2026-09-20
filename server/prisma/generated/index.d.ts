@@ -99,6 +99,11 @@ export type SubscriptionPlan = $Result.DefaultSelection<Prisma.$SubscriptionPlan
  */
 export type Payment = $Result.DefaultSelection<Prisma.$PaymentPayload>
 /**
+ * Model PaymentRefund
+ * Verified YooKassa refunds. The provider refund id makes webhook retries idempotent.
+ */
+export type PaymentRefund = $Result.DefaultSelection<Prisma.$PaymentRefundPayload>
+/**
  * Model WebhookLog
  * Incoming YooKassa (and future) webhook delivery audit trail
  */
@@ -469,6 +474,16 @@ export class PrismaClient<
     * ```
     */
   get payment(): Prisma.PaymentDelegate<ExtArgs>;
+
+  /**
+   * `prisma.paymentRefund`: Exposes CRUD operations for the **PaymentRefund** model.
+    * Example usage:
+    * ```ts
+    * // Fetch zero or more PaymentRefunds
+    * const paymentRefunds = await prisma.paymentRefund.findMany()
+    * ```
+    */
+  get paymentRefund(): Prisma.PaymentRefundDelegate<ExtArgs>;
 
   /**
    * `prisma.webhookLog`: Exposes CRUD operations for the **WebhookLog** model.
@@ -1017,6 +1032,7 @@ export namespace Prisma {
     Admin: 'Admin',
     SubscriptionPlan: 'SubscriptionPlan',
     Payment: 'Payment',
+    PaymentRefund: 'PaymentRefund',
     WebhookLog: 'WebhookLog',
     Subscription: 'Subscription',
     Grant: 'Grant',
@@ -1041,7 +1057,7 @@ export namespace Prisma {
 
   export type TypeMap<ExtArgs extends $Extensions.InternalArgs = $Extensions.DefaultArgs, ClientOptions = {}> = {
     meta: {
-      modelProps: "user" | "buddyApplication" | "passwordSetupToken" | "profile" | "note" | "reminder" | "guide" | "chatDailyUsage" | "chatMessage" | "supportTicket" | "supportResponse" | "adminInboxRead" | "adminAuditLog" | "userNotification" | "admin" | "subscriptionPlan" | "payment" | "webhookLog" | "subscription" | "grant" | "userGrantApplication" | "question" | "answer" | "questionLike" | "guideRead" | "review"
+      modelProps: "user" | "buddyApplication" | "passwordSetupToken" | "profile" | "note" | "reminder" | "guide" | "chatDailyUsage" | "chatMessage" | "supportTicket" | "supportResponse" | "adminInboxRead" | "adminAuditLog" | "userNotification" | "admin" | "subscriptionPlan" | "payment" | "paymentRefund" | "webhookLog" | "subscription" | "grant" | "userGrantApplication" | "question" | "answer" | "questionLike" | "guideRead" | "review"
       txIsolationLevel: Prisma.TransactionIsolationLevel
     }
     model: {
@@ -2235,6 +2251,76 @@ export namespace Prisma {
           }
         }
       }
+      PaymentRefund: {
+        payload: Prisma.$PaymentRefundPayload<ExtArgs>
+        fields: Prisma.PaymentRefundFieldRefs
+        operations: {
+          findUnique: {
+            args: Prisma.PaymentRefundFindUniqueArgs<ExtArgs>
+            result: $Utils.PayloadToResult<Prisma.$PaymentRefundPayload> | null
+          }
+          findUniqueOrThrow: {
+            args: Prisma.PaymentRefundFindUniqueOrThrowArgs<ExtArgs>
+            result: $Utils.PayloadToResult<Prisma.$PaymentRefundPayload>
+          }
+          findFirst: {
+            args: Prisma.PaymentRefundFindFirstArgs<ExtArgs>
+            result: $Utils.PayloadToResult<Prisma.$PaymentRefundPayload> | null
+          }
+          findFirstOrThrow: {
+            args: Prisma.PaymentRefundFindFirstOrThrowArgs<ExtArgs>
+            result: $Utils.PayloadToResult<Prisma.$PaymentRefundPayload>
+          }
+          findMany: {
+            args: Prisma.PaymentRefundFindManyArgs<ExtArgs>
+            result: $Utils.PayloadToResult<Prisma.$PaymentRefundPayload>[]
+          }
+          create: {
+            args: Prisma.PaymentRefundCreateArgs<ExtArgs>
+            result: $Utils.PayloadToResult<Prisma.$PaymentRefundPayload>
+          }
+          createMany: {
+            args: Prisma.PaymentRefundCreateManyArgs<ExtArgs>
+            result: BatchPayload
+          }
+          createManyAndReturn: {
+            args: Prisma.PaymentRefundCreateManyAndReturnArgs<ExtArgs>
+            result: $Utils.PayloadToResult<Prisma.$PaymentRefundPayload>[]
+          }
+          delete: {
+            args: Prisma.PaymentRefundDeleteArgs<ExtArgs>
+            result: $Utils.PayloadToResult<Prisma.$PaymentRefundPayload>
+          }
+          update: {
+            args: Prisma.PaymentRefundUpdateArgs<ExtArgs>
+            result: $Utils.PayloadToResult<Prisma.$PaymentRefundPayload>
+          }
+          deleteMany: {
+            args: Prisma.PaymentRefundDeleteManyArgs<ExtArgs>
+            result: BatchPayload
+          }
+          updateMany: {
+            args: Prisma.PaymentRefundUpdateManyArgs<ExtArgs>
+            result: BatchPayload
+          }
+          upsert: {
+            args: Prisma.PaymentRefundUpsertArgs<ExtArgs>
+            result: $Utils.PayloadToResult<Prisma.$PaymentRefundPayload>
+          }
+          aggregate: {
+            args: Prisma.PaymentRefundAggregateArgs<ExtArgs>
+            result: $Utils.Optional<AggregatePaymentRefund>
+          }
+          groupBy: {
+            args: Prisma.PaymentRefundGroupByArgs<ExtArgs>
+            result: $Utils.Optional<PaymentRefundGroupByOutputType>[]
+          }
+          count: {
+            args: Prisma.PaymentRefundCountArgs<ExtArgs>
+            result: $Utils.Optional<PaymentRefundCountAggregateOutputType> | number
+          }
+        }
+      }
       WebhookLog: {
         payload: Prisma.$WebhookLogPayload<ExtArgs>
         fields: Prisma.WebhookLogFieldRefs
@@ -3353,10 +3439,12 @@ export namespace Prisma {
 
   export type PaymentCountOutputType = {
     subscriptions: number
+    refunds: number
   }
 
   export type PaymentCountOutputTypeSelect<ExtArgs extends $Extensions.InternalArgs = $Extensions.DefaultArgs> = {
     subscriptions?: boolean | PaymentCountOutputTypeCountSubscriptionsArgs
+    refunds?: boolean | PaymentCountOutputTypeCountRefundsArgs
   }
 
   // Custom InputTypes
@@ -3375,6 +3463,13 @@ export namespace Prisma {
    */
   export type PaymentCountOutputTypeCountSubscriptionsArgs<ExtArgs extends $Extensions.InternalArgs = $Extensions.DefaultArgs> = {
     where?: SubscriptionWhereInput
+  }
+
+  /**
+   * PaymentCountOutputType without action
+   */
+  export type PaymentCountOutputTypeCountRefundsArgs<ExtArgs extends $Extensions.InternalArgs = $Extensions.DefaultArgs> = {
+    where?: PaymentRefundWhereInput
   }
 
 
@@ -20333,6 +20428,7 @@ export namespace Prisma {
     updatedAt?: boolean
     user?: boolean | Payment$userArgs<ExtArgs>
     subscriptions?: boolean | Payment$subscriptionsArgs<ExtArgs>
+    refunds?: boolean | Payment$refundsArgs<ExtArgs>
     _count?: boolean | PaymentCountOutputTypeDefaultArgs<ExtArgs>
   }, ExtArgs["result"]["payment"]>
 
@@ -20372,6 +20468,7 @@ export namespace Prisma {
   export type PaymentInclude<ExtArgs extends $Extensions.InternalArgs = $Extensions.DefaultArgs> = {
     user?: boolean | Payment$userArgs<ExtArgs>
     subscriptions?: boolean | Payment$subscriptionsArgs<ExtArgs>
+    refunds?: boolean | Payment$refundsArgs<ExtArgs>
     _count?: boolean | PaymentCountOutputTypeDefaultArgs<ExtArgs>
   }
   export type PaymentIncludeCreateManyAndReturn<ExtArgs extends $Extensions.InternalArgs = $Extensions.DefaultArgs> = {
@@ -20383,6 +20480,7 @@ export namespace Prisma {
     objects: {
       user: Prisma.$UserPayload<ExtArgs> | null
       subscriptions: Prisma.$SubscriptionPayload<ExtArgs>[]
+      refunds: Prisma.$PaymentRefundPayload<ExtArgs>[]
     }
     scalars: $Extensions.GetPayloadResult<{
       appliedAt: Date | null
@@ -20764,6 +20862,7 @@ export namespace Prisma {
     readonly [Symbol.toStringTag]: "PrismaPromise"
     user<T extends Payment$userArgs<ExtArgs> = {}>(args?: Subset<T, Payment$userArgs<ExtArgs>>): Prisma__UserClient<$Result.GetResult<Prisma.$UserPayload<ExtArgs>, T, "findUniqueOrThrow"> | null, null, ExtArgs>
     subscriptions<T extends Payment$subscriptionsArgs<ExtArgs> = {}>(args?: Subset<T, Payment$subscriptionsArgs<ExtArgs>>): Prisma.PrismaPromise<$Result.GetResult<Prisma.$SubscriptionPayload<ExtArgs>, T, "findMany"> | Null>
+    refunds<T extends Payment$refundsArgs<ExtArgs> = {}>(args?: Subset<T, Payment$refundsArgs<ExtArgs>>): Prisma.PrismaPromise<$Result.GetResult<Prisma.$PaymentRefundPayload<ExtArgs>, T, "findMany"> | Null>
     /**
      * Attaches callbacks for the resolution and/or rejection of the Promise.
      * @param onfulfilled The callback to execute when the Promise is resolved.
@@ -21159,6 +21258,26 @@ export namespace Prisma {
   }
 
   /**
+   * Payment.refunds
+   */
+  export type Payment$refundsArgs<ExtArgs extends $Extensions.InternalArgs = $Extensions.DefaultArgs> = {
+    /**
+     * Select specific fields to fetch from the PaymentRefund
+     */
+    select?: PaymentRefundSelect<ExtArgs> | null
+    /**
+     * Choose, which related nodes to fetch as well
+     */
+    include?: PaymentRefundInclude<ExtArgs> | null
+    where?: PaymentRefundWhereInput
+    orderBy?: PaymentRefundOrderByWithRelationInput | PaymentRefundOrderByWithRelationInput[]
+    cursor?: PaymentRefundWhereUniqueInput
+    take?: number
+    skip?: number
+    distinct?: PaymentRefundScalarFieldEnum | PaymentRefundScalarFieldEnum[]
+  }
+
+  /**
    * Payment without action
    */
   export type PaymentDefaultArgs<ExtArgs extends $Extensions.InternalArgs = $Extensions.DefaultArgs> = {
@@ -21170,6 +21289,1021 @@ export namespace Prisma {
      * Choose, which related nodes to fetch as well
      */
     include?: PaymentInclude<ExtArgs> | null
+  }
+
+
+  /**
+   * Model PaymentRefund
+   */
+
+  export type AggregatePaymentRefund = {
+    _count: PaymentRefundCountAggregateOutputType | null
+    _avg: PaymentRefundAvgAggregateOutputType | null
+    _sum: PaymentRefundSumAggregateOutputType | null
+    _min: PaymentRefundMinAggregateOutputType | null
+    _max: PaymentRefundMaxAggregateOutputType | null
+  }
+
+  export type PaymentRefundAvgAggregateOutputType = {
+    amount: number | null
+  }
+
+  export type PaymentRefundSumAggregateOutputType = {
+    amount: number | null
+  }
+
+  export type PaymentRefundMinAggregateOutputType = {
+    id: string | null
+    paymentId: string | null
+    yooKassaRefundId: string | null
+    amount: number | null
+    currency: string | null
+    status: string | null
+    providerCreatedAt: Date | null
+    createdAt: Date | null
+    updatedAt: Date | null
+  }
+
+  export type PaymentRefundMaxAggregateOutputType = {
+    id: string | null
+    paymentId: string | null
+    yooKassaRefundId: string | null
+    amount: number | null
+    currency: string | null
+    status: string | null
+    providerCreatedAt: Date | null
+    createdAt: Date | null
+    updatedAt: Date | null
+  }
+
+  export type PaymentRefundCountAggregateOutputType = {
+    id: number
+    paymentId: number
+    yooKassaRefundId: number
+    amount: number
+    currency: number
+    status: number
+    providerCreatedAt: number
+    createdAt: number
+    updatedAt: number
+    _all: number
+  }
+
+
+  export type PaymentRefundAvgAggregateInputType = {
+    amount?: true
+  }
+
+  export type PaymentRefundSumAggregateInputType = {
+    amount?: true
+  }
+
+  export type PaymentRefundMinAggregateInputType = {
+    id?: true
+    paymentId?: true
+    yooKassaRefundId?: true
+    amount?: true
+    currency?: true
+    status?: true
+    providerCreatedAt?: true
+    createdAt?: true
+    updatedAt?: true
+  }
+
+  export type PaymentRefundMaxAggregateInputType = {
+    id?: true
+    paymentId?: true
+    yooKassaRefundId?: true
+    amount?: true
+    currency?: true
+    status?: true
+    providerCreatedAt?: true
+    createdAt?: true
+    updatedAt?: true
+  }
+
+  export type PaymentRefundCountAggregateInputType = {
+    id?: true
+    paymentId?: true
+    yooKassaRefundId?: true
+    amount?: true
+    currency?: true
+    status?: true
+    providerCreatedAt?: true
+    createdAt?: true
+    updatedAt?: true
+    _all?: true
+  }
+
+  export type PaymentRefundAggregateArgs<ExtArgs extends $Extensions.InternalArgs = $Extensions.DefaultArgs> = {
+    /**
+     * Filter which PaymentRefund to aggregate.
+     */
+    where?: PaymentRefundWhereInput
+    /**
+     * {@link https://www.prisma.io/docs/concepts/components/prisma-client/sorting Sorting Docs}
+     * 
+     * Determine the order of PaymentRefunds to fetch.
+     */
+    orderBy?: PaymentRefundOrderByWithRelationInput | PaymentRefundOrderByWithRelationInput[]
+    /**
+     * {@link https://www.prisma.io/docs/concepts/components/prisma-client/pagination#cursor-based-pagination Cursor Docs}
+     * 
+     * Sets the start position
+     */
+    cursor?: PaymentRefundWhereUniqueInput
+    /**
+     * {@link https://www.prisma.io/docs/concepts/components/prisma-client/pagination Pagination Docs}
+     * 
+     * Take `±n` PaymentRefunds from the position of the cursor.
+     */
+    take?: number
+    /**
+     * {@link https://www.prisma.io/docs/concepts/components/prisma-client/pagination Pagination Docs}
+     * 
+     * Skip the first `n` PaymentRefunds.
+     */
+    skip?: number
+    /**
+     * {@link https://www.prisma.io/docs/concepts/components/prisma-client/aggregations Aggregation Docs}
+     * 
+     * Count returned PaymentRefunds
+    **/
+    _count?: true | PaymentRefundCountAggregateInputType
+    /**
+     * {@link https://www.prisma.io/docs/concepts/components/prisma-client/aggregations Aggregation Docs}
+     * 
+     * Select which fields to average
+    **/
+    _avg?: PaymentRefundAvgAggregateInputType
+    /**
+     * {@link https://www.prisma.io/docs/concepts/components/prisma-client/aggregations Aggregation Docs}
+     * 
+     * Select which fields to sum
+    **/
+    _sum?: PaymentRefundSumAggregateInputType
+    /**
+     * {@link https://www.prisma.io/docs/concepts/components/prisma-client/aggregations Aggregation Docs}
+     * 
+     * Select which fields to find the minimum value
+    **/
+    _min?: PaymentRefundMinAggregateInputType
+    /**
+     * {@link https://www.prisma.io/docs/concepts/components/prisma-client/aggregations Aggregation Docs}
+     * 
+     * Select which fields to find the maximum value
+    **/
+    _max?: PaymentRefundMaxAggregateInputType
+  }
+
+  export type GetPaymentRefundAggregateType<T extends PaymentRefundAggregateArgs> = {
+        [P in keyof T & keyof AggregatePaymentRefund]: P extends '_count' | 'count'
+      ? T[P] extends true
+        ? number
+        : GetScalarType<T[P], AggregatePaymentRefund[P]>
+      : GetScalarType<T[P], AggregatePaymentRefund[P]>
+  }
+
+
+
+
+  export type PaymentRefundGroupByArgs<ExtArgs extends $Extensions.InternalArgs = $Extensions.DefaultArgs> = {
+    where?: PaymentRefundWhereInput
+    orderBy?: PaymentRefundOrderByWithAggregationInput | PaymentRefundOrderByWithAggregationInput[]
+    by: PaymentRefundScalarFieldEnum[] | PaymentRefundScalarFieldEnum
+    having?: PaymentRefundScalarWhereWithAggregatesInput
+    take?: number
+    skip?: number
+    _count?: PaymentRefundCountAggregateInputType | true
+    _avg?: PaymentRefundAvgAggregateInputType
+    _sum?: PaymentRefundSumAggregateInputType
+    _min?: PaymentRefundMinAggregateInputType
+    _max?: PaymentRefundMaxAggregateInputType
+  }
+
+  export type PaymentRefundGroupByOutputType = {
+    id: string
+    paymentId: string
+    yooKassaRefundId: string
+    amount: number
+    currency: string
+    status: string
+    providerCreatedAt: Date | null
+    createdAt: Date
+    updatedAt: Date
+    _count: PaymentRefundCountAggregateOutputType | null
+    _avg: PaymentRefundAvgAggregateOutputType | null
+    _sum: PaymentRefundSumAggregateOutputType | null
+    _min: PaymentRefundMinAggregateOutputType | null
+    _max: PaymentRefundMaxAggregateOutputType | null
+  }
+
+  type GetPaymentRefundGroupByPayload<T extends PaymentRefundGroupByArgs> = Prisma.PrismaPromise<
+    Array<
+      PickEnumerable<PaymentRefundGroupByOutputType, T['by']> &
+        {
+          [P in ((keyof T) & (keyof PaymentRefundGroupByOutputType))]: P extends '_count'
+            ? T[P] extends boolean
+              ? number
+              : GetScalarType<T[P], PaymentRefundGroupByOutputType[P]>
+            : GetScalarType<T[P], PaymentRefundGroupByOutputType[P]>
+        }
+      >
+    >
+
+
+  export type PaymentRefundSelect<ExtArgs extends $Extensions.InternalArgs = $Extensions.DefaultArgs> = $Extensions.GetSelect<{
+    id?: boolean
+    paymentId?: boolean
+    yooKassaRefundId?: boolean
+    amount?: boolean
+    currency?: boolean
+    status?: boolean
+    providerCreatedAt?: boolean
+    createdAt?: boolean
+    updatedAt?: boolean
+    payment?: boolean | PaymentDefaultArgs<ExtArgs>
+  }, ExtArgs["result"]["paymentRefund"]>
+
+  export type PaymentRefundSelectCreateManyAndReturn<ExtArgs extends $Extensions.InternalArgs = $Extensions.DefaultArgs> = $Extensions.GetSelect<{
+    id?: boolean
+    paymentId?: boolean
+    yooKassaRefundId?: boolean
+    amount?: boolean
+    currency?: boolean
+    status?: boolean
+    providerCreatedAt?: boolean
+    createdAt?: boolean
+    updatedAt?: boolean
+    payment?: boolean | PaymentDefaultArgs<ExtArgs>
+  }, ExtArgs["result"]["paymentRefund"]>
+
+  export type PaymentRefundSelectScalar = {
+    id?: boolean
+    paymentId?: boolean
+    yooKassaRefundId?: boolean
+    amount?: boolean
+    currency?: boolean
+    status?: boolean
+    providerCreatedAt?: boolean
+    createdAt?: boolean
+    updatedAt?: boolean
+  }
+
+  export type PaymentRefundInclude<ExtArgs extends $Extensions.InternalArgs = $Extensions.DefaultArgs> = {
+    payment?: boolean | PaymentDefaultArgs<ExtArgs>
+  }
+  export type PaymentRefundIncludeCreateManyAndReturn<ExtArgs extends $Extensions.InternalArgs = $Extensions.DefaultArgs> = {
+    payment?: boolean | PaymentDefaultArgs<ExtArgs>
+  }
+
+  export type $PaymentRefundPayload<ExtArgs extends $Extensions.InternalArgs = $Extensions.DefaultArgs> = {
+    name: "PaymentRefund"
+    objects: {
+      payment: Prisma.$PaymentPayload<ExtArgs>
+    }
+    scalars: $Extensions.GetPayloadResult<{
+      id: string
+      paymentId: string
+      yooKassaRefundId: string
+      amount: number
+      currency: string
+      status: string
+      providerCreatedAt: Date | null
+      createdAt: Date
+      updatedAt: Date
+    }, ExtArgs["result"]["paymentRefund"]>
+    composites: {}
+  }
+
+  type PaymentRefundGetPayload<S extends boolean | null | undefined | PaymentRefundDefaultArgs> = $Result.GetResult<Prisma.$PaymentRefundPayload, S>
+
+  type PaymentRefundCountArgs<ExtArgs extends $Extensions.InternalArgs = $Extensions.DefaultArgs> = 
+    Omit<PaymentRefundFindManyArgs, 'select' | 'include' | 'distinct'> & {
+      select?: PaymentRefundCountAggregateInputType | true
+    }
+
+  export interface PaymentRefundDelegate<ExtArgs extends $Extensions.InternalArgs = $Extensions.DefaultArgs> {
+    [K: symbol]: { types: Prisma.TypeMap<ExtArgs>['model']['PaymentRefund'], meta: { name: 'PaymentRefund' } }
+    /**
+     * Find zero or one PaymentRefund that matches the filter.
+     * @param {PaymentRefundFindUniqueArgs} args - Arguments to find a PaymentRefund
+     * @example
+     * // Get one PaymentRefund
+     * const paymentRefund = await prisma.paymentRefund.findUnique({
+     *   where: {
+     *     // ... provide filter here
+     *   }
+     * })
+     */
+    findUnique<T extends PaymentRefundFindUniqueArgs>(args: SelectSubset<T, PaymentRefundFindUniqueArgs<ExtArgs>>): Prisma__PaymentRefundClient<$Result.GetResult<Prisma.$PaymentRefundPayload<ExtArgs>, T, "findUnique"> | null, null, ExtArgs>
+
+    /**
+     * Find one PaymentRefund that matches the filter or throw an error with `error.code='P2025'` 
+     * if no matches were found.
+     * @param {PaymentRefundFindUniqueOrThrowArgs} args - Arguments to find a PaymentRefund
+     * @example
+     * // Get one PaymentRefund
+     * const paymentRefund = await prisma.paymentRefund.findUniqueOrThrow({
+     *   where: {
+     *     // ... provide filter here
+     *   }
+     * })
+     */
+    findUniqueOrThrow<T extends PaymentRefundFindUniqueOrThrowArgs>(args: SelectSubset<T, PaymentRefundFindUniqueOrThrowArgs<ExtArgs>>): Prisma__PaymentRefundClient<$Result.GetResult<Prisma.$PaymentRefundPayload<ExtArgs>, T, "findUniqueOrThrow">, never, ExtArgs>
+
+    /**
+     * Find the first PaymentRefund that matches the filter.
+     * Note, that providing `undefined` is treated as the value not being there.
+     * Read more here: https://pris.ly/d/null-undefined
+     * @param {PaymentRefundFindFirstArgs} args - Arguments to find a PaymentRefund
+     * @example
+     * // Get one PaymentRefund
+     * const paymentRefund = await prisma.paymentRefund.findFirst({
+     *   where: {
+     *     // ... provide filter here
+     *   }
+     * })
+     */
+    findFirst<T extends PaymentRefundFindFirstArgs>(args?: SelectSubset<T, PaymentRefundFindFirstArgs<ExtArgs>>): Prisma__PaymentRefundClient<$Result.GetResult<Prisma.$PaymentRefundPayload<ExtArgs>, T, "findFirst"> | null, null, ExtArgs>
+
+    /**
+     * Find the first PaymentRefund that matches the filter or
+     * throw `PrismaKnownClientError` with `P2025` code if no matches were found.
+     * Note, that providing `undefined` is treated as the value not being there.
+     * Read more here: https://pris.ly/d/null-undefined
+     * @param {PaymentRefundFindFirstOrThrowArgs} args - Arguments to find a PaymentRefund
+     * @example
+     * // Get one PaymentRefund
+     * const paymentRefund = await prisma.paymentRefund.findFirstOrThrow({
+     *   where: {
+     *     // ... provide filter here
+     *   }
+     * })
+     */
+    findFirstOrThrow<T extends PaymentRefundFindFirstOrThrowArgs>(args?: SelectSubset<T, PaymentRefundFindFirstOrThrowArgs<ExtArgs>>): Prisma__PaymentRefundClient<$Result.GetResult<Prisma.$PaymentRefundPayload<ExtArgs>, T, "findFirstOrThrow">, never, ExtArgs>
+
+    /**
+     * Find zero or more PaymentRefunds that matches the filter.
+     * Note, that providing `undefined` is treated as the value not being there.
+     * Read more here: https://pris.ly/d/null-undefined
+     * @param {PaymentRefundFindManyArgs} args - Arguments to filter and select certain fields only.
+     * @example
+     * // Get all PaymentRefunds
+     * const paymentRefunds = await prisma.paymentRefund.findMany()
+     * 
+     * // Get first 10 PaymentRefunds
+     * const paymentRefunds = await prisma.paymentRefund.findMany({ take: 10 })
+     * 
+     * // Only select the `id`
+     * const paymentRefundWithIdOnly = await prisma.paymentRefund.findMany({ select: { id: true } })
+     * 
+     */
+    findMany<T extends PaymentRefundFindManyArgs>(args?: SelectSubset<T, PaymentRefundFindManyArgs<ExtArgs>>): Prisma.PrismaPromise<$Result.GetResult<Prisma.$PaymentRefundPayload<ExtArgs>, T, "findMany">>
+
+    /**
+     * Create a PaymentRefund.
+     * @param {PaymentRefundCreateArgs} args - Arguments to create a PaymentRefund.
+     * @example
+     * // Create one PaymentRefund
+     * const PaymentRefund = await prisma.paymentRefund.create({
+     *   data: {
+     *     // ... data to create a PaymentRefund
+     *   }
+     * })
+     * 
+     */
+    create<T extends PaymentRefundCreateArgs>(args: SelectSubset<T, PaymentRefundCreateArgs<ExtArgs>>): Prisma__PaymentRefundClient<$Result.GetResult<Prisma.$PaymentRefundPayload<ExtArgs>, T, "create">, never, ExtArgs>
+
+    /**
+     * Create many PaymentRefunds.
+     * @param {PaymentRefundCreateManyArgs} args - Arguments to create many PaymentRefunds.
+     * @example
+     * // Create many PaymentRefunds
+     * const paymentRefund = await prisma.paymentRefund.createMany({
+     *   data: [
+     *     // ... provide data here
+     *   ]
+     * })
+     *     
+     */
+    createMany<T extends PaymentRefundCreateManyArgs>(args?: SelectSubset<T, PaymentRefundCreateManyArgs<ExtArgs>>): Prisma.PrismaPromise<BatchPayload>
+
+    /**
+     * Create many PaymentRefunds and returns the data saved in the database.
+     * @param {PaymentRefundCreateManyAndReturnArgs} args - Arguments to create many PaymentRefunds.
+     * @example
+     * // Create many PaymentRefunds
+     * const paymentRefund = await prisma.paymentRefund.createManyAndReturn({
+     *   data: [
+     *     // ... provide data here
+     *   ]
+     * })
+     * 
+     * // Create many PaymentRefunds and only return the `id`
+     * const paymentRefundWithIdOnly = await prisma.paymentRefund.createManyAndReturn({ 
+     *   select: { id: true },
+     *   data: [
+     *     // ... provide data here
+     *   ]
+     * })
+     * Note, that providing `undefined` is treated as the value not being there.
+     * Read more here: https://pris.ly/d/null-undefined
+     * 
+     */
+    createManyAndReturn<T extends PaymentRefundCreateManyAndReturnArgs>(args?: SelectSubset<T, PaymentRefundCreateManyAndReturnArgs<ExtArgs>>): Prisma.PrismaPromise<$Result.GetResult<Prisma.$PaymentRefundPayload<ExtArgs>, T, "createManyAndReturn">>
+
+    /**
+     * Delete a PaymentRefund.
+     * @param {PaymentRefundDeleteArgs} args - Arguments to delete one PaymentRefund.
+     * @example
+     * // Delete one PaymentRefund
+     * const PaymentRefund = await prisma.paymentRefund.delete({
+     *   where: {
+     *     // ... filter to delete one PaymentRefund
+     *   }
+     * })
+     * 
+     */
+    delete<T extends PaymentRefundDeleteArgs>(args: SelectSubset<T, PaymentRefundDeleteArgs<ExtArgs>>): Prisma__PaymentRefundClient<$Result.GetResult<Prisma.$PaymentRefundPayload<ExtArgs>, T, "delete">, never, ExtArgs>
+
+    /**
+     * Update one PaymentRefund.
+     * @param {PaymentRefundUpdateArgs} args - Arguments to update one PaymentRefund.
+     * @example
+     * // Update one PaymentRefund
+     * const paymentRefund = await prisma.paymentRefund.update({
+     *   where: {
+     *     // ... provide filter here
+     *   },
+     *   data: {
+     *     // ... provide data here
+     *   }
+     * })
+     * 
+     */
+    update<T extends PaymentRefundUpdateArgs>(args: SelectSubset<T, PaymentRefundUpdateArgs<ExtArgs>>): Prisma__PaymentRefundClient<$Result.GetResult<Prisma.$PaymentRefundPayload<ExtArgs>, T, "update">, never, ExtArgs>
+
+    /**
+     * Delete zero or more PaymentRefunds.
+     * @param {PaymentRefundDeleteManyArgs} args - Arguments to filter PaymentRefunds to delete.
+     * @example
+     * // Delete a few PaymentRefunds
+     * const { count } = await prisma.paymentRefund.deleteMany({
+     *   where: {
+     *     // ... provide filter here
+     *   }
+     * })
+     * 
+     */
+    deleteMany<T extends PaymentRefundDeleteManyArgs>(args?: SelectSubset<T, PaymentRefundDeleteManyArgs<ExtArgs>>): Prisma.PrismaPromise<BatchPayload>
+
+    /**
+     * Update zero or more PaymentRefunds.
+     * Note, that providing `undefined` is treated as the value not being there.
+     * Read more here: https://pris.ly/d/null-undefined
+     * @param {PaymentRefundUpdateManyArgs} args - Arguments to update one or more rows.
+     * @example
+     * // Update many PaymentRefunds
+     * const paymentRefund = await prisma.paymentRefund.updateMany({
+     *   where: {
+     *     // ... provide filter here
+     *   },
+     *   data: {
+     *     // ... provide data here
+     *   }
+     * })
+     * 
+     */
+    updateMany<T extends PaymentRefundUpdateManyArgs>(args: SelectSubset<T, PaymentRefundUpdateManyArgs<ExtArgs>>): Prisma.PrismaPromise<BatchPayload>
+
+    /**
+     * Create or update one PaymentRefund.
+     * @param {PaymentRefundUpsertArgs} args - Arguments to update or create a PaymentRefund.
+     * @example
+     * // Update or create a PaymentRefund
+     * const paymentRefund = await prisma.paymentRefund.upsert({
+     *   create: {
+     *     // ... data to create a PaymentRefund
+     *   },
+     *   update: {
+     *     // ... in case it already exists, update
+     *   },
+     *   where: {
+     *     // ... the filter for the PaymentRefund we want to update
+     *   }
+     * })
+     */
+    upsert<T extends PaymentRefundUpsertArgs>(args: SelectSubset<T, PaymentRefundUpsertArgs<ExtArgs>>): Prisma__PaymentRefundClient<$Result.GetResult<Prisma.$PaymentRefundPayload<ExtArgs>, T, "upsert">, never, ExtArgs>
+
+
+    /**
+     * Count the number of PaymentRefunds.
+     * Note, that providing `undefined` is treated as the value not being there.
+     * Read more here: https://pris.ly/d/null-undefined
+     * @param {PaymentRefundCountArgs} args - Arguments to filter PaymentRefunds to count.
+     * @example
+     * // Count the number of PaymentRefunds
+     * const count = await prisma.paymentRefund.count({
+     *   where: {
+     *     // ... the filter for the PaymentRefunds we want to count
+     *   }
+     * })
+    **/
+    count<T extends PaymentRefundCountArgs>(
+      args?: Subset<T, PaymentRefundCountArgs>,
+    ): Prisma.PrismaPromise<
+      T extends $Utils.Record<'select', any>
+        ? T['select'] extends true
+          ? number
+          : GetScalarType<T['select'], PaymentRefundCountAggregateOutputType>
+        : number
+    >
+
+    /**
+     * Allows you to perform aggregations operations on a PaymentRefund.
+     * Note, that providing `undefined` is treated as the value not being there.
+     * Read more here: https://pris.ly/d/null-undefined
+     * @param {PaymentRefundAggregateArgs} args - Select which aggregations you would like to apply and on what fields.
+     * @example
+     * // Ordered by age ascending
+     * // Where email contains prisma.io
+     * // Limited to the 10 users
+     * const aggregations = await prisma.user.aggregate({
+     *   _avg: {
+     *     age: true,
+     *   },
+     *   where: {
+     *     email: {
+     *       contains: "prisma.io",
+     *     },
+     *   },
+     *   orderBy: {
+     *     age: "asc",
+     *   },
+     *   take: 10,
+     * })
+    **/
+    aggregate<T extends PaymentRefundAggregateArgs>(args: Subset<T, PaymentRefundAggregateArgs>): Prisma.PrismaPromise<GetPaymentRefundAggregateType<T>>
+
+    /**
+     * Group by PaymentRefund.
+     * Note, that providing `undefined` is treated as the value not being there.
+     * Read more here: https://pris.ly/d/null-undefined
+     * @param {PaymentRefundGroupByArgs} args - Group by arguments.
+     * @example
+     * // Group by city, order by createdAt, get count
+     * const result = await prisma.user.groupBy({
+     *   by: ['city', 'createdAt'],
+     *   orderBy: {
+     *     createdAt: true
+     *   },
+     *   _count: {
+     *     _all: true
+     *   },
+     * })
+     * 
+    **/
+    groupBy<
+      T extends PaymentRefundGroupByArgs,
+      HasSelectOrTake extends Or<
+        Extends<'skip', Keys<T>>,
+        Extends<'take', Keys<T>>
+      >,
+      OrderByArg extends True extends HasSelectOrTake
+        ? { orderBy: PaymentRefundGroupByArgs['orderBy'] }
+        : { orderBy?: PaymentRefundGroupByArgs['orderBy'] },
+      OrderFields extends ExcludeUnderscoreKeys<Keys<MaybeTupleToUnion<T['orderBy']>>>,
+      ByFields extends MaybeTupleToUnion<T['by']>,
+      ByValid extends Has<ByFields, OrderFields>,
+      HavingFields extends GetHavingFields<T['having']>,
+      HavingValid extends Has<ByFields, HavingFields>,
+      ByEmpty extends T['by'] extends never[] ? True : False,
+      InputErrors extends ByEmpty extends True
+      ? `Error: "by" must not be empty.`
+      : HavingValid extends False
+      ? {
+          [P in HavingFields]: P extends ByFields
+            ? never
+            : P extends string
+            ? `Error: Field "${P}" used in "having" needs to be provided in "by".`
+            : [
+                Error,
+                'Field ',
+                P,
+                ` in "having" needs to be provided in "by"`,
+              ]
+        }[HavingFields]
+      : 'take' extends Keys<T>
+      ? 'orderBy' extends Keys<T>
+        ? ByValid extends True
+          ? {}
+          : {
+              [P in OrderFields]: P extends ByFields
+                ? never
+                : `Error: Field "${P}" in "orderBy" needs to be provided in "by"`
+            }[OrderFields]
+        : 'Error: If you provide "take", you also need to provide "orderBy"'
+      : 'skip' extends Keys<T>
+      ? 'orderBy' extends Keys<T>
+        ? ByValid extends True
+          ? {}
+          : {
+              [P in OrderFields]: P extends ByFields
+                ? never
+                : `Error: Field "${P}" in "orderBy" needs to be provided in "by"`
+            }[OrderFields]
+        : 'Error: If you provide "skip", you also need to provide "orderBy"'
+      : ByValid extends True
+      ? {}
+      : {
+          [P in OrderFields]: P extends ByFields
+            ? never
+            : `Error: Field "${P}" in "orderBy" needs to be provided in "by"`
+        }[OrderFields]
+    >(args: SubsetIntersection<T, PaymentRefundGroupByArgs, OrderByArg> & InputErrors): {} extends InputErrors ? GetPaymentRefundGroupByPayload<T> : Prisma.PrismaPromise<InputErrors>
+  /**
+   * Fields of the PaymentRefund model
+   */
+  readonly fields: PaymentRefundFieldRefs;
+  }
+
+  /**
+   * The delegate class that acts as a "Promise-like" for PaymentRefund.
+   * Why is this prefixed with `Prisma__`?
+   * Because we want to prevent naming conflicts as mentioned in
+   * https://github.com/prisma/prisma-client-js/issues/707
+   */
+  export interface Prisma__PaymentRefundClient<T, Null = never, ExtArgs extends $Extensions.InternalArgs = $Extensions.DefaultArgs> extends Prisma.PrismaPromise<T> {
+    readonly [Symbol.toStringTag]: "PrismaPromise"
+    payment<T extends PaymentDefaultArgs<ExtArgs> = {}>(args?: Subset<T, PaymentDefaultArgs<ExtArgs>>): Prisma__PaymentClient<$Result.GetResult<Prisma.$PaymentPayload<ExtArgs>, T, "findUniqueOrThrow"> | Null, Null, ExtArgs>
+    /**
+     * Attaches callbacks for the resolution and/or rejection of the Promise.
+     * @param onfulfilled The callback to execute when the Promise is resolved.
+     * @param onrejected The callback to execute when the Promise is rejected.
+     * @returns A Promise for the completion of which ever callback is executed.
+     */
+    then<TResult1 = T, TResult2 = never>(onfulfilled?: ((value: T) => TResult1 | PromiseLike<TResult1>) | undefined | null, onrejected?: ((reason: any) => TResult2 | PromiseLike<TResult2>) | undefined | null): $Utils.JsPromise<TResult1 | TResult2>
+    /**
+     * Attaches a callback for only the rejection of the Promise.
+     * @param onrejected The callback to execute when the Promise is rejected.
+     * @returns A Promise for the completion of the callback.
+     */
+    catch<TResult = never>(onrejected?: ((reason: any) => TResult | PromiseLike<TResult>) | undefined | null): $Utils.JsPromise<T | TResult>
+    /**
+     * Attaches a callback that is invoked when the Promise is settled (fulfilled or rejected). The
+     * resolved value cannot be modified from the callback.
+     * @param onfinally The callback to execute when the Promise is settled (fulfilled or rejected).
+     * @returns A Promise for the completion of the callback.
+     */
+    finally(onfinally?: (() => void) | undefined | null): $Utils.JsPromise<T>
+  }
+
+
+
+
+  /**
+   * Fields of the PaymentRefund model
+   */ 
+  interface PaymentRefundFieldRefs {
+    readonly id: FieldRef<"PaymentRefund", 'String'>
+    readonly paymentId: FieldRef<"PaymentRefund", 'String'>
+    readonly yooKassaRefundId: FieldRef<"PaymentRefund", 'String'>
+    readonly amount: FieldRef<"PaymentRefund", 'Float'>
+    readonly currency: FieldRef<"PaymentRefund", 'String'>
+    readonly status: FieldRef<"PaymentRefund", 'String'>
+    readonly providerCreatedAt: FieldRef<"PaymentRefund", 'DateTime'>
+    readonly createdAt: FieldRef<"PaymentRefund", 'DateTime'>
+    readonly updatedAt: FieldRef<"PaymentRefund", 'DateTime'>
+  }
+    
+
+  // Custom InputTypes
+  /**
+   * PaymentRefund findUnique
+   */
+  export type PaymentRefundFindUniqueArgs<ExtArgs extends $Extensions.InternalArgs = $Extensions.DefaultArgs> = {
+    /**
+     * Select specific fields to fetch from the PaymentRefund
+     */
+    select?: PaymentRefundSelect<ExtArgs> | null
+    /**
+     * Choose, which related nodes to fetch as well
+     */
+    include?: PaymentRefundInclude<ExtArgs> | null
+    /**
+     * Filter, which PaymentRefund to fetch.
+     */
+    where: PaymentRefundWhereUniqueInput
+  }
+
+  /**
+   * PaymentRefund findUniqueOrThrow
+   */
+  export type PaymentRefundFindUniqueOrThrowArgs<ExtArgs extends $Extensions.InternalArgs = $Extensions.DefaultArgs> = {
+    /**
+     * Select specific fields to fetch from the PaymentRefund
+     */
+    select?: PaymentRefundSelect<ExtArgs> | null
+    /**
+     * Choose, which related nodes to fetch as well
+     */
+    include?: PaymentRefundInclude<ExtArgs> | null
+    /**
+     * Filter, which PaymentRefund to fetch.
+     */
+    where: PaymentRefundWhereUniqueInput
+  }
+
+  /**
+   * PaymentRefund findFirst
+   */
+  export type PaymentRefundFindFirstArgs<ExtArgs extends $Extensions.InternalArgs = $Extensions.DefaultArgs> = {
+    /**
+     * Select specific fields to fetch from the PaymentRefund
+     */
+    select?: PaymentRefundSelect<ExtArgs> | null
+    /**
+     * Choose, which related nodes to fetch as well
+     */
+    include?: PaymentRefundInclude<ExtArgs> | null
+    /**
+     * Filter, which PaymentRefund to fetch.
+     */
+    where?: PaymentRefundWhereInput
+    /**
+     * {@link https://www.prisma.io/docs/concepts/components/prisma-client/sorting Sorting Docs}
+     * 
+     * Determine the order of PaymentRefunds to fetch.
+     */
+    orderBy?: PaymentRefundOrderByWithRelationInput | PaymentRefundOrderByWithRelationInput[]
+    /**
+     * {@link https://www.prisma.io/docs/concepts/components/prisma-client/pagination#cursor-based-pagination Cursor Docs}
+     * 
+     * Sets the position for searching for PaymentRefunds.
+     */
+    cursor?: PaymentRefundWhereUniqueInput
+    /**
+     * {@link https://www.prisma.io/docs/concepts/components/prisma-client/pagination Pagination Docs}
+     * 
+     * Take `±n` PaymentRefunds from the position of the cursor.
+     */
+    take?: number
+    /**
+     * {@link https://www.prisma.io/docs/concepts/components/prisma-client/pagination Pagination Docs}
+     * 
+     * Skip the first `n` PaymentRefunds.
+     */
+    skip?: number
+    /**
+     * {@link https://www.prisma.io/docs/concepts/components/prisma-client/distinct Distinct Docs}
+     * 
+     * Filter by unique combinations of PaymentRefunds.
+     */
+    distinct?: PaymentRefundScalarFieldEnum | PaymentRefundScalarFieldEnum[]
+  }
+
+  /**
+   * PaymentRefund findFirstOrThrow
+   */
+  export type PaymentRefundFindFirstOrThrowArgs<ExtArgs extends $Extensions.InternalArgs = $Extensions.DefaultArgs> = {
+    /**
+     * Select specific fields to fetch from the PaymentRefund
+     */
+    select?: PaymentRefundSelect<ExtArgs> | null
+    /**
+     * Choose, which related nodes to fetch as well
+     */
+    include?: PaymentRefundInclude<ExtArgs> | null
+    /**
+     * Filter, which PaymentRefund to fetch.
+     */
+    where?: PaymentRefundWhereInput
+    /**
+     * {@link https://www.prisma.io/docs/concepts/components/prisma-client/sorting Sorting Docs}
+     * 
+     * Determine the order of PaymentRefunds to fetch.
+     */
+    orderBy?: PaymentRefundOrderByWithRelationInput | PaymentRefundOrderByWithRelationInput[]
+    /**
+     * {@link https://www.prisma.io/docs/concepts/components/prisma-client/pagination#cursor-based-pagination Cursor Docs}
+     * 
+     * Sets the position for searching for PaymentRefunds.
+     */
+    cursor?: PaymentRefundWhereUniqueInput
+    /**
+     * {@link https://www.prisma.io/docs/concepts/components/prisma-client/pagination Pagination Docs}
+     * 
+     * Take `±n` PaymentRefunds from the position of the cursor.
+     */
+    take?: number
+    /**
+     * {@link https://www.prisma.io/docs/concepts/components/prisma-client/pagination Pagination Docs}
+     * 
+     * Skip the first `n` PaymentRefunds.
+     */
+    skip?: number
+    /**
+     * {@link https://www.prisma.io/docs/concepts/components/prisma-client/distinct Distinct Docs}
+     * 
+     * Filter by unique combinations of PaymentRefunds.
+     */
+    distinct?: PaymentRefundScalarFieldEnum | PaymentRefundScalarFieldEnum[]
+  }
+
+  /**
+   * PaymentRefund findMany
+   */
+  export type PaymentRefundFindManyArgs<ExtArgs extends $Extensions.InternalArgs = $Extensions.DefaultArgs> = {
+    /**
+     * Select specific fields to fetch from the PaymentRefund
+     */
+    select?: PaymentRefundSelect<ExtArgs> | null
+    /**
+     * Choose, which related nodes to fetch as well
+     */
+    include?: PaymentRefundInclude<ExtArgs> | null
+    /**
+     * Filter, which PaymentRefunds to fetch.
+     */
+    where?: PaymentRefundWhereInput
+    /**
+     * {@link https://www.prisma.io/docs/concepts/components/prisma-client/sorting Sorting Docs}
+     * 
+     * Determine the order of PaymentRefunds to fetch.
+     */
+    orderBy?: PaymentRefundOrderByWithRelationInput | PaymentRefundOrderByWithRelationInput[]
+    /**
+     * {@link https://www.prisma.io/docs/concepts/components/prisma-client/pagination#cursor-based-pagination Cursor Docs}
+     * 
+     * Sets the position for listing PaymentRefunds.
+     */
+    cursor?: PaymentRefundWhereUniqueInput
+    /**
+     * {@link https://www.prisma.io/docs/concepts/components/prisma-client/pagination Pagination Docs}
+     * 
+     * Take `±n` PaymentRefunds from the position of the cursor.
+     */
+    take?: number
+    /**
+     * {@link https://www.prisma.io/docs/concepts/components/prisma-client/pagination Pagination Docs}
+     * 
+     * Skip the first `n` PaymentRefunds.
+     */
+    skip?: number
+    distinct?: PaymentRefundScalarFieldEnum | PaymentRefundScalarFieldEnum[]
+  }
+
+  /**
+   * PaymentRefund create
+   */
+  export type PaymentRefundCreateArgs<ExtArgs extends $Extensions.InternalArgs = $Extensions.DefaultArgs> = {
+    /**
+     * Select specific fields to fetch from the PaymentRefund
+     */
+    select?: PaymentRefundSelect<ExtArgs> | null
+    /**
+     * Choose, which related nodes to fetch as well
+     */
+    include?: PaymentRefundInclude<ExtArgs> | null
+    /**
+     * The data needed to create a PaymentRefund.
+     */
+    data: XOR<PaymentRefundCreateInput, PaymentRefundUncheckedCreateInput>
+  }
+
+  /**
+   * PaymentRefund createMany
+   */
+  export type PaymentRefundCreateManyArgs<ExtArgs extends $Extensions.InternalArgs = $Extensions.DefaultArgs> = {
+    /**
+     * The data used to create many PaymentRefunds.
+     */
+    data: PaymentRefundCreateManyInput | PaymentRefundCreateManyInput[]
+    skipDuplicates?: boolean
+  }
+
+  /**
+   * PaymentRefund createManyAndReturn
+   */
+  export type PaymentRefundCreateManyAndReturnArgs<ExtArgs extends $Extensions.InternalArgs = $Extensions.DefaultArgs> = {
+    /**
+     * Select specific fields to fetch from the PaymentRefund
+     */
+    select?: PaymentRefundSelectCreateManyAndReturn<ExtArgs> | null
+    /**
+     * The data used to create many PaymentRefunds.
+     */
+    data: PaymentRefundCreateManyInput | PaymentRefundCreateManyInput[]
+    skipDuplicates?: boolean
+    /**
+     * Choose, which related nodes to fetch as well
+     */
+    include?: PaymentRefundIncludeCreateManyAndReturn<ExtArgs> | null
+  }
+
+  /**
+   * PaymentRefund update
+   */
+  export type PaymentRefundUpdateArgs<ExtArgs extends $Extensions.InternalArgs = $Extensions.DefaultArgs> = {
+    /**
+     * Select specific fields to fetch from the PaymentRefund
+     */
+    select?: PaymentRefundSelect<ExtArgs> | null
+    /**
+     * Choose, which related nodes to fetch as well
+     */
+    include?: PaymentRefundInclude<ExtArgs> | null
+    /**
+     * The data needed to update a PaymentRefund.
+     */
+    data: XOR<PaymentRefundUpdateInput, PaymentRefundUncheckedUpdateInput>
+    /**
+     * Choose, which PaymentRefund to update.
+     */
+    where: PaymentRefundWhereUniqueInput
+  }
+
+  /**
+   * PaymentRefund updateMany
+   */
+  export type PaymentRefundUpdateManyArgs<ExtArgs extends $Extensions.InternalArgs = $Extensions.DefaultArgs> = {
+    /**
+     * The data used to update PaymentRefunds.
+     */
+    data: XOR<PaymentRefundUpdateManyMutationInput, PaymentRefundUncheckedUpdateManyInput>
+    /**
+     * Filter which PaymentRefunds to update
+     */
+    where?: PaymentRefundWhereInput
+  }
+
+  /**
+   * PaymentRefund upsert
+   */
+  export type PaymentRefundUpsertArgs<ExtArgs extends $Extensions.InternalArgs = $Extensions.DefaultArgs> = {
+    /**
+     * Select specific fields to fetch from the PaymentRefund
+     */
+    select?: PaymentRefundSelect<ExtArgs> | null
+    /**
+     * Choose, which related nodes to fetch as well
+     */
+    include?: PaymentRefundInclude<ExtArgs> | null
+    /**
+     * The filter to search for the PaymentRefund to update in case it exists.
+     */
+    where: PaymentRefundWhereUniqueInput
+    /**
+     * In case the PaymentRefund found by the `where` argument doesn't exist, create a new PaymentRefund with this data.
+     */
+    create: XOR<PaymentRefundCreateInput, PaymentRefundUncheckedCreateInput>
+    /**
+     * In case the PaymentRefund was found with the provided `where` argument, update it with this data.
+     */
+    update: XOR<PaymentRefundUpdateInput, PaymentRefundUncheckedUpdateInput>
+  }
+
+  /**
+   * PaymentRefund delete
+   */
+  export type PaymentRefundDeleteArgs<ExtArgs extends $Extensions.InternalArgs = $Extensions.DefaultArgs> = {
+    /**
+     * Select specific fields to fetch from the PaymentRefund
+     */
+    select?: PaymentRefundSelect<ExtArgs> | null
+    /**
+     * Choose, which related nodes to fetch as well
+     */
+    include?: PaymentRefundInclude<ExtArgs> | null
+    /**
+     * Filter which PaymentRefund to delete.
+     */
+    where: PaymentRefundWhereUniqueInput
+  }
+
+  /**
+   * PaymentRefund deleteMany
+   */
+  export type PaymentRefundDeleteManyArgs<ExtArgs extends $Extensions.InternalArgs = $Extensions.DefaultArgs> = {
+    /**
+     * Filter which PaymentRefunds to delete
+     */
+    where?: PaymentRefundWhereInput
+  }
+
+  /**
+   * PaymentRefund without action
+   */
+  export type PaymentRefundDefaultArgs<ExtArgs extends $Extensions.InternalArgs = $Extensions.DefaultArgs> = {
+    /**
+     * Select specific fields to fetch from the PaymentRefund
+     */
+    select?: PaymentRefundSelect<ExtArgs> | null
+    /**
+     * Choose, which related nodes to fetch as well
+     */
+    include?: PaymentRefundInclude<ExtArgs> | null
   }
 
 
@@ -30333,6 +31467,21 @@ export namespace Prisma {
   export type PaymentScalarFieldEnum = (typeof PaymentScalarFieldEnum)[keyof typeof PaymentScalarFieldEnum]
 
 
+  export const PaymentRefundScalarFieldEnum: {
+    id: 'id',
+    paymentId: 'paymentId',
+    yooKassaRefundId: 'yooKassaRefundId',
+    amount: 'amount',
+    currency: 'currency',
+    status: 'status',
+    providerCreatedAt: 'providerCreatedAt',
+    createdAt: 'createdAt',
+    updatedAt: 'updatedAt'
+  };
+
+  export type PaymentRefundScalarFieldEnum = (typeof PaymentRefundScalarFieldEnum)[keyof typeof PaymentRefundScalarFieldEnum]
+
+
   export const WebhookLogScalarFieldEnum: {
     id: 'id',
     event: 'event',
@@ -31991,6 +33140,7 @@ export namespace Prisma {
     updatedAt?: DateTimeFilter<"Payment"> | Date | string
     user?: XOR<UserNullableRelationFilter, UserWhereInput> | null
     subscriptions?: SubscriptionListRelationFilter
+    refunds?: PaymentRefundListRelationFilter
   }
 
   export type PaymentOrderByWithRelationInput = {
@@ -32009,6 +33159,7 @@ export namespace Prisma {
     updatedAt?: SortOrder
     user?: UserOrderByWithRelationInput
     subscriptions?: SubscriptionOrderByRelationAggregateInput
+    refunds?: PaymentRefundOrderByRelationAggregateInput
   }
 
   export type PaymentWhereUniqueInput = Prisma.AtLeast<{
@@ -32030,6 +33181,7 @@ export namespace Prisma {
     updatedAt?: DateTimeFilter<"Payment"> | Date | string
     user?: XOR<UserNullableRelationFilter, UserWhereInput> | null
     subscriptions?: SubscriptionListRelationFilter
+    refunds?: PaymentRefundListRelationFilter
   }, "id">
 
   export type PaymentOrderByWithAggregationInput = {
@@ -32070,6 +33222,83 @@ export namespace Prisma {
     yooKassaPaymentId?: StringNullableWithAggregatesFilter<"Payment"> | string | null
     createdAt?: DateTimeWithAggregatesFilter<"Payment"> | Date | string
     updatedAt?: DateTimeWithAggregatesFilter<"Payment"> | Date | string
+  }
+
+  export type PaymentRefundWhereInput = {
+    AND?: PaymentRefundWhereInput | PaymentRefundWhereInput[]
+    OR?: PaymentRefundWhereInput[]
+    NOT?: PaymentRefundWhereInput | PaymentRefundWhereInput[]
+    id?: StringFilter<"PaymentRefund"> | string
+    paymentId?: StringFilter<"PaymentRefund"> | string
+    yooKassaRefundId?: StringFilter<"PaymentRefund"> | string
+    amount?: FloatFilter<"PaymentRefund"> | number
+    currency?: StringFilter<"PaymentRefund"> | string
+    status?: StringFilter<"PaymentRefund"> | string
+    providerCreatedAt?: DateTimeNullableFilter<"PaymentRefund"> | Date | string | null
+    createdAt?: DateTimeFilter<"PaymentRefund"> | Date | string
+    updatedAt?: DateTimeFilter<"PaymentRefund"> | Date | string
+    payment?: XOR<PaymentRelationFilter, PaymentWhereInput>
+  }
+
+  export type PaymentRefundOrderByWithRelationInput = {
+    id?: SortOrder
+    paymentId?: SortOrder
+    yooKassaRefundId?: SortOrder
+    amount?: SortOrder
+    currency?: SortOrder
+    status?: SortOrder
+    providerCreatedAt?: SortOrderInput | SortOrder
+    createdAt?: SortOrder
+    updatedAt?: SortOrder
+    payment?: PaymentOrderByWithRelationInput
+  }
+
+  export type PaymentRefundWhereUniqueInput = Prisma.AtLeast<{
+    id?: string
+    yooKassaRefundId?: string
+    AND?: PaymentRefundWhereInput | PaymentRefundWhereInput[]
+    OR?: PaymentRefundWhereInput[]
+    NOT?: PaymentRefundWhereInput | PaymentRefundWhereInput[]
+    paymentId?: StringFilter<"PaymentRefund"> | string
+    amount?: FloatFilter<"PaymentRefund"> | number
+    currency?: StringFilter<"PaymentRefund"> | string
+    status?: StringFilter<"PaymentRefund"> | string
+    providerCreatedAt?: DateTimeNullableFilter<"PaymentRefund"> | Date | string | null
+    createdAt?: DateTimeFilter<"PaymentRefund"> | Date | string
+    updatedAt?: DateTimeFilter<"PaymentRefund"> | Date | string
+    payment?: XOR<PaymentRelationFilter, PaymentWhereInput>
+  }, "id" | "yooKassaRefundId">
+
+  export type PaymentRefundOrderByWithAggregationInput = {
+    id?: SortOrder
+    paymentId?: SortOrder
+    yooKassaRefundId?: SortOrder
+    amount?: SortOrder
+    currency?: SortOrder
+    status?: SortOrder
+    providerCreatedAt?: SortOrderInput | SortOrder
+    createdAt?: SortOrder
+    updatedAt?: SortOrder
+    _count?: PaymentRefundCountOrderByAggregateInput
+    _avg?: PaymentRefundAvgOrderByAggregateInput
+    _max?: PaymentRefundMaxOrderByAggregateInput
+    _min?: PaymentRefundMinOrderByAggregateInput
+    _sum?: PaymentRefundSumOrderByAggregateInput
+  }
+
+  export type PaymentRefundScalarWhereWithAggregatesInput = {
+    AND?: PaymentRefundScalarWhereWithAggregatesInput | PaymentRefundScalarWhereWithAggregatesInput[]
+    OR?: PaymentRefundScalarWhereWithAggregatesInput[]
+    NOT?: PaymentRefundScalarWhereWithAggregatesInput | PaymentRefundScalarWhereWithAggregatesInput[]
+    id?: StringWithAggregatesFilter<"PaymentRefund"> | string
+    paymentId?: StringWithAggregatesFilter<"PaymentRefund"> | string
+    yooKassaRefundId?: StringWithAggregatesFilter<"PaymentRefund"> | string
+    amount?: FloatWithAggregatesFilter<"PaymentRefund"> | number
+    currency?: StringWithAggregatesFilter<"PaymentRefund"> | string
+    status?: StringWithAggregatesFilter<"PaymentRefund"> | string
+    providerCreatedAt?: DateTimeNullableWithAggregatesFilter<"PaymentRefund"> | Date | string | null
+    createdAt?: DateTimeWithAggregatesFilter<"PaymentRefund"> | Date | string
+    updatedAt?: DateTimeWithAggregatesFilter<"PaymentRefund"> | Date | string
   }
 
   export type WebhookLogWhereInput = {
@@ -34287,6 +35516,7 @@ export namespace Prisma {
     updatedAt?: Date | string
     user?: UserCreateNestedOneWithoutPaymentsInput
     subscriptions?: SubscriptionCreateNestedManyWithoutPaymentInput
+    refunds?: PaymentRefundCreateNestedManyWithoutPaymentInput
   }
 
   export type PaymentUncheckedCreateInput = {
@@ -34304,6 +35534,7 @@ export namespace Prisma {
     createdAt?: Date | string
     updatedAt?: Date | string
     subscriptions?: SubscriptionUncheckedCreateNestedManyWithoutPaymentInput
+    refunds?: PaymentRefundUncheckedCreateNestedManyWithoutPaymentInput
   }
 
   export type PaymentUpdateInput = {
@@ -34321,6 +35552,7 @@ export namespace Prisma {
     updatedAt?: DateTimeFieldUpdateOperationsInput | Date | string
     user?: UserUpdateOneWithoutPaymentsNestedInput
     subscriptions?: SubscriptionUpdateManyWithoutPaymentNestedInput
+    refunds?: PaymentRefundUpdateManyWithoutPaymentNestedInput
   }
 
   export type PaymentUncheckedUpdateInput = {
@@ -34338,6 +35570,7 @@ export namespace Prisma {
     createdAt?: DateTimeFieldUpdateOperationsInput | Date | string
     updatedAt?: DateTimeFieldUpdateOperationsInput | Date | string
     subscriptions?: SubscriptionUncheckedUpdateManyWithoutPaymentNestedInput
+    refunds?: PaymentRefundUncheckedUpdateManyWithoutPaymentNestedInput
   }
 
   export type PaymentCreateManyInput = {
@@ -34383,6 +35616,89 @@ export namespace Prisma {
     status?: StringFieldUpdateOperationsInput | string
     paymentMethod?: StringFieldUpdateOperationsInput | string
     yooKassaPaymentId?: NullableStringFieldUpdateOperationsInput | string | null
+    createdAt?: DateTimeFieldUpdateOperationsInput | Date | string
+    updatedAt?: DateTimeFieldUpdateOperationsInput | Date | string
+  }
+
+  export type PaymentRefundCreateInput = {
+    id?: string
+    yooKassaRefundId: string
+    amount: number
+    currency: string
+    status: string
+    providerCreatedAt?: Date | string | null
+    createdAt?: Date | string
+    updatedAt?: Date | string
+    payment: PaymentCreateNestedOneWithoutRefundsInput
+  }
+
+  export type PaymentRefundUncheckedCreateInput = {
+    id?: string
+    paymentId: string
+    yooKassaRefundId: string
+    amount: number
+    currency: string
+    status: string
+    providerCreatedAt?: Date | string | null
+    createdAt?: Date | string
+    updatedAt?: Date | string
+  }
+
+  export type PaymentRefundUpdateInput = {
+    id?: StringFieldUpdateOperationsInput | string
+    yooKassaRefundId?: StringFieldUpdateOperationsInput | string
+    amount?: FloatFieldUpdateOperationsInput | number
+    currency?: StringFieldUpdateOperationsInput | string
+    status?: StringFieldUpdateOperationsInput | string
+    providerCreatedAt?: NullableDateTimeFieldUpdateOperationsInput | Date | string | null
+    createdAt?: DateTimeFieldUpdateOperationsInput | Date | string
+    updatedAt?: DateTimeFieldUpdateOperationsInput | Date | string
+    payment?: PaymentUpdateOneRequiredWithoutRefundsNestedInput
+  }
+
+  export type PaymentRefundUncheckedUpdateInput = {
+    id?: StringFieldUpdateOperationsInput | string
+    paymentId?: StringFieldUpdateOperationsInput | string
+    yooKassaRefundId?: StringFieldUpdateOperationsInput | string
+    amount?: FloatFieldUpdateOperationsInput | number
+    currency?: StringFieldUpdateOperationsInput | string
+    status?: StringFieldUpdateOperationsInput | string
+    providerCreatedAt?: NullableDateTimeFieldUpdateOperationsInput | Date | string | null
+    createdAt?: DateTimeFieldUpdateOperationsInput | Date | string
+    updatedAt?: DateTimeFieldUpdateOperationsInput | Date | string
+  }
+
+  export type PaymentRefundCreateManyInput = {
+    id?: string
+    paymentId: string
+    yooKassaRefundId: string
+    amount: number
+    currency: string
+    status: string
+    providerCreatedAt?: Date | string | null
+    createdAt?: Date | string
+    updatedAt?: Date | string
+  }
+
+  export type PaymentRefundUpdateManyMutationInput = {
+    id?: StringFieldUpdateOperationsInput | string
+    yooKassaRefundId?: StringFieldUpdateOperationsInput | string
+    amount?: FloatFieldUpdateOperationsInput | number
+    currency?: StringFieldUpdateOperationsInput | string
+    status?: StringFieldUpdateOperationsInput | string
+    providerCreatedAt?: NullableDateTimeFieldUpdateOperationsInput | Date | string | null
+    createdAt?: DateTimeFieldUpdateOperationsInput | Date | string
+    updatedAt?: DateTimeFieldUpdateOperationsInput | Date | string
+  }
+
+  export type PaymentRefundUncheckedUpdateManyInput = {
+    id?: StringFieldUpdateOperationsInput | string
+    paymentId?: StringFieldUpdateOperationsInput | string
+    yooKassaRefundId?: StringFieldUpdateOperationsInput | string
+    amount?: FloatFieldUpdateOperationsInput | number
+    currency?: StringFieldUpdateOperationsInput | string
+    status?: StringFieldUpdateOperationsInput | string
+    providerCreatedAt?: NullableDateTimeFieldUpdateOperationsInput | Date | string | null
     createdAt?: DateTimeFieldUpdateOperationsInput | Date | string
     updatedAt?: DateTimeFieldUpdateOperationsInput | Date | string
   }
@@ -36274,6 +37590,16 @@ export namespace Prisma {
     not?: NestedIntNullableFilter<$PrismaModel> | number | null
   }
 
+  export type PaymentRefundListRelationFilter = {
+    every?: PaymentRefundWhereInput
+    some?: PaymentRefundWhereInput
+    none?: PaymentRefundWhereInput
+  }
+
+  export type PaymentRefundOrderByRelationAggregateInput = {
+    _count?: SortOrder
+  }
+
   export type PaymentCountOrderByAggregateInput = {
     appliedAt?: SortOrder
     durationMonths?: SortOrder
@@ -36346,6 +37672,55 @@ export namespace Prisma {
     _sum?: NestedIntNullableFilter<$PrismaModel>
     _min?: NestedIntNullableFilter<$PrismaModel>
     _max?: NestedIntNullableFilter<$PrismaModel>
+  }
+
+  export type PaymentRelationFilter = {
+    is?: PaymentWhereInput
+    isNot?: PaymentWhereInput
+  }
+
+  export type PaymentRefundCountOrderByAggregateInput = {
+    id?: SortOrder
+    paymentId?: SortOrder
+    yooKassaRefundId?: SortOrder
+    amount?: SortOrder
+    currency?: SortOrder
+    status?: SortOrder
+    providerCreatedAt?: SortOrder
+    createdAt?: SortOrder
+    updatedAt?: SortOrder
+  }
+
+  export type PaymentRefundAvgOrderByAggregateInput = {
+    amount?: SortOrder
+  }
+
+  export type PaymentRefundMaxOrderByAggregateInput = {
+    id?: SortOrder
+    paymentId?: SortOrder
+    yooKassaRefundId?: SortOrder
+    amount?: SortOrder
+    currency?: SortOrder
+    status?: SortOrder
+    providerCreatedAt?: SortOrder
+    createdAt?: SortOrder
+    updatedAt?: SortOrder
+  }
+
+  export type PaymentRefundMinOrderByAggregateInput = {
+    id?: SortOrder
+    paymentId?: SortOrder
+    yooKassaRefundId?: SortOrder
+    amount?: SortOrder
+    currency?: SortOrder
+    status?: SortOrder
+    providerCreatedAt?: SortOrder
+    createdAt?: SortOrder
+    updatedAt?: SortOrder
+  }
+
+  export type PaymentRefundSumOrderByAggregateInput = {
+    amount?: SortOrder
   }
   export type JsonFilter<$PrismaModel = never> = 
     | PatchUndefined<
@@ -36423,11 +37798,6 @@ export namespace Prisma {
   export type SubscriptionPlanRelationFilter = {
     is?: SubscriptionPlanWhereInput
     isNot?: SubscriptionPlanWhereInput
-  }
-
-  export type PaymentRelationFilter = {
-    is?: PaymentWhereInput
-    isNot?: PaymentWhereInput
   }
 
   export type SubscriptionCountOrderByAggregateInput = {
@@ -38098,11 +39468,25 @@ export namespace Prisma {
     connect?: SubscriptionWhereUniqueInput | SubscriptionWhereUniqueInput[]
   }
 
+  export type PaymentRefundCreateNestedManyWithoutPaymentInput = {
+    create?: XOR<PaymentRefundCreateWithoutPaymentInput, PaymentRefundUncheckedCreateWithoutPaymentInput> | PaymentRefundCreateWithoutPaymentInput[] | PaymentRefundUncheckedCreateWithoutPaymentInput[]
+    connectOrCreate?: PaymentRefundCreateOrConnectWithoutPaymentInput | PaymentRefundCreateOrConnectWithoutPaymentInput[]
+    createMany?: PaymentRefundCreateManyPaymentInputEnvelope
+    connect?: PaymentRefundWhereUniqueInput | PaymentRefundWhereUniqueInput[]
+  }
+
   export type SubscriptionUncheckedCreateNestedManyWithoutPaymentInput = {
     create?: XOR<SubscriptionCreateWithoutPaymentInput, SubscriptionUncheckedCreateWithoutPaymentInput> | SubscriptionCreateWithoutPaymentInput[] | SubscriptionUncheckedCreateWithoutPaymentInput[]
     connectOrCreate?: SubscriptionCreateOrConnectWithoutPaymentInput | SubscriptionCreateOrConnectWithoutPaymentInput[]
     createMany?: SubscriptionCreateManyPaymentInputEnvelope
     connect?: SubscriptionWhereUniqueInput | SubscriptionWhereUniqueInput[]
+  }
+
+  export type PaymentRefundUncheckedCreateNestedManyWithoutPaymentInput = {
+    create?: XOR<PaymentRefundCreateWithoutPaymentInput, PaymentRefundUncheckedCreateWithoutPaymentInput> | PaymentRefundCreateWithoutPaymentInput[] | PaymentRefundUncheckedCreateWithoutPaymentInput[]
+    connectOrCreate?: PaymentRefundCreateOrConnectWithoutPaymentInput | PaymentRefundCreateOrConnectWithoutPaymentInput[]
+    createMany?: PaymentRefundCreateManyPaymentInputEnvelope
+    connect?: PaymentRefundWhereUniqueInput | PaymentRefundWhereUniqueInput[]
   }
 
   export type NullableIntFieldUpdateOperationsInput = {
@@ -38137,6 +39521,20 @@ export namespace Prisma {
     deleteMany?: SubscriptionScalarWhereInput | SubscriptionScalarWhereInput[]
   }
 
+  export type PaymentRefundUpdateManyWithoutPaymentNestedInput = {
+    create?: XOR<PaymentRefundCreateWithoutPaymentInput, PaymentRefundUncheckedCreateWithoutPaymentInput> | PaymentRefundCreateWithoutPaymentInput[] | PaymentRefundUncheckedCreateWithoutPaymentInput[]
+    connectOrCreate?: PaymentRefundCreateOrConnectWithoutPaymentInput | PaymentRefundCreateOrConnectWithoutPaymentInput[]
+    upsert?: PaymentRefundUpsertWithWhereUniqueWithoutPaymentInput | PaymentRefundUpsertWithWhereUniqueWithoutPaymentInput[]
+    createMany?: PaymentRefundCreateManyPaymentInputEnvelope
+    set?: PaymentRefundWhereUniqueInput | PaymentRefundWhereUniqueInput[]
+    disconnect?: PaymentRefundWhereUniqueInput | PaymentRefundWhereUniqueInput[]
+    delete?: PaymentRefundWhereUniqueInput | PaymentRefundWhereUniqueInput[]
+    connect?: PaymentRefundWhereUniqueInput | PaymentRefundWhereUniqueInput[]
+    update?: PaymentRefundUpdateWithWhereUniqueWithoutPaymentInput | PaymentRefundUpdateWithWhereUniqueWithoutPaymentInput[]
+    updateMany?: PaymentRefundUpdateManyWithWhereWithoutPaymentInput | PaymentRefundUpdateManyWithWhereWithoutPaymentInput[]
+    deleteMany?: PaymentRefundScalarWhereInput | PaymentRefundScalarWhereInput[]
+  }
+
   export type SubscriptionUncheckedUpdateManyWithoutPaymentNestedInput = {
     create?: XOR<SubscriptionCreateWithoutPaymentInput, SubscriptionUncheckedCreateWithoutPaymentInput> | SubscriptionCreateWithoutPaymentInput[] | SubscriptionUncheckedCreateWithoutPaymentInput[]
     connectOrCreate?: SubscriptionCreateOrConnectWithoutPaymentInput | SubscriptionCreateOrConnectWithoutPaymentInput[]
@@ -38149,6 +39547,34 @@ export namespace Prisma {
     update?: SubscriptionUpdateWithWhereUniqueWithoutPaymentInput | SubscriptionUpdateWithWhereUniqueWithoutPaymentInput[]
     updateMany?: SubscriptionUpdateManyWithWhereWithoutPaymentInput | SubscriptionUpdateManyWithWhereWithoutPaymentInput[]
     deleteMany?: SubscriptionScalarWhereInput | SubscriptionScalarWhereInput[]
+  }
+
+  export type PaymentRefundUncheckedUpdateManyWithoutPaymentNestedInput = {
+    create?: XOR<PaymentRefundCreateWithoutPaymentInput, PaymentRefundUncheckedCreateWithoutPaymentInput> | PaymentRefundCreateWithoutPaymentInput[] | PaymentRefundUncheckedCreateWithoutPaymentInput[]
+    connectOrCreate?: PaymentRefundCreateOrConnectWithoutPaymentInput | PaymentRefundCreateOrConnectWithoutPaymentInput[]
+    upsert?: PaymentRefundUpsertWithWhereUniqueWithoutPaymentInput | PaymentRefundUpsertWithWhereUniqueWithoutPaymentInput[]
+    createMany?: PaymentRefundCreateManyPaymentInputEnvelope
+    set?: PaymentRefundWhereUniqueInput | PaymentRefundWhereUniqueInput[]
+    disconnect?: PaymentRefundWhereUniqueInput | PaymentRefundWhereUniqueInput[]
+    delete?: PaymentRefundWhereUniqueInput | PaymentRefundWhereUniqueInput[]
+    connect?: PaymentRefundWhereUniqueInput | PaymentRefundWhereUniqueInput[]
+    update?: PaymentRefundUpdateWithWhereUniqueWithoutPaymentInput | PaymentRefundUpdateWithWhereUniqueWithoutPaymentInput[]
+    updateMany?: PaymentRefundUpdateManyWithWhereWithoutPaymentInput | PaymentRefundUpdateManyWithWhereWithoutPaymentInput[]
+    deleteMany?: PaymentRefundScalarWhereInput | PaymentRefundScalarWhereInput[]
+  }
+
+  export type PaymentCreateNestedOneWithoutRefundsInput = {
+    create?: XOR<PaymentCreateWithoutRefundsInput, PaymentUncheckedCreateWithoutRefundsInput>
+    connectOrCreate?: PaymentCreateOrConnectWithoutRefundsInput
+    connect?: PaymentWhereUniqueInput
+  }
+
+  export type PaymentUpdateOneRequiredWithoutRefundsNestedInput = {
+    create?: XOR<PaymentCreateWithoutRefundsInput, PaymentUncheckedCreateWithoutRefundsInput>
+    connectOrCreate?: PaymentCreateOrConnectWithoutRefundsInput
+    upsert?: PaymentUpsertWithoutRefundsInput
+    connect?: PaymentWhereUniqueInput
+    update?: XOR<XOR<PaymentUpdateToOneWithWhereWithoutRefundsInput, PaymentUpdateWithoutRefundsInput>, PaymentUncheckedUpdateWithoutRefundsInput>
   }
 
   export type UserCreateNestedOneWithoutSubscriptionsInput = {
@@ -38933,6 +40359,7 @@ export namespace Prisma {
     createdAt?: Date | string
     updatedAt?: Date | string
     subscriptions?: SubscriptionCreateNestedManyWithoutPaymentInput
+    refunds?: PaymentRefundCreateNestedManyWithoutPaymentInput
   }
 
   export type PaymentUncheckedCreateWithoutUserInput = {
@@ -38949,6 +40376,7 @@ export namespace Prisma {
     createdAt?: Date | string
     updatedAt?: Date | string
     subscriptions?: SubscriptionUncheckedCreateNestedManyWithoutPaymentInput
+    refunds?: PaymentRefundUncheckedCreateNestedManyWithoutPaymentInput
   }
 
   export type PaymentCreateOrConnectWithoutUserInput = {
@@ -42885,6 +44313,38 @@ export namespace Prisma {
     skipDuplicates?: boolean
   }
 
+  export type PaymentRefundCreateWithoutPaymentInput = {
+    id?: string
+    yooKassaRefundId: string
+    amount: number
+    currency: string
+    status: string
+    providerCreatedAt?: Date | string | null
+    createdAt?: Date | string
+    updatedAt?: Date | string
+  }
+
+  export type PaymentRefundUncheckedCreateWithoutPaymentInput = {
+    id?: string
+    yooKassaRefundId: string
+    amount: number
+    currency: string
+    status: string
+    providerCreatedAt?: Date | string | null
+    createdAt?: Date | string
+    updatedAt?: Date | string
+  }
+
+  export type PaymentRefundCreateOrConnectWithoutPaymentInput = {
+    where: PaymentRefundWhereUniqueInput
+    create: XOR<PaymentRefundCreateWithoutPaymentInput, PaymentRefundUncheckedCreateWithoutPaymentInput>
+  }
+
+  export type PaymentRefundCreateManyPaymentInputEnvelope = {
+    data: PaymentRefundCreateManyPaymentInput | PaymentRefundCreateManyPaymentInput[]
+    skipDuplicates?: boolean
+  }
+
   export type UserUpsertWithoutPaymentsInput = {
     update: XOR<UserUpdateWithoutPaymentsInput, UserUncheckedUpdateWithoutPaymentsInput>
     create: XOR<UserCreateWithoutPaymentsInput, UserUncheckedCreateWithoutPaymentsInput>
@@ -42992,6 +44452,121 @@ export namespace Prisma {
   export type SubscriptionUpdateManyWithWhereWithoutPaymentInput = {
     where: SubscriptionScalarWhereInput
     data: XOR<SubscriptionUpdateManyMutationInput, SubscriptionUncheckedUpdateManyWithoutPaymentInput>
+  }
+
+  export type PaymentRefundUpsertWithWhereUniqueWithoutPaymentInput = {
+    where: PaymentRefundWhereUniqueInput
+    update: XOR<PaymentRefundUpdateWithoutPaymentInput, PaymentRefundUncheckedUpdateWithoutPaymentInput>
+    create: XOR<PaymentRefundCreateWithoutPaymentInput, PaymentRefundUncheckedCreateWithoutPaymentInput>
+  }
+
+  export type PaymentRefundUpdateWithWhereUniqueWithoutPaymentInput = {
+    where: PaymentRefundWhereUniqueInput
+    data: XOR<PaymentRefundUpdateWithoutPaymentInput, PaymentRefundUncheckedUpdateWithoutPaymentInput>
+  }
+
+  export type PaymentRefundUpdateManyWithWhereWithoutPaymentInput = {
+    where: PaymentRefundScalarWhereInput
+    data: XOR<PaymentRefundUpdateManyMutationInput, PaymentRefundUncheckedUpdateManyWithoutPaymentInput>
+  }
+
+  export type PaymentRefundScalarWhereInput = {
+    AND?: PaymentRefundScalarWhereInput | PaymentRefundScalarWhereInput[]
+    OR?: PaymentRefundScalarWhereInput[]
+    NOT?: PaymentRefundScalarWhereInput | PaymentRefundScalarWhereInput[]
+    id?: StringFilter<"PaymentRefund"> | string
+    paymentId?: StringFilter<"PaymentRefund"> | string
+    yooKassaRefundId?: StringFilter<"PaymentRefund"> | string
+    amount?: FloatFilter<"PaymentRefund"> | number
+    currency?: StringFilter<"PaymentRefund"> | string
+    status?: StringFilter<"PaymentRefund"> | string
+    providerCreatedAt?: DateTimeNullableFilter<"PaymentRefund"> | Date | string | null
+    createdAt?: DateTimeFilter<"PaymentRefund"> | Date | string
+    updatedAt?: DateTimeFilter<"PaymentRefund"> | Date | string
+  }
+
+  export type PaymentCreateWithoutRefundsInput = {
+    appliedAt?: Date | string | null
+    durationMonths?: number | null
+    id?: string
+    planId?: string | null
+    amount: number
+    currency?: string
+    description: string
+    status?: string
+    paymentMethod?: string
+    yooKassaPaymentId?: string | null
+    createdAt?: Date | string
+    updatedAt?: Date | string
+    user?: UserCreateNestedOneWithoutPaymentsInput
+    subscriptions?: SubscriptionCreateNestedManyWithoutPaymentInput
+  }
+
+  export type PaymentUncheckedCreateWithoutRefundsInput = {
+    appliedAt?: Date | string | null
+    durationMonths?: number | null
+    id?: string
+    userId?: string | null
+    planId?: string | null
+    amount: number
+    currency?: string
+    description: string
+    status?: string
+    paymentMethod?: string
+    yooKassaPaymentId?: string | null
+    createdAt?: Date | string
+    updatedAt?: Date | string
+    subscriptions?: SubscriptionUncheckedCreateNestedManyWithoutPaymentInput
+  }
+
+  export type PaymentCreateOrConnectWithoutRefundsInput = {
+    where: PaymentWhereUniqueInput
+    create: XOR<PaymentCreateWithoutRefundsInput, PaymentUncheckedCreateWithoutRefundsInput>
+  }
+
+  export type PaymentUpsertWithoutRefundsInput = {
+    update: XOR<PaymentUpdateWithoutRefundsInput, PaymentUncheckedUpdateWithoutRefundsInput>
+    create: XOR<PaymentCreateWithoutRefundsInput, PaymentUncheckedCreateWithoutRefundsInput>
+    where?: PaymentWhereInput
+  }
+
+  export type PaymentUpdateToOneWithWhereWithoutRefundsInput = {
+    where?: PaymentWhereInput
+    data: XOR<PaymentUpdateWithoutRefundsInput, PaymentUncheckedUpdateWithoutRefundsInput>
+  }
+
+  export type PaymentUpdateWithoutRefundsInput = {
+    appliedAt?: NullableDateTimeFieldUpdateOperationsInput | Date | string | null
+    durationMonths?: NullableIntFieldUpdateOperationsInput | number | null
+    id?: StringFieldUpdateOperationsInput | string
+    planId?: NullableStringFieldUpdateOperationsInput | string | null
+    amount?: FloatFieldUpdateOperationsInput | number
+    currency?: StringFieldUpdateOperationsInput | string
+    description?: StringFieldUpdateOperationsInput | string
+    status?: StringFieldUpdateOperationsInput | string
+    paymentMethod?: StringFieldUpdateOperationsInput | string
+    yooKassaPaymentId?: NullableStringFieldUpdateOperationsInput | string | null
+    createdAt?: DateTimeFieldUpdateOperationsInput | Date | string
+    updatedAt?: DateTimeFieldUpdateOperationsInput | Date | string
+    user?: UserUpdateOneWithoutPaymentsNestedInput
+    subscriptions?: SubscriptionUpdateManyWithoutPaymentNestedInput
+  }
+
+  export type PaymentUncheckedUpdateWithoutRefundsInput = {
+    appliedAt?: NullableDateTimeFieldUpdateOperationsInput | Date | string | null
+    durationMonths?: NullableIntFieldUpdateOperationsInput | number | null
+    id?: StringFieldUpdateOperationsInput | string
+    userId?: NullableStringFieldUpdateOperationsInput | string | null
+    planId?: NullableStringFieldUpdateOperationsInput | string | null
+    amount?: FloatFieldUpdateOperationsInput | number
+    currency?: StringFieldUpdateOperationsInput | string
+    description?: StringFieldUpdateOperationsInput | string
+    status?: StringFieldUpdateOperationsInput | string
+    paymentMethod?: StringFieldUpdateOperationsInput | string
+    yooKassaPaymentId?: NullableStringFieldUpdateOperationsInput | string | null
+    createdAt?: DateTimeFieldUpdateOperationsInput | Date | string
+    updatedAt?: DateTimeFieldUpdateOperationsInput | Date | string
+    subscriptions?: SubscriptionUncheckedUpdateManyWithoutPaymentNestedInput
   }
 
   export type UserCreateWithoutSubscriptionsInput = {
@@ -43128,6 +44703,7 @@ export namespace Prisma {
     createdAt?: Date | string
     updatedAt?: Date | string
     user?: UserCreateNestedOneWithoutPaymentsInput
+    refunds?: PaymentRefundCreateNestedManyWithoutPaymentInput
   }
 
   export type PaymentUncheckedCreateWithoutSubscriptionsInput = {
@@ -43144,6 +44720,7 @@ export namespace Prisma {
     yooKassaPaymentId?: string | null
     createdAt?: Date | string
     updatedAt?: Date | string
+    refunds?: PaymentRefundUncheckedCreateNestedManyWithoutPaymentInput
   }
 
   export type PaymentCreateOrConnectWithoutSubscriptionsInput = {
@@ -43308,6 +44885,7 @@ export namespace Prisma {
     createdAt?: DateTimeFieldUpdateOperationsInput | Date | string
     updatedAt?: DateTimeFieldUpdateOperationsInput | Date | string
     user?: UserUpdateOneWithoutPaymentsNestedInput
+    refunds?: PaymentRefundUpdateManyWithoutPaymentNestedInput
   }
 
   export type PaymentUncheckedUpdateWithoutSubscriptionsInput = {
@@ -43324,6 +44902,7 @@ export namespace Prisma {
     yooKassaPaymentId?: NullableStringFieldUpdateOperationsInput | string | null
     createdAt?: DateTimeFieldUpdateOperationsInput | Date | string
     updatedAt?: DateTimeFieldUpdateOperationsInput | Date | string
+    refunds?: PaymentRefundUncheckedUpdateManyWithoutPaymentNestedInput
   }
 
   export type UserGrantApplicationCreateWithoutGrantInput = {
@@ -45149,6 +46728,7 @@ export namespace Prisma {
     createdAt?: DateTimeFieldUpdateOperationsInput | Date | string
     updatedAt?: DateTimeFieldUpdateOperationsInput | Date | string
     subscriptions?: SubscriptionUpdateManyWithoutPaymentNestedInput
+    refunds?: PaymentRefundUpdateManyWithoutPaymentNestedInput
   }
 
   export type PaymentUncheckedUpdateWithoutUserInput = {
@@ -45165,6 +46745,7 @@ export namespace Prisma {
     createdAt?: DateTimeFieldUpdateOperationsInput | Date | string
     updatedAt?: DateTimeFieldUpdateOperationsInput | Date | string
     subscriptions?: SubscriptionUncheckedUpdateManyWithoutPaymentNestedInput
+    refunds?: PaymentRefundUncheckedUpdateManyWithoutPaymentNestedInput
   }
 
   export type PaymentUncheckedUpdateManyWithoutUserInput = {
@@ -45836,6 +47417,17 @@ export namespace Prisma {
     updatedAt?: Date | string
   }
 
+  export type PaymentRefundCreateManyPaymentInput = {
+    id?: string
+    yooKassaRefundId: string
+    amount: number
+    currency: string
+    status: string
+    providerCreatedAt?: Date | string | null
+    createdAt?: Date | string
+    updatedAt?: Date | string
+  }
+
   export type SubscriptionUpdateWithoutPaymentInput = {
     id?: StringFieldUpdateOperationsInput | string
     status?: StringFieldUpdateOperationsInput | string
@@ -45868,6 +47460,39 @@ export namespace Prisma {
     startDate?: DateTimeFieldUpdateOperationsInput | Date | string
     endDate?: DateTimeFieldUpdateOperationsInput | Date | string
     autoRenew?: BoolFieldUpdateOperationsInput | boolean
+    createdAt?: DateTimeFieldUpdateOperationsInput | Date | string
+    updatedAt?: DateTimeFieldUpdateOperationsInput | Date | string
+  }
+
+  export type PaymentRefundUpdateWithoutPaymentInput = {
+    id?: StringFieldUpdateOperationsInput | string
+    yooKassaRefundId?: StringFieldUpdateOperationsInput | string
+    amount?: FloatFieldUpdateOperationsInput | number
+    currency?: StringFieldUpdateOperationsInput | string
+    status?: StringFieldUpdateOperationsInput | string
+    providerCreatedAt?: NullableDateTimeFieldUpdateOperationsInput | Date | string | null
+    createdAt?: DateTimeFieldUpdateOperationsInput | Date | string
+    updatedAt?: DateTimeFieldUpdateOperationsInput | Date | string
+  }
+
+  export type PaymentRefundUncheckedUpdateWithoutPaymentInput = {
+    id?: StringFieldUpdateOperationsInput | string
+    yooKassaRefundId?: StringFieldUpdateOperationsInput | string
+    amount?: FloatFieldUpdateOperationsInput | number
+    currency?: StringFieldUpdateOperationsInput | string
+    status?: StringFieldUpdateOperationsInput | string
+    providerCreatedAt?: NullableDateTimeFieldUpdateOperationsInput | Date | string | null
+    createdAt?: DateTimeFieldUpdateOperationsInput | Date | string
+    updatedAt?: DateTimeFieldUpdateOperationsInput | Date | string
+  }
+
+  export type PaymentRefundUncheckedUpdateManyWithoutPaymentInput = {
+    id?: StringFieldUpdateOperationsInput | string
+    yooKassaRefundId?: StringFieldUpdateOperationsInput | string
+    amount?: FloatFieldUpdateOperationsInput | number
+    currency?: StringFieldUpdateOperationsInput | string
+    status?: StringFieldUpdateOperationsInput | string
+    providerCreatedAt?: NullableDateTimeFieldUpdateOperationsInput | Date | string | null
     createdAt?: DateTimeFieldUpdateOperationsInput | Date | string
     updatedAt?: DateTimeFieldUpdateOperationsInput | Date | string
   }
@@ -46077,6 +47702,10 @@ export namespace Prisma {
      * @deprecated Use PaymentDefaultArgs instead
      */
     export type PaymentArgs<ExtArgs extends $Extensions.InternalArgs = $Extensions.DefaultArgs> = PaymentDefaultArgs<ExtArgs>
+    /**
+     * @deprecated Use PaymentRefundDefaultArgs instead
+     */
+    export type PaymentRefundArgs<ExtArgs extends $Extensions.InternalArgs = $Extensions.DefaultArgs> = PaymentRefundDefaultArgs<ExtArgs>
     /**
      * @deprecated Use WebhookLogDefaultArgs instead
      */

@@ -1,12 +1,30 @@
 import { after, before, describe, it } from 'node:test';
 import assert from 'node:assert/strict';
 import { randomUUID } from 'node:crypto';
-import { addSubscriptionMonths, assertVerifiedPayment } from './apply-premium';
+import {
+  addSubscriptionMonths,
+  assertVerifiedPayment,
+  calculatePremiumEntitlement,
+} from './apply-premium';
 import { createPayment, getPayment } from './yookassa';
 
 it('clamps monthly and yearly access at the end of the month', () => {
   assert.equal(addSubscriptionMonths(new Date('2028-01-31T12:00:00Z'), 1).toISOString(), '2028-02-29T12:00:00.000Z');
   assert.equal(addSubscriptionMonths(new Date('2028-02-29T12:00:00Z'), 12).toISOString(), '2029-02-28T12:00:00.000Z');
+});
+
+it('replays remaining purchases across continuous access and gaps', () => {
+  const first = new Date('2028-01-01T00:00:00Z');
+  const second = new Date('2028-01-15T00:00:00Z');
+  const afterGap = new Date('2029-01-01T00:00:00Z');
+  const result = calculatePremiumEntitlement([
+    { id: 'a', planId: 'month', durationMonths: 1, appliedAt: first },
+    { id: 'b', planId: 'quarter', durationMonths: 3, appliedAt: second },
+    { id: 'c', planId: 'month', durationMonths: 1, appliedAt: afterGap },
+  ]);
+  assert.equal(result?.startDate.toISOString(), afterGap.toISOString());
+  assert.equal(result?.endDate.toISOString(), '2029-02-01T00:00:00.000Z');
+  assert.equal(result?.paymentId, 'c');
 });
 
 it('rejects missing provider ids, mismatched amounts/currencies, and unpaid successes', () => {
@@ -61,6 +79,7 @@ const databaseUrl = process.env.PAYMENT_TEST_DATABASE_URL;
 describe('payment integration (isolated PostgreSQL)', { skip: !databaseUrl }, () => {
   let db: typeof import('./database').prisma;
   let apply: typeof import('./apply-premium').applyVerifiedPayment;
+  let applyRefund: typeof import('./apply-premium').applyVerifiedRefund;
   let sync: typeof import('./apply-premium').synchronizePayment;
   let server: import('node:http').Server;
   let baseUrl: string;
@@ -80,7 +99,12 @@ describe('payment integration (isolated PostgreSQL)', { skip: !databaseUrl }, ()
     shared.payment.findFirst = db.payment.findFirst.bind(db.payment);
     shared.payment.findMany = db.payment.findMany.bind(db.payment);
     shared.user.findUnique = db.user.findUnique.bind(db.user);
-    ({ applyVerifiedPayment: apply, synchronizePayment: sync } = await import('./apply-premium'));
+    shared.webhookLog.create = db.webhookLog.create.bind(db.webhookLog);
+    ({
+      applyVerifiedPayment: apply,
+      applyVerifiedRefund: applyRefund,
+      synchronizePayment: sync,
+    } = await import('./apply-premium'));
     const express = (await import('express')).default;
     const router = (await import('../api/payments')).default;
     const auth = await import('./auth');
@@ -120,6 +144,12 @@ describe('payment integration (isolated PostgreSQL)', { skip: !databaseUrl }, ()
   }
   const success = (id: string) => ({ id, status: 'succeeded', paid: true,
     amount: { value: '549.00', currency: 'RUB' } });
+  const refund = (id: string, paymentId: string, value = '549.00') => ({
+    id,
+    payment_id: paymentId,
+    status: 'succeeded',
+    amount: { value, currency: 'RUB' },
+  });
 
   it('rejects an orphan payment through the public apply endpoint', async () => {
     const { user, payment } = await fixture('STUDENT', null);
@@ -199,6 +229,92 @@ describe('payment integration (isolated PostgreSQL)', { skip: !databaseUrl }, ()
     const { user, payment } = await fixture();
     await assert.rejects(apply(payment.id, { ...success(payment.yooKassaPaymentId!), amount: { value: '1.00', currency: 'RUB' } }));
     assert.equal(await db.subscription.count({ where: { userId: user.id } }), 0);
+    assert.equal((await db.user.findUniqueOrThrow({ where: { id: user.id } })).plan, 'FREEMIUM');
     assert.equal((await db.payment.findUniqueOrThrow({ where: { id: payment.id } })).appliedAt, null);
+  });
+
+  it('keeps access for partial refunds and applies webhook retries once', async () => {
+    const { user, payment } = await fixture();
+    await apply(payment.id, success(payment.yooKassaPaymentId!));
+    const before = await db.subscription.findUniqueOrThrow({ where: { userId: user.id } });
+
+    const partial = refund('refund-partial', payment.yooKassaPaymentId!, '100.00');
+    const first = await applyRefund(partial);
+    const repeated = await applyRefund(partial);
+    assert.equal(first.fullyRefunded, false);
+    assert.equal(repeated.alreadyProcessed, true);
+    assert.equal(await db.paymentRefund.count({ where: { paymentId: payment.id } }), 1);
+    assert.equal((await db.payment.findUniqueOrThrow({ where: { id: payment.id } })).status, 'SUCCEEDED');
+    assert.equal(
+      (await db.subscription.findUniqueOrThrow({ where: { userId: user.id } })).endDate.toISOString(),
+      before.endDate.toISOString(),
+    );
+
+    const completed = await applyRefund(refund('refund-rest', payment.yooKassaPaymentId!, '449.00'));
+    assert.equal(completed.fullyRefunded, true);
+    assert.equal((await db.payment.findUniqueOrThrow({ where: { id: payment.id } })).status, 'REFUNDED');
+    assert.equal((await db.subscription.findUniqueOrThrow({ where: { userId: user.id } })).status, 'CANCELED');
+    assert.equal((await db.user.findUniqueOrThrow({ where: { id: user.id } })).plan, 'FREEMIUM');
+  });
+
+  it('verifies and applies a mock refund through the public webhook route', async () => {
+    const providerId = `test_${randomUUID()}`;
+    const { user, payment } = await fixture('ADMIN', providerId);
+    await apply(payment.id, { ...success(providerId), test: true });
+
+    const refundId = providerId.replace(/^test_/, 'test_refund_');
+    const response = await originalFetch(`${baseUrl}/webhook`, {
+      method: 'POST',
+      headers: { 'Content-Type': 'application/json' },
+      body: JSON.stringify({ event: 'refund.succeeded', object: { id: refundId } }),
+    });
+    assert.equal(response.status, 200);
+    assert.equal((await response.json()).fullyRefunded, true);
+    assert.equal((await db.payment.findUniqueOrThrow({ where: { id: payment.id } })).status, 'REFUNDED');
+    assert.equal((await db.user.findUniqueOrThrow({ where: { id: user.id } })).plan, 'FREEMIUM');
+  });
+
+  it('rebuilds stacked access when older and newer purchases are refunded', async () => {
+    const { user, payment: first } = await fixture();
+    await apply(first.id, success(first.yooKassaPaymentId!));
+    const second = await purchase(user.id);
+    const secondApplied = await apply(second.id, success(second.yooKassaPaymentId!));
+    const third = await purchase(user.id);
+    await apply(third.id, success(third.yooKassaPaymentId!));
+
+    await applyRefund(refund('refund-oldest', first.yooKassaPaymentId!));
+    let subscription = await db.subscription.findUniqueOrThrow({ where: { userId: user.id } });
+    assert.equal(subscription.paymentId, third.id);
+    assert.equal(
+      subscription.endDate.toISOString(),
+      addSubscriptionMonths(addSubscriptionMonths(secondApplied.appliedAt!, 3), 3).toISOString(),
+    );
+
+    await applyRefund(refund('refund-newest', third.yooKassaPaymentId!));
+    subscription = await db.subscription.findUniqueOrThrow({ where: { userId: user.id } });
+    assert.equal(subscription.status, 'ACTIVE');
+    assert.equal(subscription.paymentId, second.id);
+    assert.equal(
+      subscription.endDate.toISOString(),
+      addSubscriptionMonths(secondApplied.appliedAt!, 3).toISOString(),
+    );
+  });
+
+  it('rejects refund currency mismatches and over-refunds atomically', async () => {
+    const { payment } = await fixture();
+    await apply(payment.id, success(payment.yooKassaPaymentId!));
+    await assert.rejects(
+      applyRefund({
+        ...refund('refund-usd', payment.yooKassaPaymentId!),
+        amount: { value: '549.00', currency: 'USD' },
+      }),
+      /currency/i,
+    );
+    await assert.rejects(
+      applyRefund(refund('refund-too-large', payment.yooKassaPaymentId!, '550.00')),
+      /exceeds/i,
+    );
+    assert.equal(await db.paymentRefund.count({ where: { paymentId: payment.id } }), 0);
+    assert.equal((await db.payment.findUniqueOrThrow({ where: { id: payment.id } })).status, 'SUCCEEDED');
   });
 });

@@ -30,6 +30,65 @@ export function addSubscriptionMonths(date: Date, months: number): Date {
   return result;
 }
 
+type AppliedPurchase = {
+  id: string;
+  planId: string | null;
+  durationMonths: number | null;
+  appliedAt: Date | null;
+  createdAt?: Date;
+};
+
+export type PremiumEntitlement = {
+  startDate: Date;
+  endDate: Date;
+  paymentId: string;
+  planId: string;
+};
+
+/** Replay the paid-access ledger after a refund, including gaps between purchases. */
+export function calculatePremiumEntitlement(
+  purchases: AppliedPurchase[],
+): PremiumEntitlement | null {
+  let entitlement: PremiumEntitlement | null = null;
+  const ordered = [...purchases].sort((a, b) => {
+    const byAppliedAt = (a.appliedAt?.getTime() || 0) - (b.appliedAt?.getTime() || 0);
+    const byCreatedAt = (a.createdAt?.getTime() || 0) - (b.createdAt?.getTime() || 0);
+    return byAppliedAt || byCreatedAt || a.id.localeCompare(b.id);
+  });
+
+  for (const purchase of ordered) {
+    if (!purchase.appliedAt || !purchase.planId || !purchase.durationMonths) {
+      throw new PaymentVerificationError('Applied payment is missing entitlement data');
+    }
+    const months = getPlanDurationMonths({ durationMonths: purchase.durationMonths });
+    const current = entitlement;
+    const continuesCurrentSegment: boolean =
+      current !== null && current.endDate > purchase.appliedAt;
+    const startDate: Date = continuesCurrentSegment
+      ? current!.startDate
+      : purchase.appliedAt;
+    const baseDate: Date = continuesCurrentSegment
+      ? current!.endDate
+      : purchase.appliedAt;
+    entitlement = {
+      startDate,
+      endDate: addSubscriptionMonths(baseDate, months),
+      paymentId: purchase.id,
+      planId: purchase.planId,
+    };
+  }
+
+  return entitlement;
+}
+
+function moneyToCents(value: string | number): number {
+  const amount = Number(value);
+  if (!Number.isFinite(amount) || amount <= 0) {
+    throw new PaymentVerificationError('Invalid refund amount');
+  }
+  return Math.round(amount * 100);
+}
+
 export function assertVerifiedPayment(
   payment: { yooKassaPaymentId: string | null; amount: number; currency: string; status?: string },
   verified: YooKassaPayment,
@@ -108,12 +167,9 @@ export async function applyVerifiedPayment(paymentId: string, verified: YooKassa
   });
 }
 
-/**
- * Apply a verified YooKassa refund: mark payment REFUNDED and revoke Premium
- * only when this payment currently backs the user's subscription.
- */
+/** Record an idempotent verified refund and rebuild access after a full refund. */
 export async function applyVerifiedRefund(refund: YooKassaRefund) {
-  if (refund.status !== 'succeeded' || !refund.payment_id) {
+  if (refund.status !== 'succeeded' || !refund.payment_id || !refund.id) {
     throw new PaymentVerificationError('Refund is not succeeded');
   }
 
@@ -126,8 +182,64 @@ export async function applyVerifiedRefund(refund: YooKassaRefund) {
     await tx.$queryRaw`SELECT id FROM users WHERE id = ${payment.userId} FOR UPDATE`;
 
     const current = await tx.payment.findUniqueOrThrow({ where: { id: payment.id } });
-    if (String(current.status).toUpperCase() === 'REFUNDED') {
-      return { matched: true as const, paymentId: current.id, alreadyRefunded: true as const };
+    const owner = await tx.user.findUniqueOrThrow({ where: { id: payment.userId } });
+    if ((refund.test || refund.id.startsWith('test_refund_')) && !isPaymentTester(owner)) {
+      throw new PaymentVerificationError('PAYMENT_TEST_ONLY');
+    }
+
+    const existingRefund = await tx.paymentRefund.findUnique({
+      where: { yooKassaRefundId: refund.id },
+    });
+    if (existingRefund) {
+      if (existingRefund.paymentId !== current.id) {
+        throw new PaymentVerificationError('Refund belongs to another payment');
+      }
+      return {
+        matched: true as const,
+        paymentId: current.id,
+        alreadyProcessed: true as const,
+        fullyRefunded: String(current.status).toUpperCase() === 'REFUNDED',
+      };
+    }
+
+    if (refund.amount.currency !== current.currency) {
+      throw new PaymentVerificationError('Refund currency mismatch');
+    }
+    const refundCents = moneyToCents(refund.amount.value);
+    const paymentCents = moneyToCents(current.amount);
+    const refunded = await tx.paymentRefund.aggregate({
+      where: { paymentId: current.id, status: 'SUCCEEDED' },
+      _sum: { amount: true },
+    });
+    const previousRefundCents = Math.round(Number(refunded._sum.amount || 0) * 100);
+    const totalRefundedCents = previousRefundCents + refundCents;
+    if (totalRefundedCents > paymentCents) {
+      throw new PaymentVerificationError('Refund exceeds payment amount');
+    }
+
+    const providerCreatedAt = refund.created_at ? new Date(refund.created_at) : null;
+    await tx.paymentRefund.create({
+      data: {
+        paymentId: current.id,
+        yooKassaRefundId: refund.id,
+        amount: refundCents / 100,
+        currency: refund.amount.currency,
+        status: 'SUCCEEDED',
+        providerCreatedAt:
+          providerCreatedAt && Number.isFinite(providerCreatedAt.getTime())
+            ? providerCreatedAt
+            : null,
+      },
+    });
+
+    const fullyRefunded = totalRefundedCents === paymentCents;
+    if (!fullyRefunded) {
+      return {
+        matched: true as const,
+        paymentId: current.id,
+        alreadyProcessed: false as const,
+        fullyRefunded: false as const,
+      };
     }
 
     await tx.payment.update({
@@ -135,32 +247,55 @@ export async function applyVerifiedRefund(refund: YooKassaRefund) {
       data: { status: 'REFUNDED' },
     });
 
-    const subscription = await tx.subscription.findFirst({
-      where: { userId: current.userId!, paymentId: current.id },
+    const remainingPurchases = await tx.payment.findMany({
+      where: {
+        userId: current.userId!,
+        status: 'SUCCEEDED',
+        appliedAt: { not: null },
+        NOT: { id: current.id },
+      },
+      select: { id: true, planId: true, durationMonths: true, appliedAt: true, createdAt: true },
+      orderBy: [{ appliedAt: 'asc' }, { createdAt: 'asc' }, { id: 'asc' }],
     });
+    const entitlement = calculatePremiumEntitlement(remainingPurchases);
+    const now = new Date();
 
-    if (subscription) {
-      await tx.subscription.update({
-        where: { id: subscription.id },
-        data: { status: 'CANCELED', autoRenew: false },
-      });
-
-      const otherActive = await tx.subscription.findFirst({
-        where: {
-          userId: current.userId!,
+    if (entitlement && entitlement.endDate > now) {
+      await tx.subscription.upsert({
+        where: { userId: current.userId! },
+        update: {
+          ...entitlement,
           status: 'ACTIVE',
-          endDate: { gte: new Date() },
-          NOT: { id: subscription.id },
+          autoRenew: false,
+        },
+        create: {
+          id: uuidv4(),
+          userId: current.userId!,
+          ...entitlement,
+          status: 'ACTIVE',
+          autoRenew: false,
         },
       });
-      if (!otherActive) {
-        await tx.user.update({
-          where: { id: current.userId! },
-          data: { plan: 'FREEMIUM' },
-        });
-      }
+      await tx.user.update({
+        where: { id: current.userId! },
+        data: { plan: 'PREMIUM' },
+      });
+    } else {
+      await tx.subscription.updateMany({
+        where: { userId: current.userId!, status: 'ACTIVE' },
+        data: { status: 'CANCELED', autoRenew: false },
+      });
+      await tx.user.update({
+        where: { id: current.userId! },
+        data: { plan: 'FREEMIUM' },
+      });
     }
 
-    return { matched: true as const, paymentId: current.id, alreadyRefunded: false as const };
+    return {
+      matched: true as const,
+      paymentId: current.id,
+      alreadyProcessed: false as const,
+      fullyRefunded: true as const,
+    };
   });
 }

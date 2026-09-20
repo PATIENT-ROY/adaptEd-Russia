@@ -344,6 +344,18 @@ exports.Prisma.PaymentScalarFieldEnum = {
   updatedAt: 'updatedAt'
 };
 
+exports.Prisma.PaymentRefundScalarFieldEnum = {
+  id: 'id',
+  paymentId: 'paymentId',
+  yooKassaRefundId: 'yooKassaRefundId',
+  amount: 'amount',
+  currency: 'currency',
+  status: 'status',
+  providerCreatedAt: 'providerCreatedAt',
+  createdAt: 'createdAt',
+  updatedAt: 'updatedAt'
+};
+
 exports.Prisma.WebhookLogScalarFieldEnum = {
   id: 'id',
   event: 'event',
@@ -508,6 +520,7 @@ exports.Prisma.ModelName = {
   Admin: 'Admin',
   SubscriptionPlan: 'SubscriptionPlan',
   Payment: 'Payment',
+  PaymentRefund: 'PaymentRefund',
   WebhookLog: 'WebhookLog',
   Subscription: 'Subscription',
   Grant: 'Grant',

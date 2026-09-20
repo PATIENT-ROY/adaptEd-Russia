@@ -5,6 +5,7 @@ import {
   isMockYooKassaPaymentId,
   isPaymentTester,
   parsePaymentTestEmails,
+  parsePaymentTestUserIds,
 } from './payment-test-access';
 
 describe('payment-test-access', () => {
@@ -16,13 +17,18 @@ describe('payment-test-access', () => {
     ]);
   });
 
-  it('allows ADMIN and listed emails', () => {
+  it('allows ADMIN, listed user ids, and only verified listed emails', () => {
     assert.equal(isPaymentTester({ role: 'ADMIN', email: 'x@y.com' }), true);
-    const prev = process.env.PAYMENT_TEST_EMAILS;
+    const previousEmails = process.env.PAYMENT_TEST_EMAILS;
+    const previousIds = process.env.PAYMENT_TEST_USER_IDS;
     process.env.PAYMENT_TEST_EMAILS = 'tester@adaptedrussia.ru';
+    process.env.PAYMENT_TEST_USER_IDS = 'user-1, user-2';
     try {
-      assert.equal(isPaymentTester({ role: 'STUDENT', email: 'tester@adaptedrussia.ru' }), true);
-      assert.equal(isPaymentTester({ role: 'STUDENT', email: 'Tester@AdaptedRussia.ru' }), true);
+      assert.deepEqual(parsePaymentTestUserIds(), ['user-1', 'user-2']);
+      assert.equal(isPaymentTester({ role: 'STUDENT', userId: 'user-1' }), true);
+      assert.equal(isPaymentTester({ role: 'STUDENT', id: 'user-2' }), true);
+      assert.equal(isPaymentTester({ role: 'STUDENT', email: 'tester@adaptedrussia.ru' }), false);
+      assert.equal(isPaymentTester({ role: 'STUDENT', email: 'Tester@AdaptedRussia.ru' }), false);
       assert.equal(isPaymentTester({ role: 'STUDENT', email: ' other@adaptedrussia.ru ' }), false);
       assert.equal(
         isPaymentTester({ role: 'STUDENT', email: 'tester@adaptedrussia.ru', emailVerified: false }),
@@ -33,8 +39,10 @@ describe('payment-test-access', () => {
         true,
       );
     } finally {
-      if (prev === undefined) delete process.env.PAYMENT_TEST_EMAILS;
-      else process.env.PAYMENT_TEST_EMAILS = prev;
+      if (previousEmails === undefined) delete process.env.PAYMENT_TEST_EMAILS;
+      else process.env.PAYMENT_TEST_EMAILS = previousEmails;
+      if (previousIds === undefined) delete process.env.PAYMENT_TEST_USER_IDS;
+      else process.env.PAYMENT_TEST_USER_IDS = previousIds;
     }
   });
 

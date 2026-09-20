@@ -52,7 +52,8 @@ YOOKASSA_SHOP_ID="your-yookassa-shop-id"
 YOOKASSA_SECRET_KEY="your-yookassa-secret-key"
 # YOOKASSA_USE_MOCK=true
 # YOOKASSA_WEBHOOK_SECRET="..."
-# PAYMENT_TEST_EMAILS="you@example.com"```
+# PAYMENT_TEST_USER_IDS="cm123...,cm456..."
+```
 
 ### 3. Получение тестовых ключей YooKassa
 

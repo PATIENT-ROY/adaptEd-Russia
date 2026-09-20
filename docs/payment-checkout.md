@@ -31,15 +31,17 @@ it resets those catalog entries to the configured default prices.
 Set `YOOKASSA_SHOP_ID`, `YOOKASSA_SECRET_KEY`, `CLIENT_URL`, and
 `YOOKASSA_USE_MOCK=false` for real checkout. Without live credentials ordinary users
 see an unavailable button. Local mocks and YooKassa sandbox payments are restricted
-to admins and emails in `PAYMENT_TEST_EMAILS`.
+to admins and user IDs in `PAYMENT_TEST_USER_IDS`. Email allowlisting is disabled until
+the application has a real email-verification flow.
 
 Configure `/api/payments/webhook` for provider notifications. If
 `YOOKASSA_WEBHOOK_SECRET` is set, configure the matching `?secret=...` in the notification
 URL. Subscribe to both `payment.succeeded` / `payment.canceled` and `refund.succeeded`
 in the merchant cabinet (Integration → HTTP-notifications). Every notification is
 independently verified through the provider API (`GET /payments/{id}` or
-`GET /refunds/{id}`). A `refund.succeeded` event marks the payment `REFUNDED`, cancels
-the linked subscription, and demotes the user to FREEMIUM.
+`GET /refunds/{id}`). Refund IDs are stored idempotently. Partial refunds accumulate
+without removing access; once the full payment amount has been returned, its purchased
+duration is removed and access is rebuilt from the user's remaining successful payments.
 The browser return URL does not prove payment. The callback polls up to 20 times;
 a user can also inspect the payment from `/payment`.
 
@@ -73,5 +75,6 @@ npm run test:payment-ui --workspace client
 
 The UI tests mock APIs and do not charge money. Integration tests exercise real
 PostgreSQL transactions, concurrent duplicate/different purchases, old payment replays,
-orphan/unpaid payment endpoints, test-mode restrictions, and duration snapshots.
+orphan/unpaid payment endpoints, test-mode restrictions, duration snapshots, partial
+refund accumulation, duplicate refund webhooks, and access rebuilding after refunds.
 Real merchant payments require an end-to-end check after activation and deployment.
