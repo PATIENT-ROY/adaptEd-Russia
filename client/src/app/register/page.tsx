@@ -30,11 +30,10 @@ import {
 import { Role, Plan, Language } from "@/types";
 import { countrySuggestions } from "@/constants/countries";
 import { readSafeReturnTo } from "@/lib/safe-return-to";
+import { passwordMeetsPolicy } from "@/lib/password-policy";
 
 const STEP_TRANSITION_DURATION = 0.35; // seconds
 const STEP_TRANSITION_MS = STEP_TRANSITION_DURATION * 1000;
-const PASSWORD_POLICY = /^(?=.*[a-z])(?=.*[A-Z])(?=.*\d).{8,}$/;
-
 function isDuplicateEmailError(message: string) {
   return /уже существует|already exists|déjà (utilis|exist)|already been taken|مسجل|已存在/i.test(
     message,
@@ -128,7 +127,7 @@ export default function RegisterPage() {
       return;
     }
 
-    if (!PASSWORD_POLICY.test(formData.password)) {
+    if (!passwordMeetsPolicy(formData.password)) {
       setError(t("register.error.passwordTooShort"));
       return;
     }

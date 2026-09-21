@@ -23,7 +23,7 @@ interface AuthContextType {
       country: string;
     }
   ) => Promise<boolean>;
-  logout: () => void;
+  logout: () => Promise<void>;
   updateProfile: (userData: Partial<User>) => Promise<boolean>;
   syncUser: (userData: Partial<User>) => void;
   isLoading: boolean;
@@ -149,7 +149,7 @@ export function AuthProvider({ children }: { children: React.ReactNode }) {
     );
 
     try {
-      apiClient.logout();
+      await apiClient.logout();
     } catch (error) {
       console.error("Logout error:", error);
     }

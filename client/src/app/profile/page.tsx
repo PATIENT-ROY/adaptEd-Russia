@@ -535,8 +535,8 @@ function ProfileContent() {
     [t, locale, currentLanguage, invoiceStatusLabel, showToast],
   );
 
-  const handleLogout = useCallback(() => {
-    logout();
+  const handleLogout = useCallback(async () => {
+    await logout();
     router.push("/");
   }, [logout, router]);
 

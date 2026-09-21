@@ -306,8 +306,16 @@ class ApiClient {
     return data.user;
   }
 
-  logout() {
-    this.clearToken();
+  async logout(): Promise<void> {
+    if (!this.token) {
+      this.clearToken();
+      return;
+    }
+    try {
+      await this.request('/auth/logout', { method: 'POST' });
+    } finally {
+      this.clearToken();
+    }
   }
 
   // Пользователи
@@ -347,10 +355,12 @@ class ApiClient {
       method: 'POST',
       body: JSON.stringify({ currentPassword, newPassword }),
     });
+    this.clearToken();
   }
 
   async logoutAll(): Promise<void> {
     await this.request('/auth/logout-all', { method: 'POST' });
+    this.clearToken();
   }
 
   async getDashboardOverview(): Promise<DashboardOverview> {

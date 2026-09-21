@@ -28,6 +28,8 @@ import { startReminderNotificationWorker } from './lib/reminder-notifications.js
 dotenv.config();
 
 const app = express();
+// Trust the first reverse proxy (nginx / NetAngels) so req.ip and secure cookies work
+app.set('trust proxy', 1);
 const PORT = Number(process.env.APP_PORT || process.env.PORT || 56548);
 const HOST = process.env.APP_IP || '0.0.0.0';
 

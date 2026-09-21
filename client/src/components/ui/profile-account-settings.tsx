@@ -24,9 +24,10 @@ import { Input } from "./input";
 import { Label } from "./label";
 import { Switch } from "./switch";
 import { cn } from "@/lib/utils";
+import { passwordMeetsPolicy } from "@/lib/password-policy";
 
 interface ProfileAccountSettingsProps {
-  onLogout: () => void;
+  onLogout: () => void | Promise<void>;
   t: (key: string) => string;
 }
 
@@ -279,6 +280,13 @@ export function ProfileAccountSettings({
       });
       return;
     }
+    if (!passwordMeetsPolicy(newPassword)) {
+      setMessage({
+        text: t("profile.settings.passwordInvalid"),
+        error: true,
+      });
+      return;
+    }
     setChangingPassword(true);
     try {
       await apiClient.changePassword(currentPassword, newPassword);
@@ -300,7 +308,7 @@ export function ProfileAccountSettings({
     setLoggingOutAll(true);
     try {
       await apiClient.logoutAll();
-      onLogout();
+      await onLogout();
     } catch (error) {
       setMessage({
         text:

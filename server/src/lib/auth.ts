@@ -24,12 +24,22 @@ export interface JWTPayload {
   tokenVersion: number;
 }
 
+export const BCRYPT_PASSWORD_MAX_BYTES = 72;
+
+export function passwordFitsBcryptLimit(password: string): boolean {
+  return Buffer.byteLength(password, 'utf8') <= BCRYPT_PASSWORD_MAX_BYTES;
+}
+
 export async function hashPassword(password: string): Promise<string> {
+  if (!passwordFitsBcryptLimit(password)) {
+    throw new RangeError(`Password exceeds bcrypt's ${BCRYPT_PASSWORD_MAX_BYTES}-byte limit`);
+  }
   const saltRounds = 12;
   return bcrypt.hash(password, saltRounds);
 }
 
 export async function comparePasswords(password: string, hashedPassword: string): Promise<boolean> {
+  if (!passwordFitsBcryptLimit(password)) return false;
   return bcrypt.compare(password, hashedPassword);
 }
 

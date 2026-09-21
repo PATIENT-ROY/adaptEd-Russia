@@ -39,7 +39,7 @@ it('rejects missing provider ids, mismatched amounts/currencies, and unpaid succ
   ]) assert.throws(() => assertVerifiedPayment(payment, wrong));
 });
 
-it('sends the selected payment method and stable retry key to YooKassa', async () => {
+it('sends the selected payment method, receipt, and stable retry key to YooKassa', async () => {
   const previous = process.env.YOOKASSA_USE_MOCK;
   const originalFetch = globalThis.fetch;
   process.env.YOOKASSA_USE_MOCK = 'false';
@@ -51,10 +51,18 @@ it('sends the selected payment method and stable retry key to YooKassa', async (
         assert.equal(body.amount.value, '549.00');
         assert.match(body.confirmation.return_url, /payment_id=local-id$/);
         assert.equal((init?.headers as Record<string, string>)['Idempotence-Key'], 'local-id');
+        assert.equal(body.receipt.customer.email, 'buyer@example.com');
+        assert.equal(body.receipt.items[0].vat_code, 1);
+        assert.equal(body.receipt.items[0].payment_subject, 'service');
+        assert.equal(body.receipt.items[0].payment_mode, 'full_payment');
+        assert.equal(body.receipt.items[0].amount.value, '549.00');
         return new Response(JSON.stringify({ id: 'provider-id', status: 'pending' }));
       };
       await createPayment(549, 'Subscription', {}, {
-        paymentMethod: method, idempotenceKey: 'local-id', returnUrlPaymentId: 'local-id',
+        paymentMethod: method,
+        idempotenceKey: 'local-id',
+        returnUrlPaymentId: 'local-id',
+        customerEmail: 'buyer@example.com',
       });
     }
   } finally {
