@@ -1,7 +1,14 @@
 import { Router, Request, Response } from 'express';
 import { z } from 'zod';
 import { prisma } from '../lib/database';
-import { hashPassword, comparePasswords, generateToken, authenticateUser, authMiddleware } from '../lib/auth';
+import {
+  hashPassword,
+  comparePasswords,
+  generateToken,
+  authenticateUser,
+  authMiddleware,
+  passwordFitsBcryptLimit,
+} from '../lib/auth';
 import { sendInviteEmail } from '../lib/email';
 import { RegisterRequest, LoginRequest, AuthResponse, ApiResponse } from '../types/index.js';
 import crypto from 'crypto';
@@ -9,14 +16,17 @@ import crypto from 'crypto';
 const router = Router();
 
 // Схемы валидации
+const passwordSchema = z
+  .string()
+  .min(8, 'Пароль минимум 8 символов')
+  .regex(/[A-Z]/, 'Минимум одна заглавная буква')
+  .regex(/[a-z]/, 'Минимум одна строчная буква')
+  .regex(/[0-9]/, 'Минимум одна цифра')
+  .refine(passwordFitsBcryptLimit, 'Пароль не должен превышать 72 байта UTF-8');
+
 const registerSchema = z.object({
   email: z.string().email('Неверный формат email'),
-  password: z
-    .string()
-    .min(8, 'Пароль минимум 8 символов')
-    .regex(/[A-Z]/, 'Минимум одна заглавная буква')
-    .regex(/[a-z]/, 'Минимум одна строчная буква')
-    .regex(/[0-9]/, 'Минимум одна цифра'),
+  password: passwordSchema,
   name: z.string().min(2, 'Имя должно содержать минимум 2 символа').max(50, 'Имя не более 50 символов'),
   language: z.enum(['RU', 'EN', 'FR', 'AR', 'ZH', 'ES']).default('RU'),
   country: z.string().min(2, 'Укажите страну'),
@@ -24,7 +34,10 @@ const registerSchema = z.object({
 
 const loginSchema = z.object({
   email: z.string().email('Неверный формат email'),
-  password: z.string().min(1, 'Пароль обязателен'),
+  password: z
+    .string()
+    .min(1, 'Пароль обязателен')
+    .refine(passwordFitsBcryptLimit, 'Неверный email или пароль'),
 });
 
 const adminInviteSchema = z.object({
@@ -37,22 +50,15 @@ const adminInviteSchema = z.object({
 
 const setPasswordSchema = z.object({
   token: z.string().min(16, 'Недействительный токен'),
-  password: z
-    .string()
-    .min(8, 'Пароль минимум 8 символов')
-    .regex(/[A-Z]/, 'Минимум одна заглавная буква')
-    .regex(/[a-z]/, 'Минимум одна строчная буква')
-    .regex(/[0-9]/, 'Минимум одна цифра'),
+  password: passwordSchema,
 });
 
 const changePasswordSchema = z.object({
-  currentPassword: z.string().min(1, 'Введите текущий пароль'),
-  newPassword: z
+  currentPassword: z
     .string()
-    .min(8, 'Пароль минимум 8 символов')
-    .regex(/[A-Z]/, 'Минимум одна заглавная буква')
-    .regex(/[a-z]/, 'Минимум одна строчная буква')
-    .regex(/[0-9]/, 'Минимум одна цифра'),
+    .min(1, 'Введите текущий пароль')
+    .refine(passwordFitsBcryptLimit, 'Текущий пароль указан неверно'),
+  newPassword: passwordSchema,
 });
 
 function createPasswordSetupToken() {
@@ -295,7 +301,7 @@ router.post('/set-password', async (req: Request, res: Response) => {
       where: { tokenHash },
     });
 
-    if (!setupToken || setupToken.usedAt || setupToken.expiresAt < now) {
+    if (!setupToken || setupToken.usedAt || setupToken.expiresAt <= now) {
       return res.status(400).json({
         success: false,
         error: 'Ссылка недействительна или истекла'
@@ -304,16 +310,39 @@ router.post('/set-password', async (req: Request, res: Response) => {
 
     const hashedPassword = await hashPassword(validatedData.password);
 
-    await prisma.$transaction([
-      prisma.user.update({
+    const passwordChanged = await prisma.$transaction(async (tx) => {
+      // Serialize password changes for this account, then atomically claim the token.
+      await tx.$queryRaw`SELECT id FROM users WHERE id = ${setupToken.userId} FOR UPDATE`;
+      const claimedAt = new Date();
+      const claimed = await tx.passwordSetupToken.updateMany({
+        where: {
+          id: setupToken.id,
+          userId: setupToken.userId,
+          usedAt: null,
+          expiresAt: { gt: claimedAt },
+        },
+        data: { usedAt: claimedAt },
+      });
+      if (claimed.count !== 1) return false;
+
+      await tx.user.update({
         where: { id: setupToken.userId },
         data: { password: hashedPassword, tokenVersion: { increment: 1 } },
-      }),
-      prisma.passwordSetupToken.update({
-        where: { id: setupToken.id },
-        data: { usedAt: now },
-      }),
-    ]);
+      });
+      // A successful password reset invalidates every other outstanding link.
+      await tx.passwordSetupToken.updateMany({
+        where: { userId: setupToken.userId, usedAt: null },
+        data: { usedAt: claimedAt },
+      });
+      return true;
+    });
+
+    if (!passwordChanged) {
+      return res.status(400).json({
+        success: false,
+        error: 'Ссылка недействительна или истекла'
+      } as ApiResponse);
+    }
 
     return res.json({
       success: true,
@@ -399,26 +428,42 @@ router.post('/change-password', authMiddleware, async (req: Request, res: Respon
   try {
     const authUser = (req as any).user;
     const validatedData = changePasswordSchema.parse(req.body);
-    const user = await prisma.user.findUnique({
-      where: { id: authUser.userId },
-      select: { password: true },
+    const result = await prisma.$transaction(async (tx) => {
+      await tx.$queryRaw`SELECT id FROM users WHERE id = ${authUser.userId} FOR UPDATE`;
+      const user = await tx.user.findUnique({
+        where: { id: authUser.userId },
+        select: { password: true },
+      });
+      if (!user || !(await comparePasswords(validatedData.currentPassword, user.password))) {
+        return 'INVALID_CURRENT' as const;
+      }
+      if (await comparePasswords(validatedData.newPassword, user.password)) {
+        return 'UNCHANGED' as const;
+      }
+
+      const changedAt = new Date();
+      const hashedPassword = await hashPassword(validatedData.newPassword);
+      await tx.user.update({
+        where: { id: authUser.userId },
+        data: {
+          password: hashedPassword,
+          tokenVersion: { increment: 1 },
+        },
+      });
+      await tx.passwordSetupToken.updateMany({
+        where: { userId: authUser.userId, usedAt: null },
+        data: { usedAt: changedAt },
+      });
+      return 'CHANGED' as const;
     });
 
-    if (!user || !(await comparePasswords(validatedData.currentPassword, user.password))) {
+    if (result === 'INVALID_CURRENT') {
       return res.status(400).json({ success: false, error: 'Текущий пароль указан неверно' } as ApiResponse);
     }
 
-    if (await comparePasswords(validatedData.newPassword, user.password)) {
+    if (result === 'UNCHANGED') {
       return res.status(400).json({ success: false, error: 'Новый пароль должен отличаться от текущего' } as ApiResponse);
     }
-
-    await prisma.user.update({
-      where: { id: authUser.userId },
-      data: {
-        password: await hashPassword(validatedData.newPassword),
-        tokenVersion: { increment: 1 },
-      },
-    });
 
     return res.json({ success: true, message: 'Пароль изменён. Войдите заново на всех устройствах.' } as ApiResponse);
   } catch (error) {
@@ -430,6 +475,20 @@ router.post('/change-password', authMiddleware, async (req: Request, res: Respon
       } as ApiResponse);
     }
     console.error('Change password error:', error);
+    return res.status(500).json({ success: false, error: 'Внутренняя ошибка сервера' } as ApiResponse);
+  }
+});
+
+router.post('/logout', authMiddleware, async (req: Request, res: Response) => {
+  try {
+    const authUser = (req as any).user;
+    await prisma.user.update({
+      where: { id: authUser.userId },
+      data: { tokenVersion: { increment: 1 } },
+    });
+    return res.json({ success: true, message: 'Сеанс завершён' } as ApiResponse);
+  } catch (error) {
+    console.error('Logout error:', error);
     return res.status(500).json({ success: false, error: 'Внутренняя ошибка сервера' } as ApiResponse);
   }
 });

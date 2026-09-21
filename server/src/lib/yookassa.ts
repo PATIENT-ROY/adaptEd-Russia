@@ -160,10 +160,18 @@ export const createPayment = async (
   amount: number,
   description: string,
   metadata?: Record<string, string>,
-  options?: { idempotenceKey?: string; returnUrlPaymentId?: string; paymentMethod?: 'CARD' | 'SBP' | 'WALLET' },
+  options?: {
+    idempotenceKey?: string;
+    returnUrlPaymentId?: string;
+    paymentMethod?: 'CARD' | 'SBP' | 'WALLET';
+    customerEmail?: string;
+  },
 ): Promise<YooKassaPayment> => {
   const meta = stringifyMetadata(metadata);
   const returnUrl = clientReturnUrl(options?.returnUrlPaymentId);
+  const amountValue = amount.toFixed(2);
+  const itemDescription = description.slice(0, 128);
+  const customerEmail = String(options?.customerEmail || '').trim().toLowerCase();
 
   if (shouldUseMockYooKassa()) {
     await new Promise((resolve) => setTimeout(resolve, 200));
@@ -177,23 +185,44 @@ export const createPayment = async (
     return mock;
   }
 
+  const paymentData: Record<string, unknown> = {
+    amount: {
+      value: amountValue,
+      currency: 'RUB',
+    },
+    capture: true,
+    payment_method_data: {
+      type: { CARD: 'bank_card', SBP: 'sbp', WALLET: 'yoo_money' }[options?.paymentMethod || 'CARD'],
+    },
+    confirmation: {
+      type: 'redirect',
+      return_url: returnUrl,
+    },
+    description: itemDescription,
+    metadata: meta,
+  };
+
+  // 54-FZ fiscal receipt (YooKassa CloudPayments / online cash register)
+  if (customerEmail.includes('@')) {
+    paymentData.receipt = {
+      customer: { email: customerEmail },
+      items: [
+        {
+          description: itemDescription,
+          quantity: '1.00',
+          amount: { value: amountValue, currency: 'RUB' },
+          vat_code: 1, // без НДС (УСН)
+          payment_subject: 'service',
+          payment_mode: 'full_payment',
+        },
+      ],
+    };
+  }
+
   return yooKassaFetch<YooKassaPayment>('/payments', {
     method: 'POST',
     idempotenceKey: options?.idempotenceKey || randomUUID(),
-    body: JSON.stringify({
-      amount: {
-        value: amount.toFixed(2),
-        currency: 'RUB',
-      },
-      capture: true,
-      payment_method_data: { type: { CARD: 'bank_card', SBP: 'sbp', WALLET: 'yoo_money' }[options?.paymentMethod || 'CARD'] },
-      confirmation: {
-        type: 'redirect',
-        return_url: returnUrl,
-      },
-      description: description.slice(0, 128),
-      metadata: meta,
-    }),
+    body: JSON.stringify(paymentData),
   });
 };
 

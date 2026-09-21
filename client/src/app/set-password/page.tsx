@@ -8,6 +8,7 @@ import { Card, CardContent, CardDescription, CardHeader, CardTitle } from "@/com
 import { Input } from "@/components/ui/input";
 import { Button } from "@/components/ui/button";
 import { Lock, AlertCircle, CheckCircle2, Loader2, ArrowLeft } from "lucide-react";
+import { passwordMeetsPolicy } from "@/lib/password-policy";
 
 export default function SetPasswordPage() {
   const searchParams = useSearchParams();
@@ -60,6 +61,10 @@ export default function SetPasswordPage() {
 
     if (password !== confirmPassword) {
       setError("Пароли не совпадают.");
+      return;
+    }
+    if (!passwordMeetsPolicy(password)) {
+      setError("Пароль должен содержать 8–72 байта UTF-8, заглавную и строчную буквы и цифру.");
       return;
     }
 
@@ -189,4 +194,3 @@ export default function SetPasswordPage() {
     </div>
   );
 }
-

@@ -404,7 +404,7 @@ function PaymentCheckoutContent() {
           <BackButton
             label={t("support.back")}
             className="mb-5"
-            onClick={() => router.push("/profile")}
+            fallbackHref="/profile"
           />
 
           <div className="text-center mb-8 sm:mb-10">

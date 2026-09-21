@@ -50,6 +50,17 @@ router.post('/create-payment', authMiddleware, async (req, res) => {
     }
     const description = formatPremiumPaymentDescription(plan);
     const paymentId = uuidv4();
+    let customerEmail = String(user.email || '').trim().toLowerCase();
+    if (!customerEmail.includes('@')) {
+      const dbUser = await prisma.user.findUnique({
+        where: { id: user.userId },
+        select: { email: true },
+      });
+      customerEmail = String(dbUser?.email || '').trim().toLowerCase();
+    }
+    if (!customerEmail.includes('@')) {
+      return res.status(400).json({ error: 'Email required for fiscal receipt' });
+    }
     const payment = await prisma.payment.create({ data: {
       id: paymentId, userId: user.userId, planId: plan.id,
       amount: plan.price, currency: plan.currency, durationMonths: getPlanDurationMonths(plan),
@@ -59,7 +70,12 @@ router.post('/create-payment', authMiddleware, async (req, res) => {
     const created = await createPayment(plan.price, description, {
       userId: user.userId, planId: plan.id, paymentId,
       planMonths: String(payment.durationMonths),
-    }, { idempotenceKey: paymentId, returnUrlPaymentId: paymentId, paymentMethod });
+    }, {
+      idempotenceKey: paymentId,
+      returnUrlPaymentId: paymentId,
+      paymentMethod,
+      customerEmail,
+    });
     await prisma.payment.update({ where: { id: paymentId }, data: { yooKassaPaymentId: created.id } });
     res.json({ paymentId, yooKassaPaymentId: created.id,
       confirmationUrl: created.confirmation?.confirmation_url,
