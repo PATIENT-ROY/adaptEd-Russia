@@ -36,7 +36,20 @@ type AppliedPurchase = {
   durationMonths: number | null;
   appliedAt: Date | null;
   createdAt?: Date;
+  plan?: { id: string; durationMonths: number } | null;
 };
+
+export function toAppliedPurchase(payment: AppliedPurchase): AppliedPurchase {
+  const planId = payment.planId || payment.plan?.id || null;
+  const durationMonths = payment.durationMonths ?? payment.plan?.durationMonths ?? null;
+  return {
+    id: payment.id,
+    planId,
+    durationMonths,
+    appliedAt: payment.appliedAt,
+    createdAt: payment.createdAt,
+  };
+}
 
 export type PremiumEntitlement = {
   startDate: Date;
@@ -56,7 +69,8 @@ export function calculatePremiumEntitlement(
     return byAppliedAt || byCreatedAt || a.id.localeCompare(b.id);
   });
 
-  for (const purchase of ordered) {
+  for (const raw of ordered) {
+    const purchase = toAppliedPurchase(raw);
     if (!purchase.appliedAt || !purchase.planId || !purchase.durationMonths) {
       throw new PaymentVerificationError('Applied payment is missing entitlement data');
     }
@@ -144,12 +158,14 @@ export async function applyVerifiedPayment(paymentId: string, verified: YooKassa
       return tx.payment.update({ where: { id: paymentId }, data: { status } });
     }
 
-    if (!payment.planId || !payment.durationMonths) {
+    if (!payment.planId) {
       throw new PaymentVerificationError('Purchased plan or duration missing');
     }
     const plan = await tx.subscriptionPlan.findUnique({ where: { id: payment.planId } });
     if (!plan) throw new PaymentVerificationError('Purchased plan missing');
-    const months = getPlanDurationMonths({ durationMonths: payment.durationMonths });
+    const months = getPlanDurationMonths({
+      durationMonths: payment.durationMonths ?? plan.durationMonths,
+    });
     const now = new Date();
     const existing = await tx.subscription.findUnique({ where: { userId: owner.id } });
     const hasRemainingTime = existing?.status === 'ACTIVE' && existing.endDate > now;
@@ -254,10 +270,17 @@ export async function applyVerifiedRefund(refund: YooKassaRefund) {
         appliedAt: { not: null },
         NOT: { id: current.id },
       },
-      select: { id: true, planId: true, durationMonths: true, appliedAt: true, createdAt: true },
+      select: {
+        id: true,
+        planId: true,
+        durationMonths: true,
+        appliedAt: true,
+        createdAt: true,
+        plan: { select: { id: true, durationMonths: true } },
+      },
       orderBy: [{ appliedAt: 'asc' }, { createdAt: 'asc' }, { id: 'asc' }],
     });
-    const entitlement = calculatePremiumEntitlement(remainingPurchases);
+    const entitlement = calculatePremiumEntitlement(remainingPurchases.map(toAppliedPurchase));
     const now = new Date();
 
     if (entitlement && entitlement.endDate > now) {

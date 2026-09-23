@@ -485,6 +485,9 @@ function ProfileContent() {
     (status: string) => {
       if (status === "paid") return t("profile.billing.status.paid");
       if (status === "free") return t("profile.billing.status.active");
+      if (status === "refunded") return t("profile.billing.status.refunded");
+      if (status === "failed") return t("profile.billing.status.failed");
+      if (status === "canceled") return t("profile.billing.status.canceled");
       return t("profile.billing.status.pending");
     },
     [t],

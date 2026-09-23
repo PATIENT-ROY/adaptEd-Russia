@@ -54,7 +54,7 @@ function PaymentCallbackContent() {
         setPaymentStatus(payment.status);
         if (payment.status === PaymentStatus.SUCCEEDED) {
           // Give time to read success status before leaving the callback screen
-          timer = setTimeout(() => router.replace("/payment?payment_id=" + encodeURIComponent(id)), 8000);
+          timer = setTimeout(() => router.replace("/payment?payment_id=" + encodeURIComponent(id)), 15000);
         } else if (
           payment.status !== PaymentStatus.CANCELED &&
           payment.status !== PaymentStatus.FAILED &&

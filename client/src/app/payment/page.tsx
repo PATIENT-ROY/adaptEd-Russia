@@ -195,7 +195,7 @@ function PaymentCheckoutContent() {
   ) => {
     setToastMessage(message);
     setToastType(type);
-    const durationMs = type === "success" ? 8000 : 4000;
+    const durationMs = type === "success" ? 15000 : 4000;
     setTimeout(() => setToastMessage(null), durationMs);
   };
 
