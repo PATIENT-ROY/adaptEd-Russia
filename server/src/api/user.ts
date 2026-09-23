@@ -935,6 +935,8 @@ router.get('/profile/overview', authMiddleware, async (req: Request, res: Respon
             ? 'pending'
             : paymentStatus === 'FAILED'
             ? 'failed'
+            : paymentStatus === 'REFUNDED'
+            ? 'refunded'
             : paymentStatus.toLowerCase(),
         description: payment.description,
         invoiceNumber: `INV-${new Date(payment.createdAt)

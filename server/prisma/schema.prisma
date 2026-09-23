@@ -375,6 +375,7 @@ model SubscriptionPlan {
 
   // Связи
   subscriptions Subscription[]
+  payments      Payment[]
 
   @@map("subscription_plans")
 }
@@ -391,12 +392,13 @@ model Payment {
   description       String
   status            String   @default("PENDING") // PENDING, SUCCEEDED, CANCELED, FAILED, REFUNDED
   paymentMethod     String   @default("CARD") // CARD, SBP, WALLET
-  yooKassaPaymentId String?
+  yooKassaPaymentId String?  @unique
   createdAt         DateTime @default(now())
   updatedAt         DateTime @updatedAt
 
   // Связи
-  user          User?          @relation(fields: [userId], references: [id], onDelete: SetNull)
+  user          User?             @relation(fields: [userId], references: [id], onDelete: SetNull)
+  plan          SubscriptionPlan? @relation(fields: [planId], references: [id], onDelete: SetNull)
   subscriptions Subscription[]
   refunds       PaymentRefund[]
 

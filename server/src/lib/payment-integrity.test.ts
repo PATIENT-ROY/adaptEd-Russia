@@ -27,6 +27,21 @@ it('replays remaining purchases across continuous access and gaps', () => {
   assert.equal(result?.paymentId, 'c');
 });
 
+it('uses the saved plan when durationMonths snapshot is missing', () => {
+  const appliedAt = new Date('2028-01-01T00:00:00Z');
+  const result = calculatePremiumEntitlement([
+    {
+      id: 'legacy',
+      planId: null,
+      durationMonths: null,
+      appliedAt,
+      plan: { id: 'premium-3months', durationMonths: 3 },
+    },
+  ]);
+  assert.equal(result?.planId, 'premium-3months');
+  assert.equal(result?.endDate.toISOString(), '2028-04-01T00:00:00.000Z');
+});
+
 it('rejects missing provider ids, mismatched amounts/currencies, and unpaid successes', () => {
   const payment = { yooKassaPaymentId: 'live-1', amount: 549, currency: 'RUB' };
   const verified = { id: 'live-1', status: 'succeeded', paid: true, amount: { value: '549.00', currency: 'RUB' } };
