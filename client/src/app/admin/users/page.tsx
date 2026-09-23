@@ -219,6 +219,11 @@ function AdminUsersContent() {
         country: payload.data.user.country,
         language: String(payload.data.user.language || "RU").toLowerCase(),
         role: String(payload.data.user.role || "STUDENT").toLowerCase(),
+        plan:
+          String(payload.data.user.plan || "FREEMIUM").toUpperCase() ===
+          "PREMIUM"
+            ? "premium"
+            : "freemium",
         status: "pending",
         invitePending: true,
         registeredAt: new Date().toISOString().split("T")[0],

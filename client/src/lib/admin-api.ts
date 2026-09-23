@@ -138,7 +138,7 @@ export type AdminUserRow = {
   country: string;
   language: string;
   role: string;
-  plan: 'freemium' | 'premium';
+  plan?: 'freemium' | 'premium';
   status: string;
   invitePending?: boolean;
   registeredAt: string;
