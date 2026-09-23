@@ -38,6 +38,12 @@ export type AdminDashboardData = {
     guideReadsWeek: number;
     aiMessagesWeek: number;
   };
+  payments: {
+    refundCount: number;
+    refundSum: number;
+    paidGross: number;
+    refundRate: number;
+  };
   recentUsers: Array<{
     id: string;
     name: string;
@@ -91,6 +97,7 @@ function normalizeDashboard(raw: unknown): AdminDashboardData {
   const data = asRecord(raw);
   const stats = asRecord(data.stats);
   const ops = asRecord(data.ops);
+  const payments = asRecord(data.payments);
   const guideReads = stats.guideReads ?? stats.docscan ?? emptyMetric();
   return {
     stats: {
@@ -105,6 +112,12 @@ function normalizeDashboard(raw: unknown): AdminDashboardData {
       newBuddyApplications: Number(ops.newBuddyApplications ?? 0),
       guideReadsWeek: Number(ops.guideReadsWeek ?? 0),
       aiMessagesWeek: Number(ops.aiMessagesWeek ?? 0),
+    },
+    payments: {
+      refundCount: Number(payments.refundCount ?? 0),
+      refundSum: Number(payments.refundSum ?? 0),
+      paidGross: Number(payments.paidGross ?? 0),
+      refundRate: Number(payments.refundRate ?? 0),
     },
     recentUsers: Array.isArray(data.recentUsers)
       ? (data.recentUsers as AdminDashboardData['recentUsers'])
@@ -125,6 +138,7 @@ export type AdminUserRow = {
   country: string;
   language: string;
   role: string;
+  plan?: 'freemium' | 'premium';
   status: string;
   invitePending?: boolean;
   registeredAt: string;

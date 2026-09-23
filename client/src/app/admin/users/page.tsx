@@ -62,6 +62,7 @@ function AdminUsersContent() {
   const [searchTerm, setSearchTerm] = useState("");
   const [roleFilter, setRoleFilter] = useState("all");
   const [statusFilter, setStatusFilter] = useState("all");
+  const [planFilter, setPlanFilter] = useState("all");
   const [isAddUserOpen, setIsAddUserOpen] = useState(false);
   const [newUser, setNewUser] = useState({
     name: "",
@@ -95,10 +96,12 @@ function AdminUsersContent() {
       const matchesRole = roleFilter === "all" || user.role === roleFilter;
       const matchesStatus =
         statusFilter === "all" || user.status === statusFilter;
+      const plan = user.plan === "premium" ? "premium" : "freemium";
+      const matchesPlan = planFilter === "all" || plan === planFilter;
 
-      return matchesSearch && matchesRole && matchesStatus;
+      return matchesSearch && matchesRole && matchesStatus && matchesPlan;
     });
-  }, [users, searchTerm, roleFilter, statusFilter]);
+  }, [users, searchTerm, roleFilter, statusFilter, planFilter]);
 
   useEffect(() => {
     if (!isAdmin) return;
@@ -216,6 +219,11 @@ function AdminUsersContent() {
         country: payload.data.user.country,
         language: String(payload.data.user.language || "RU").toLowerCase(),
         role: String(payload.data.user.role || "STUDENT").toLowerCase(),
+        plan:
+          String(payload.data.user.plan || "FREEMIUM").toUpperCase() ===
+          "PREMIUM"
+            ? "premium"
+            : "freemium",
         status: "pending",
         invitePending: true,
         registeredAt: new Date().toISOString().split("T")[0],
@@ -421,6 +429,18 @@ function AdminUsersContent() {
               </select>
                 <ChevronDown className="h-4 w-4 text-gray-400 pointer-events-none absolute right-3 top-1/2 -translate-y-1/2" />
               </div>
+              <div className="relative w-full sm:w-48">
+              <select
+                value={planFilter}
+                onChange={(e) => setPlanFilter(e.target.value)}
+                  className="w-full appearance-none px-3 py-2 pr-9 border border-slate-300 rounded-lg focus:ring-2 focus:ring-blue-500 focus:border-blue-500"
+              >
+                <option value="all">{t("admin.users.filters.plan.all")}</option>
+                <option value="freemium">{t("admin.users.filters.plan.free")}</option>
+                <option value="premium">{t("admin.users.filters.plan.premium")}</option>
+              </select>
+                <ChevronDown className="h-4 w-4 text-gray-400 pointer-events-none absolute right-3 top-1/2 -translate-y-1/2" />
+              </div>
             </div>
           </CardContent>
         </Card>
@@ -445,6 +465,9 @@ function AdminUsersContent() {
                     </th>
                     <th className="text-left py-3 px-4 font-medium text-gray-900">
                       {t("admin.users.table.status")}
+                    </th>
+                    <th className="text-left py-3 px-4 font-medium text-gray-900">
+                      {t("admin.users.table.plan")}
                     </th>
                     <th className="text-left py-3 px-4 font-medium text-gray-900">
                       {t("admin.users.table.activity")}
@@ -502,6 +525,19 @@ function AdminUsersContent() {
                             : u.status === "pending"
                             ? t("admin.users.statuses.pending")
                             : t("admin.users.statuses.blocked")}
+                        </span>
+                      </td>
+                      <td className="py-3 px-4">
+                        <span
+                          className={`inline-flex items-center px-3 py-1 rounded-full text-xs font-semibold ${
+                            u.plan === "premium"
+                              ? "bg-amber-100 text-amber-800"
+                              : "bg-slate-100 text-slate-700"
+                          }`}
+                        >
+                          {u.plan === "premium"
+                            ? t("admin.users.plan.premium")
+                            : t("admin.users.plan.free")}
                         </span>
                       </td>
                       <td className="py-3 px-4">

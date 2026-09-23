@@ -152,6 +152,43 @@ export async function sendEmail(params: SendEmailParams): Promise<SendInviteEmai
   };
 }
 
+export function formatRefundAmount(amount: number, currency = 'RUB'): string {
+  const value = Number.isInteger(amount) ? String(amount) : amount.toFixed(2);
+  return currency === 'RUB' ? `${value} ₽` : `${value} ${currency}`;
+}
+
+export async function sendRefundEmail(params: {
+  to: string;
+  name?: string;
+  amount: number;
+  currency?: string;
+  refundId: string;
+}): Promise<SendInviteEmailResult> {
+  const appUrl = process.env.CLIENT_URL || process.env.APP_BASE_URL || 'https://adaptedrussia.ru';
+  const amountLabel = formatRefundAmount(params.amount, params.currency || 'RUB');
+  const name = escapeHtml(params.name?.split(' ')[0] || 'студент');
+  return sendEmail({
+    to: params.to,
+    subject: 'Возврат средств — AdaptEd Russia',
+    html: `
+      <div style="font-family:Arial,sans-serif;max-width:560px;margin:0 auto;padding:24px;color:#1f2937">
+        <h2 style="margin:0 0 12px 0;">Возврат средств</h2>
+        <p style="margin:0 0 12px 0;">Здравствуйте, ${name}.</p>
+        <p style="margin:0 0 16px 0;">Мы вернули ${escapeHtml(amountLabel)} на вашу карту.</p>
+        <p style="margin:0 0 20px 0;color:#6b7280;font-size:14px;">
+          Деньги обычно приходят в течение 1–10 рабочих дней, в зависимости от банка.
+        </p>
+        <p style="margin:0;">
+          <a href="${appUrl}/profile" style="display:inline-block;background:#2563eb;color:#fff;text-decoration:none;padding:12px 18px;border-radius:8px;">
+            Открыть историю платежей
+          </a>
+        </p>
+      </div>
+    `,
+    idempotencyKey: `refund:${params.refundId}`,
+  });
+}
+
 export async function sendInviteEmail(params: SendInviteEmailParams): Promise<SendInviteEmailResult> {
   return sendEmail({
     to: params.to,

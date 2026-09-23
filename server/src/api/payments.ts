@@ -11,6 +11,7 @@ import {
 } from '../lib/yookassa';
 import { isPaymentTester } from '../lib/payment-test-access';
 import { logWebhookEvent } from '../lib/webhook-log';
+import { notifyPaymentRefund } from '../lib/refund-notify.js';
 import { v4 as uuidv4 } from 'uuid';
 
 const router = Router();
@@ -182,7 +183,18 @@ router.post('/webhook', async (req, res) => {
         result.matched ? 'processed' : 'skipped',
         result.matched ? null : 'Payment not found for refund',
       );
-      return res.json({ received: true, ...result });
+      if (result.matched && result.notify) {
+        void notifyPaymentRefund(result.notify);
+      }
+      const publicResult = result.matched
+        ? {
+            matched: result.matched,
+            paymentId: result.paymentId,
+            alreadyProcessed: result.alreadyProcessed,
+            fullyRefunded: result.fullyRefunded,
+          }
+        : { matched: false as const };
+      return res.json({ received: true, ...publicResult });
     }
 
     // Never trust the status, amount, or owner sent by the webhook caller.
