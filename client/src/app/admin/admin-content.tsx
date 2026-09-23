@@ -15,6 +15,7 @@ import {
   ScanLine,
   HeartHandshake,
   Send,
+  CreditCard,
 } from "lucide-react";
 import Link from "next/link";
 import { useAuth } from "@/contexts/AuthContext";
@@ -57,6 +58,7 @@ export function AdminContent() {
   }, [isAdmin]);
 
   const stats = dashboard?.stats;
+  const payments = dashboard?.payments;
   const adminStats = [
     {
       title: t("admin.dashboard.stats.users"),
@@ -232,6 +234,56 @@ export function AdminContent() {
               </Card>
             );
           })}
+        </div>
+
+        <div>
+          <h2 className="text-lg sm:text-xl font-semibold text-gray-900 mb-4 sm:mb-6">
+            {t("admin.dashboard.payments.title")}
+          </h2>
+          <div className="grid grid-cols-1 sm:grid-cols-3 gap-4 sm:gap-6">
+            <Card className={cardClass}>
+              <CardContent className="p-4 sm:p-6">
+                <p className="text-sm font-medium text-gray-600">
+                  {t("admin.dashboard.payments.refundCount")}
+                </p>
+                <p className="text-2xl font-bold text-gray-900">
+                  {loading ? "…" : String(payments?.refundCount ?? 0)}
+                </p>
+              </CardContent>
+            </Card>
+            <Card className={cardClass}>
+              <CardContent className="p-4 sm:p-6">
+                <p className="text-sm font-medium text-gray-600">
+                  {t("admin.dashboard.payments.refundSum")}
+                </p>
+                <p className="text-2xl font-bold text-gray-900">
+                  {loading
+                    ? "…"
+                    : `${Math.round(payments?.refundSum ?? 0).toLocaleString("ru-RU")} ₽`}
+                </p>
+              </CardContent>
+            </Card>
+            <Card className={cardClass}>
+              <CardContent className="p-4 sm:p-6">
+                <div className="flex items-start justify-between gap-3">
+                  <div>
+                    <p className="text-sm font-medium text-gray-600">
+                      {t("admin.dashboard.payments.refundRate")}
+                    </p>
+                    <p className="text-2xl font-bold text-gray-900">
+                      {loading ? "…" : `${payments?.refundRate ?? 0}%`}
+                    </p>
+                    <p className="text-xs text-gray-500">
+                      {t("admin.dashboard.payments.ofRevenue")}
+                    </p>
+                  </div>
+                  <div className="w-12 h-12 rounded-xl bg-gradient-to-br from-rose-500 to-orange-500 flex items-center justify-center flex-shrink-0">
+                    <CreditCard className="h-6 w-6 text-white" />
+                  </div>
+                </div>
+              </CardContent>
+            </Card>
+          </div>
         </div>
 
         <div>

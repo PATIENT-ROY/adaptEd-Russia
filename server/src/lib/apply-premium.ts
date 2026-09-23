@@ -248,6 +248,17 @@ export async function applyVerifiedRefund(refund: YooKassaRefund) {
       },
     });
 
+    const notify = owner.email
+      ? {
+          userId: owner.id,
+          email: owner.email,
+          name: owner.name,
+          amount: refundCents / 100,
+          currency: current.currency,
+          refundId: refund.id,
+        }
+      : undefined;
+
     const fullyRefunded = totalRefundedCents === paymentCents;
     if (!fullyRefunded) {
       return {
@@ -255,6 +266,7 @@ export async function applyVerifiedRefund(refund: YooKassaRefund) {
         paymentId: current.id,
         alreadyProcessed: false as const,
         fullyRefunded: false as const,
+        notify,
       };
     }
 
@@ -319,6 +331,7 @@ export async function applyVerifiedRefund(refund: YooKassaRefund) {
       paymentId: current.id,
       alreadyProcessed: false as const,
       fullyRefunded: true as const,
+      notify,
     };
   });
 }

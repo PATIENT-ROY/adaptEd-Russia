@@ -5,6 +5,7 @@ import { ApiResponse } from '../types/index.js';
 import { ACHIEVEMENT_CATALOG_SIZE } from './user';
 import { z } from 'zod';
 import { recordAdminAction } from '../lib/admin-audit';
+import { refundRatePercent } from '../lib/payment-metrics';
 
 const router = Router();
 
@@ -190,6 +191,9 @@ router.get('/dashboard', async (_req, res) => {
       recentUsers,
       recentGuides,
       guideReadGroups,
+      refundCount,
+      refundSumAgg,
+      paidGrossAgg,
     ] = await Promise.all([
       prisma.user.count(),
       prisma.user.count({ where: { registeredAt: { gte: thirtyDaysAgo } } }),
@@ -242,7 +246,19 @@ router.get('/dashboard', async (_req, res) => {
         by: ['guideId', 'guideType'],
         _count: { _all: true },
       }),
+      prisma.paymentRefund.count({ where: { status: 'SUCCEEDED' } }),
+      prisma.paymentRefund.aggregate({
+        where: { status: 'SUCCEEDED' },
+        _sum: { amount: true },
+      }),
+      prisma.payment.aggregate({
+        where: { status: { in: ['SUCCEEDED', 'REFUNDED'] } },
+        _sum: { amount: true },
+      }),
     ]);
+
+    const refundSum = Number(refundSumAgg._sum.amount || 0);
+    const paidGross = Number(paidGrossAgg._sum.amount || 0);
 
     const topReads = [...guideReadGroups]
       .sort((a, b) => b._count._all - a._count._all)
@@ -280,6 +296,12 @@ router.get('/dashboard', async (_req, res) => {
           newBuddyApplications,
           guideReadsWeek: guideReadsLastWeek,
           aiMessagesWeek: aiMessagesLastWeek,
+        },
+        payments: {
+          refundCount,
+          refundSum,
+          paidGross,
+          refundRate: refundRatePercent(refundSum, paidGross),
         },
         recentUsers: recentUsers.map((u) => ({
           id: u.id,
@@ -340,6 +362,7 @@ type AdminUserListRecord = {
   country: string;
   language: string;
   role: string;
+  plan: string;
   registeredAt: Date;
   _count: { guideReads: number; chatMessages: number };
   chatMessages: Array<{ createdAt: Date }>;
@@ -361,6 +384,7 @@ function toAdminUserRow(u: AdminUserListRecord) {
     country: u.country,
     language: u.language.toLowerCase(),
     role: u.role.toLowerCase(),
+    plan: String(u.plan || 'FREEMIUM').toUpperCase() === 'PREMIUM' ? 'premium' : 'freemium',
     status: u.blockedAt ? "blocked" : invitePending ? "pending" : "active",
     invitePending,
     registeredAt: u.registeredAt.toISOString().slice(0, 10),
