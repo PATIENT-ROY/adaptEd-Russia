@@ -1227,7 +1227,7 @@ const translations: Record<Language, Record<string, string>> = {
     "profile.billing.status.paid": "Оплачено",
     "profile.billing.status.active": "Активен",
     "profile.billing.status.pending": "В ожидании",
-    "profile.billing.status.refunded": "Возвращён",
+    "profile.billing.status.refunded": "Возврат",
     "profile.billing.status.failed": "Ошибка",
     "profile.billing.status.canceled": "Отменён",
     "profile.billing.applyPremium": "Применить Premium",

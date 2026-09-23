@@ -1,9 +1,11 @@
 "use client";
 
+import { usePathname } from "next/navigation";
 import { useEffect } from "react";
 
 let lockCount = 0;
 let savedScrollY = 0;
+let savedPath = "";
 let lastTouchY = 0;
 
 function isInsideScrollable(target: EventTarget | null, deltaY: number) {
@@ -55,6 +57,7 @@ function lockScroll() {
   const html = document.documentElement;
   const { body } = document;
   savedScrollY = window.scrollY;
+  savedPath = window.location.pathname;
   const gap = window.innerWidth - html.clientWidth;
 
   html.classList.add("body-scroll-locked");
@@ -85,13 +88,27 @@ function unlockScroll() {
   document.removeEventListener("touchstart", onTouchStart);
   document.removeEventListener("touchmove", onTouchMove);
 
-  window.scrollTo(0, savedScrollY);
+  const stillOnSamePage = window.location.pathname === savedPath;
+  window.scrollTo(0, stillOnSamePage ? savedScrollY : 0);
+}
+
+function resetScrollAfterRouteChange(pathname: string) {
+  if (lockCount === 0 || pathname === savedPath) return;
+  savedScrollY = 0;
+  window.scrollTo(0, 0);
 }
 
 export function useBodyScrollLock(locked: boolean) {
+  const pathname = usePathname();
+
   useEffect(() => {
     if (!locked) return;
     lockScroll();
     return () => unlockScroll();
   }, [locked]);
+
+  useEffect(() => {
+    if (!locked) return;
+    resetScrollAfterRouteChange(pathname);
+  }, [locked, pathname]);
 }
