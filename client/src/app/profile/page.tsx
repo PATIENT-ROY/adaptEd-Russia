@@ -37,6 +37,7 @@ import {
   Download,
   Eye,
   Clock,
+  RotateCcw,
   ScanLine,
   AlertCircle,
   HelpCircle,
@@ -481,16 +482,27 @@ function ProfileContent() {
     setTimeout(() => setToastMessage(null), 3000);
   }, []);
 
+  const invoiceStatusKind = useCallback((status: string) => {
+    const s = (status || "").toLowerCase();
+    if (s === "paid" || s === "succeeded") return "paid";
+    if (s === "free") return "free";
+    if (s === "refunded") return "refunded";
+    if (s === "failed") return "failed";
+    if (s === "canceled" || s === "cancelled") return "canceled";
+    return "pending";
+  }, []);
+
   const invoiceStatusLabel = useCallback(
     (status: string) => {
-      if (status === "paid") return t("profile.billing.status.paid");
-      if (status === "free") return t("profile.billing.status.active");
-      if (status === "refunded") return t("profile.billing.status.refunded");
-      if (status === "failed") return t("profile.billing.status.failed");
-      if (status === "canceled") return t("profile.billing.status.canceled");
+      const kind = invoiceStatusKind(status);
+      if (kind === "paid") return t("profile.billing.status.paid");
+      if (kind === "free") return t("profile.billing.status.active");
+      if (kind === "refunded") return t("profile.billing.status.refunded");
+      if (kind === "failed") return t("profile.billing.status.failed");
+      if (kind === "canceled") return t("profile.billing.status.canceled");
       return t("profile.billing.status.pending");
     },
-    [t],
+    [invoiceStatusKind, t],
   );
 
   const downloadInvoiceReceipt = useCallback(
@@ -1155,7 +1167,9 @@ function ProfileContent() {
                   ) : (
                     <>
                       <div className="space-y-4">
-                        {billingHistoryData.map((invoice) => (
+                        {billingHistoryData.map((invoice) => {
+                          const kind = invoiceStatusKind(invoice.status);
+                          return (
                           <div
                             key={invoice.id}
                             className="flex flex-col sm:flex-row sm:items-center sm:justify-between p-3 sm:p-4 rounded-xl bg-slate-50 hover:bg-slate-100 transition-all duration-300 group gap-3 sm:gap-0"
@@ -1163,17 +1177,27 @@ function ProfileContent() {
                             <div className="flex items-center space-x-3 sm:space-x-4 flex-1 min-w-0">
                               <div
                                 className={`w-10 h-10 sm:w-12 sm:h-12 rounded-xl flex items-center justify-center flex-shrink-0 ${
-                                  invoice.status === "paid"
+                                  kind === "paid"
                                     ? "bg-green-100 text-green-600"
-                                    : invoice.status === "free"
+                                    : kind === "free"
                                       ? "bg-blue-100 text-blue-600"
-                                      : "bg-yellow-100 text-yellow-600"
+                                      : kind === "refunded"
+                                        ? "bg-slate-200 text-slate-600"
+                                        : kind === "canceled"
+                                          ? "bg-slate-100 text-slate-500"
+                                          : kind === "failed"
+                                            ? "bg-red-100 text-red-600"
+                                            : "bg-yellow-100 text-yellow-600"
                                 }`}
                               >
-                                {invoice.status === "paid" ? (
+                                {kind === "paid" ? (
                                   <CheckCircle className="h-5 w-5 sm:h-6 sm:w-6" />
-                                ) : invoice.status === "free" ? (
+                                ) : kind === "free" ? (
                                   <Crown className="h-5 w-5 sm:h-6 sm:w-6" />
+                                ) : kind === "refunded" ? (
+                                  <RotateCcw className="h-5 w-5 sm:h-6 sm:w-6" />
+                                ) : kind === "canceled" || kind === "failed" ? (
+                                  <AlertCircle className="h-5 w-5 sm:h-6 sm:w-6" />
                                 ) : (
                                   <Clock className="h-5 w-5 sm:h-6 sm:w-6" />
                                 )}
@@ -1204,11 +1228,15 @@ function ProfileContent() {
                               <div className="text-left sm:text-right">
                                 <p
                                   className={`font-bold text-base sm:text-lg ${
-                                    invoice.status === "paid"
+                                    kind === "paid"
                                       ? "text-green-600"
-                                      : invoice.status === "free"
+                                      : kind === "free"
                                         ? "text-blue-600"
-                                        : "text-yellow-600"
+                                        : kind === "refunded" || kind === "canceled"
+                                          ? "text-slate-500"
+                                          : kind === "failed"
+                                            ? "text-red-600"
+                                            : "text-yellow-600"
                                   }`}
                                 >
                                   {invoice.status === "free"
@@ -1216,11 +1244,7 @@ function ProfileContent() {
                                     : `${invoice.amount} ₽`}
                                 </p>
                                 <p className="text-xs sm:text-sm text-slate-500 capitalize">
-                                  {invoice.status === "paid"
-                                    ? t("profile.billing.status.paid")
-                                    : invoice.status === "free"
-                                      ? t("profile.billing.status.active")
-                                      : t("profile.billing.status.pending")}
+                                  {invoiceStatusLabel(invoice.status)}
                                 </p>
                               </div>
 
@@ -1256,7 +1280,8 @@ function ProfileContent() {
                               </div>
                             </div>
                           </div>
-                        ))}
+                          );
+                        })}
                       </div>
 
                       <div className="mt-6 pt-4 border-t border-slate-200">

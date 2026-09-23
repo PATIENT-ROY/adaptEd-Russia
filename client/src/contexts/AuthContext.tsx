@@ -162,6 +162,9 @@ export function AuthProvider({ children }: { children: React.ReactNode }) {
 
     clearApiCache();
     router.push("/");
+    requestAnimationFrame(() => {
+      window.scrollTo({ top: 0, left: 0, behavior: "instant" });
+    });
   }, [user, router]);
 
   const clearNewUserFlag = useCallback(() => {
