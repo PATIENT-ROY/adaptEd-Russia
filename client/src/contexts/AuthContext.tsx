@@ -23,7 +23,7 @@ interface AuthContextType {
       country: string;
     }
   ) => Promise<boolean>;
-  logout: () => Promise<void>;
+  logout: () => void;
   updateProfile: (userData: Partial<User>) => Promise<boolean>;
   syncUser: (userData: Partial<User>) => void;
   isLoading: boolean;
@@ -149,7 +149,7 @@ export function AuthProvider({ children }: { children: React.ReactNode }) {
     );
 
     try {
-      await apiClient.logout();
+      apiClient.logout();
     } catch (error) {
       console.error("Logout error:", error);
     }
@@ -162,9 +162,6 @@ export function AuthProvider({ children }: { children: React.ReactNode }) {
 
     clearApiCache();
     router.push("/");
-    requestAnimationFrame(() => {
-      window.scrollTo({ top: 0, left: 0, behavior: "instant" });
-    });
   }, [user, router]);
 
   const clearNewUserFlag = useCallback(() => {

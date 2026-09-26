@@ -72,7 +72,7 @@ function YandexMetrikaInner() {
 })(window, document, "script", "https://mc.yandex.ru/metrika/tag.js?id=${YANDEX_METRIKA_ID}", "ym");
 ym(${YANDEX_METRIKA_ID}, "init", {
   ssr: true,
-  webvisor: false,
+  webvisor: true,
   clickmap: false,
   accurateTrackBounce: true,
   trackLinks: true
