@@ -482,14 +482,42 @@ export function DocScanContent() {
                 <label htmlFor="docscan-source-language" className="block text-sm font-medium text-gray-700">
                   {t("docscan.sourceLanguage")}
                 </label>
-                <select id="docscan-source-language" value={sourceLanguage}
-                  onChange={event => setSourceLanguage(event.target.value as OcrLanguage)}
-                  disabled={isProcessing}
-                  className="w-full rounded-xl border border-gray-300 bg-white px-3 py-3 text-sm"
-                  aria-describedby="docscan-quality-tip">
-                  {(Object.keys(OCR_LANGUAGES) as OcrLanguage[]).map(code =>
-                    <option key={code} value={code}>{getLangName(code)}</option>)}
-                </select>
+                <div className="relative">
+                  <select
+                    id="docscan-source-language"
+                    value={sourceLanguage}
+                    onChange={(event) =>
+                      setSourceLanguage(event.target.value as OcrLanguage)
+                    }
+                    disabled={isProcessing}
+                    className="w-full appearance-none rounded-xl border border-gray-300 bg-white px-3 py-3 pr-10 text-sm text-gray-900 focus:outline-none focus:ring-2 focus:ring-[#6A5AE0] focus:border-[#6A5AE0] disabled:opacity-60"
+                    aria-describedby="docscan-quality-tip"
+                  >
+                    {(Object.keys(OCR_LANGUAGES) as OcrLanguage[]).map(
+                      (code) => (
+                        <option key={code} value={code}>
+                          {getLangName(code)}
+                        </option>
+                      ),
+                    )}
+                  </select>
+                  <div className="pointer-events-none absolute inset-y-0 right-0 flex items-center pr-3">
+                    <svg
+                      className="h-5 w-5 text-gray-400"
+                      fill="none"
+                      stroke="currentColor"
+                      viewBox="0 0 24 24"
+                      aria-hidden
+                    >
+                      <path
+                        strokeLinecap="round"
+                        strokeLinejoin="round"
+                        strokeWidth={2}
+                        d="M19 9l-7 7-7-7"
+                      />
+                    </svg>
+                  </div>
+                </div>
                 <p id="docscan-quality-tip" className="text-sm text-gray-500">{t("docscan.qualityTip")}</p>
               </div>
 

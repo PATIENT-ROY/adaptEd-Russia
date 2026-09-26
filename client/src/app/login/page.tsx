@@ -222,24 +222,24 @@ export default function LoginPage() {
                   style={{ minHeight: "200px" }}
                 >
                   <motion.div
-                    className="rounded-xl border border-slate-200 bg-slate-50 p-3 sm:p-4 text-left"
+                    className="rounded-xl border border-slate-200 bg-slate-50 p-4 text-left"
                     initial={{ opacity: 0, scale: 0.97 }}
                     animate={{ opacity: 1, scale: 1 }}
                     transition={{ duration: 0.3, ease: [0.16, 1, 0.3, 1] }}
                   >
-                    <div className="flex items-start gap-3">
-                      <div className="min-w-0 flex-1">
+                    <div className="flex items-center justify-between">
+                      <div>
                         <p className="text-xs uppercase tracking-wide text-slate-400">
                           {t("login.confirmedEmail")}
                         </p>
-                        <p className="mt-0.5 text-sm font-semibold text-slate-900 break-all">
+                        <p className="text-sm font-semibold text-slate-900">
                           {email}
                         </p>
                       </div>
                       <button
                         type="button"
                         onClick={handleBackToEmail}
-                        className="shrink-0 text-sm font-medium text-blue-600 hover:text-blue-700 pt-0.5"
+                        className="text-sm font-medium text-blue-600 hover:text-blue-700"
                         aria-label={t("login.changeEmail")}
                       >
                         {t("login.back")}
