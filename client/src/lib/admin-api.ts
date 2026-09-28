@@ -294,18 +294,61 @@ export function fetchAdminAiAnalytics() {
 
 export async function fetchAdminDocscanAnalytics() {
   const raw = asRecord(await adminFetch<unknown>('/analytics/docscan'));
+  const funnelRaw = asRecord(raw.funnel);
+  const trend = Array.isArray(raw.trend)
+    ? raw.trend.map((item) => {
+        const row = asRecord(item);
+        return {
+          date: String(row.date ?? ''),
+          count: Number(row.count ?? 0),
+        };
+      })
+    : [];
   return {
-    totalReads: Number(raw.totalReads ?? raw.totalScans ?? 0),
-    activeReaders: Number(raw.activeReaders ?? raw.activeUsers ?? 0),
+    totalScans: Number(raw.totalScans ?? raw.totalReads ?? 0),
+    successOcr: Number(raw.successOcr ?? 0),
+    ocrErrors: Number(raw.ocrErrors ?? 0),
+    activeUsers: Number(raw.activeUsers ?? raw.activeReaders ?? 0),
+    funnel: {
+      upload: Number(funnelRaw.upload ?? 0),
+      ocr: Number(funnelRaw.ocr ?? 0),
+      export: Number(funnelRaw.export ?? 0),
+    },
+    trend,
   };
 }
 
 export async function fetchAdminAchievementsAnalytics() {
   const raw = asRecord(await adminFetch<unknown>('/analytics/achievements'));
+  const categories = Array.isArray(raw.categories)
+    ? raw.categories.map((item) => {
+        const row = asRecord(item);
+        return {
+          key: String(row.key ?? ''),
+          catalog: Number(row.catalog ?? 0),
+          unlockedUsers: Number(row.unlockedUsers ?? 0),
+          share: Number(row.share ?? 0),
+        };
+      })
+    : [];
+  const recent = Array.isArray(raw.recent)
+    ? raw.recent.map((item) => {
+        const row = asRecord(item);
+        return {
+          id: String(row.id ?? ''),
+          name: String(row.name ?? ''),
+          category: String(row.category ?? ''),
+          rarity: String(row.rarity ?? 'common'),
+          unlockedUsers: Number(row.unlockedUsers ?? 0),
+        };
+      })
+    : [];
   return {
     totalAchievements: Number(raw.totalAchievements ?? 0),
     engagedShare: Number(raw.engagedShare ?? raw.avgProgress ?? 0),
     activeUsers: Number(raw.activeUsers ?? 0),
     newUsersMonth: Number(raw.newUsersMonth ?? 0),
+    categories,
+    recent,
   };
 }

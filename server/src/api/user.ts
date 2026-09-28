@@ -468,6 +468,7 @@ const ACHIEVEMENTS: AchievementDefinition[] = [
 ];
 
 /** Catalog size for admin analytics — keep in sync with ACHIEVEMENTS above */
+export const ACHIEVEMENT_CATALOG = ACHIEVEMENTS;
 export const ACHIEVEMENT_CATALOG_SIZE = ACHIEVEMENTS.length;
 
 const router = Router();
@@ -1165,22 +1166,15 @@ router.get('/achievements', authMiddleware, async (req: Request, res: Response) 
   try {
     const authUser = (req as any).user;
 
-    const docScanAggregatePromise = (async () => {
-      const client = prisma as any;
-      if (!client?.docScanUsage?.aggregate) {
-        return { _sum: { scanCount: 0 } };
-      }
-
-      try {
-        return await client.docScanUsage.aggregate({
-          where: { userId: authUser.userId },
-          _sum: { scanCount: true },
-        });
-      } catch (error) {
+    const docScanAggregatePromise = prisma.docScanUsage
+      .aggregate({
+        where: { userId: authUser.userId },
+        _sum: { scanCount: true },
+      })
+      .catch((error) => {
         console.warn('DocScan aggregate failed, fallback to 0:', error);
         return { _sum: { scanCount: 0 } };
-      }
-    })();
+      });
 
     const grantApplicationsCountPromise = prisma.userGrantApplication
       .count({
@@ -1429,6 +1423,47 @@ router.get('/achievements', authMiddleware, async (req: Request, res: Response) 
     res.status(500).json({
       success: false,
       error: 'Внутренняя ошибка сервера',
+    } as ApiResponse);
+  }
+});
+
+const docScanLogSchema = z.object({
+  success: z.boolean().optional().default(true),
+  exported: z.boolean().optional().default(false),
+  source: z.enum(['pdf', 'ocr', 'mixed']).optional(),
+  language: z.string().trim().max(16).optional(),
+});
+
+router.post('/docscan/log', authMiddleware, async (req: Request, res: Response) => {
+  try {
+    const authUser = (req as any).user;
+    const payload = docScanLogSchema.parse(req.body ?? {});
+    const exported = payload.exported === true;
+    const success = exported ? true : payload.success !== false;
+
+    await prisma.docScanUsage.create({
+      data: {
+        userId: authUser.userId,
+        scanCount: exported || !success ? 0 : 1,
+        success,
+        exported,
+        source: payload.source ?? null,
+        language: payload.language ?? null,
+      },
+    });
+
+    res.json({ success: true, data: { logged: true } } as ApiResponse);
+  } catch (error) {
+    if (error instanceof z.ZodError) {
+      return res.status(400).json({
+        success: false,
+        error: 'Некорректные данные DocScan',
+      } as ApiResponse);
+    }
+    console.error('DocScan log error:', error);
+    res.status(500).json({
+      success: false,
+      error: 'Не удалось сохранить событие DocScan',
     } as ApiResponse);
   }
 });

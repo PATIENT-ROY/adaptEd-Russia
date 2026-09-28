@@ -54,6 +54,11 @@ export type Guide = $Result.DefaultSelection<Prisma.$GuidePayload>
  */
 export type ChatDailyUsage = $Result.DefaultSelection<Prisma.$ChatDailyUsagePayload>
 /**
+ * Model DocScanUsage
+ * 
+ */
+export type DocScanUsage = $Result.DefaultSelection<Prisma.$DocScanUsagePayload>
+/**
  * Model ChatMessage
  * 
  */
@@ -384,6 +389,16 @@ export class PrismaClient<
     * ```
     */
   get chatDailyUsage(): Prisma.ChatDailyUsageDelegate<ExtArgs>;
+
+  /**
+   * `prisma.docScanUsage`: Exposes CRUD operations for the **DocScanUsage** model.
+    * Example usage:
+    * ```ts
+    * // Fetch zero or more DocScanUsages
+    * const docScanUsages = await prisma.docScanUsage.findMany()
+    * ```
+    */
+  get docScanUsage(): Prisma.DocScanUsageDelegate<ExtArgs>;
 
   /**
    * `prisma.chatMessage`: Exposes CRUD operations for the **ChatMessage** model.
@@ -1023,6 +1038,7 @@ export namespace Prisma {
     Reminder: 'Reminder',
     Guide: 'Guide',
     ChatDailyUsage: 'ChatDailyUsage',
+    DocScanUsage: 'DocScanUsage',
     ChatMessage: 'ChatMessage',
     SupportTicket: 'SupportTicket',
     SupportResponse: 'SupportResponse',
@@ -1057,7 +1073,7 @@ export namespace Prisma {
 
   export type TypeMap<ExtArgs extends $Extensions.InternalArgs = $Extensions.DefaultArgs, ClientOptions = {}> = {
     meta: {
-      modelProps: "user" | "buddyApplication" | "passwordSetupToken" | "profile" | "note" | "reminder" | "guide" | "chatDailyUsage" | "chatMessage" | "supportTicket" | "supportResponse" | "adminInboxRead" | "adminAuditLog" | "userNotification" | "admin" | "subscriptionPlan" | "payment" | "paymentRefund" | "webhookLog" | "subscription" | "grant" | "userGrantApplication" | "question" | "answer" | "questionLike" | "guideRead" | "review"
+      modelProps: "user" | "buddyApplication" | "passwordSetupToken" | "profile" | "note" | "reminder" | "guide" | "chatDailyUsage" | "docScanUsage" | "chatMessage" | "supportTicket" | "supportResponse" | "adminInboxRead" | "adminAuditLog" | "userNotification" | "admin" | "subscriptionPlan" | "payment" | "paymentRefund" | "webhookLog" | "subscription" | "grant" | "userGrantApplication" | "question" | "answer" | "questionLike" | "guideRead" | "review"
       txIsolationLevel: Prisma.TransactionIsolationLevel
     }
     model: {
@@ -1618,6 +1634,76 @@ export namespace Prisma {
           count: {
             args: Prisma.ChatDailyUsageCountArgs<ExtArgs>
             result: $Utils.Optional<ChatDailyUsageCountAggregateOutputType> | number
+          }
+        }
+      }
+      DocScanUsage: {
+        payload: Prisma.$DocScanUsagePayload<ExtArgs>
+        fields: Prisma.DocScanUsageFieldRefs
+        operations: {
+          findUnique: {
+            args: Prisma.DocScanUsageFindUniqueArgs<ExtArgs>
+            result: $Utils.PayloadToResult<Prisma.$DocScanUsagePayload> | null
+          }
+          findUniqueOrThrow: {
+            args: Prisma.DocScanUsageFindUniqueOrThrowArgs<ExtArgs>
+            result: $Utils.PayloadToResult<Prisma.$DocScanUsagePayload>
+          }
+          findFirst: {
+            args: Prisma.DocScanUsageFindFirstArgs<ExtArgs>
+            result: $Utils.PayloadToResult<Prisma.$DocScanUsagePayload> | null
+          }
+          findFirstOrThrow: {
+            args: Prisma.DocScanUsageFindFirstOrThrowArgs<ExtArgs>
+            result: $Utils.PayloadToResult<Prisma.$DocScanUsagePayload>
+          }
+          findMany: {
+            args: Prisma.DocScanUsageFindManyArgs<ExtArgs>
+            result: $Utils.PayloadToResult<Prisma.$DocScanUsagePayload>[]
+          }
+          create: {
+            args: Prisma.DocScanUsageCreateArgs<ExtArgs>
+            result: $Utils.PayloadToResult<Prisma.$DocScanUsagePayload>
+          }
+          createMany: {
+            args: Prisma.DocScanUsageCreateManyArgs<ExtArgs>
+            result: BatchPayload
+          }
+          createManyAndReturn: {
+            args: Prisma.DocScanUsageCreateManyAndReturnArgs<ExtArgs>
+            result: $Utils.PayloadToResult<Prisma.$DocScanUsagePayload>[]
+          }
+          delete: {
+            args: Prisma.DocScanUsageDeleteArgs<ExtArgs>
+            result: $Utils.PayloadToResult<Prisma.$DocScanUsagePayload>
+          }
+          update: {
+            args: Prisma.DocScanUsageUpdateArgs<ExtArgs>
+            result: $Utils.PayloadToResult<Prisma.$DocScanUsagePayload>
+          }
+          deleteMany: {
+            args: Prisma.DocScanUsageDeleteManyArgs<ExtArgs>
+            result: BatchPayload
+          }
+          updateMany: {
+            args: Prisma.DocScanUsageUpdateManyArgs<ExtArgs>
+            result: BatchPayload
+          }
+          upsert: {
+            args: Prisma.DocScanUsageUpsertArgs<ExtArgs>
+            result: $Utils.PayloadToResult<Prisma.$DocScanUsagePayload>
+          }
+          aggregate: {
+            args: Prisma.DocScanUsageAggregateArgs<ExtArgs>
+            result: $Utils.Optional<AggregateDocScanUsage>
+          }
+          groupBy: {
+            args: Prisma.DocScanUsageGroupByArgs<ExtArgs>
+            result: $Utils.Optional<DocScanUsageGroupByOutputType>[]
+          }
+          count: {
+            args: Prisma.DocScanUsageCountArgs<ExtArgs>
+            result: $Utils.Optional<DocScanUsageCountAggregateOutputType> | number
           }
         }
       }
@@ -3125,6 +3211,7 @@ export namespace Prisma {
     questionLikes: number
     reviews: number
     guideReads: number
+    docScanUsage: number
     passwordSetupTokens: number
     buddyApplications: number
     adminInboxReads: number
@@ -3148,6 +3235,7 @@ export namespace Prisma {
     questionLikes?: boolean | UserCountOutputTypeCountQuestionLikesArgs
     reviews?: boolean | UserCountOutputTypeCountReviewsArgs
     guideReads?: boolean | UserCountOutputTypeCountGuideReadsArgs
+    docScanUsage?: boolean | UserCountOutputTypeCountDocScanUsageArgs
     passwordSetupTokens?: boolean | UserCountOutputTypeCountPasswordSetupTokensArgs
     buddyApplications?: boolean | UserCountOutputTypeCountBuddyApplicationsArgs
     adminInboxReads?: boolean | UserCountOutputTypeCountAdminInboxReadsArgs
@@ -3257,6 +3345,13 @@ export namespace Prisma {
    */
   export type UserCountOutputTypeCountGuideReadsArgs<ExtArgs extends $Extensions.InternalArgs = $Extensions.DefaultArgs> = {
     where?: GuideReadWhereInput
+  }
+
+  /**
+   * UserCountOutputType without action
+   */
+  export type UserCountOutputTypeCountDocScanUsageArgs<ExtArgs extends $Extensions.InternalArgs = $Extensions.DefaultArgs> = {
+    where?: DocScanUsageWhereInput
   }
 
   /**
@@ -3408,10 +3503,12 @@ export namespace Prisma {
 
   export type SubscriptionPlanCountOutputType = {
     subscriptions: number
+    payments: number
   }
 
   export type SubscriptionPlanCountOutputTypeSelect<ExtArgs extends $Extensions.InternalArgs = $Extensions.DefaultArgs> = {
     subscriptions?: boolean | SubscriptionPlanCountOutputTypeCountSubscriptionsArgs
+    payments?: boolean | SubscriptionPlanCountOutputTypeCountPaymentsArgs
   }
 
   // Custom InputTypes
@@ -3430,6 +3527,13 @@ export namespace Prisma {
    */
   export type SubscriptionPlanCountOutputTypeCountSubscriptionsArgs<ExtArgs extends $Extensions.InternalArgs = $Extensions.DefaultArgs> = {
     where?: SubscriptionWhereInput
+  }
+
+  /**
+   * SubscriptionPlanCountOutputType without action
+   */
+  export type SubscriptionPlanCountOutputTypeCountPaymentsArgs<ExtArgs extends $Extensions.InternalArgs = $Extensions.DefaultArgs> = {
+    where?: PaymentWhereInput
   }
 
 
@@ -3864,6 +3968,7 @@ export namespace Prisma {
     questionLikes?: boolean | User$questionLikesArgs<ExtArgs>
     reviews?: boolean | User$reviewsArgs<ExtArgs>
     guideReads?: boolean | User$guideReadsArgs<ExtArgs>
+    docScanUsage?: boolean | User$docScanUsageArgs<ExtArgs>
     passwordSetupTokens?: boolean | User$passwordSetupTokensArgs<ExtArgs>
     buddyApplications?: boolean | User$buddyApplicationsArgs<ExtArgs>
     adminInboxReads?: boolean | User$adminInboxReadsArgs<ExtArgs>
@@ -3931,6 +4036,7 @@ export namespace Prisma {
     questionLikes?: boolean | User$questionLikesArgs<ExtArgs>
     reviews?: boolean | User$reviewsArgs<ExtArgs>
     guideReads?: boolean | User$guideReadsArgs<ExtArgs>
+    docScanUsage?: boolean | User$docScanUsageArgs<ExtArgs>
     passwordSetupTokens?: boolean | User$passwordSetupTokensArgs<ExtArgs>
     buddyApplications?: boolean | User$buddyApplicationsArgs<ExtArgs>
     adminInboxReads?: boolean | User$adminInboxReadsArgs<ExtArgs>
@@ -3959,6 +4065,7 @@ export namespace Prisma {
       questionLikes: Prisma.$QuestionLikePayload<ExtArgs>[]
       reviews: Prisma.$ReviewPayload<ExtArgs>[]
       guideReads: Prisma.$GuideReadPayload<ExtArgs>[]
+      docScanUsage: Prisma.$DocScanUsagePayload<ExtArgs>[]
       passwordSetupTokens: Prisma.$PasswordSetupTokenPayload<ExtArgs>[]
       buddyApplications: Prisma.$BuddyApplicationPayload<ExtArgs>[]
       adminInboxReads: Prisma.$AdminInboxReadPayload<ExtArgs>[]
@@ -4364,6 +4471,7 @@ export namespace Prisma {
     questionLikes<T extends User$questionLikesArgs<ExtArgs> = {}>(args?: Subset<T, User$questionLikesArgs<ExtArgs>>): Prisma.PrismaPromise<$Result.GetResult<Prisma.$QuestionLikePayload<ExtArgs>, T, "findMany"> | Null>
     reviews<T extends User$reviewsArgs<ExtArgs> = {}>(args?: Subset<T, User$reviewsArgs<ExtArgs>>): Prisma.PrismaPromise<$Result.GetResult<Prisma.$ReviewPayload<ExtArgs>, T, "findMany"> | Null>
     guideReads<T extends User$guideReadsArgs<ExtArgs> = {}>(args?: Subset<T, User$guideReadsArgs<ExtArgs>>): Prisma.PrismaPromise<$Result.GetResult<Prisma.$GuideReadPayload<ExtArgs>, T, "findMany"> | Null>
+    docScanUsage<T extends User$docScanUsageArgs<ExtArgs> = {}>(args?: Subset<T, User$docScanUsageArgs<ExtArgs>>): Prisma.PrismaPromise<$Result.GetResult<Prisma.$DocScanUsagePayload<ExtArgs>, T, "findMany"> | Null>
     passwordSetupTokens<T extends User$passwordSetupTokensArgs<ExtArgs> = {}>(args?: Subset<T, User$passwordSetupTokensArgs<ExtArgs>>): Prisma.PrismaPromise<$Result.GetResult<Prisma.$PasswordSetupTokenPayload<ExtArgs>, T, "findMany"> | Null>
     buddyApplications<T extends User$buddyApplicationsArgs<ExtArgs> = {}>(args?: Subset<T, User$buddyApplicationsArgs<ExtArgs>>): Prisma.PrismaPromise<$Result.GetResult<Prisma.$BuddyApplicationPayload<ExtArgs>, T, "findMany"> | Null>
     adminInboxReads<T extends User$adminInboxReadsArgs<ExtArgs> = {}>(args?: Subset<T, User$adminInboxReadsArgs<ExtArgs>>): Prisma.PrismaPromise<$Result.GetResult<Prisma.$AdminInboxReadPayload<ExtArgs>, T, "findMany"> | Null>
@@ -5004,6 +5112,26 @@ export namespace Prisma {
     take?: number
     skip?: number
     distinct?: GuideReadScalarFieldEnum | GuideReadScalarFieldEnum[]
+  }
+
+  /**
+   * User.docScanUsage
+   */
+  export type User$docScanUsageArgs<ExtArgs extends $Extensions.InternalArgs = $Extensions.DefaultArgs> = {
+    /**
+     * Select specific fields to fetch from the DocScanUsage
+     */
+    select?: DocScanUsageSelect<ExtArgs> | null
+    /**
+     * Choose, which related nodes to fetch as well
+     */
+    include?: DocScanUsageInclude<ExtArgs> | null
+    where?: DocScanUsageWhereInput
+    orderBy?: DocScanUsageOrderByWithRelationInput | DocScanUsageOrderByWithRelationInput[]
+    cursor?: DocScanUsageWhereUniqueInput
+    take?: number
+    skip?: number
+    distinct?: DocScanUsageScalarFieldEnum | DocScanUsageScalarFieldEnum[]
   }
 
   /**
@@ -12217,6 +12345,1009 @@ export namespace Prisma {
 
 
   /**
+   * Model DocScanUsage
+   */
+
+  export type AggregateDocScanUsage = {
+    _count: DocScanUsageCountAggregateOutputType | null
+    _avg: DocScanUsageAvgAggregateOutputType | null
+    _sum: DocScanUsageSumAggregateOutputType | null
+    _min: DocScanUsageMinAggregateOutputType | null
+    _max: DocScanUsageMaxAggregateOutputType | null
+  }
+
+  export type DocScanUsageAvgAggregateOutputType = {
+    scanCount: number | null
+  }
+
+  export type DocScanUsageSumAggregateOutputType = {
+    scanCount: number | null
+  }
+
+  export type DocScanUsageMinAggregateOutputType = {
+    id: string | null
+    userId: string | null
+    scanCount: number | null
+    success: boolean | null
+    exported: boolean | null
+    source: string | null
+    language: string | null
+    createdAt: Date | null
+  }
+
+  export type DocScanUsageMaxAggregateOutputType = {
+    id: string | null
+    userId: string | null
+    scanCount: number | null
+    success: boolean | null
+    exported: boolean | null
+    source: string | null
+    language: string | null
+    createdAt: Date | null
+  }
+
+  export type DocScanUsageCountAggregateOutputType = {
+    id: number
+    userId: number
+    scanCount: number
+    success: number
+    exported: number
+    source: number
+    language: number
+    createdAt: number
+    _all: number
+  }
+
+
+  export type DocScanUsageAvgAggregateInputType = {
+    scanCount?: true
+  }
+
+  export type DocScanUsageSumAggregateInputType = {
+    scanCount?: true
+  }
+
+  export type DocScanUsageMinAggregateInputType = {
+    id?: true
+    userId?: true
+    scanCount?: true
+    success?: true
+    exported?: true
+    source?: true
+    language?: true
+    createdAt?: true
+  }
+
+  export type DocScanUsageMaxAggregateInputType = {
+    id?: true
+    userId?: true
+    scanCount?: true
+    success?: true
+    exported?: true
+    source?: true
+    language?: true
+    createdAt?: true
+  }
+
+  export type DocScanUsageCountAggregateInputType = {
+    id?: true
+    userId?: true
+    scanCount?: true
+    success?: true
+    exported?: true
+    source?: true
+    language?: true
+    createdAt?: true
+    _all?: true
+  }
+
+  export type DocScanUsageAggregateArgs<ExtArgs extends $Extensions.InternalArgs = $Extensions.DefaultArgs> = {
+    /**
+     * Filter which DocScanUsage to aggregate.
+     */
+    where?: DocScanUsageWhereInput
+    /**
+     * {@link https://www.prisma.io/docs/concepts/components/prisma-client/sorting Sorting Docs}
+     * 
+     * Determine the order of DocScanUsages to fetch.
+     */
+    orderBy?: DocScanUsageOrderByWithRelationInput | DocScanUsageOrderByWithRelationInput[]
+    /**
+     * {@link https://www.prisma.io/docs/concepts/components/prisma-client/pagination#cursor-based-pagination Cursor Docs}
+     * 
+     * Sets the start position
+     */
+    cursor?: DocScanUsageWhereUniqueInput
+    /**
+     * {@link https://www.prisma.io/docs/concepts/components/prisma-client/pagination Pagination Docs}
+     * 
+     * Take `±n` DocScanUsages from the position of the cursor.
+     */
+    take?: number
+    /**
+     * {@link https://www.prisma.io/docs/concepts/components/prisma-client/pagination Pagination Docs}
+     * 
+     * Skip the first `n` DocScanUsages.
+     */
+    skip?: number
+    /**
+     * {@link https://www.prisma.io/docs/concepts/components/prisma-client/aggregations Aggregation Docs}
+     * 
+     * Count returned DocScanUsages
+    **/
+    _count?: true | DocScanUsageCountAggregateInputType
+    /**
+     * {@link https://www.prisma.io/docs/concepts/components/prisma-client/aggregations Aggregation Docs}
+     * 
+     * Select which fields to average
+    **/
+    _avg?: DocScanUsageAvgAggregateInputType
+    /**
+     * {@link https://www.prisma.io/docs/concepts/components/prisma-client/aggregations Aggregation Docs}
+     * 
+     * Select which fields to sum
+    **/
+    _sum?: DocScanUsageSumAggregateInputType
+    /**
+     * {@link https://www.prisma.io/docs/concepts/components/prisma-client/aggregations Aggregation Docs}
+     * 
+     * Select which fields to find the minimum value
+    **/
+    _min?: DocScanUsageMinAggregateInputType
+    /**
+     * {@link https://www.prisma.io/docs/concepts/components/prisma-client/aggregations Aggregation Docs}
+     * 
+     * Select which fields to find the maximum value
+    **/
+    _max?: DocScanUsageMaxAggregateInputType
+  }
+
+  export type GetDocScanUsageAggregateType<T extends DocScanUsageAggregateArgs> = {
+        [P in keyof T & keyof AggregateDocScanUsage]: P extends '_count' | 'count'
+      ? T[P] extends true
+        ? number
+        : GetScalarType<T[P], AggregateDocScanUsage[P]>
+      : GetScalarType<T[P], AggregateDocScanUsage[P]>
+  }
+
+
+
+
+  export type DocScanUsageGroupByArgs<ExtArgs extends $Extensions.InternalArgs = $Extensions.DefaultArgs> = {
+    where?: DocScanUsageWhereInput
+    orderBy?: DocScanUsageOrderByWithAggregationInput | DocScanUsageOrderByWithAggregationInput[]
+    by: DocScanUsageScalarFieldEnum[] | DocScanUsageScalarFieldEnum
+    having?: DocScanUsageScalarWhereWithAggregatesInput
+    take?: number
+    skip?: number
+    _count?: DocScanUsageCountAggregateInputType | true
+    _avg?: DocScanUsageAvgAggregateInputType
+    _sum?: DocScanUsageSumAggregateInputType
+    _min?: DocScanUsageMinAggregateInputType
+    _max?: DocScanUsageMaxAggregateInputType
+  }
+
+  export type DocScanUsageGroupByOutputType = {
+    id: string
+    userId: string
+    scanCount: number
+    success: boolean
+    exported: boolean
+    source: string | null
+    language: string | null
+    createdAt: Date
+    _count: DocScanUsageCountAggregateOutputType | null
+    _avg: DocScanUsageAvgAggregateOutputType | null
+    _sum: DocScanUsageSumAggregateOutputType | null
+    _min: DocScanUsageMinAggregateOutputType | null
+    _max: DocScanUsageMaxAggregateOutputType | null
+  }
+
+  type GetDocScanUsageGroupByPayload<T extends DocScanUsageGroupByArgs> = Prisma.PrismaPromise<
+    Array<
+      PickEnumerable<DocScanUsageGroupByOutputType, T['by']> &
+        {
+          [P in ((keyof T) & (keyof DocScanUsageGroupByOutputType))]: P extends '_count'
+            ? T[P] extends boolean
+              ? number
+              : GetScalarType<T[P], DocScanUsageGroupByOutputType[P]>
+            : GetScalarType<T[P], DocScanUsageGroupByOutputType[P]>
+        }
+      >
+    >
+
+
+  export type DocScanUsageSelect<ExtArgs extends $Extensions.InternalArgs = $Extensions.DefaultArgs> = $Extensions.GetSelect<{
+    id?: boolean
+    userId?: boolean
+    scanCount?: boolean
+    success?: boolean
+    exported?: boolean
+    source?: boolean
+    language?: boolean
+    createdAt?: boolean
+    user?: boolean | UserDefaultArgs<ExtArgs>
+  }, ExtArgs["result"]["docScanUsage"]>
+
+  export type DocScanUsageSelectCreateManyAndReturn<ExtArgs extends $Extensions.InternalArgs = $Extensions.DefaultArgs> = $Extensions.GetSelect<{
+    id?: boolean
+    userId?: boolean
+    scanCount?: boolean
+    success?: boolean
+    exported?: boolean
+    source?: boolean
+    language?: boolean
+    createdAt?: boolean
+    user?: boolean | UserDefaultArgs<ExtArgs>
+  }, ExtArgs["result"]["docScanUsage"]>
+
+  export type DocScanUsageSelectScalar = {
+    id?: boolean
+    userId?: boolean
+    scanCount?: boolean
+    success?: boolean
+    exported?: boolean
+    source?: boolean
+    language?: boolean
+    createdAt?: boolean
+  }
+
+  export type DocScanUsageInclude<ExtArgs extends $Extensions.InternalArgs = $Extensions.DefaultArgs> = {
+    user?: boolean | UserDefaultArgs<ExtArgs>
+  }
+  export type DocScanUsageIncludeCreateManyAndReturn<ExtArgs extends $Extensions.InternalArgs = $Extensions.DefaultArgs> = {
+    user?: boolean | UserDefaultArgs<ExtArgs>
+  }
+
+  export type $DocScanUsagePayload<ExtArgs extends $Extensions.InternalArgs = $Extensions.DefaultArgs> = {
+    name: "DocScanUsage"
+    objects: {
+      user: Prisma.$UserPayload<ExtArgs>
+    }
+    scalars: $Extensions.GetPayloadResult<{
+      id: string
+      userId: string
+      scanCount: number
+      success: boolean
+      exported: boolean
+      source: string | null
+      language: string | null
+      createdAt: Date
+    }, ExtArgs["result"]["docScanUsage"]>
+    composites: {}
+  }
+
+  type DocScanUsageGetPayload<S extends boolean | null | undefined | DocScanUsageDefaultArgs> = $Result.GetResult<Prisma.$DocScanUsagePayload, S>
+
+  type DocScanUsageCountArgs<ExtArgs extends $Extensions.InternalArgs = $Extensions.DefaultArgs> = 
+    Omit<DocScanUsageFindManyArgs, 'select' | 'include' | 'distinct'> & {
+      select?: DocScanUsageCountAggregateInputType | true
+    }
+
+  export interface DocScanUsageDelegate<ExtArgs extends $Extensions.InternalArgs = $Extensions.DefaultArgs> {
+    [K: symbol]: { types: Prisma.TypeMap<ExtArgs>['model']['DocScanUsage'], meta: { name: 'DocScanUsage' } }
+    /**
+     * Find zero or one DocScanUsage that matches the filter.
+     * @param {DocScanUsageFindUniqueArgs} args - Arguments to find a DocScanUsage
+     * @example
+     * // Get one DocScanUsage
+     * const docScanUsage = await prisma.docScanUsage.findUnique({
+     *   where: {
+     *     // ... provide filter here
+     *   }
+     * })
+     */
+    findUnique<T extends DocScanUsageFindUniqueArgs>(args: SelectSubset<T, DocScanUsageFindUniqueArgs<ExtArgs>>): Prisma__DocScanUsageClient<$Result.GetResult<Prisma.$DocScanUsagePayload<ExtArgs>, T, "findUnique"> | null, null, ExtArgs>
+
+    /**
+     * Find one DocScanUsage that matches the filter or throw an error with `error.code='P2025'` 
+     * if no matches were found.
+     * @param {DocScanUsageFindUniqueOrThrowArgs} args - Arguments to find a DocScanUsage
+     * @example
+     * // Get one DocScanUsage
+     * const docScanUsage = await prisma.docScanUsage.findUniqueOrThrow({
+     *   where: {
+     *     // ... provide filter here
+     *   }
+     * })
+     */
+    findUniqueOrThrow<T extends DocScanUsageFindUniqueOrThrowArgs>(args: SelectSubset<T, DocScanUsageFindUniqueOrThrowArgs<ExtArgs>>): Prisma__DocScanUsageClient<$Result.GetResult<Prisma.$DocScanUsagePayload<ExtArgs>, T, "findUniqueOrThrow">, never, ExtArgs>
+
+    /**
+     * Find the first DocScanUsage that matches the filter.
+     * Note, that providing `undefined` is treated as the value not being there.
+     * Read more here: https://pris.ly/d/null-undefined
+     * @param {DocScanUsageFindFirstArgs} args - Arguments to find a DocScanUsage
+     * @example
+     * // Get one DocScanUsage
+     * const docScanUsage = await prisma.docScanUsage.findFirst({
+     *   where: {
+     *     // ... provide filter here
+     *   }
+     * })
+     */
+    findFirst<T extends DocScanUsageFindFirstArgs>(args?: SelectSubset<T, DocScanUsageFindFirstArgs<ExtArgs>>): Prisma__DocScanUsageClient<$Result.GetResult<Prisma.$DocScanUsagePayload<ExtArgs>, T, "findFirst"> | null, null, ExtArgs>
+
+    /**
+     * Find the first DocScanUsage that matches the filter or
+     * throw `PrismaKnownClientError` with `P2025` code if no matches were found.
+     * Note, that providing `undefined` is treated as the value not being there.
+     * Read more here: https://pris.ly/d/null-undefined
+     * @param {DocScanUsageFindFirstOrThrowArgs} args - Arguments to find a DocScanUsage
+     * @example
+     * // Get one DocScanUsage
+     * const docScanUsage = await prisma.docScanUsage.findFirstOrThrow({
+     *   where: {
+     *     // ... provide filter here
+     *   }
+     * })
+     */
+    findFirstOrThrow<T extends DocScanUsageFindFirstOrThrowArgs>(args?: SelectSubset<T, DocScanUsageFindFirstOrThrowArgs<ExtArgs>>): Prisma__DocScanUsageClient<$Result.GetResult<Prisma.$DocScanUsagePayload<ExtArgs>, T, "findFirstOrThrow">, never, ExtArgs>
+
+    /**
+     * Find zero or more DocScanUsages that matches the filter.
+     * Note, that providing `undefined` is treated as the value not being there.
+     * Read more here: https://pris.ly/d/null-undefined
+     * @param {DocScanUsageFindManyArgs} args - Arguments to filter and select certain fields only.
+     * @example
+     * // Get all DocScanUsages
+     * const docScanUsages = await prisma.docScanUsage.findMany()
+     * 
+     * // Get first 10 DocScanUsages
+     * const docScanUsages = await prisma.docScanUsage.findMany({ take: 10 })
+     * 
+     * // Only select the `id`
+     * const docScanUsageWithIdOnly = await prisma.docScanUsage.findMany({ select: { id: true } })
+     * 
+     */
+    findMany<T extends DocScanUsageFindManyArgs>(args?: SelectSubset<T, DocScanUsageFindManyArgs<ExtArgs>>): Prisma.PrismaPromise<$Result.GetResult<Prisma.$DocScanUsagePayload<ExtArgs>, T, "findMany">>
+
+    /**
+     * Create a DocScanUsage.
+     * @param {DocScanUsageCreateArgs} args - Arguments to create a DocScanUsage.
+     * @example
+     * // Create one DocScanUsage
+     * const DocScanUsage = await prisma.docScanUsage.create({
+     *   data: {
+     *     // ... data to create a DocScanUsage
+     *   }
+     * })
+     * 
+     */
+    create<T extends DocScanUsageCreateArgs>(args: SelectSubset<T, DocScanUsageCreateArgs<ExtArgs>>): Prisma__DocScanUsageClient<$Result.GetResult<Prisma.$DocScanUsagePayload<ExtArgs>, T, "create">, never, ExtArgs>
+
+    /**
+     * Create many DocScanUsages.
+     * @param {DocScanUsageCreateManyArgs} args - Arguments to create many DocScanUsages.
+     * @example
+     * // Create many DocScanUsages
+     * const docScanUsage = await prisma.docScanUsage.createMany({
+     *   data: [
+     *     // ... provide data here
+     *   ]
+     * })
+     *     
+     */
+    createMany<T extends DocScanUsageCreateManyArgs>(args?: SelectSubset<T, DocScanUsageCreateManyArgs<ExtArgs>>): Prisma.PrismaPromise<BatchPayload>
+
+    /**
+     * Create many DocScanUsages and returns the data saved in the database.
+     * @param {DocScanUsageCreateManyAndReturnArgs} args - Arguments to create many DocScanUsages.
+     * @example
+     * // Create many DocScanUsages
+     * const docScanUsage = await prisma.docScanUsage.createManyAndReturn({
+     *   data: [
+     *     // ... provide data here
+     *   ]
+     * })
+     * 
+     * // Create many DocScanUsages and only return the `id`
+     * const docScanUsageWithIdOnly = await prisma.docScanUsage.createManyAndReturn({ 
+     *   select: { id: true },
+     *   data: [
+     *     // ... provide data here
+     *   ]
+     * })
+     * Note, that providing `undefined` is treated as the value not being there.
+     * Read more here: https://pris.ly/d/null-undefined
+     * 
+     */
+    createManyAndReturn<T extends DocScanUsageCreateManyAndReturnArgs>(args?: SelectSubset<T, DocScanUsageCreateManyAndReturnArgs<ExtArgs>>): Prisma.PrismaPromise<$Result.GetResult<Prisma.$DocScanUsagePayload<ExtArgs>, T, "createManyAndReturn">>
+
+    /**
+     * Delete a DocScanUsage.
+     * @param {DocScanUsageDeleteArgs} args - Arguments to delete one DocScanUsage.
+     * @example
+     * // Delete one DocScanUsage
+     * const DocScanUsage = await prisma.docScanUsage.delete({
+     *   where: {
+     *     // ... filter to delete one DocScanUsage
+     *   }
+     * })
+     * 
+     */
+    delete<T extends DocScanUsageDeleteArgs>(args: SelectSubset<T, DocScanUsageDeleteArgs<ExtArgs>>): Prisma__DocScanUsageClient<$Result.GetResult<Prisma.$DocScanUsagePayload<ExtArgs>, T, "delete">, never, ExtArgs>
+
+    /**
+     * Update one DocScanUsage.
+     * @param {DocScanUsageUpdateArgs} args - Arguments to update one DocScanUsage.
+     * @example
+     * // Update one DocScanUsage
+     * const docScanUsage = await prisma.docScanUsage.update({
+     *   where: {
+     *     // ... provide filter here
+     *   },
+     *   data: {
+     *     // ... provide data here
+     *   }
+     * })
+     * 
+     */
+    update<T extends DocScanUsageUpdateArgs>(args: SelectSubset<T, DocScanUsageUpdateArgs<ExtArgs>>): Prisma__DocScanUsageClient<$Result.GetResult<Prisma.$DocScanUsagePayload<ExtArgs>, T, "update">, never, ExtArgs>
+
+    /**
+     * Delete zero or more DocScanUsages.
+     * @param {DocScanUsageDeleteManyArgs} args - Arguments to filter DocScanUsages to delete.
+     * @example
+     * // Delete a few DocScanUsages
+     * const { count } = await prisma.docScanUsage.deleteMany({
+     *   where: {
+     *     // ... provide filter here
+     *   }
+     * })
+     * 
+     */
+    deleteMany<T extends DocScanUsageDeleteManyArgs>(args?: SelectSubset<T, DocScanUsageDeleteManyArgs<ExtArgs>>): Prisma.PrismaPromise<BatchPayload>
+
+    /**
+     * Update zero or more DocScanUsages.
+     * Note, that providing `undefined` is treated as the value not being there.
+     * Read more here: https://pris.ly/d/null-undefined
+     * @param {DocScanUsageUpdateManyArgs} args - Arguments to update one or more rows.
+     * @example
+     * // Update many DocScanUsages
+     * const docScanUsage = await prisma.docScanUsage.updateMany({
+     *   where: {
+     *     // ... provide filter here
+     *   },
+     *   data: {
+     *     // ... provide data here
+     *   }
+     * })
+     * 
+     */
+    updateMany<T extends DocScanUsageUpdateManyArgs>(args: SelectSubset<T, DocScanUsageUpdateManyArgs<ExtArgs>>): Prisma.PrismaPromise<BatchPayload>
+
+    /**
+     * Create or update one DocScanUsage.
+     * @param {DocScanUsageUpsertArgs} args - Arguments to update or create a DocScanUsage.
+     * @example
+     * // Update or create a DocScanUsage
+     * const docScanUsage = await prisma.docScanUsage.upsert({
+     *   create: {
+     *     // ... data to create a DocScanUsage
+     *   },
+     *   update: {
+     *     // ... in case it already exists, update
+     *   },
+     *   where: {
+     *     // ... the filter for the DocScanUsage we want to update
+     *   }
+     * })
+     */
+    upsert<T extends DocScanUsageUpsertArgs>(args: SelectSubset<T, DocScanUsageUpsertArgs<ExtArgs>>): Prisma__DocScanUsageClient<$Result.GetResult<Prisma.$DocScanUsagePayload<ExtArgs>, T, "upsert">, never, ExtArgs>
+
+
+    /**
+     * Count the number of DocScanUsages.
+     * Note, that providing `undefined` is treated as the value not being there.
+     * Read more here: https://pris.ly/d/null-undefined
+     * @param {DocScanUsageCountArgs} args - Arguments to filter DocScanUsages to count.
+     * @example
+     * // Count the number of DocScanUsages
+     * const count = await prisma.docScanUsage.count({
+     *   where: {
+     *     // ... the filter for the DocScanUsages we want to count
+     *   }
+     * })
+    **/
+    count<T extends DocScanUsageCountArgs>(
+      args?: Subset<T, DocScanUsageCountArgs>,
+    ): Prisma.PrismaPromise<
+      T extends $Utils.Record<'select', any>
+        ? T['select'] extends true
+          ? number
+          : GetScalarType<T['select'], DocScanUsageCountAggregateOutputType>
+        : number
+    >
+
+    /**
+     * Allows you to perform aggregations operations on a DocScanUsage.
+     * Note, that providing `undefined` is treated as the value not being there.
+     * Read more here: https://pris.ly/d/null-undefined
+     * @param {DocScanUsageAggregateArgs} args - Select which aggregations you would like to apply and on what fields.
+     * @example
+     * // Ordered by age ascending
+     * // Where email contains prisma.io
+     * // Limited to the 10 users
+     * const aggregations = await prisma.user.aggregate({
+     *   _avg: {
+     *     age: true,
+     *   },
+     *   where: {
+     *     email: {
+     *       contains: "prisma.io",
+     *     },
+     *   },
+     *   orderBy: {
+     *     age: "asc",
+     *   },
+     *   take: 10,
+     * })
+    **/
+    aggregate<T extends DocScanUsageAggregateArgs>(args: Subset<T, DocScanUsageAggregateArgs>): Prisma.PrismaPromise<GetDocScanUsageAggregateType<T>>
+
+    /**
+     * Group by DocScanUsage.
+     * Note, that providing `undefined` is treated as the value not being there.
+     * Read more here: https://pris.ly/d/null-undefined
+     * @param {DocScanUsageGroupByArgs} args - Group by arguments.
+     * @example
+     * // Group by city, order by createdAt, get count
+     * const result = await prisma.user.groupBy({
+     *   by: ['city', 'createdAt'],
+     *   orderBy: {
+     *     createdAt: true
+     *   },
+     *   _count: {
+     *     _all: true
+     *   },
+     * })
+     * 
+    **/
+    groupBy<
+      T extends DocScanUsageGroupByArgs,
+      HasSelectOrTake extends Or<
+        Extends<'skip', Keys<T>>,
+        Extends<'take', Keys<T>>
+      >,
+      OrderByArg extends True extends HasSelectOrTake
+        ? { orderBy: DocScanUsageGroupByArgs['orderBy'] }
+        : { orderBy?: DocScanUsageGroupByArgs['orderBy'] },
+      OrderFields extends ExcludeUnderscoreKeys<Keys<MaybeTupleToUnion<T['orderBy']>>>,
+      ByFields extends MaybeTupleToUnion<T['by']>,
+      ByValid extends Has<ByFields, OrderFields>,
+      HavingFields extends GetHavingFields<T['having']>,
+      HavingValid extends Has<ByFields, HavingFields>,
+      ByEmpty extends T['by'] extends never[] ? True : False,
+      InputErrors extends ByEmpty extends True
+      ? `Error: "by" must not be empty.`
+      : HavingValid extends False
+      ? {
+          [P in HavingFields]: P extends ByFields
+            ? never
+            : P extends string
+            ? `Error: Field "${P}" used in "having" needs to be provided in "by".`
+            : [
+                Error,
+                'Field ',
+                P,
+                ` in "having" needs to be provided in "by"`,
+              ]
+        }[HavingFields]
+      : 'take' extends Keys<T>
+      ? 'orderBy' extends Keys<T>
+        ? ByValid extends True
+          ? {}
+          : {
+              [P in OrderFields]: P extends ByFields
+                ? never
+                : `Error: Field "${P}" in "orderBy" needs to be provided in "by"`
+            }[OrderFields]
+        : 'Error: If you provide "take", you also need to provide "orderBy"'
+      : 'skip' extends Keys<T>
+      ? 'orderBy' extends Keys<T>
+        ? ByValid extends True
+          ? {}
+          : {
+              [P in OrderFields]: P extends ByFields
+                ? never
+                : `Error: Field "${P}" in "orderBy" needs to be provided in "by"`
+            }[OrderFields]
+        : 'Error: If you provide "skip", you also need to provide "orderBy"'
+      : ByValid extends True
+      ? {}
+      : {
+          [P in OrderFields]: P extends ByFields
+            ? never
+            : `Error: Field "${P}" in "orderBy" needs to be provided in "by"`
+        }[OrderFields]
+    >(args: SubsetIntersection<T, DocScanUsageGroupByArgs, OrderByArg> & InputErrors): {} extends InputErrors ? GetDocScanUsageGroupByPayload<T> : Prisma.PrismaPromise<InputErrors>
+  /**
+   * Fields of the DocScanUsage model
+   */
+  readonly fields: DocScanUsageFieldRefs;
+  }
+
+  /**
+   * The delegate class that acts as a "Promise-like" for DocScanUsage.
+   * Why is this prefixed with `Prisma__`?
+   * Because we want to prevent naming conflicts as mentioned in
+   * https://github.com/prisma/prisma-client-js/issues/707
+   */
+  export interface Prisma__DocScanUsageClient<T, Null = never, ExtArgs extends $Extensions.InternalArgs = $Extensions.DefaultArgs> extends Prisma.PrismaPromise<T> {
+    readonly [Symbol.toStringTag]: "PrismaPromise"
+    user<T extends UserDefaultArgs<ExtArgs> = {}>(args?: Subset<T, UserDefaultArgs<ExtArgs>>): Prisma__UserClient<$Result.GetResult<Prisma.$UserPayload<ExtArgs>, T, "findUniqueOrThrow"> | Null, Null, ExtArgs>
+    /**
+     * Attaches callbacks for the resolution and/or rejection of the Promise.
+     * @param onfulfilled The callback to execute when the Promise is resolved.
+     * @param onrejected The callback to execute when the Promise is rejected.
+     * @returns A Promise for the completion of which ever callback is executed.
+     */
+    then<TResult1 = T, TResult2 = never>(onfulfilled?: ((value: T) => TResult1 | PromiseLike<TResult1>) | undefined | null, onrejected?: ((reason: any) => TResult2 | PromiseLike<TResult2>) | undefined | null): $Utils.JsPromise<TResult1 | TResult2>
+    /**
+     * Attaches a callback for only the rejection of the Promise.
+     * @param onrejected The callback to execute when the Promise is rejected.
+     * @returns A Promise for the completion of the callback.
+     */
+    catch<TResult = never>(onrejected?: ((reason: any) => TResult | PromiseLike<TResult>) | undefined | null): $Utils.JsPromise<T | TResult>
+    /**
+     * Attaches a callback that is invoked when the Promise is settled (fulfilled or rejected). The
+     * resolved value cannot be modified from the callback.
+     * @param onfinally The callback to execute when the Promise is settled (fulfilled or rejected).
+     * @returns A Promise for the completion of the callback.
+     */
+    finally(onfinally?: (() => void) | undefined | null): $Utils.JsPromise<T>
+  }
+
+
+
+
+  /**
+   * Fields of the DocScanUsage model
+   */ 
+  interface DocScanUsageFieldRefs {
+    readonly id: FieldRef<"DocScanUsage", 'String'>
+    readonly userId: FieldRef<"DocScanUsage", 'String'>
+    readonly scanCount: FieldRef<"DocScanUsage", 'Int'>
+    readonly success: FieldRef<"DocScanUsage", 'Boolean'>
+    readonly exported: FieldRef<"DocScanUsage", 'Boolean'>
+    readonly source: FieldRef<"DocScanUsage", 'String'>
+    readonly language: FieldRef<"DocScanUsage", 'String'>
+    readonly createdAt: FieldRef<"DocScanUsage", 'DateTime'>
+  }
+    
+
+  // Custom InputTypes
+  /**
+   * DocScanUsage findUnique
+   */
+  export type DocScanUsageFindUniqueArgs<ExtArgs extends $Extensions.InternalArgs = $Extensions.DefaultArgs> = {
+    /**
+     * Select specific fields to fetch from the DocScanUsage
+     */
+    select?: DocScanUsageSelect<ExtArgs> | null
+    /**
+     * Choose, which related nodes to fetch as well
+     */
+    include?: DocScanUsageInclude<ExtArgs> | null
+    /**
+     * Filter, which DocScanUsage to fetch.
+     */
+    where: DocScanUsageWhereUniqueInput
+  }
+
+  /**
+   * DocScanUsage findUniqueOrThrow
+   */
+  export type DocScanUsageFindUniqueOrThrowArgs<ExtArgs extends $Extensions.InternalArgs = $Extensions.DefaultArgs> = {
+    /**
+     * Select specific fields to fetch from the DocScanUsage
+     */
+    select?: DocScanUsageSelect<ExtArgs> | null
+    /**
+     * Choose, which related nodes to fetch as well
+     */
+    include?: DocScanUsageInclude<ExtArgs> | null
+    /**
+     * Filter, which DocScanUsage to fetch.
+     */
+    where: DocScanUsageWhereUniqueInput
+  }
+
+  /**
+   * DocScanUsage findFirst
+   */
+  export type DocScanUsageFindFirstArgs<ExtArgs extends $Extensions.InternalArgs = $Extensions.DefaultArgs> = {
+    /**
+     * Select specific fields to fetch from the DocScanUsage
+     */
+    select?: DocScanUsageSelect<ExtArgs> | null
+    /**
+     * Choose, which related nodes to fetch as well
+     */
+    include?: DocScanUsageInclude<ExtArgs> | null
+    /**
+     * Filter, which DocScanUsage to fetch.
+     */
+    where?: DocScanUsageWhereInput
+    /**
+     * {@link https://www.prisma.io/docs/concepts/components/prisma-client/sorting Sorting Docs}
+     * 
+     * Determine the order of DocScanUsages to fetch.
+     */
+    orderBy?: DocScanUsageOrderByWithRelationInput | DocScanUsageOrderByWithRelationInput[]
+    /**
+     * {@link https://www.prisma.io/docs/concepts/components/prisma-client/pagination#cursor-based-pagination Cursor Docs}
+     * 
+     * Sets the position for searching for DocScanUsages.
+     */
+    cursor?: DocScanUsageWhereUniqueInput
+    /**
+     * {@link https://www.prisma.io/docs/concepts/components/prisma-client/pagination Pagination Docs}
+     * 
+     * Take `±n` DocScanUsages from the position of the cursor.
+     */
+    take?: number
+    /**
+     * {@link https://www.prisma.io/docs/concepts/components/prisma-client/pagination Pagination Docs}
+     * 
+     * Skip the first `n` DocScanUsages.
+     */
+    skip?: number
+    /**
+     * {@link https://www.prisma.io/docs/concepts/components/prisma-client/distinct Distinct Docs}
+     * 
+     * Filter by unique combinations of DocScanUsages.
+     */
+    distinct?: DocScanUsageScalarFieldEnum | DocScanUsageScalarFieldEnum[]
+  }
+
+  /**
+   * DocScanUsage findFirstOrThrow
+   */
+  export type DocScanUsageFindFirstOrThrowArgs<ExtArgs extends $Extensions.InternalArgs = $Extensions.DefaultArgs> = {
+    /**
+     * Select specific fields to fetch from the DocScanUsage
+     */
+    select?: DocScanUsageSelect<ExtArgs> | null
+    /**
+     * Choose, which related nodes to fetch as well
+     */
+    include?: DocScanUsageInclude<ExtArgs> | null
+    /**
+     * Filter, which DocScanUsage to fetch.
+     */
+    where?: DocScanUsageWhereInput
+    /**
+     * {@link https://www.prisma.io/docs/concepts/components/prisma-client/sorting Sorting Docs}
+     * 
+     * Determine the order of DocScanUsages to fetch.
+     */
+    orderBy?: DocScanUsageOrderByWithRelationInput | DocScanUsageOrderByWithRelationInput[]
+    /**
+     * {@link https://www.prisma.io/docs/concepts/components/prisma-client/pagination#cursor-based-pagination Cursor Docs}
+     * 
+     * Sets the position for searching for DocScanUsages.
+     */
+    cursor?: DocScanUsageWhereUniqueInput
+    /**
+     * {@link https://www.prisma.io/docs/concepts/components/prisma-client/pagination Pagination Docs}
+     * 
+     * Take `±n` DocScanUsages from the position of the cursor.
+     */
+    take?: number
+    /**
+     * {@link https://www.prisma.io/docs/concepts/components/prisma-client/pagination Pagination Docs}
+     * 
+     * Skip the first `n` DocScanUsages.
+     */
+    skip?: number
+    /**
+     * {@link https://www.prisma.io/docs/concepts/components/prisma-client/distinct Distinct Docs}
+     * 
+     * Filter by unique combinations of DocScanUsages.
+     */
+    distinct?: DocScanUsageScalarFieldEnum | DocScanUsageScalarFieldEnum[]
+  }
+
+  /**
+   * DocScanUsage findMany
+   */
+  export type DocScanUsageFindManyArgs<ExtArgs extends $Extensions.InternalArgs = $Extensions.DefaultArgs> = {
+    /**
+     * Select specific fields to fetch from the DocScanUsage
+     */
+    select?: DocScanUsageSelect<ExtArgs> | null
+    /**
+     * Choose, which related nodes to fetch as well
+     */
+    include?: DocScanUsageInclude<ExtArgs> | null
+    /**
+     * Filter, which DocScanUsages to fetch.
+     */
+    where?: DocScanUsageWhereInput
+    /**
+     * {@link https://www.prisma.io/docs/concepts/components/prisma-client/sorting Sorting Docs}
+     * 
+     * Determine the order of DocScanUsages to fetch.
+     */
+    orderBy?: DocScanUsageOrderByWithRelationInput | DocScanUsageOrderByWithRelationInput[]
+    /**
+     * {@link https://www.prisma.io/docs/concepts/components/prisma-client/pagination#cursor-based-pagination Cursor Docs}
+     * 
+     * Sets the position for listing DocScanUsages.
+     */
+    cursor?: DocScanUsageWhereUniqueInput
+    /**
+     * {@link https://www.prisma.io/docs/concepts/components/prisma-client/pagination Pagination Docs}
+     * 
+     * Take `±n` DocScanUsages from the position of the cursor.
+     */
+    take?: number
+    /**
+     * {@link https://www.prisma.io/docs/concepts/components/prisma-client/pagination Pagination Docs}
+     * 
+     * Skip the first `n` DocScanUsages.
+     */
+    skip?: number
+    distinct?: DocScanUsageScalarFieldEnum | DocScanUsageScalarFieldEnum[]
+  }
+
+  /**
+   * DocScanUsage create
+   */
+  export type DocScanUsageCreateArgs<ExtArgs extends $Extensions.InternalArgs = $Extensions.DefaultArgs> = {
+    /**
+     * Select specific fields to fetch from the DocScanUsage
+     */
+    select?: DocScanUsageSelect<ExtArgs> | null
+    /**
+     * Choose, which related nodes to fetch as well
+     */
+    include?: DocScanUsageInclude<ExtArgs> | null
+    /**
+     * The data needed to create a DocScanUsage.
+     */
+    data: XOR<DocScanUsageCreateInput, DocScanUsageUncheckedCreateInput>
+  }
+
+  /**
+   * DocScanUsage createMany
+   */
+  export type DocScanUsageCreateManyArgs<ExtArgs extends $Extensions.InternalArgs = $Extensions.DefaultArgs> = {
+    /**
+     * The data used to create many DocScanUsages.
+     */
+    data: DocScanUsageCreateManyInput | DocScanUsageCreateManyInput[]
+    skipDuplicates?: boolean
+  }
+
+  /**
+   * DocScanUsage createManyAndReturn
+   */
+  export type DocScanUsageCreateManyAndReturnArgs<ExtArgs extends $Extensions.InternalArgs = $Extensions.DefaultArgs> = {
+    /**
+     * Select specific fields to fetch from the DocScanUsage
+     */
+    select?: DocScanUsageSelectCreateManyAndReturn<ExtArgs> | null
+    /**
+     * The data used to create many DocScanUsages.
+     */
+    data: DocScanUsageCreateManyInput | DocScanUsageCreateManyInput[]
+    skipDuplicates?: boolean
+    /**
+     * Choose, which related nodes to fetch as well
+     */
+    include?: DocScanUsageIncludeCreateManyAndReturn<ExtArgs> | null
+  }
+
+  /**
+   * DocScanUsage update
+   */
+  export type DocScanUsageUpdateArgs<ExtArgs extends $Extensions.InternalArgs = $Extensions.DefaultArgs> = {
+    /**
+     * Select specific fields to fetch from the DocScanUsage
+     */
+    select?: DocScanUsageSelect<ExtArgs> | null
+    /**
+     * Choose, which related nodes to fetch as well
+     */
+    include?: DocScanUsageInclude<ExtArgs> | null
+    /**
+     * The data needed to update a DocScanUsage.
+     */
+    data: XOR<DocScanUsageUpdateInput, DocScanUsageUncheckedUpdateInput>
+    /**
+     * Choose, which DocScanUsage to update.
+     */
+    where: DocScanUsageWhereUniqueInput
+  }
+
+  /**
+   * DocScanUsage updateMany
+   */
+  export type DocScanUsageUpdateManyArgs<ExtArgs extends $Extensions.InternalArgs = $Extensions.DefaultArgs> = {
+    /**
+     * The data used to update DocScanUsages.
+     */
+    data: XOR<DocScanUsageUpdateManyMutationInput, DocScanUsageUncheckedUpdateManyInput>
+    /**
+     * Filter which DocScanUsages to update
+     */
+    where?: DocScanUsageWhereInput
+  }
+
+  /**
+   * DocScanUsage upsert
+   */
+  export type DocScanUsageUpsertArgs<ExtArgs extends $Extensions.InternalArgs = $Extensions.DefaultArgs> = {
+    /**
+     * Select specific fields to fetch from the DocScanUsage
+     */
+    select?: DocScanUsageSelect<ExtArgs> | null
+    /**
+     * Choose, which related nodes to fetch as well
+     */
+    include?: DocScanUsageInclude<ExtArgs> | null
+    /**
+     * The filter to search for the DocScanUsage to update in case it exists.
+     */
+    where: DocScanUsageWhereUniqueInput
+    /**
+     * In case the DocScanUsage found by the `where` argument doesn't exist, create a new DocScanUsage with this data.
+     */
+    create: XOR<DocScanUsageCreateInput, DocScanUsageUncheckedCreateInput>
+    /**
+     * In case the DocScanUsage was found with the provided `where` argument, update it with this data.
+     */
+    update: XOR<DocScanUsageUpdateInput, DocScanUsageUncheckedUpdateInput>
+  }
+
+  /**
+   * DocScanUsage delete
+   */
+  export type DocScanUsageDeleteArgs<ExtArgs extends $Extensions.InternalArgs = $Extensions.DefaultArgs> = {
+    /**
+     * Select specific fields to fetch from the DocScanUsage
+     */
+    select?: DocScanUsageSelect<ExtArgs> | null
+    /**
+     * Choose, which related nodes to fetch as well
+     */
+    include?: DocScanUsageInclude<ExtArgs> | null
+    /**
+     * Filter which DocScanUsage to delete.
+     */
+    where: DocScanUsageWhereUniqueInput
+  }
+
+  /**
+   * DocScanUsage deleteMany
+   */
+  export type DocScanUsageDeleteManyArgs<ExtArgs extends $Extensions.InternalArgs = $Extensions.DefaultArgs> = {
+    /**
+     * Filter which DocScanUsages to delete
+     */
+    where?: DocScanUsageWhereInput
+  }
+
+  /**
+   * DocScanUsage without action
+   */
+  export type DocScanUsageDefaultArgs<ExtArgs extends $Extensions.InternalArgs = $Extensions.DefaultArgs> = {
+    /**
+     * Select specific fields to fetch from the DocScanUsage
+     */
+    select?: DocScanUsageSelect<ExtArgs> | null
+    /**
+     * Choose, which related nodes to fetch as well
+     */
+    include?: DocScanUsageInclude<ExtArgs> | null
+  }
+
+
+  /**
    * Model ChatMessage
    */
 
@@ -19353,6 +20484,7 @@ export namespace Prisma {
     createdAt?: boolean
     updatedAt?: boolean
     subscriptions?: boolean | SubscriptionPlan$subscriptionsArgs<ExtArgs>
+    payments?: boolean | SubscriptionPlan$paymentsArgs<ExtArgs>
     _count?: boolean | SubscriptionPlanCountOutputTypeDefaultArgs<ExtArgs>
   }, ExtArgs["result"]["subscriptionPlan"]>
 
@@ -19386,6 +20518,7 @@ export namespace Prisma {
 
   export type SubscriptionPlanInclude<ExtArgs extends $Extensions.InternalArgs = $Extensions.DefaultArgs> = {
     subscriptions?: boolean | SubscriptionPlan$subscriptionsArgs<ExtArgs>
+    payments?: boolean | SubscriptionPlan$paymentsArgs<ExtArgs>
     _count?: boolean | SubscriptionPlanCountOutputTypeDefaultArgs<ExtArgs>
   }
   export type SubscriptionPlanIncludeCreateManyAndReturn<ExtArgs extends $Extensions.InternalArgs = $Extensions.DefaultArgs> = {}
@@ -19394,6 +20527,7 @@ export namespace Prisma {
     name: "SubscriptionPlan"
     objects: {
       subscriptions: Prisma.$SubscriptionPayload<ExtArgs>[]
+      payments: Prisma.$PaymentPayload<ExtArgs>[]
     }
     scalars: $Extensions.GetPayloadResult<{
       code: string | null
@@ -19772,6 +20906,7 @@ export namespace Prisma {
   export interface Prisma__SubscriptionPlanClient<T, Null = never, ExtArgs extends $Extensions.InternalArgs = $Extensions.DefaultArgs> extends Prisma.PrismaPromise<T> {
     readonly [Symbol.toStringTag]: "PrismaPromise"
     subscriptions<T extends SubscriptionPlan$subscriptionsArgs<ExtArgs> = {}>(args?: Subset<T, SubscriptionPlan$subscriptionsArgs<ExtArgs>>): Prisma.PrismaPromise<$Result.GetResult<Prisma.$SubscriptionPayload<ExtArgs>, T, "findMany"> | Null>
+    payments<T extends SubscriptionPlan$paymentsArgs<ExtArgs> = {}>(args?: Subset<T, SubscriptionPlan$paymentsArgs<ExtArgs>>): Prisma.PrismaPromise<$Result.GetResult<Prisma.$PaymentPayload<ExtArgs>, T, "findMany"> | Null>
     /**
      * Attaches callbacks for the resolution and/or rejection of the Promise.
      * @param onfulfilled The callback to execute when the Promise is resolved.
@@ -20146,6 +21281,26 @@ export namespace Prisma {
   }
 
   /**
+   * SubscriptionPlan.payments
+   */
+  export type SubscriptionPlan$paymentsArgs<ExtArgs extends $Extensions.InternalArgs = $Extensions.DefaultArgs> = {
+    /**
+     * Select specific fields to fetch from the Payment
+     */
+    select?: PaymentSelect<ExtArgs> | null
+    /**
+     * Choose, which related nodes to fetch as well
+     */
+    include?: PaymentInclude<ExtArgs> | null
+    where?: PaymentWhereInput
+    orderBy?: PaymentOrderByWithRelationInput | PaymentOrderByWithRelationInput[]
+    cursor?: PaymentWhereUniqueInput
+    take?: number
+    skip?: number
+    distinct?: PaymentScalarFieldEnum | PaymentScalarFieldEnum[]
+  }
+
+  /**
    * SubscriptionPlan without action
    */
   export type SubscriptionPlanDefaultArgs<ExtArgs extends $Extensions.InternalArgs = $Extensions.DefaultArgs> = {
@@ -20427,6 +21582,7 @@ export namespace Prisma {
     createdAt?: boolean
     updatedAt?: boolean
     user?: boolean | Payment$userArgs<ExtArgs>
+    plan?: boolean | Payment$planArgs<ExtArgs>
     subscriptions?: boolean | Payment$subscriptionsArgs<ExtArgs>
     refunds?: boolean | Payment$refundsArgs<ExtArgs>
     _count?: boolean | PaymentCountOutputTypeDefaultArgs<ExtArgs>
@@ -20447,6 +21603,7 @@ export namespace Prisma {
     createdAt?: boolean
     updatedAt?: boolean
     user?: boolean | Payment$userArgs<ExtArgs>
+    plan?: boolean | Payment$planArgs<ExtArgs>
   }, ExtArgs["result"]["payment"]>
 
   export type PaymentSelectScalar = {
@@ -20467,18 +21624,21 @@ export namespace Prisma {
 
   export type PaymentInclude<ExtArgs extends $Extensions.InternalArgs = $Extensions.DefaultArgs> = {
     user?: boolean | Payment$userArgs<ExtArgs>
+    plan?: boolean | Payment$planArgs<ExtArgs>
     subscriptions?: boolean | Payment$subscriptionsArgs<ExtArgs>
     refunds?: boolean | Payment$refundsArgs<ExtArgs>
     _count?: boolean | PaymentCountOutputTypeDefaultArgs<ExtArgs>
   }
   export type PaymentIncludeCreateManyAndReturn<ExtArgs extends $Extensions.InternalArgs = $Extensions.DefaultArgs> = {
     user?: boolean | Payment$userArgs<ExtArgs>
+    plan?: boolean | Payment$planArgs<ExtArgs>
   }
 
   export type $PaymentPayload<ExtArgs extends $Extensions.InternalArgs = $Extensions.DefaultArgs> = {
     name: "Payment"
     objects: {
       user: Prisma.$UserPayload<ExtArgs> | null
+      plan: Prisma.$SubscriptionPlanPayload<ExtArgs> | null
       subscriptions: Prisma.$SubscriptionPayload<ExtArgs>[]
       refunds: Prisma.$PaymentRefundPayload<ExtArgs>[]
     }
@@ -20861,6 +22021,7 @@ export namespace Prisma {
   export interface Prisma__PaymentClient<T, Null = never, ExtArgs extends $Extensions.InternalArgs = $Extensions.DefaultArgs> extends Prisma.PrismaPromise<T> {
     readonly [Symbol.toStringTag]: "PrismaPromise"
     user<T extends Payment$userArgs<ExtArgs> = {}>(args?: Subset<T, Payment$userArgs<ExtArgs>>): Prisma__UserClient<$Result.GetResult<Prisma.$UserPayload<ExtArgs>, T, "findUniqueOrThrow"> | null, null, ExtArgs>
+    plan<T extends Payment$planArgs<ExtArgs> = {}>(args?: Subset<T, Payment$planArgs<ExtArgs>>): Prisma__SubscriptionPlanClient<$Result.GetResult<Prisma.$SubscriptionPlanPayload<ExtArgs>, T, "findUniqueOrThrow"> | null, null, ExtArgs>
     subscriptions<T extends Payment$subscriptionsArgs<ExtArgs> = {}>(args?: Subset<T, Payment$subscriptionsArgs<ExtArgs>>): Prisma.PrismaPromise<$Result.GetResult<Prisma.$SubscriptionPayload<ExtArgs>, T, "findMany"> | Null>
     refunds<T extends Payment$refundsArgs<ExtArgs> = {}>(args?: Subset<T, Payment$refundsArgs<ExtArgs>>): Prisma.PrismaPromise<$Result.GetResult<Prisma.$PaymentRefundPayload<ExtArgs>, T, "findMany"> | Null>
     /**
@@ -21235,6 +22396,21 @@ export namespace Prisma {
      */
     include?: UserInclude<ExtArgs> | null
     where?: UserWhereInput
+  }
+
+  /**
+   * Payment.plan
+   */
+  export type Payment$planArgs<ExtArgs extends $Extensions.InternalArgs = $Extensions.DefaultArgs> = {
+    /**
+     * Select specific fields to fetch from the SubscriptionPlan
+     */
+    select?: SubscriptionPlanSelect<ExtArgs> | null
+    /**
+     * Choose, which related nodes to fetch as well
+     */
+    include?: SubscriptionPlanInclude<ExtArgs> | null
+    where?: SubscriptionPlanWhereInput
   }
 
   /**
@@ -31334,6 +32510,20 @@ export namespace Prisma {
   export type ChatDailyUsageScalarFieldEnum = (typeof ChatDailyUsageScalarFieldEnum)[keyof typeof ChatDailyUsageScalarFieldEnum]
 
 
+  export const DocScanUsageScalarFieldEnum: {
+    id: 'id',
+    userId: 'userId',
+    scanCount: 'scanCount',
+    success: 'success',
+    exported: 'exported',
+    source: 'source',
+    language: 'language',
+    createdAt: 'createdAt'
+  };
+
+  export type DocScanUsageScalarFieldEnum = (typeof DocScanUsageScalarFieldEnum)[keyof typeof DocScanUsageScalarFieldEnum]
+
+
   export const ChatMessageScalarFieldEnum: {
     id: 'id',
     userId: 'userId',
@@ -31802,6 +32992,7 @@ export namespace Prisma {
     questionLikes?: QuestionLikeListRelationFilter
     reviews?: ReviewListRelationFilter
     guideReads?: GuideReadListRelationFilter
+    docScanUsage?: DocScanUsageListRelationFilter
     passwordSetupTokens?: PasswordSetupTokenListRelationFilter
     buddyApplications?: BuddyApplicationListRelationFilter
     adminInboxReads?: AdminInboxReadListRelationFilter
@@ -31844,6 +33035,7 @@ export namespace Prisma {
     questionLikes?: QuestionLikeOrderByRelationAggregateInput
     reviews?: ReviewOrderByRelationAggregateInput
     guideReads?: GuideReadOrderByRelationAggregateInput
+    docScanUsage?: DocScanUsageOrderByRelationAggregateInput
     passwordSetupTokens?: PasswordSetupTokenOrderByRelationAggregateInput
     buddyApplications?: BuddyApplicationOrderByRelationAggregateInput
     adminInboxReads?: AdminInboxReadOrderByRelationAggregateInput
@@ -31889,6 +33081,7 @@ export namespace Prisma {
     questionLikes?: QuestionLikeListRelationFilter
     reviews?: ReviewListRelationFilter
     guideReads?: GuideReadListRelationFilter
+    docScanUsage?: DocScanUsageListRelationFilter
     passwordSetupTokens?: PasswordSetupTokenListRelationFilter
     buddyApplications?: BuddyApplicationListRelationFilter
     adminInboxReads?: AdminInboxReadListRelationFilter
@@ -32536,6 +33729,78 @@ export namespace Prisma {
     used?: IntWithAggregatesFilter<"ChatDailyUsage"> | number
   }
 
+  export type DocScanUsageWhereInput = {
+    AND?: DocScanUsageWhereInput | DocScanUsageWhereInput[]
+    OR?: DocScanUsageWhereInput[]
+    NOT?: DocScanUsageWhereInput | DocScanUsageWhereInput[]
+    id?: StringFilter<"DocScanUsage"> | string
+    userId?: StringFilter<"DocScanUsage"> | string
+    scanCount?: IntFilter<"DocScanUsage"> | number
+    success?: BoolFilter<"DocScanUsage"> | boolean
+    exported?: BoolFilter<"DocScanUsage"> | boolean
+    source?: StringNullableFilter<"DocScanUsage"> | string | null
+    language?: StringNullableFilter<"DocScanUsage"> | string | null
+    createdAt?: DateTimeFilter<"DocScanUsage"> | Date | string
+    user?: XOR<UserRelationFilter, UserWhereInput>
+  }
+
+  export type DocScanUsageOrderByWithRelationInput = {
+    id?: SortOrder
+    userId?: SortOrder
+    scanCount?: SortOrder
+    success?: SortOrder
+    exported?: SortOrder
+    source?: SortOrderInput | SortOrder
+    language?: SortOrderInput | SortOrder
+    createdAt?: SortOrder
+    user?: UserOrderByWithRelationInput
+  }
+
+  export type DocScanUsageWhereUniqueInput = Prisma.AtLeast<{
+    id?: string
+    AND?: DocScanUsageWhereInput | DocScanUsageWhereInput[]
+    OR?: DocScanUsageWhereInput[]
+    NOT?: DocScanUsageWhereInput | DocScanUsageWhereInput[]
+    userId?: StringFilter<"DocScanUsage"> | string
+    scanCount?: IntFilter<"DocScanUsage"> | number
+    success?: BoolFilter<"DocScanUsage"> | boolean
+    exported?: BoolFilter<"DocScanUsage"> | boolean
+    source?: StringNullableFilter<"DocScanUsage"> | string | null
+    language?: StringNullableFilter<"DocScanUsage"> | string | null
+    createdAt?: DateTimeFilter<"DocScanUsage"> | Date | string
+    user?: XOR<UserRelationFilter, UserWhereInput>
+  }, "id">
+
+  export type DocScanUsageOrderByWithAggregationInput = {
+    id?: SortOrder
+    userId?: SortOrder
+    scanCount?: SortOrder
+    success?: SortOrder
+    exported?: SortOrder
+    source?: SortOrderInput | SortOrder
+    language?: SortOrderInput | SortOrder
+    createdAt?: SortOrder
+    _count?: DocScanUsageCountOrderByAggregateInput
+    _avg?: DocScanUsageAvgOrderByAggregateInput
+    _max?: DocScanUsageMaxOrderByAggregateInput
+    _min?: DocScanUsageMinOrderByAggregateInput
+    _sum?: DocScanUsageSumOrderByAggregateInput
+  }
+
+  export type DocScanUsageScalarWhereWithAggregatesInput = {
+    AND?: DocScanUsageScalarWhereWithAggregatesInput | DocScanUsageScalarWhereWithAggregatesInput[]
+    OR?: DocScanUsageScalarWhereWithAggregatesInput[]
+    NOT?: DocScanUsageScalarWhereWithAggregatesInput | DocScanUsageScalarWhereWithAggregatesInput[]
+    id?: StringWithAggregatesFilter<"DocScanUsage"> | string
+    userId?: StringWithAggregatesFilter<"DocScanUsage"> | string
+    scanCount?: IntWithAggregatesFilter<"DocScanUsage"> | number
+    success?: BoolWithAggregatesFilter<"DocScanUsage"> | boolean
+    exported?: BoolWithAggregatesFilter<"DocScanUsage"> | boolean
+    source?: StringNullableWithAggregatesFilter<"DocScanUsage"> | string | null
+    language?: StringNullableWithAggregatesFilter<"DocScanUsage"> | string | null
+    createdAt?: DateTimeWithAggregatesFilter<"DocScanUsage"> | Date | string
+  }
+
   export type ChatMessageWhereInput = {
     AND?: ChatMessageWhereInput | ChatMessageWhereInput[]
     OR?: ChatMessageWhereInput[]
@@ -33050,6 +34315,7 @@ export namespace Prisma {
     createdAt?: DateTimeFilter<"SubscriptionPlan"> | Date | string
     updatedAt?: DateTimeFilter<"SubscriptionPlan"> | Date | string
     subscriptions?: SubscriptionListRelationFilter
+    payments?: PaymentListRelationFilter
   }
 
   export type SubscriptionPlanOrderByWithRelationInput = {
@@ -33065,6 +34331,7 @@ export namespace Prisma {
     createdAt?: SortOrder
     updatedAt?: SortOrder
     subscriptions?: SubscriptionOrderByRelationAggregateInput
+    payments?: PaymentOrderByRelationAggregateInput
   }
 
   export type SubscriptionPlanWhereUniqueInput = Prisma.AtLeast<{
@@ -33083,6 +34350,7 @@ export namespace Prisma {
     createdAt?: DateTimeFilter<"SubscriptionPlan"> | Date | string
     updatedAt?: DateTimeFilter<"SubscriptionPlan"> | Date | string
     subscriptions?: SubscriptionListRelationFilter
+    payments?: PaymentListRelationFilter
   }, "id" | "code">
 
   export type SubscriptionPlanOrderByWithAggregationInput = {
@@ -33139,6 +34407,7 @@ export namespace Prisma {
     createdAt?: DateTimeFilter<"Payment"> | Date | string
     updatedAt?: DateTimeFilter<"Payment"> | Date | string
     user?: XOR<UserNullableRelationFilter, UserWhereInput> | null
+    plan?: XOR<SubscriptionPlanNullableRelationFilter, SubscriptionPlanWhereInput> | null
     subscriptions?: SubscriptionListRelationFilter
     refunds?: PaymentRefundListRelationFilter
   }
@@ -33158,12 +34427,14 @@ export namespace Prisma {
     createdAt?: SortOrder
     updatedAt?: SortOrder
     user?: UserOrderByWithRelationInput
+    plan?: SubscriptionPlanOrderByWithRelationInput
     subscriptions?: SubscriptionOrderByRelationAggregateInput
     refunds?: PaymentRefundOrderByRelationAggregateInput
   }
 
   export type PaymentWhereUniqueInput = Prisma.AtLeast<{
     id?: string
+    yooKassaPaymentId?: string
     AND?: PaymentWhereInput | PaymentWhereInput[]
     OR?: PaymentWhereInput[]
     NOT?: PaymentWhereInput | PaymentWhereInput[]
@@ -33176,13 +34447,13 @@ export namespace Prisma {
     description?: StringFilter<"Payment"> | string
     status?: StringFilter<"Payment"> | string
     paymentMethod?: StringFilter<"Payment"> | string
-    yooKassaPaymentId?: StringNullableFilter<"Payment"> | string | null
     createdAt?: DateTimeFilter<"Payment"> | Date | string
     updatedAt?: DateTimeFilter<"Payment"> | Date | string
     user?: XOR<UserNullableRelationFilter, UserWhereInput> | null
+    plan?: XOR<SubscriptionPlanNullableRelationFilter, SubscriptionPlanWhereInput> | null
     subscriptions?: SubscriptionListRelationFilter
     refunds?: PaymentRefundListRelationFilter
-  }, "id">
+  }, "id" | "yooKassaPaymentId">
 
   export type PaymentOrderByWithAggregationInput = {
     appliedAt?: SortOrderInput | SortOrder
@@ -34008,6 +35279,7 @@ export namespace Prisma {
     questionLikes?: QuestionLikeCreateNestedManyWithoutUserInput
     reviews?: ReviewCreateNestedManyWithoutUserInput
     guideReads?: GuideReadCreateNestedManyWithoutUserInput
+    docScanUsage?: DocScanUsageCreateNestedManyWithoutUserInput
     passwordSetupTokens?: PasswordSetupTokenCreateNestedManyWithoutUserInput
     buddyApplications?: BuddyApplicationCreateNestedManyWithoutUserInput
     adminInboxReads?: AdminInboxReadCreateNestedManyWithoutAdminUserInput
@@ -34050,6 +35322,7 @@ export namespace Prisma {
     questionLikes?: QuestionLikeUncheckedCreateNestedManyWithoutUserInput
     reviews?: ReviewUncheckedCreateNestedManyWithoutUserInput
     guideReads?: GuideReadUncheckedCreateNestedManyWithoutUserInput
+    docScanUsage?: DocScanUsageUncheckedCreateNestedManyWithoutUserInput
     passwordSetupTokens?: PasswordSetupTokenUncheckedCreateNestedManyWithoutUserInput
     buddyApplications?: BuddyApplicationUncheckedCreateNestedManyWithoutUserInput
     adminInboxReads?: AdminInboxReadUncheckedCreateNestedManyWithoutAdminUserInput
@@ -34092,6 +35365,7 @@ export namespace Prisma {
     questionLikes?: QuestionLikeUpdateManyWithoutUserNestedInput
     reviews?: ReviewUpdateManyWithoutUserNestedInput
     guideReads?: GuideReadUpdateManyWithoutUserNestedInput
+    docScanUsage?: DocScanUsageUpdateManyWithoutUserNestedInput
     passwordSetupTokens?: PasswordSetupTokenUpdateManyWithoutUserNestedInput
     buddyApplications?: BuddyApplicationUpdateManyWithoutUserNestedInput
     adminInboxReads?: AdminInboxReadUpdateManyWithoutAdminUserNestedInput
@@ -34134,6 +35408,7 @@ export namespace Prisma {
     questionLikes?: QuestionLikeUncheckedUpdateManyWithoutUserNestedInput
     reviews?: ReviewUncheckedUpdateManyWithoutUserNestedInput
     guideReads?: GuideReadUncheckedUpdateManyWithoutUserNestedInput
+    docScanUsage?: DocScanUsageUncheckedUpdateManyWithoutUserNestedInput
     passwordSetupTokens?: PasswordSetupTokenUncheckedUpdateManyWithoutUserNestedInput
     buddyApplications?: BuddyApplicationUncheckedUpdateManyWithoutUserNestedInput
     adminInboxReads?: AdminInboxReadUncheckedUpdateManyWithoutAdminUserNestedInput
@@ -34868,6 +36143,82 @@ export namespace Prisma {
     used?: IntFieldUpdateOperationsInput | number
   }
 
+  export type DocScanUsageCreateInput = {
+    id?: string
+    scanCount?: number
+    success?: boolean
+    exported?: boolean
+    source?: string | null
+    language?: string | null
+    createdAt?: Date | string
+    user: UserCreateNestedOneWithoutDocScanUsageInput
+  }
+
+  export type DocScanUsageUncheckedCreateInput = {
+    id?: string
+    userId: string
+    scanCount?: number
+    success?: boolean
+    exported?: boolean
+    source?: string | null
+    language?: string | null
+    createdAt?: Date | string
+  }
+
+  export type DocScanUsageUpdateInput = {
+    id?: StringFieldUpdateOperationsInput | string
+    scanCount?: IntFieldUpdateOperationsInput | number
+    success?: BoolFieldUpdateOperationsInput | boolean
+    exported?: BoolFieldUpdateOperationsInput | boolean
+    source?: NullableStringFieldUpdateOperationsInput | string | null
+    language?: NullableStringFieldUpdateOperationsInput | string | null
+    createdAt?: DateTimeFieldUpdateOperationsInput | Date | string
+    user?: UserUpdateOneRequiredWithoutDocScanUsageNestedInput
+  }
+
+  export type DocScanUsageUncheckedUpdateInput = {
+    id?: StringFieldUpdateOperationsInput | string
+    userId?: StringFieldUpdateOperationsInput | string
+    scanCount?: IntFieldUpdateOperationsInput | number
+    success?: BoolFieldUpdateOperationsInput | boolean
+    exported?: BoolFieldUpdateOperationsInput | boolean
+    source?: NullableStringFieldUpdateOperationsInput | string | null
+    language?: NullableStringFieldUpdateOperationsInput | string | null
+    createdAt?: DateTimeFieldUpdateOperationsInput | Date | string
+  }
+
+  export type DocScanUsageCreateManyInput = {
+    id?: string
+    userId: string
+    scanCount?: number
+    success?: boolean
+    exported?: boolean
+    source?: string | null
+    language?: string | null
+    createdAt?: Date | string
+  }
+
+  export type DocScanUsageUpdateManyMutationInput = {
+    id?: StringFieldUpdateOperationsInput | string
+    scanCount?: IntFieldUpdateOperationsInput | number
+    success?: BoolFieldUpdateOperationsInput | boolean
+    exported?: BoolFieldUpdateOperationsInput | boolean
+    source?: NullableStringFieldUpdateOperationsInput | string | null
+    language?: NullableStringFieldUpdateOperationsInput | string | null
+    createdAt?: DateTimeFieldUpdateOperationsInput | Date | string
+  }
+
+  export type DocScanUsageUncheckedUpdateManyInput = {
+    id?: StringFieldUpdateOperationsInput | string
+    userId?: StringFieldUpdateOperationsInput | string
+    scanCount?: IntFieldUpdateOperationsInput | number
+    success?: BoolFieldUpdateOperationsInput | boolean
+    exported?: BoolFieldUpdateOperationsInput | boolean
+    source?: NullableStringFieldUpdateOperationsInput | string | null
+    language?: NullableStringFieldUpdateOperationsInput | string | null
+    createdAt?: DateTimeFieldUpdateOperationsInput | Date | string
+  }
+
   export type ChatMessageCreateInput = {
     id?: string
     content: string
@@ -35412,6 +36763,7 @@ export namespace Prisma {
     createdAt?: Date | string
     updatedAt?: Date | string
     subscriptions?: SubscriptionCreateNestedManyWithoutPlanInput
+    payments?: PaymentCreateNestedManyWithoutPlanInput
   }
 
   export type SubscriptionPlanUncheckedCreateInput = {
@@ -35427,6 +36779,7 @@ export namespace Prisma {
     createdAt?: Date | string
     updatedAt?: Date | string
     subscriptions?: SubscriptionUncheckedCreateNestedManyWithoutPlanInput
+    payments?: PaymentUncheckedCreateNestedManyWithoutPlanInput
   }
 
   export type SubscriptionPlanUpdateInput = {
@@ -35442,6 +36795,7 @@ export namespace Prisma {
     createdAt?: DateTimeFieldUpdateOperationsInput | Date | string
     updatedAt?: DateTimeFieldUpdateOperationsInput | Date | string
     subscriptions?: SubscriptionUpdateManyWithoutPlanNestedInput
+    payments?: PaymentUpdateManyWithoutPlanNestedInput
   }
 
   export type SubscriptionPlanUncheckedUpdateInput = {
@@ -35457,6 +36811,7 @@ export namespace Prisma {
     createdAt?: DateTimeFieldUpdateOperationsInput | Date | string
     updatedAt?: DateTimeFieldUpdateOperationsInput | Date | string
     subscriptions?: SubscriptionUncheckedUpdateManyWithoutPlanNestedInput
+    payments?: PaymentUncheckedUpdateManyWithoutPlanNestedInput
   }
 
   export type SubscriptionPlanCreateManyInput = {
@@ -35505,7 +36860,6 @@ export namespace Prisma {
     appliedAt?: Date | string | null
     durationMonths?: number | null
     id?: string
-    planId?: string | null
     amount: number
     currency?: string
     description: string
@@ -35515,6 +36869,7 @@ export namespace Prisma {
     createdAt?: Date | string
     updatedAt?: Date | string
     user?: UserCreateNestedOneWithoutPaymentsInput
+    plan?: SubscriptionPlanCreateNestedOneWithoutPaymentsInput
     subscriptions?: SubscriptionCreateNestedManyWithoutPaymentInput
     refunds?: PaymentRefundCreateNestedManyWithoutPaymentInput
   }
@@ -35541,7 +36896,6 @@ export namespace Prisma {
     appliedAt?: NullableDateTimeFieldUpdateOperationsInput | Date | string | null
     durationMonths?: NullableIntFieldUpdateOperationsInput | number | null
     id?: StringFieldUpdateOperationsInput | string
-    planId?: NullableStringFieldUpdateOperationsInput | string | null
     amount?: FloatFieldUpdateOperationsInput | number
     currency?: StringFieldUpdateOperationsInput | string
     description?: StringFieldUpdateOperationsInput | string
@@ -35551,6 +36905,7 @@ export namespace Prisma {
     createdAt?: DateTimeFieldUpdateOperationsInput | Date | string
     updatedAt?: DateTimeFieldUpdateOperationsInput | Date | string
     user?: UserUpdateOneWithoutPaymentsNestedInput
+    plan?: SubscriptionPlanUpdateOneWithoutPaymentsNestedInput
     subscriptions?: SubscriptionUpdateManyWithoutPaymentNestedInput
     refunds?: PaymentRefundUpdateManyWithoutPaymentNestedInput
   }
@@ -35593,7 +36948,6 @@ export namespace Prisma {
     appliedAt?: NullableDateTimeFieldUpdateOperationsInput | Date | string | null
     durationMonths?: NullableIntFieldUpdateOperationsInput | number | null
     id?: StringFieldUpdateOperationsInput | string
-    planId?: NullableStringFieldUpdateOperationsInput | string | null
     amount?: FloatFieldUpdateOperationsInput | number
     currency?: StringFieldUpdateOperationsInput | string
     description?: StringFieldUpdateOperationsInput | string
@@ -36575,6 +37929,12 @@ export namespace Prisma {
     none?: GuideReadWhereInput
   }
 
+  export type DocScanUsageListRelationFilter = {
+    every?: DocScanUsageWhereInput
+    some?: DocScanUsageWhereInput
+    none?: DocScanUsageWhereInput
+  }
+
   export type PasswordSetupTokenListRelationFilter = {
     every?: PasswordSetupTokenWhereInput
     some?: PasswordSetupTokenWhereInput
@@ -36665,6 +38025,10 @@ export namespace Prisma {
   }
 
   export type GuideReadOrderByRelationAggregateInput = {
+    _count?: SortOrder
+  }
+
+  export type DocScanUsageOrderByRelationAggregateInput = {
     _count?: SortOrder
   }
 
@@ -37207,6 +38571,47 @@ export namespace Prisma {
     used?: SortOrder
   }
 
+  export type DocScanUsageCountOrderByAggregateInput = {
+    id?: SortOrder
+    userId?: SortOrder
+    scanCount?: SortOrder
+    success?: SortOrder
+    exported?: SortOrder
+    source?: SortOrder
+    language?: SortOrder
+    createdAt?: SortOrder
+  }
+
+  export type DocScanUsageAvgOrderByAggregateInput = {
+    scanCount?: SortOrder
+  }
+
+  export type DocScanUsageMaxOrderByAggregateInput = {
+    id?: SortOrder
+    userId?: SortOrder
+    scanCount?: SortOrder
+    success?: SortOrder
+    exported?: SortOrder
+    source?: SortOrder
+    language?: SortOrder
+    createdAt?: SortOrder
+  }
+
+  export type DocScanUsageMinOrderByAggregateInput = {
+    id?: SortOrder
+    userId?: SortOrder
+    scanCount?: SortOrder
+    success?: SortOrder
+    exported?: SortOrder
+    source?: SortOrder
+    language?: SortOrder
+    createdAt?: SortOrder
+  }
+
+  export type DocScanUsageSumOrderByAggregateInput = {
+    scanCount?: SortOrder
+  }
+
   export type ChatMessageCountOrderByAggregateInput = {
     id?: SortOrder
     userId?: SortOrder
@@ -37588,6 +38993,11 @@ export namespace Prisma {
     gt?: number | IntFieldRefInput<$PrismaModel>
     gte?: number | IntFieldRefInput<$PrismaModel>
     not?: NestedIntNullableFilter<$PrismaModel> | number | null
+  }
+
+  export type SubscriptionPlanNullableRelationFilter = {
+    is?: SubscriptionPlanWhereInput | null
+    isNot?: SubscriptionPlanWhereInput | null
   }
 
   export type PaymentRefundListRelationFilter = {
@@ -38216,6 +39626,13 @@ export namespace Prisma {
     connect?: GuideReadWhereUniqueInput | GuideReadWhereUniqueInput[]
   }
 
+  export type DocScanUsageCreateNestedManyWithoutUserInput = {
+    create?: XOR<DocScanUsageCreateWithoutUserInput, DocScanUsageUncheckedCreateWithoutUserInput> | DocScanUsageCreateWithoutUserInput[] | DocScanUsageUncheckedCreateWithoutUserInput[]
+    connectOrCreate?: DocScanUsageCreateOrConnectWithoutUserInput | DocScanUsageCreateOrConnectWithoutUserInput[]
+    createMany?: DocScanUsageCreateManyUserInputEnvelope
+    connect?: DocScanUsageWhereUniqueInput | DocScanUsageWhereUniqueInput[]
+  }
+
   export type PasswordSetupTokenCreateNestedManyWithoutUserInput = {
     create?: XOR<PasswordSetupTokenCreateWithoutUserInput, PasswordSetupTokenUncheckedCreateWithoutUserInput> | PasswordSetupTokenCreateWithoutUserInput[] | PasswordSetupTokenUncheckedCreateWithoutUserInput[]
     connectOrCreate?: PasswordSetupTokenCreateOrConnectWithoutUserInput | PasswordSetupTokenCreateOrConnectWithoutUserInput[]
@@ -38360,6 +39777,13 @@ export namespace Prisma {
     connectOrCreate?: GuideReadCreateOrConnectWithoutUserInput | GuideReadCreateOrConnectWithoutUserInput[]
     createMany?: GuideReadCreateManyUserInputEnvelope
     connect?: GuideReadWhereUniqueInput | GuideReadWhereUniqueInput[]
+  }
+
+  export type DocScanUsageUncheckedCreateNestedManyWithoutUserInput = {
+    create?: XOR<DocScanUsageCreateWithoutUserInput, DocScanUsageUncheckedCreateWithoutUserInput> | DocScanUsageCreateWithoutUserInput[] | DocScanUsageUncheckedCreateWithoutUserInput[]
+    connectOrCreate?: DocScanUsageCreateOrConnectWithoutUserInput | DocScanUsageCreateOrConnectWithoutUserInput[]
+    createMany?: DocScanUsageCreateManyUserInputEnvelope
+    connect?: DocScanUsageWhereUniqueInput | DocScanUsageWhereUniqueInput[]
   }
 
   export type PasswordSetupTokenUncheckedCreateNestedManyWithoutUserInput = {
@@ -38629,6 +40053,20 @@ export namespace Prisma {
     update?: GuideReadUpdateWithWhereUniqueWithoutUserInput | GuideReadUpdateWithWhereUniqueWithoutUserInput[]
     updateMany?: GuideReadUpdateManyWithWhereWithoutUserInput | GuideReadUpdateManyWithWhereWithoutUserInput[]
     deleteMany?: GuideReadScalarWhereInput | GuideReadScalarWhereInput[]
+  }
+
+  export type DocScanUsageUpdateManyWithoutUserNestedInput = {
+    create?: XOR<DocScanUsageCreateWithoutUserInput, DocScanUsageUncheckedCreateWithoutUserInput> | DocScanUsageCreateWithoutUserInput[] | DocScanUsageUncheckedCreateWithoutUserInput[]
+    connectOrCreate?: DocScanUsageCreateOrConnectWithoutUserInput | DocScanUsageCreateOrConnectWithoutUserInput[]
+    upsert?: DocScanUsageUpsertWithWhereUniqueWithoutUserInput | DocScanUsageUpsertWithWhereUniqueWithoutUserInput[]
+    createMany?: DocScanUsageCreateManyUserInputEnvelope
+    set?: DocScanUsageWhereUniqueInput | DocScanUsageWhereUniqueInput[]
+    disconnect?: DocScanUsageWhereUniqueInput | DocScanUsageWhereUniqueInput[]
+    delete?: DocScanUsageWhereUniqueInput | DocScanUsageWhereUniqueInput[]
+    connect?: DocScanUsageWhereUniqueInput | DocScanUsageWhereUniqueInput[]
+    update?: DocScanUsageUpdateWithWhereUniqueWithoutUserInput | DocScanUsageUpdateWithWhereUniqueWithoutUserInput[]
+    updateMany?: DocScanUsageUpdateManyWithWhereWithoutUserInput | DocScanUsageUpdateManyWithWhereWithoutUserInput[]
+    deleteMany?: DocScanUsageScalarWhereInput | DocScanUsageScalarWhereInput[]
   }
 
   export type PasswordSetupTokenUpdateManyWithoutUserNestedInput = {
@@ -38921,6 +40359,20 @@ export namespace Prisma {
     deleteMany?: GuideReadScalarWhereInput | GuideReadScalarWhereInput[]
   }
 
+  export type DocScanUsageUncheckedUpdateManyWithoutUserNestedInput = {
+    create?: XOR<DocScanUsageCreateWithoutUserInput, DocScanUsageUncheckedCreateWithoutUserInput> | DocScanUsageCreateWithoutUserInput[] | DocScanUsageUncheckedCreateWithoutUserInput[]
+    connectOrCreate?: DocScanUsageCreateOrConnectWithoutUserInput | DocScanUsageCreateOrConnectWithoutUserInput[]
+    upsert?: DocScanUsageUpsertWithWhereUniqueWithoutUserInput | DocScanUsageUpsertWithWhereUniqueWithoutUserInput[]
+    createMany?: DocScanUsageCreateManyUserInputEnvelope
+    set?: DocScanUsageWhereUniqueInput | DocScanUsageWhereUniqueInput[]
+    disconnect?: DocScanUsageWhereUniqueInput | DocScanUsageWhereUniqueInput[]
+    delete?: DocScanUsageWhereUniqueInput | DocScanUsageWhereUniqueInput[]
+    connect?: DocScanUsageWhereUniqueInput | DocScanUsageWhereUniqueInput[]
+    update?: DocScanUsageUpdateWithWhereUniqueWithoutUserInput | DocScanUsageUpdateWithWhereUniqueWithoutUserInput[]
+    updateMany?: DocScanUsageUpdateManyWithWhereWithoutUserInput | DocScanUsageUpdateManyWithWhereWithoutUserInput[]
+    deleteMany?: DocScanUsageScalarWhereInput | DocScanUsageScalarWhereInput[]
+  }
+
   export type PasswordSetupTokenUncheckedUpdateManyWithoutUserNestedInput = {
     create?: XOR<PasswordSetupTokenCreateWithoutUserInput, PasswordSetupTokenUncheckedCreateWithoutUserInput> | PasswordSetupTokenCreateWithoutUserInput[] | PasswordSetupTokenUncheckedCreateWithoutUserInput[]
     connectOrCreate?: PasswordSetupTokenCreateOrConnectWithoutUserInput | PasswordSetupTokenCreateOrConnectWithoutUserInput[]
@@ -39187,6 +40639,20 @@ export namespace Prisma {
     update?: XOR<XOR<UserUpdateToOneWithWhereWithoutChatDailyUsageInput, UserUpdateWithoutChatDailyUsageInput>, UserUncheckedUpdateWithoutChatDailyUsageInput>
   }
 
+  export type UserCreateNestedOneWithoutDocScanUsageInput = {
+    create?: XOR<UserCreateWithoutDocScanUsageInput, UserUncheckedCreateWithoutDocScanUsageInput>
+    connectOrCreate?: UserCreateOrConnectWithoutDocScanUsageInput
+    connect?: UserWhereUniqueInput
+  }
+
+  export type UserUpdateOneRequiredWithoutDocScanUsageNestedInput = {
+    create?: XOR<UserCreateWithoutDocScanUsageInput, UserUncheckedCreateWithoutDocScanUsageInput>
+    connectOrCreate?: UserCreateOrConnectWithoutDocScanUsageInput
+    upsert?: UserUpsertWithoutDocScanUsageInput
+    connect?: UserWhereUniqueInput
+    update?: XOR<XOR<UserUpdateToOneWithWhereWithoutDocScanUsageInput, UserUpdateWithoutDocScanUsageInput>, UserUncheckedUpdateWithoutDocScanUsageInput>
+  }
+
   export type UserCreateNestedOneWithoutChatMessagesInput = {
     create?: XOR<UserCreateWithoutChatMessagesInput, UserUncheckedCreateWithoutChatMessagesInput>
     connectOrCreate?: UserCreateOrConnectWithoutChatMessagesInput
@@ -39412,11 +40878,25 @@ export namespace Prisma {
     connect?: SubscriptionWhereUniqueInput | SubscriptionWhereUniqueInput[]
   }
 
+  export type PaymentCreateNestedManyWithoutPlanInput = {
+    create?: XOR<PaymentCreateWithoutPlanInput, PaymentUncheckedCreateWithoutPlanInput> | PaymentCreateWithoutPlanInput[] | PaymentUncheckedCreateWithoutPlanInput[]
+    connectOrCreate?: PaymentCreateOrConnectWithoutPlanInput | PaymentCreateOrConnectWithoutPlanInput[]
+    createMany?: PaymentCreateManyPlanInputEnvelope
+    connect?: PaymentWhereUniqueInput | PaymentWhereUniqueInput[]
+  }
+
   export type SubscriptionUncheckedCreateNestedManyWithoutPlanInput = {
     create?: XOR<SubscriptionCreateWithoutPlanInput, SubscriptionUncheckedCreateWithoutPlanInput> | SubscriptionCreateWithoutPlanInput[] | SubscriptionUncheckedCreateWithoutPlanInput[]
     connectOrCreate?: SubscriptionCreateOrConnectWithoutPlanInput | SubscriptionCreateOrConnectWithoutPlanInput[]
     createMany?: SubscriptionCreateManyPlanInputEnvelope
     connect?: SubscriptionWhereUniqueInput | SubscriptionWhereUniqueInput[]
+  }
+
+  export type PaymentUncheckedCreateNestedManyWithoutPlanInput = {
+    create?: XOR<PaymentCreateWithoutPlanInput, PaymentUncheckedCreateWithoutPlanInput> | PaymentCreateWithoutPlanInput[] | PaymentUncheckedCreateWithoutPlanInput[]
+    connectOrCreate?: PaymentCreateOrConnectWithoutPlanInput | PaymentCreateOrConnectWithoutPlanInput[]
+    createMany?: PaymentCreateManyPlanInputEnvelope
+    connect?: PaymentWhereUniqueInput | PaymentWhereUniqueInput[]
   }
 
   export type FloatFieldUpdateOperationsInput = {
@@ -39441,6 +40921,20 @@ export namespace Prisma {
     deleteMany?: SubscriptionScalarWhereInput | SubscriptionScalarWhereInput[]
   }
 
+  export type PaymentUpdateManyWithoutPlanNestedInput = {
+    create?: XOR<PaymentCreateWithoutPlanInput, PaymentUncheckedCreateWithoutPlanInput> | PaymentCreateWithoutPlanInput[] | PaymentUncheckedCreateWithoutPlanInput[]
+    connectOrCreate?: PaymentCreateOrConnectWithoutPlanInput | PaymentCreateOrConnectWithoutPlanInput[]
+    upsert?: PaymentUpsertWithWhereUniqueWithoutPlanInput | PaymentUpsertWithWhereUniqueWithoutPlanInput[]
+    createMany?: PaymentCreateManyPlanInputEnvelope
+    set?: PaymentWhereUniqueInput | PaymentWhereUniqueInput[]
+    disconnect?: PaymentWhereUniqueInput | PaymentWhereUniqueInput[]
+    delete?: PaymentWhereUniqueInput | PaymentWhereUniqueInput[]
+    connect?: PaymentWhereUniqueInput | PaymentWhereUniqueInput[]
+    update?: PaymentUpdateWithWhereUniqueWithoutPlanInput | PaymentUpdateWithWhereUniqueWithoutPlanInput[]
+    updateMany?: PaymentUpdateManyWithWhereWithoutPlanInput | PaymentUpdateManyWithWhereWithoutPlanInput[]
+    deleteMany?: PaymentScalarWhereInput | PaymentScalarWhereInput[]
+  }
+
   export type SubscriptionUncheckedUpdateManyWithoutPlanNestedInput = {
     create?: XOR<SubscriptionCreateWithoutPlanInput, SubscriptionUncheckedCreateWithoutPlanInput> | SubscriptionCreateWithoutPlanInput[] | SubscriptionUncheckedCreateWithoutPlanInput[]
     connectOrCreate?: SubscriptionCreateOrConnectWithoutPlanInput | SubscriptionCreateOrConnectWithoutPlanInput[]
@@ -39455,10 +40949,30 @@ export namespace Prisma {
     deleteMany?: SubscriptionScalarWhereInput | SubscriptionScalarWhereInput[]
   }
 
+  export type PaymentUncheckedUpdateManyWithoutPlanNestedInput = {
+    create?: XOR<PaymentCreateWithoutPlanInput, PaymentUncheckedCreateWithoutPlanInput> | PaymentCreateWithoutPlanInput[] | PaymentUncheckedCreateWithoutPlanInput[]
+    connectOrCreate?: PaymentCreateOrConnectWithoutPlanInput | PaymentCreateOrConnectWithoutPlanInput[]
+    upsert?: PaymentUpsertWithWhereUniqueWithoutPlanInput | PaymentUpsertWithWhereUniqueWithoutPlanInput[]
+    createMany?: PaymentCreateManyPlanInputEnvelope
+    set?: PaymentWhereUniqueInput | PaymentWhereUniqueInput[]
+    disconnect?: PaymentWhereUniqueInput | PaymentWhereUniqueInput[]
+    delete?: PaymentWhereUniqueInput | PaymentWhereUniqueInput[]
+    connect?: PaymentWhereUniqueInput | PaymentWhereUniqueInput[]
+    update?: PaymentUpdateWithWhereUniqueWithoutPlanInput | PaymentUpdateWithWhereUniqueWithoutPlanInput[]
+    updateMany?: PaymentUpdateManyWithWhereWithoutPlanInput | PaymentUpdateManyWithWhereWithoutPlanInput[]
+    deleteMany?: PaymentScalarWhereInput | PaymentScalarWhereInput[]
+  }
+
   export type UserCreateNestedOneWithoutPaymentsInput = {
     create?: XOR<UserCreateWithoutPaymentsInput, UserUncheckedCreateWithoutPaymentsInput>
     connectOrCreate?: UserCreateOrConnectWithoutPaymentsInput
     connect?: UserWhereUniqueInput
+  }
+
+  export type SubscriptionPlanCreateNestedOneWithoutPaymentsInput = {
+    create?: XOR<SubscriptionPlanCreateWithoutPaymentsInput, SubscriptionPlanUncheckedCreateWithoutPaymentsInput>
+    connectOrCreate?: SubscriptionPlanCreateOrConnectWithoutPaymentsInput
+    connect?: SubscriptionPlanWhereUniqueInput
   }
 
   export type SubscriptionCreateNestedManyWithoutPaymentInput = {
@@ -39505,6 +41019,16 @@ export namespace Prisma {
     delete?: UserWhereInput | boolean
     connect?: UserWhereUniqueInput
     update?: XOR<XOR<UserUpdateToOneWithWhereWithoutPaymentsInput, UserUpdateWithoutPaymentsInput>, UserUncheckedUpdateWithoutPaymentsInput>
+  }
+
+  export type SubscriptionPlanUpdateOneWithoutPaymentsNestedInput = {
+    create?: XOR<SubscriptionPlanCreateWithoutPaymentsInput, SubscriptionPlanUncheckedCreateWithoutPaymentsInput>
+    connectOrCreate?: SubscriptionPlanCreateOrConnectWithoutPaymentsInput
+    upsert?: SubscriptionPlanUpsertWithoutPaymentsInput
+    disconnect?: SubscriptionPlanWhereInput | boolean
+    delete?: SubscriptionPlanWhereInput | boolean
+    connect?: SubscriptionPlanWhereUniqueInput
+    update?: XOR<XOR<SubscriptionPlanUpdateToOneWithWhereWithoutPaymentsInput, SubscriptionPlanUpdateWithoutPaymentsInput>, SubscriptionPlanUncheckedUpdateWithoutPaymentsInput>
   }
 
   export type SubscriptionUpdateManyWithoutPaymentNestedInput = {
@@ -40349,7 +41873,6 @@ export namespace Prisma {
     appliedAt?: Date | string | null
     durationMonths?: number | null
     id?: string
-    planId?: string | null
     amount: number
     currency?: string
     description: string
@@ -40358,6 +41881,7 @@ export namespace Prisma {
     yooKassaPaymentId?: string | null
     createdAt?: Date | string
     updatedAt?: Date | string
+    plan?: SubscriptionPlanCreateNestedOneWithoutPaymentsInput
     subscriptions?: SubscriptionCreateNestedManyWithoutPaymentInput
     refunds?: PaymentRefundCreateNestedManyWithoutPaymentInput
   }
@@ -40590,6 +42114,36 @@ export namespace Prisma {
 
   export type GuideReadCreateManyUserInputEnvelope = {
     data: GuideReadCreateManyUserInput | GuideReadCreateManyUserInput[]
+    skipDuplicates?: boolean
+  }
+
+  export type DocScanUsageCreateWithoutUserInput = {
+    id?: string
+    scanCount?: number
+    success?: boolean
+    exported?: boolean
+    source?: string | null
+    language?: string | null
+    createdAt?: Date | string
+  }
+
+  export type DocScanUsageUncheckedCreateWithoutUserInput = {
+    id?: string
+    scanCount?: number
+    success?: boolean
+    exported?: boolean
+    source?: string | null
+    language?: string | null
+    createdAt?: Date | string
+  }
+
+  export type DocScanUsageCreateOrConnectWithoutUserInput = {
+    where: DocScanUsageWhereUniqueInput
+    create: XOR<DocScanUsageCreateWithoutUserInput, DocScanUsageUncheckedCreateWithoutUserInput>
+  }
+
+  export type DocScanUsageCreateManyUserInputEnvelope = {
+    data: DocScanUsageCreateManyUserInput | DocScanUsageCreateManyUserInput[]
     skipDuplicates?: boolean
   }
 
@@ -41254,6 +42808,36 @@ export namespace Prisma {
     readAt?: DateTimeFilter<"GuideRead"> | Date | string
   }
 
+  export type DocScanUsageUpsertWithWhereUniqueWithoutUserInput = {
+    where: DocScanUsageWhereUniqueInput
+    update: XOR<DocScanUsageUpdateWithoutUserInput, DocScanUsageUncheckedUpdateWithoutUserInput>
+    create: XOR<DocScanUsageCreateWithoutUserInput, DocScanUsageUncheckedCreateWithoutUserInput>
+  }
+
+  export type DocScanUsageUpdateWithWhereUniqueWithoutUserInput = {
+    where: DocScanUsageWhereUniqueInput
+    data: XOR<DocScanUsageUpdateWithoutUserInput, DocScanUsageUncheckedUpdateWithoutUserInput>
+  }
+
+  export type DocScanUsageUpdateManyWithWhereWithoutUserInput = {
+    where: DocScanUsageScalarWhereInput
+    data: XOR<DocScanUsageUpdateManyMutationInput, DocScanUsageUncheckedUpdateManyWithoutUserInput>
+  }
+
+  export type DocScanUsageScalarWhereInput = {
+    AND?: DocScanUsageScalarWhereInput | DocScanUsageScalarWhereInput[]
+    OR?: DocScanUsageScalarWhereInput[]
+    NOT?: DocScanUsageScalarWhereInput | DocScanUsageScalarWhereInput[]
+    id?: StringFilter<"DocScanUsage"> | string
+    userId?: StringFilter<"DocScanUsage"> | string
+    scanCount?: IntFilter<"DocScanUsage"> | number
+    success?: BoolFilter<"DocScanUsage"> | boolean
+    exported?: BoolFilter<"DocScanUsage"> | boolean
+    source?: StringNullableFilter<"DocScanUsage"> | string | null
+    language?: StringNullableFilter<"DocScanUsage"> | string | null
+    createdAt?: DateTimeFilter<"DocScanUsage"> | Date | string
+  }
+
   export type PasswordSetupTokenUpsertWithWhereUniqueWithoutUserInput = {
     where: PasswordSetupTokenWhereUniqueInput
     update: XOR<PasswordSetupTokenUpdateWithoutUserInput, PasswordSetupTokenUncheckedUpdateWithoutUserInput>
@@ -41495,6 +43079,7 @@ export namespace Prisma {
     questionLikes?: QuestionLikeCreateNestedManyWithoutUserInput
     reviews?: ReviewCreateNestedManyWithoutUserInput
     guideReads?: GuideReadCreateNestedManyWithoutUserInput
+    docScanUsage?: DocScanUsageCreateNestedManyWithoutUserInput
     passwordSetupTokens?: PasswordSetupTokenCreateNestedManyWithoutUserInput
     adminInboxReads?: AdminInboxReadCreateNestedManyWithoutAdminUserInput
     adminAuditLogs?: AdminAuditLogCreateNestedManyWithoutActorInput
@@ -41536,6 +43121,7 @@ export namespace Prisma {
     questionLikes?: QuestionLikeUncheckedCreateNestedManyWithoutUserInput
     reviews?: ReviewUncheckedCreateNestedManyWithoutUserInput
     guideReads?: GuideReadUncheckedCreateNestedManyWithoutUserInput
+    docScanUsage?: DocScanUsageUncheckedCreateNestedManyWithoutUserInput
     passwordSetupTokens?: PasswordSetupTokenUncheckedCreateNestedManyWithoutUserInput
     adminInboxReads?: AdminInboxReadUncheckedCreateNestedManyWithoutAdminUserInput
     adminAuditLogs?: AdminAuditLogUncheckedCreateNestedManyWithoutActorInput
@@ -41593,6 +43179,7 @@ export namespace Prisma {
     questionLikes?: QuestionLikeUpdateManyWithoutUserNestedInput
     reviews?: ReviewUpdateManyWithoutUserNestedInput
     guideReads?: GuideReadUpdateManyWithoutUserNestedInput
+    docScanUsage?: DocScanUsageUpdateManyWithoutUserNestedInput
     passwordSetupTokens?: PasswordSetupTokenUpdateManyWithoutUserNestedInput
     adminInboxReads?: AdminInboxReadUpdateManyWithoutAdminUserNestedInput
     adminAuditLogs?: AdminAuditLogUpdateManyWithoutActorNestedInput
@@ -41634,6 +43221,7 @@ export namespace Prisma {
     questionLikes?: QuestionLikeUncheckedUpdateManyWithoutUserNestedInput
     reviews?: ReviewUncheckedUpdateManyWithoutUserNestedInput
     guideReads?: GuideReadUncheckedUpdateManyWithoutUserNestedInput
+    docScanUsage?: DocScanUsageUncheckedUpdateManyWithoutUserNestedInput
     passwordSetupTokens?: PasswordSetupTokenUncheckedUpdateManyWithoutUserNestedInput
     adminInboxReads?: AdminInboxReadUncheckedUpdateManyWithoutAdminUserNestedInput
     adminAuditLogs?: AdminAuditLogUncheckedUpdateManyWithoutActorNestedInput
@@ -41675,6 +43263,7 @@ export namespace Prisma {
     questionLikes?: QuestionLikeCreateNestedManyWithoutUserInput
     reviews?: ReviewCreateNestedManyWithoutUserInput
     guideReads?: GuideReadCreateNestedManyWithoutUserInput
+    docScanUsage?: DocScanUsageCreateNestedManyWithoutUserInput
     buddyApplications?: BuddyApplicationCreateNestedManyWithoutUserInput
     adminInboxReads?: AdminInboxReadCreateNestedManyWithoutAdminUserInput
     adminAuditLogs?: AdminAuditLogCreateNestedManyWithoutActorInput
@@ -41716,6 +43305,7 @@ export namespace Prisma {
     questionLikes?: QuestionLikeUncheckedCreateNestedManyWithoutUserInput
     reviews?: ReviewUncheckedCreateNestedManyWithoutUserInput
     guideReads?: GuideReadUncheckedCreateNestedManyWithoutUserInput
+    docScanUsage?: DocScanUsageUncheckedCreateNestedManyWithoutUserInput
     buddyApplications?: BuddyApplicationUncheckedCreateNestedManyWithoutUserInput
     adminInboxReads?: AdminInboxReadUncheckedCreateNestedManyWithoutAdminUserInput
     adminAuditLogs?: AdminAuditLogUncheckedCreateNestedManyWithoutActorInput
@@ -41773,6 +43363,7 @@ export namespace Prisma {
     questionLikes?: QuestionLikeUpdateManyWithoutUserNestedInput
     reviews?: ReviewUpdateManyWithoutUserNestedInput
     guideReads?: GuideReadUpdateManyWithoutUserNestedInput
+    docScanUsage?: DocScanUsageUpdateManyWithoutUserNestedInput
     buddyApplications?: BuddyApplicationUpdateManyWithoutUserNestedInput
     adminInboxReads?: AdminInboxReadUpdateManyWithoutAdminUserNestedInput
     adminAuditLogs?: AdminAuditLogUpdateManyWithoutActorNestedInput
@@ -41814,6 +43405,7 @@ export namespace Prisma {
     questionLikes?: QuestionLikeUncheckedUpdateManyWithoutUserNestedInput
     reviews?: ReviewUncheckedUpdateManyWithoutUserNestedInput
     guideReads?: GuideReadUncheckedUpdateManyWithoutUserNestedInput
+    docScanUsage?: DocScanUsageUncheckedUpdateManyWithoutUserNestedInput
     buddyApplications?: BuddyApplicationUncheckedUpdateManyWithoutUserNestedInput
     adminInboxReads?: AdminInboxReadUncheckedUpdateManyWithoutAdminUserNestedInput
     adminAuditLogs?: AdminAuditLogUncheckedUpdateManyWithoutActorNestedInput
@@ -41854,6 +43446,7 @@ export namespace Prisma {
     questionLikes?: QuestionLikeCreateNestedManyWithoutUserInput
     reviews?: ReviewCreateNestedManyWithoutUserInput
     guideReads?: GuideReadCreateNestedManyWithoutUserInput
+    docScanUsage?: DocScanUsageCreateNestedManyWithoutUserInput
     passwordSetupTokens?: PasswordSetupTokenCreateNestedManyWithoutUserInput
     buddyApplications?: BuddyApplicationCreateNestedManyWithoutUserInput
     adminInboxReads?: AdminInboxReadCreateNestedManyWithoutAdminUserInput
@@ -41895,6 +43488,7 @@ export namespace Prisma {
     questionLikes?: QuestionLikeUncheckedCreateNestedManyWithoutUserInput
     reviews?: ReviewUncheckedCreateNestedManyWithoutUserInput
     guideReads?: GuideReadUncheckedCreateNestedManyWithoutUserInput
+    docScanUsage?: DocScanUsageUncheckedCreateNestedManyWithoutUserInput
     passwordSetupTokens?: PasswordSetupTokenUncheckedCreateNestedManyWithoutUserInput
     buddyApplications?: BuddyApplicationUncheckedCreateNestedManyWithoutUserInput
     adminInboxReads?: AdminInboxReadUncheckedCreateNestedManyWithoutAdminUserInput
@@ -41952,6 +43546,7 @@ export namespace Prisma {
     questionLikes?: QuestionLikeUpdateManyWithoutUserNestedInput
     reviews?: ReviewUpdateManyWithoutUserNestedInput
     guideReads?: GuideReadUpdateManyWithoutUserNestedInput
+    docScanUsage?: DocScanUsageUpdateManyWithoutUserNestedInput
     passwordSetupTokens?: PasswordSetupTokenUpdateManyWithoutUserNestedInput
     buddyApplications?: BuddyApplicationUpdateManyWithoutUserNestedInput
     adminInboxReads?: AdminInboxReadUpdateManyWithoutAdminUserNestedInput
@@ -41993,6 +43588,7 @@ export namespace Prisma {
     questionLikes?: QuestionLikeUncheckedUpdateManyWithoutUserNestedInput
     reviews?: ReviewUncheckedUpdateManyWithoutUserNestedInput
     guideReads?: GuideReadUncheckedUpdateManyWithoutUserNestedInput
+    docScanUsage?: DocScanUsageUncheckedUpdateManyWithoutUserNestedInput
     passwordSetupTokens?: PasswordSetupTokenUncheckedUpdateManyWithoutUserNestedInput
     buddyApplications?: BuddyApplicationUncheckedUpdateManyWithoutUserNestedInput
     adminInboxReads?: AdminInboxReadUncheckedUpdateManyWithoutAdminUserNestedInput
@@ -42034,6 +43630,7 @@ export namespace Prisma {
     questionLikes?: QuestionLikeCreateNestedManyWithoutUserInput
     reviews?: ReviewCreateNestedManyWithoutUserInput
     guideReads?: GuideReadCreateNestedManyWithoutUserInput
+    docScanUsage?: DocScanUsageCreateNestedManyWithoutUserInput
     passwordSetupTokens?: PasswordSetupTokenCreateNestedManyWithoutUserInput
     buddyApplications?: BuddyApplicationCreateNestedManyWithoutUserInput
     adminInboxReads?: AdminInboxReadCreateNestedManyWithoutAdminUserInput
@@ -42075,6 +43672,7 @@ export namespace Prisma {
     questionLikes?: QuestionLikeUncheckedCreateNestedManyWithoutUserInput
     reviews?: ReviewUncheckedCreateNestedManyWithoutUserInput
     guideReads?: GuideReadUncheckedCreateNestedManyWithoutUserInput
+    docScanUsage?: DocScanUsageUncheckedCreateNestedManyWithoutUserInput
     passwordSetupTokens?: PasswordSetupTokenUncheckedCreateNestedManyWithoutUserInput
     buddyApplications?: BuddyApplicationUncheckedCreateNestedManyWithoutUserInput
     adminInboxReads?: AdminInboxReadUncheckedCreateNestedManyWithoutAdminUserInput
@@ -42172,6 +43770,7 @@ export namespace Prisma {
     questionLikes?: QuestionLikeUpdateManyWithoutUserNestedInput
     reviews?: ReviewUpdateManyWithoutUserNestedInput
     guideReads?: GuideReadUpdateManyWithoutUserNestedInput
+    docScanUsage?: DocScanUsageUpdateManyWithoutUserNestedInput
     passwordSetupTokens?: PasswordSetupTokenUpdateManyWithoutUserNestedInput
     buddyApplications?: BuddyApplicationUpdateManyWithoutUserNestedInput
     adminInboxReads?: AdminInboxReadUpdateManyWithoutAdminUserNestedInput
@@ -42213,6 +43812,7 @@ export namespace Prisma {
     questionLikes?: QuestionLikeUncheckedUpdateManyWithoutUserNestedInput
     reviews?: ReviewUncheckedUpdateManyWithoutUserNestedInput
     guideReads?: GuideReadUncheckedUpdateManyWithoutUserNestedInput
+    docScanUsage?: DocScanUsageUncheckedUpdateManyWithoutUserNestedInput
     passwordSetupTokens?: PasswordSetupTokenUncheckedUpdateManyWithoutUserNestedInput
     buddyApplications?: BuddyApplicationUncheckedUpdateManyWithoutUserNestedInput
     adminInboxReads?: AdminInboxReadUncheckedUpdateManyWithoutAdminUserNestedInput
@@ -42270,6 +43870,7 @@ export namespace Prisma {
     questionLikes?: QuestionLikeCreateNestedManyWithoutUserInput
     reviews?: ReviewCreateNestedManyWithoutUserInput
     guideReads?: GuideReadCreateNestedManyWithoutUserInput
+    docScanUsage?: DocScanUsageCreateNestedManyWithoutUserInput
     passwordSetupTokens?: PasswordSetupTokenCreateNestedManyWithoutUserInput
     buddyApplications?: BuddyApplicationCreateNestedManyWithoutUserInput
     adminInboxReads?: AdminInboxReadCreateNestedManyWithoutAdminUserInput
@@ -42311,6 +43912,7 @@ export namespace Prisma {
     questionLikes?: QuestionLikeUncheckedCreateNestedManyWithoutUserInput
     reviews?: ReviewUncheckedCreateNestedManyWithoutUserInput
     guideReads?: GuideReadUncheckedCreateNestedManyWithoutUserInput
+    docScanUsage?: DocScanUsageUncheckedCreateNestedManyWithoutUserInput
     passwordSetupTokens?: PasswordSetupTokenUncheckedCreateNestedManyWithoutUserInput
     buddyApplications?: BuddyApplicationUncheckedCreateNestedManyWithoutUserInput
     adminInboxReads?: AdminInboxReadUncheckedCreateNestedManyWithoutAdminUserInput
@@ -42395,6 +43997,7 @@ export namespace Prisma {
     questionLikes?: QuestionLikeUpdateManyWithoutUserNestedInput
     reviews?: ReviewUpdateManyWithoutUserNestedInput
     guideReads?: GuideReadUpdateManyWithoutUserNestedInput
+    docScanUsage?: DocScanUsageUpdateManyWithoutUserNestedInput
     passwordSetupTokens?: PasswordSetupTokenUpdateManyWithoutUserNestedInput
     buddyApplications?: BuddyApplicationUpdateManyWithoutUserNestedInput
     adminInboxReads?: AdminInboxReadUpdateManyWithoutAdminUserNestedInput
@@ -42436,6 +44039,7 @@ export namespace Prisma {
     questionLikes?: QuestionLikeUncheckedUpdateManyWithoutUserNestedInput
     reviews?: ReviewUncheckedUpdateManyWithoutUserNestedInput
     guideReads?: GuideReadUncheckedUpdateManyWithoutUserNestedInput
+    docScanUsage?: DocScanUsageUncheckedUpdateManyWithoutUserNestedInput
     passwordSetupTokens?: PasswordSetupTokenUncheckedUpdateManyWithoutUserNestedInput
     buddyApplications?: BuddyApplicationUncheckedUpdateManyWithoutUserNestedInput
     adminInboxReads?: AdminInboxReadUncheckedUpdateManyWithoutAdminUserNestedInput
@@ -42510,6 +44114,7 @@ export namespace Prisma {
     questionLikes?: QuestionLikeCreateNestedManyWithoutUserInput
     reviews?: ReviewCreateNestedManyWithoutUserInput
     guideReads?: GuideReadCreateNestedManyWithoutUserInput
+    docScanUsage?: DocScanUsageCreateNestedManyWithoutUserInput
     passwordSetupTokens?: PasswordSetupTokenCreateNestedManyWithoutUserInput
     buddyApplications?: BuddyApplicationCreateNestedManyWithoutUserInput
     adminInboxReads?: AdminInboxReadCreateNestedManyWithoutAdminUserInput
@@ -42551,6 +44156,7 @@ export namespace Prisma {
     questionLikes?: QuestionLikeUncheckedCreateNestedManyWithoutUserInput
     reviews?: ReviewUncheckedCreateNestedManyWithoutUserInput
     guideReads?: GuideReadUncheckedCreateNestedManyWithoutUserInput
+    docScanUsage?: DocScanUsageUncheckedCreateNestedManyWithoutUserInput
     passwordSetupTokens?: PasswordSetupTokenUncheckedCreateNestedManyWithoutUserInput
     buddyApplications?: BuddyApplicationUncheckedCreateNestedManyWithoutUserInput
     adminInboxReads?: AdminInboxReadUncheckedCreateNestedManyWithoutAdminUserInput
@@ -42608,6 +44214,7 @@ export namespace Prisma {
     questionLikes?: QuestionLikeUpdateManyWithoutUserNestedInput
     reviews?: ReviewUpdateManyWithoutUserNestedInput
     guideReads?: GuideReadUpdateManyWithoutUserNestedInput
+    docScanUsage?: DocScanUsageUpdateManyWithoutUserNestedInput
     passwordSetupTokens?: PasswordSetupTokenUpdateManyWithoutUserNestedInput
     buddyApplications?: BuddyApplicationUpdateManyWithoutUserNestedInput
     adminInboxReads?: AdminInboxReadUpdateManyWithoutAdminUserNestedInput
@@ -42639,6 +44246,191 @@ export namespace Prisma {
     reminders?: ReminderUncheckedUpdateManyWithoutUserNestedInput
     notes?: NoteUncheckedUpdateManyWithoutUserNestedInput
     chatMessages?: ChatMessageUncheckedUpdateManyWithoutUserNestedInput
+    profile?: ProfileUncheckedUpdateOneWithoutUserNestedInput
+    supportTickets?: SupportTicketUncheckedUpdateManyWithoutUserNestedInput
+    payments?: PaymentUncheckedUpdateManyWithoutUserNestedInput
+    subscriptions?: SubscriptionUncheckedUpdateManyWithoutUserNestedInput
+    userGrantApplications?: UserGrantApplicationUncheckedUpdateManyWithoutUserNestedInput
+    questions?: QuestionUncheckedUpdateManyWithoutAuthorNestedInput
+    answers?: AnswerUncheckedUpdateManyWithoutAuthorNestedInput
+    questionLikes?: QuestionLikeUncheckedUpdateManyWithoutUserNestedInput
+    reviews?: ReviewUncheckedUpdateManyWithoutUserNestedInput
+    guideReads?: GuideReadUncheckedUpdateManyWithoutUserNestedInput
+    docScanUsage?: DocScanUsageUncheckedUpdateManyWithoutUserNestedInput
+    passwordSetupTokens?: PasswordSetupTokenUncheckedUpdateManyWithoutUserNestedInput
+    buddyApplications?: BuddyApplicationUncheckedUpdateManyWithoutUserNestedInput
+    adminInboxReads?: AdminInboxReadUncheckedUpdateManyWithoutAdminUserNestedInput
+    adminAuditLogs?: AdminAuditLogUncheckedUpdateManyWithoutActorNestedInput
+    adminSupportResponses?: SupportResponseUncheckedUpdateManyWithoutAdminUserNestedInput
+    notifications?: UserNotificationUncheckedUpdateManyWithoutUserNestedInput
+    sentNotifications?: UserNotificationUncheckedUpdateManyWithoutActorNestedInput
+  }
+
+  export type UserCreateWithoutDocScanUsageInput = {
+    id?: string
+    email: string
+    password: string
+    name: string
+    language?: string
+    country: string
+    role?: string
+    registeredAt?: Date | string
+    university?: string | null
+    faculty?: string | null
+    year?: string | null
+    plan?: string
+    phone?: string | null
+    gender?: string | null
+    emailNotifications?: boolean
+    timezone?: string
+    tokenVersion?: number
+    blockedAt?: Date | string | null
+    reminders?: ReminderCreateNestedManyWithoutUserInput
+    notes?: NoteCreateNestedManyWithoutUserInput
+    chatMessages?: ChatMessageCreateNestedManyWithoutUserInput
+    chatDailyUsage?: ChatDailyUsageCreateNestedManyWithoutUserInput
+    profile?: ProfileCreateNestedOneWithoutUserInput
+    supportTickets?: SupportTicketCreateNestedManyWithoutUserInput
+    payments?: PaymentCreateNestedManyWithoutUserInput
+    subscriptions?: SubscriptionCreateNestedManyWithoutUserInput
+    userGrantApplications?: UserGrantApplicationCreateNestedManyWithoutUserInput
+    questions?: QuestionCreateNestedManyWithoutAuthorInput
+    answers?: AnswerCreateNestedManyWithoutAuthorInput
+    questionLikes?: QuestionLikeCreateNestedManyWithoutUserInput
+    reviews?: ReviewCreateNestedManyWithoutUserInput
+    guideReads?: GuideReadCreateNestedManyWithoutUserInput
+    passwordSetupTokens?: PasswordSetupTokenCreateNestedManyWithoutUserInput
+    buddyApplications?: BuddyApplicationCreateNestedManyWithoutUserInput
+    adminInboxReads?: AdminInboxReadCreateNestedManyWithoutAdminUserInput
+    adminAuditLogs?: AdminAuditLogCreateNestedManyWithoutActorInput
+    adminSupportResponses?: SupportResponseCreateNestedManyWithoutAdminUserInput
+    notifications?: UserNotificationCreateNestedManyWithoutUserInput
+    sentNotifications?: UserNotificationCreateNestedManyWithoutActorInput
+  }
+
+  export type UserUncheckedCreateWithoutDocScanUsageInput = {
+    id?: string
+    email: string
+    password: string
+    name: string
+    language?: string
+    country: string
+    role?: string
+    registeredAt?: Date | string
+    university?: string | null
+    faculty?: string | null
+    year?: string | null
+    plan?: string
+    phone?: string | null
+    gender?: string | null
+    emailNotifications?: boolean
+    timezone?: string
+    tokenVersion?: number
+    blockedAt?: Date | string | null
+    reminders?: ReminderUncheckedCreateNestedManyWithoutUserInput
+    notes?: NoteUncheckedCreateNestedManyWithoutUserInput
+    chatMessages?: ChatMessageUncheckedCreateNestedManyWithoutUserInput
+    chatDailyUsage?: ChatDailyUsageUncheckedCreateNestedManyWithoutUserInput
+    profile?: ProfileUncheckedCreateNestedOneWithoutUserInput
+    supportTickets?: SupportTicketUncheckedCreateNestedManyWithoutUserInput
+    payments?: PaymentUncheckedCreateNestedManyWithoutUserInput
+    subscriptions?: SubscriptionUncheckedCreateNestedManyWithoutUserInput
+    userGrantApplications?: UserGrantApplicationUncheckedCreateNestedManyWithoutUserInput
+    questions?: QuestionUncheckedCreateNestedManyWithoutAuthorInput
+    answers?: AnswerUncheckedCreateNestedManyWithoutAuthorInput
+    questionLikes?: QuestionLikeUncheckedCreateNestedManyWithoutUserInput
+    reviews?: ReviewUncheckedCreateNestedManyWithoutUserInput
+    guideReads?: GuideReadUncheckedCreateNestedManyWithoutUserInput
+    passwordSetupTokens?: PasswordSetupTokenUncheckedCreateNestedManyWithoutUserInput
+    buddyApplications?: BuddyApplicationUncheckedCreateNestedManyWithoutUserInput
+    adminInboxReads?: AdminInboxReadUncheckedCreateNestedManyWithoutAdminUserInput
+    adminAuditLogs?: AdminAuditLogUncheckedCreateNestedManyWithoutActorInput
+    adminSupportResponses?: SupportResponseUncheckedCreateNestedManyWithoutAdminUserInput
+    notifications?: UserNotificationUncheckedCreateNestedManyWithoutUserInput
+    sentNotifications?: UserNotificationUncheckedCreateNestedManyWithoutActorInput
+  }
+
+  export type UserCreateOrConnectWithoutDocScanUsageInput = {
+    where: UserWhereUniqueInput
+    create: XOR<UserCreateWithoutDocScanUsageInput, UserUncheckedCreateWithoutDocScanUsageInput>
+  }
+
+  export type UserUpsertWithoutDocScanUsageInput = {
+    update: XOR<UserUpdateWithoutDocScanUsageInput, UserUncheckedUpdateWithoutDocScanUsageInput>
+    create: XOR<UserCreateWithoutDocScanUsageInput, UserUncheckedCreateWithoutDocScanUsageInput>
+    where?: UserWhereInput
+  }
+
+  export type UserUpdateToOneWithWhereWithoutDocScanUsageInput = {
+    where?: UserWhereInput
+    data: XOR<UserUpdateWithoutDocScanUsageInput, UserUncheckedUpdateWithoutDocScanUsageInput>
+  }
+
+  export type UserUpdateWithoutDocScanUsageInput = {
+    id?: StringFieldUpdateOperationsInput | string
+    email?: StringFieldUpdateOperationsInput | string
+    password?: StringFieldUpdateOperationsInput | string
+    name?: StringFieldUpdateOperationsInput | string
+    language?: StringFieldUpdateOperationsInput | string
+    country?: StringFieldUpdateOperationsInput | string
+    role?: StringFieldUpdateOperationsInput | string
+    registeredAt?: DateTimeFieldUpdateOperationsInput | Date | string
+    university?: NullableStringFieldUpdateOperationsInput | string | null
+    faculty?: NullableStringFieldUpdateOperationsInput | string | null
+    year?: NullableStringFieldUpdateOperationsInput | string | null
+    plan?: StringFieldUpdateOperationsInput | string
+    phone?: NullableStringFieldUpdateOperationsInput | string | null
+    gender?: NullableStringFieldUpdateOperationsInput | string | null
+    emailNotifications?: BoolFieldUpdateOperationsInput | boolean
+    timezone?: StringFieldUpdateOperationsInput | string
+    tokenVersion?: IntFieldUpdateOperationsInput | number
+    blockedAt?: NullableDateTimeFieldUpdateOperationsInput | Date | string | null
+    reminders?: ReminderUpdateManyWithoutUserNestedInput
+    notes?: NoteUpdateManyWithoutUserNestedInput
+    chatMessages?: ChatMessageUpdateManyWithoutUserNestedInput
+    chatDailyUsage?: ChatDailyUsageUpdateManyWithoutUserNestedInput
+    profile?: ProfileUpdateOneWithoutUserNestedInput
+    supportTickets?: SupportTicketUpdateManyWithoutUserNestedInput
+    payments?: PaymentUpdateManyWithoutUserNestedInput
+    subscriptions?: SubscriptionUpdateManyWithoutUserNestedInput
+    userGrantApplications?: UserGrantApplicationUpdateManyWithoutUserNestedInput
+    questions?: QuestionUpdateManyWithoutAuthorNestedInput
+    answers?: AnswerUpdateManyWithoutAuthorNestedInput
+    questionLikes?: QuestionLikeUpdateManyWithoutUserNestedInput
+    reviews?: ReviewUpdateManyWithoutUserNestedInput
+    guideReads?: GuideReadUpdateManyWithoutUserNestedInput
+    passwordSetupTokens?: PasswordSetupTokenUpdateManyWithoutUserNestedInput
+    buddyApplications?: BuddyApplicationUpdateManyWithoutUserNestedInput
+    adminInboxReads?: AdminInboxReadUpdateManyWithoutAdminUserNestedInput
+    adminAuditLogs?: AdminAuditLogUpdateManyWithoutActorNestedInput
+    adminSupportResponses?: SupportResponseUpdateManyWithoutAdminUserNestedInput
+    notifications?: UserNotificationUpdateManyWithoutUserNestedInput
+    sentNotifications?: UserNotificationUpdateManyWithoutActorNestedInput
+  }
+
+  export type UserUncheckedUpdateWithoutDocScanUsageInput = {
+    id?: StringFieldUpdateOperationsInput | string
+    email?: StringFieldUpdateOperationsInput | string
+    password?: StringFieldUpdateOperationsInput | string
+    name?: StringFieldUpdateOperationsInput | string
+    language?: StringFieldUpdateOperationsInput | string
+    country?: StringFieldUpdateOperationsInput | string
+    role?: StringFieldUpdateOperationsInput | string
+    registeredAt?: DateTimeFieldUpdateOperationsInput | Date | string
+    university?: NullableStringFieldUpdateOperationsInput | string | null
+    faculty?: NullableStringFieldUpdateOperationsInput | string | null
+    year?: NullableStringFieldUpdateOperationsInput | string | null
+    plan?: StringFieldUpdateOperationsInput | string
+    phone?: NullableStringFieldUpdateOperationsInput | string | null
+    gender?: NullableStringFieldUpdateOperationsInput | string | null
+    emailNotifications?: BoolFieldUpdateOperationsInput | boolean
+    timezone?: StringFieldUpdateOperationsInput | string
+    tokenVersion?: IntFieldUpdateOperationsInput | number
+    blockedAt?: NullableDateTimeFieldUpdateOperationsInput | Date | string | null
+    reminders?: ReminderUncheckedUpdateManyWithoutUserNestedInput
+    notes?: NoteUncheckedUpdateManyWithoutUserNestedInput
+    chatMessages?: ChatMessageUncheckedUpdateManyWithoutUserNestedInput
+    chatDailyUsage?: ChatDailyUsageUncheckedUpdateManyWithoutUserNestedInput
     profile?: ProfileUncheckedUpdateOneWithoutUserNestedInput
     supportTickets?: SupportTicketUncheckedUpdateManyWithoutUserNestedInput
     payments?: PaymentUncheckedUpdateManyWithoutUserNestedInput
@@ -42690,6 +44482,7 @@ export namespace Prisma {
     questionLikes?: QuestionLikeCreateNestedManyWithoutUserInput
     reviews?: ReviewCreateNestedManyWithoutUserInput
     guideReads?: GuideReadCreateNestedManyWithoutUserInput
+    docScanUsage?: DocScanUsageCreateNestedManyWithoutUserInput
     passwordSetupTokens?: PasswordSetupTokenCreateNestedManyWithoutUserInput
     buddyApplications?: BuddyApplicationCreateNestedManyWithoutUserInput
     adminInboxReads?: AdminInboxReadCreateNestedManyWithoutAdminUserInput
@@ -42731,6 +44524,7 @@ export namespace Prisma {
     questionLikes?: QuestionLikeUncheckedCreateNestedManyWithoutUserInput
     reviews?: ReviewUncheckedCreateNestedManyWithoutUserInput
     guideReads?: GuideReadUncheckedCreateNestedManyWithoutUserInput
+    docScanUsage?: DocScanUsageUncheckedCreateNestedManyWithoutUserInput
     passwordSetupTokens?: PasswordSetupTokenUncheckedCreateNestedManyWithoutUserInput
     buddyApplications?: BuddyApplicationUncheckedCreateNestedManyWithoutUserInput
     adminInboxReads?: AdminInboxReadUncheckedCreateNestedManyWithoutAdminUserInput
@@ -42788,6 +44582,7 @@ export namespace Prisma {
     questionLikes?: QuestionLikeUpdateManyWithoutUserNestedInput
     reviews?: ReviewUpdateManyWithoutUserNestedInput
     guideReads?: GuideReadUpdateManyWithoutUserNestedInput
+    docScanUsage?: DocScanUsageUpdateManyWithoutUserNestedInput
     passwordSetupTokens?: PasswordSetupTokenUpdateManyWithoutUserNestedInput
     buddyApplications?: BuddyApplicationUpdateManyWithoutUserNestedInput
     adminInboxReads?: AdminInboxReadUpdateManyWithoutAdminUserNestedInput
@@ -42829,6 +44624,7 @@ export namespace Prisma {
     questionLikes?: QuestionLikeUncheckedUpdateManyWithoutUserNestedInput
     reviews?: ReviewUncheckedUpdateManyWithoutUserNestedInput
     guideReads?: GuideReadUncheckedUpdateManyWithoutUserNestedInput
+    docScanUsage?: DocScanUsageUncheckedUpdateManyWithoutUserNestedInput
     passwordSetupTokens?: PasswordSetupTokenUncheckedUpdateManyWithoutUserNestedInput
     buddyApplications?: BuddyApplicationUncheckedUpdateManyWithoutUserNestedInput
     adminInboxReads?: AdminInboxReadUncheckedUpdateManyWithoutAdminUserNestedInput
@@ -42870,6 +44666,7 @@ export namespace Prisma {
     questionLikes?: QuestionLikeCreateNestedManyWithoutUserInput
     reviews?: ReviewCreateNestedManyWithoutUserInput
     guideReads?: GuideReadCreateNestedManyWithoutUserInput
+    docScanUsage?: DocScanUsageCreateNestedManyWithoutUserInput
     passwordSetupTokens?: PasswordSetupTokenCreateNestedManyWithoutUserInput
     buddyApplications?: BuddyApplicationCreateNestedManyWithoutUserInput
     adminInboxReads?: AdminInboxReadCreateNestedManyWithoutAdminUserInput
@@ -42911,6 +44708,7 @@ export namespace Prisma {
     questionLikes?: QuestionLikeUncheckedCreateNestedManyWithoutUserInput
     reviews?: ReviewUncheckedCreateNestedManyWithoutUserInput
     guideReads?: GuideReadUncheckedCreateNestedManyWithoutUserInput
+    docScanUsage?: DocScanUsageUncheckedCreateNestedManyWithoutUserInput
     passwordSetupTokens?: PasswordSetupTokenUncheckedCreateNestedManyWithoutUserInput
     buddyApplications?: BuddyApplicationUncheckedCreateNestedManyWithoutUserInput
     adminInboxReads?: AdminInboxReadUncheckedCreateNestedManyWithoutAdminUserInput
@@ -42998,6 +44796,7 @@ export namespace Prisma {
     questionLikes?: QuestionLikeUpdateManyWithoutUserNestedInput
     reviews?: ReviewUpdateManyWithoutUserNestedInput
     guideReads?: GuideReadUpdateManyWithoutUserNestedInput
+    docScanUsage?: DocScanUsageUpdateManyWithoutUserNestedInput
     passwordSetupTokens?: PasswordSetupTokenUpdateManyWithoutUserNestedInput
     buddyApplications?: BuddyApplicationUpdateManyWithoutUserNestedInput
     adminInboxReads?: AdminInboxReadUpdateManyWithoutAdminUserNestedInput
@@ -43039,6 +44838,7 @@ export namespace Prisma {
     questionLikes?: QuestionLikeUncheckedUpdateManyWithoutUserNestedInput
     reviews?: ReviewUncheckedUpdateManyWithoutUserNestedInput
     guideReads?: GuideReadUncheckedUpdateManyWithoutUserNestedInput
+    docScanUsage?: DocScanUsageUncheckedUpdateManyWithoutUserNestedInput
     passwordSetupTokens?: PasswordSetupTokenUncheckedUpdateManyWithoutUserNestedInput
     buddyApplications?: BuddyApplicationUncheckedUpdateManyWithoutUserNestedInput
     adminInboxReads?: AdminInboxReadUncheckedUpdateManyWithoutAdminUserNestedInput
@@ -43157,6 +44957,7 @@ export namespace Prisma {
     questionLikes?: QuestionLikeCreateNestedManyWithoutUserInput
     reviews?: ReviewCreateNestedManyWithoutUserInput
     guideReads?: GuideReadCreateNestedManyWithoutUserInput
+    docScanUsage?: DocScanUsageCreateNestedManyWithoutUserInput
     passwordSetupTokens?: PasswordSetupTokenCreateNestedManyWithoutUserInput
     buddyApplications?: BuddyApplicationCreateNestedManyWithoutUserInput
     adminInboxReads?: AdminInboxReadCreateNestedManyWithoutAdminUserInput
@@ -43198,6 +44999,7 @@ export namespace Prisma {
     questionLikes?: QuestionLikeUncheckedCreateNestedManyWithoutUserInput
     reviews?: ReviewUncheckedCreateNestedManyWithoutUserInput
     guideReads?: GuideReadUncheckedCreateNestedManyWithoutUserInput
+    docScanUsage?: DocScanUsageUncheckedCreateNestedManyWithoutUserInput
     passwordSetupTokens?: PasswordSetupTokenUncheckedCreateNestedManyWithoutUserInput
     buddyApplications?: BuddyApplicationUncheckedCreateNestedManyWithoutUserInput
     adminInboxReads?: AdminInboxReadUncheckedCreateNestedManyWithoutAdminUserInput
@@ -43327,6 +45129,7 @@ export namespace Prisma {
     questionLikes?: QuestionLikeUpdateManyWithoutUserNestedInput
     reviews?: ReviewUpdateManyWithoutUserNestedInput
     guideReads?: GuideReadUpdateManyWithoutUserNestedInput
+    docScanUsage?: DocScanUsageUpdateManyWithoutUserNestedInput
     passwordSetupTokens?: PasswordSetupTokenUpdateManyWithoutUserNestedInput
     buddyApplications?: BuddyApplicationUpdateManyWithoutUserNestedInput
     adminInboxReads?: AdminInboxReadUpdateManyWithoutAdminUserNestedInput
@@ -43368,6 +45171,7 @@ export namespace Prisma {
     questionLikes?: QuestionLikeUncheckedUpdateManyWithoutUserNestedInput
     reviews?: ReviewUncheckedUpdateManyWithoutUserNestedInput
     guideReads?: GuideReadUncheckedUpdateManyWithoutUserNestedInput
+    docScanUsage?: DocScanUsageUncheckedUpdateManyWithoutUserNestedInput
     passwordSetupTokens?: PasswordSetupTokenUncheckedUpdateManyWithoutUserNestedInput
     buddyApplications?: BuddyApplicationUncheckedUpdateManyWithoutUserNestedInput
     adminInboxReads?: AdminInboxReadUncheckedUpdateManyWithoutAdminUserNestedInput
@@ -43409,6 +45213,7 @@ export namespace Prisma {
     questionLikes?: QuestionLikeCreateNestedManyWithoutUserInput
     reviews?: ReviewCreateNestedManyWithoutUserInput
     guideReads?: GuideReadCreateNestedManyWithoutUserInput
+    docScanUsage?: DocScanUsageCreateNestedManyWithoutUserInput
     passwordSetupTokens?: PasswordSetupTokenCreateNestedManyWithoutUserInput
     buddyApplications?: BuddyApplicationCreateNestedManyWithoutUserInput
     adminAuditLogs?: AdminAuditLogCreateNestedManyWithoutActorInput
@@ -43450,6 +45255,7 @@ export namespace Prisma {
     questionLikes?: QuestionLikeUncheckedCreateNestedManyWithoutUserInput
     reviews?: ReviewUncheckedCreateNestedManyWithoutUserInput
     guideReads?: GuideReadUncheckedCreateNestedManyWithoutUserInput
+    docScanUsage?: DocScanUsageUncheckedCreateNestedManyWithoutUserInput
     passwordSetupTokens?: PasswordSetupTokenUncheckedCreateNestedManyWithoutUserInput
     buddyApplications?: BuddyApplicationUncheckedCreateNestedManyWithoutUserInput
     adminAuditLogs?: AdminAuditLogUncheckedCreateNestedManyWithoutActorInput
@@ -43507,6 +45313,7 @@ export namespace Prisma {
     questionLikes?: QuestionLikeUpdateManyWithoutUserNestedInput
     reviews?: ReviewUpdateManyWithoutUserNestedInput
     guideReads?: GuideReadUpdateManyWithoutUserNestedInput
+    docScanUsage?: DocScanUsageUpdateManyWithoutUserNestedInput
     passwordSetupTokens?: PasswordSetupTokenUpdateManyWithoutUserNestedInput
     buddyApplications?: BuddyApplicationUpdateManyWithoutUserNestedInput
     adminAuditLogs?: AdminAuditLogUpdateManyWithoutActorNestedInput
@@ -43548,6 +45355,7 @@ export namespace Prisma {
     questionLikes?: QuestionLikeUncheckedUpdateManyWithoutUserNestedInput
     reviews?: ReviewUncheckedUpdateManyWithoutUserNestedInput
     guideReads?: GuideReadUncheckedUpdateManyWithoutUserNestedInput
+    docScanUsage?: DocScanUsageUncheckedUpdateManyWithoutUserNestedInput
     passwordSetupTokens?: PasswordSetupTokenUncheckedUpdateManyWithoutUserNestedInput
     buddyApplications?: BuddyApplicationUncheckedUpdateManyWithoutUserNestedInput
     adminAuditLogs?: AdminAuditLogUncheckedUpdateManyWithoutActorNestedInput
@@ -43589,6 +45397,7 @@ export namespace Prisma {
     questionLikes?: QuestionLikeCreateNestedManyWithoutUserInput
     reviews?: ReviewCreateNestedManyWithoutUserInput
     guideReads?: GuideReadCreateNestedManyWithoutUserInput
+    docScanUsage?: DocScanUsageCreateNestedManyWithoutUserInput
     passwordSetupTokens?: PasswordSetupTokenCreateNestedManyWithoutUserInput
     buddyApplications?: BuddyApplicationCreateNestedManyWithoutUserInput
     adminInboxReads?: AdminInboxReadCreateNestedManyWithoutAdminUserInput
@@ -43630,6 +45439,7 @@ export namespace Prisma {
     questionLikes?: QuestionLikeUncheckedCreateNestedManyWithoutUserInput
     reviews?: ReviewUncheckedCreateNestedManyWithoutUserInput
     guideReads?: GuideReadUncheckedCreateNestedManyWithoutUserInput
+    docScanUsage?: DocScanUsageUncheckedCreateNestedManyWithoutUserInput
     passwordSetupTokens?: PasswordSetupTokenUncheckedCreateNestedManyWithoutUserInput
     buddyApplications?: BuddyApplicationUncheckedCreateNestedManyWithoutUserInput
     adminInboxReads?: AdminInboxReadUncheckedCreateNestedManyWithoutAdminUserInput
@@ -43687,6 +45497,7 @@ export namespace Prisma {
     questionLikes?: QuestionLikeUpdateManyWithoutUserNestedInput
     reviews?: ReviewUpdateManyWithoutUserNestedInput
     guideReads?: GuideReadUpdateManyWithoutUserNestedInput
+    docScanUsage?: DocScanUsageUpdateManyWithoutUserNestedInput
     passwordSetupTokens?: PasswordSetupTokenUpdateManyWithoutUserNestedInput
     buddyApplications?: BuddyApplicationUpdateManyWithoutUserNestedInput
     adminInboxReads?: AdminInboxReadUpdateManyWithoutAdminUserNestedInput
@@ -43728,6 +45539,7 @@ export namespace Prisma {
     questionLikes?: QuestionLikeUncheckedUpdateManyWithoutUserNestedInput
     reviews?: ReviewUncheckedUpdateManyWithoutUserNestedInput
     guideReads?: GuideReadUncheckedUpdateManyWithoutUserNestedInput
+    docScanUsage?: DocScanUsageUncheckedUpdateManyWithoutUserNestedInput
     passwordSetupTokens?: PasswordSetupTokenUncheckedUpdateManyWithoutUserNestedInput
     buddyApplications?: BuddyApplicationUncheckedUpdateManyWithoutUserNestedInput
     adminInboxReads?: AdminInboxReadUncheckedUpdateManyWithoutAdminUserNestedInput
@@ -43769,6 +45581,7 @@ export namespace Prisma {
     questionLikes?: QuestionLikeCreateNestedManyWithoutUserInput
     reviews?: ReviewCreateNestedManyWithoutUserInput
     guideReads?: GuideReadCreateNestedManyWithoutUserInput
+    docScanUsage?: DocScanUsageCreateNestedManyWithoutUserInput
     passwordSetupTokens?: PasswordSetupTokenCreateNestedManyWithoutUserInput
     buddyApplications?: BuddyApplicationCreateNestedManyWithoutUserInput
     adminInboxReads?: AdminInboxReadCreateNestedManyWithoutAdminUserInput
@@ -43810,6 +45623,7 @@ export namespace Prisma {
     questionLikes?: QuestionLikeUncheckedCreateNestedManyWithoutUserInput
     reviews?: ReviewUncheckedCreateNestedManyWithoutUserInput
     guideReads?: GuideReadUncheckedCreateNestedManyWithoutUserInput
+    docScanUsage?: DocScanUsageUncheckedCreateNestedManyWithoutUserInput
     passwordSetupTokens?: PasswordSetupTokenUncheckedCreateNestedManyWithoutUserInput
     buddyApplications?: BuddyApplicationUncheckedCreateNestedManyWithoutUserInput
     adminInboxReads?: AdminInboxReadUncheckedCreateNestedManyWithoutAdminUserInput
@@ -43856,6 +45670,7 @@ export namespace Prisma {
     questionLikes?: QuestionLikeCreateNestedManyWithoutUserInput
     reviews?: ReviewCreateNestedManyWithoutUserInput
     guideReads?: GuideReadCreateNestedManyWithoutUserInput
+    docScanUsage?: DocScanUsageCreateNestedManyWithoutUserInput
     passwordSetupTokens?: PasswordSetupTokenCreateNestedManyWithoutUserInput
     buddyApplications?: BuddyApplicationCreateNestedManyWithoutUserInput
     adminInboxReads?: AdminInboxReadCreateNestedManyWithoutAdminUserInput
@@ -43897,6 +45712,7 @@ export namespace Prisma {
     questionLikes?: QuestionLikeUncheckedCreateNestedManyWithoutUserInput
     reviews?: ReviewUncheckedCreateNestedManyWithoutUserInput
     guideReads?: GuideReadUncheckedCreateNestedManyWithoutUserInput
+    docScanUsage?: DocScanUsageUncheckedCreateNestedManyWithoutUserInput
     passwordSetupTokens?: PasswordSetupTokenUncheckedCreateNestedManyWithoutUserInput
     buddyApplications?: BuddyApplicationUncheckedCreateNestedManyWithoutUserInput
     adminInboxReads?: AdminInboxReadUncheckedCreateNestedManyWithoutAdminUserInput
@@ -43954,6 +45770,7 @@ export namespace Prisma {
     questionLikes?: QuestionLikeUpdateManyWithoutUserNestedInput
     reviews?: ReviewUpdateManyWithoutUserNestedInput
     guideReads?: GuideReadUpdateManyWithoutUserNestedInput
+    docScanUsage?: DocScanUsageUpdateManyWithoutUserNestedInput
     passwordSetupTokens?: PasswordSetupTokenUpdateManyWithoutUserNestedInput
     buddyApplications?: BuddyApplicationUpdateManyWithoutUserNestedInput
     adminInboxReads?: AdminInboxReadUpdateManyWithoutAdminUserNestedInput
@@ -43995,6 +45812,7 @@ export namespace Prisma {
     questionLikes?: QuestionLikeUncheckedUpdateManyWithoutUserNestedInput
     reviews?: ReviewUncheckedUpdateManyWithoutUserNestedInput
     guideReads?: GuideReadUncheckedUpdateManyWithoutUserNestedInput
+    docScanUsage?: DocScanUsageUncheckedUpdateManyWithoutUserNestedInput
     passwordSetupTokens?: PasswordSetupTokenUncheckedUpdateManyWithoutUserNestedInput
     buddyApplications?: BuddyApplicationUncheckedUpdateManyWithoutUserNestedInput
     adminInboxReads?: AdminInboxReadUncheckedUpdateManyWithoutAdminUserNestedInput
@@ -44047,6 +45865,7 @@ export namespace Prisma {
     questionLikes?: QuestionLikeUpdateManyWithoutUserNestedInput
     reviews?: ReviewUpdateManyWithoutUserNestedInput
     guideReads?: GuideReadUpdateManyWithoutUserNestedInput
+    docScanUsage?: DocScanUsageUpdateManyWithoutUserNestedInput
     passwordSetupTokens?: PasswordSetupTokenUpdateManyWithoutUserNestedInput
     buddyApplications?: BuddyApplicationUpdateManyWithoutUserNestedInput
     adminInboxReads?: AdminInboxReadUpdateManyWithoutAdminUserNestedInput
@@ -44088,6 +45907,7 @@ export namespace Prisma {
     questionLikes?: QuestionLikeUncheckedUpdateManyWithoutUserNestedInput
     reviews?: ReviewUncheckedUpdateManyWithoutUserNestedInput
     guideReads?: GuideReadUncheckedUpdateManyWithoutUserNestedInput
+    docScanUsage?: DocScanUsageUncheckedUpdateManyWithoutUserNestedInput
     passwordSetupTokens?: PasswordSetupTokenUncheckedUpdateManyWithoutUserNestedInput
     buddyApplications?: BuddyApplicationUncheckedUpdateManyWithoutUserNestedInput
     adminInboxReads?: AdminInboxReadUncheckedUpdateManyWithoutAdminUserNestedInput
@@ -44176,6 +45996,50 @@ export namespace Prisma {
     skipDuplicates?: boolean
   }
 
+  export type PaymentCreateWithoutPlanInput = {
+    appliedAt?: Date | string | null
+    durationMonths?: number | null
+    id?: string
+    amount: number
+    currency?: string
+    description: string
+    status?: string
+    paymentMethod?: string
+    yooKassaPaymentId?: string | null
+    createdAt?: Date | string
+    updatedAt?: Date | string
+    user?: UserCreateNestedOneWithoutPaymentsInput
+    subscriptions?: SubscriptionCreateNestedManyWithoutPaymentInput
+    refunds?: PaymentRefundCreateNestedManyWithoutPaymentInput
+  }
+
+  export type PaymentUncheckedCreateWithoutPlanInput = {
+    appliedAt?: Date | string | null
+    durationMonths?: number | null
+    id?: string
+    userId?: string | null
+    amount: number
+    currency?: string
+    description: string
+    status?: string
+    paymentMethod?: string
+    yooKassaPaymentId?: string | null
+    createdAt?: Date | string
+    updatedAt?: Date | string
+    subscriptions?: SubscriptionUncheckedCreateNestedManyWithoutPaymentInput
+    refunds?: PaymentRefundUncheckedCreateNestedManyWithoutPaymentInput
+  }
+
+  export type PaymentCreateOrConnectWithoutPlanInput = {
+    where: PaymentWhereUniqueInput
+    create: XOR<PaymentCreateWithoutPlanInput, PaymentUncheckedCreateWithoutPlanInput>
+  }
+
+  export type PaymentCreateManyPlanInputEnvelope = {
+    data: PaymentCreateManyPlanInput | PaymentCreateManyPlanInput[]
+    skipDuplicates?: boolean
+  }
+
   export type SubscriptionUpsertWithWhereUniqueWithoutPlanInput = {
     where: SubscriptionWhereUniqueInput
     update: XOR<SubscriptionUpdateWithoutPlanInput, SubscriptionUncheckedUpdateWithoutPlanInput>
@@ -44190,6 +46054,22 @@ export namespace Prisma {
   export type SubscriptionUpdateManyWithWhereWithoutPlanInput = {
     where: SubscriptionScalarWhereInput
     data: XOR<SubscriptionUpdateManyMutationInput, SubscriptionUncheckedUpdateManyWithoutPlanInput>
+  }
+
+  export type PaymentUpsertWithWhereUniqueWithoutPlanInput = {
+    where: PaymentWhereUniqueInput
+    update: XOR<PaymentUpdateWithoutPlanInput, PaymentUncheckedUpdateWithoutPlanInput>
+    create: XOR<PaymentCreateWithoutPlanInput, PaymentUncheckedCreateWithoutPlanInput>
+  }
+
+  export type PaymentUpdateWithWhereUniqueWithoutPlanInput = {
+    where: PaymentWhereUniqueInput
+    data: XOR<PaymentUpdateWithoutPlanInput, PaymentUncheckedUpdateWithoutPlanInput>
+  }
+
+  export type PaymentUpdateManyWithWhereWithoutPlanInput = {
+    where: PaymentScalarWhereInput
+    data: XOR<PaymentUpdateManyMutationInput, PaymentUncheckedUpdateManyWithoutPlanInput>
   }
 
   export type UserCreateWithoutPaymentsInput = {
@@ -44224,6 +46104,7 @@ export namespace Prisma {
     questionLikes?: QuestionLikeCreateNestedManyWithoutUserInput
     reviews?: ReviewCreateNestedManyWithoutUserInput
     guideReads?: GuideReadCreateNestedManyWithoutUserInput
+    docScanUsage?: DocScanUsageCreateNestedManyWithoutUserInput
     passwordSetupTokens?: PasswordSetupTokenCreateNestedManyWithoutUserInput
     buddyApplications?: BuddyApplicationCreateNestedManyWithoutUserInput
     adminInboxReads?: AdminInboxReadCreateNestedManyWithoutAdminUserInput
@@ -44265,6 +46146,7 @@ export namespace Prisma {
     questionLikes?: QuestionLikeUncheckedCreateNestedManyWithoutUserInput
     reviews?: ReviewUncheckedCreateNestedManyWithoutUserInput
     guideReads?: GuideReadUncheckedCreateNestedManyWithoutUserInput
+    docScanUsage?: DocScanUsageUncheckedCreateNestedManyWithoutUserInput
     passwordSetupTokens?: PasswordSetupTokenUncheckedCreateNestedManyWithoutUserInput
     buddyApplications?: BuddyApplicationUncheckedCreateNestedManyWithoutUserInput
     adminInboxReads?: AdminInboxReadUncheckedCreateNestedManyWithoutAdminUserInput
@@ -44277,6 +46159,41 @@ export namespace Prisma {
   export type UserCreateOrConnectWithoutPaymentsInput = {
     where: UserWhereUniqueInput
     create: XOR<UserCreateWithoutPaymentsInput, UserUncheckedCreateWithoutPaymentsInput>
+  }
+
+  export type SubscriptionPlanCreateWithoutPaymentsInput = {
+    code?: string | null
+    durationMonths?: number
+    id?: string
+    name: string
+    price: number
+    currency?: string
+    interval?: string
+    features: string
+    isActive?: boolean
+    createdAt?: Date | string
+    updatedAt?: Date | string
+    subscriptions?: SubscriptionCreateNestedManyWithoutPlanInput
+  }
+
+  export type SubscriptionPlanUncheckedCreateWithoutPaymentsInput = {
+    code?: string | null
+    durationMonths?: number
+    id?: string
+    name: string
+    price: number
+    currency?: string
+    interval?: string
+    features: string
+    isActive?: boolean
+    createdAt?: Date | string
+    updatedAt?: Date | string
+    subscriptions?: SubscriptionUncheckedCreateNestedManyWithoutPlanInput
+  }
+
+  export type SubscriptionPlanCreateOrConnectWithoutPaymentsInput = {
+    where: SubscriptionPlanWhereUniqueInput
+    create: XOR<SubscriptionPlanCreateWithoutPaymentsInput, SubscriptionPlanUncheckedCreateWithoutPaymentsInput>
   }
 
   export type SubscriptionCreateWithoutPaymentInput = {
@@ -44388,6 +46305,7 @@ export namespace Prisma {
     questionLikes?: QuestionLikeUpdateManyWithoutUserNestedInput
     reviews?: ReviewUpdateManyWithoutUserNestedInput
     guideReads?: GuideReadUpdateManyWithoutUserNestedInput
+    docScanUsage?: DocScanUsageUpdateManyWithoutUserNestedInput
     passwordSetupTokens?: PasswordSetupTokenUpdateManyWithoutUserNestedInput
     buddyApplications?: BuddyApplicationUpdateManyWithoutUserNestedInput
     adminInboxReads?: AdminInboxReadUpdateManyWithoutAdminUserNestedInput
@@ -44429,6 +46347,7 @@ export namespace Prisma {
     questionLikes?: QuestionLikeUncheckedUpdateManyWithoutUserNestedInput
     reviews?: ReviewUncheckedUpdateManyWithoutUserNestedInput
     guideReads?: GuideReadUncheckedUpdateManyWithoutUserNestedInput
+    docScanUsage?: DocScanUsageUncheckedUpdateManyWithoutUserNestedInput
     passwordSetupTokens?: PasswordSetupTokenUncheckedUpdateManyWithoutUserNestedInput
     buddyApplications?: BuddyApplicationUncheckedUpdateManyWithoutUserNestedInput
     adminInboxReads?: AdminInboxReadUncheckedUpdateManyWithoutAdminUserNestedInput
@@ -44436,6 +46355,47 @@ export namespace Prisma {
     adminSupportResponses?: SupportResponseUncheckedUpdateManyWithoutAdminUserNestedInput
     notifications?: UserNotificationUncheckedUpdateManyWithoutUserNestedInput
     sentNotifications?: UserNotificationUncheckedUpdateManyWithoutActorNestedInput
+  }
+
+  export type SubscriptionPlanUpsertWithoutPaymentsInput = {
+    update: XOR<SubscriptionPlanUpdateWithoutPaymentsInput, SubscriptionPlanUncheckedUpdateWithoutPaymentsInput>
+    create: XOR<SubscriptionPlanCreateWithoutPaymentsInput, SubscriptionPlanUncheckedCreateWithoutPaymentsInput>
+    where?: SubscriptionPlanWhereInput
+  }
+
+  export type SubscriptionPlanUpdateToOneWithWhereWithoutPaymentsInput = {
+    where?: SubscriptionPlanWhereInput
+    data: XOR<SubscriptionPlanUpdateWithoutPaymentsInput, SubscriptionPlanUncheckedUpdateWithoutPaymentsInput>
+  }
+
+  export type SubscriptionPlanUpdateWithoutPaymentsInput = {
+    code?: NullableStringFieldUpdateOperationsInput | string | null
+    durationMonths?: IntFieldUpdateOperationsInput | number
+    id?: StringFieldUpdateOperationsInput | string
+    name?: StringFieldUpdateOperationsInput | string
+    price?: FloatFieldUpdateOperationsInput | number
+    currency?: StringFieldUpdateOperationsInput | string
+    interval?: StringFieldUpdateOperationsInput | string
+    features?: StringFieldUpdateOperationsInput | string
+    isActive?: BoolFieldUpdateOperationsInput | boolean
+    createdAt?: DateTimeFieldUpdateOperationsInput | Date | string
+    updatedAt?: DateTimeFieldUpdateOperationsInput | Date | string
+    subscriptions?: SubscriptionUpdateManyWithoutPlanNestedInput
+  }
+
+  export type SubscriptionPlanUncheckedUpdateWithoutPaymentsInput = {
+    code?: NullableStringFieldUpdateOperationsInput | string | null
+    durationMonths?: IntFieldUpdateOperationsInput | number
+    id?: StringFieldUpdateOperationsInput | string
+    name?: StringFieldUpdateOperationsInput | string
+    price?: FloatFieldUpdateOperationsInput | number
+    currency?: StringFieldUpdateOperationsInput | string
+    interval?: StringFieldUpdateOperationsInput | string
+    features?: StringFieldUpdateOperationsInput | string
+    isActive?: BoolFieldUpdateOperationsInput | boolean
+    createdAt?: DateTimeFieldUpdateOperationsInput | Date | string
+    updatedAt?: DateTimeFieldUpdateOperationsInput | Date | string
+    subscriptions?: SubscriptionUncheckedUpdateManyWithoutPlanNestedInput
   }
 
   export type SubscriptionUpsertWithWhereUniqueWithoutPaymentInput = {
@@ -44489,7 +46449,6 @@ export namespace Prisma {
     appliedAt?: Date | string | null
     durationMonths?: number | null
     id?: string
-    planId?: string | null
     amount: number
     currency?: string
     description: string
@@ -44499,6 +46458,7 @@ export namespace Prisma {
     createdAt?: Date | string
     updatedAt?: Date | string
     user?: UserCreateNestedOneWithoutPaymentsInput
+    plan?: SubscriptionPlanCreateNestedOneWithoutPaymentsInput
     subscriptions?: SubscriptionCreateNestedManyWithoutPaymentInput
   }
 
@@ -44539,7 +46499,6 @@ export namespace Prisma {
     appliedAt?: NullableDateTimeFieldUpdateOperationsInput | Date | string | null
     durationMonths?: NullableIntFieldUpdateOperationsInput | number | null
     id?: StringFieldUpdateOperationsInput | string
-    planId?: NullableStringFieldUpdateOperationsInput | string | null
     amount?: FloatFieldUpdateOperationsInput | number
     currency?: StringFieldUpdateOperationsInput | string
     description?: StringFieldUpdateOperationsInput | string
@@ -44549,6 +46508,7 @@ export namespace Prisma {
     createdAt?: DateTimeFieldUpdateOperationsInput | Date | string
     updatedAt?: DateTimeFieldUpdateOperationsInput | Date | string
     user?: UserUpdateOneWithoutPaymentsNestedInput
+    plan?: SubscriptionPlanUpdateOneWithoutPaymentsNestedInput
     subscriptions?: SubscriptionUpdateManyWithoutPaymentNestedInput
   }
 
@@ -44601,6 +46561,7 @@ export namespace Prisma {
     questionLikes?: QuestionLikeCreateNestedManyWithoutUserInput
     reviews?: ReviewCreateNestedManyWithoutUserInput
     guideReads?: GuideReadCreateNestedManyWithoutUserInput
+    docScanUsage?: DocScanUsageCreateNestedManyWithoutUserInput
     passwordSetupTokens?: PasswordSetupTokenCreateNestedManyWithoutUserInput
     buddyApplications?: BuddyApplicationCreateNestedManyWithoutUserInput
     adminInboxReads?: AdminInboxReadCreateNestedManyWithoutAdminUserInput
@@ -44642,6 +46603,7 @@ export namespace Prisma {
     questionLikes?: QuestionLikeUncheckedCreateNestedManyWithoutUserInput
     reviews?: ReviewUncheckedCreateNestedManyWithoutUserInput
     guideReads?: GuideReadUncheckedCreateNestedManyWithoutUserInput
+    docScanUsage?: DocScanUsageUncheckedCreateNestedManyWithoutUserInput
     passwordSetupTokens?: PasswordSetupTokenUncheckedCreateNestedManyWithoutUserInput
     buddyApplications?: BuddyApplicationUncheckedCreateNestedManyWithoutUserInput
     adminInboxReads?: AdminInboxReadUncheckedCreateNestedManyWithoutAdminUserInput
@@ -44668,6 +46630,7 @@ export namespace Prisma {
     isActive?: boolean
     createdAt?: Date | string
     updatedAt?: Date | string
+    payments?: PaymentCreateNestedManyWithoutPlanInput
   }
 
   export type SubscriptionPlanUncheckedCreateWithoutSubscriptionsInput = {
@@ -44682,6 +46645,7 @@ export namespace Prisma {
     isActive?: boolean
     createdAt?: Date | string
     updatedAt?: Date | string
+    payments?: PaymentUncheckedCreateNestedManyWithoutPlanInput
   }
 
   export type SubscriptionPlanCreateOrConnectWithoutSubscriptionsInput = {
@@ -44693,7 +46657,6 @@ export namespace Prisma {
     appliedAt?: Date | string | null
     durationMonths?: number | null
     id?: string
-    planId?: string | null
     amount: number
     currency?: string
     description: string
@@ -44703,6 +46666,7 @@ export namespace Prisma {
     createdAt?: Date | string
     updatedAt?: Date | string
     user?: UserCreateNestedOneWithoutPaymentsInput
+    plan?: SubscriptionPlanCreateNestedOneWithoutPaymentsInput
     refunds?: PaymentRefundCreateNestedManyWithoutPaymentInput
   }
 
@@ -44771,6 +46735,7 @@ export namespace Prisma {
     questionLikes?: QuestionLikeUpdateManyWithoutUserNestedInput
     reviews?: ReviewUpdateManyWithoutUserNestedInput
     guideReads?: GuideReadUpdateManyWithoutUserNestedInput
+    docScanUsage?: DocScanUsageUpdateManyWithoutUserNestedInput
     passwordSetupTokens?: PasswordSetupTokenUpdateManyWithoutUserNestedInput
     buddyApplications?: BuddyApplicationUpdateManyWithoutUserNestedInput
     adminInboxReads?: AdminInboxReadUpdateManyWithoutAdminUserNestedInput
@@ -44812,6 +46777,7 @@ export namespace Prisma {
     questionLikes?: QuestionLikeUncheckedUpdateManyWithoutUserNestedInput
     reviews?: ReviewUncheckedUpdateManyWithoutUserNestedInput
     guideReads?: GuideReadUncheckedUpdateManyWithoutUserNestedInput
+    docScanUsage?: DocScanUsageUncheckedUpdateManyWithoutUserNestedInput
     passwordSetupTokens?: PasswordSetupTokenUncheckedUpdateManyWithoutUserNestedInput
     buddyApplications?: BuddyApplicationUncheckedUpdateManyWithoutUserNestedInput
     adminInboxReads?: AdminInboxReadUncheckedUpdateManyWithoutAdminUserNestedInput
@@ -44844,6 +46810,7 @@ export namespace Prisma {
     isActive?: BoolFieldUpdateOperationsInput | boolean
     createdAt?: DateTimeFieldUpdateOperationsInput | Date | string
     updatedAt?: DateTimeFieldUpdateOperationsInput | Date | string
+    payments?: PaymentUpdateManyWithoutPlanNestedInput
   }
 
   export type SubscriptionPlanUncheckedUpdateWithoutSubscriptionsInput = {
@@ -44858,6 +46825,7 @@ export namespace Prisma {
     isActive?: BoolFieldUpdateOperationsInput | boolean
     createdAt?: DateTimeFieldUpdateOperationsInput | Date | string
     updatedAt?: DateTimeFieldUpdateOperationsInput | Date | string
+    payments?: PaymentUncheckedUpdateManyWithoutPlanNestedInput
   }
 
   export type PaymentUpsertWithoutSubscriptionsInput = {
@@ -44875,7 +46843,6 @@ export namespace Prisma {
     appliedAt?: NullableDateTimeFieldUpdateOperationsInput | Date | string | null
     durationMonths?: NullableIntFieldUpdateOperationsInput | number | null
     id?: StringFieldUpdateOperationsInput | string
-    planId?: NullableStringFieldUpdateOperationsInput | string | null
     amount?: FloatFieldUpdateOperationsInput | number
     currency?: StringFieldUpdateOperationsInput | string
     description?: StringFieldUpdateOperationsInput | string
@@ -44885,6 +46852,7 @@ export namespace Prisma {
     createdAt?: DateTimeFieldUpdateOperationsInput | Date | string
     updatedAt?: DateTimeFieldUpdateOperationsInput | Date | string
     user?: UserUpdateOneWithoutPaymentsNestedInput
+    plan?: SubscriptionPlanUpdateOneWithoutPaymentsNestedInput
     refunds?: PaymentRefundUpdateManyWithoutPaymentNestedInput
   }
 
@@ -44985,6 +46953,7 @@ export namespace Prisma {
     questionLikes?: QuestionLikeCreateNestedManyWithoutUserInput
     reviews?: ReviewCreateNestedManyWithoutUserInput
     guideReads?: GuideReadCreateNestedManyWithoutUserInput
+    docScanUsage?: DocScanUsageCreateNestedManyWithoutUserInput
     passwordSetupTokens?: PasswordSetupTokenCreateNestedManyWithoutUserInput
     buddyApplications?: BuddyApplicationCreateNestedManyWithoutUserInput
     adminInboxReads?: AdminInboxReadCreateNestedManyWithoutAdminUserInput
@@ -45026,6 +46995,7 @@ export namespace Prisma {
     questionLikes?: QuestionLikeUncheckedCreateNestedManyWithoutUserInput
     reviews?: ReviewUncheckedCreateNestedManyWithoutUserInput
     guideReads?: GuideReadUncheckedCreateNestedManyWithoutUserInput
+    docScanUsage?: DocScanUsageUncheckedCreateNestedManyWithoutUserInput
     passwordSetupTokens?: PasswordSetupTokenUncheckedCreateNestedManyWithoutUserInput
     buddyApplications?: BuddyApplicationUncheckedCreateNestedManyWithoutUserInput
     adminInboxReads?: AdminInboxReadUncheckedCreateNestedManyWithoutAdminUserInput
@@ -45132,6 +47102,7 @@ export namespace Prisma {
     questionLikes?: QuestionLikeUpdateManyWithoutUserNestedInput
     reviews?: ReviewUpdateManyWithoutUserNestedInput
     guideReads?: GuideReadUpdateManyWithoutUserNestedInput
+    docScanUsage?: DocScanUsageUpdateManyWithoutUserNestedInput
     passwordSetupTokens?: PasswordSetupTokenUpdateManyWithoutUserNestedInput
     buddyApplications?: BuddyApplicationUpdateManyWithoutUserNestedInput
     adminInboxReads?: AdminInboxReadUpdateManyWithoutAdminUserNestedInput
@@ -45173,6 +47144,7 @@ export namespace Prisma {
     questionLikes?: QuestionLikeUncheckedUpdateManyWithoutUserNestedInput
     reviews?: ReviewUncheckedUpdateManyWithoutUserNestedInput
     guideReads?: GuideReadUncheckedUpdateManyWithoutUserNestedInput
+    docScanUsage?: DocScanUsageUncheckedUpdateManyWithoutUserNestedInput
     passwordSetupTokens?: PasswordSetupTokenUncheckedUpdateManyWithoutUserNestedInput
     buddyApplications?: BuddyApplicationUncheckedUpdateManyWithoutUserNestedInput
     adminInboxReads?: AdminInboxReadUncheckedUpdateManyWithoutAdminUserNestedInput
@@ -45269,6 +47241,7 @@ export namespace Prisma {
     questionLikes?: QuestionLikeCreateNestedManyWithoutUserInput
     reviews?: ReviewCreateNestedManyWithoutUserInput
     guideReads?: GuideReadCreateNestedManyWithoutUserInput
+    docScanUsage?: DocScanUsageCreateNestedManyWithoutUserInput
     passwordSetupTokens?: PasswordSetupTokenCreateNestedManyWithoutUserInput
     buddyApplications?: BuddyApplicationCreateNestedManyWithoutUserInput
     adminInboxReads?: AdminInboxReadCreateNestedManyWithoutAdminUserInput
@@ -45310,6 +47283,7 @@ export namespace Prisma {
     questionLikes?: QuestionLikeUncheckedCreateNestedManyWithoutUserInput
     reviews?: ReviewUncheckedCreateNestedManyWithoutUserInput
     guideReads?: GuideReadUncheckedCreateNestedManyWithoutUserInput
+    docScanUsage?: DocScanUsageUncheckedCreateNestedManyWithoutUserInput
     passwordSetupTokens?: PasswordSetupTokenUncheckedCreateNestedManyWithoutUserInput
     buddyApplications?: BuddyApplicationUncheckedCreateNestedManyWithoutUserInput
     adminInboxReads?: AdminInboxReadUncheckedCreateNestedManyWithoutAdminUserInput
@@ -45415,6 +47389,7 @@ export namespace Prisma {
     questionLikes?: QuestionLikeUpdateManyWithoutUserNestedInput
     reviews?: ReviewUpdateManyWithoutUserNestedInput
     guideReads?: GuideReadUpdateManyWithoutUserNestedInput
+    docScanUsage?: DocScanUsageUpdateManyWithoutUserNestedInput
     passwordSetupTokens?: PasswordSetupTokenUpdateManyWithoutUserNestedInput
     buddyApplications?: BuddyApplicationUpdateManyWithoutUserNestedInput
     adminInboxReads?: AdminInboxReadUpdateManyWithoutAdminUserNestedInput
@@ -45456,6 +47431,7 @@ export namespace Prisma {
     questionLikes?: QuestionLikeUncheckedUpdateManyWithoutUserNestedInput
     reviews?: ReviewUncheckedUpdateManyWithoutUserNestedInput
     guideReads?: GuideReadUncheckedUpdateManyWithoutUserNestedInput
+    docScanUsage?: DocScanUsageUncheckedUpdateManyWithoutUserNestedInput
     passwordSetupTokens?: PasswordSetupTokenUncheckedUpdateManyWithoutUserNestedInput
     buddyApplications?: BuddyApplicationUncheckedUpdateManyWithoutUserNestedInput
     adminInboxReads?: AdminInboxReadUncheckedUpdateManyWithoutAdminUserNestedInput
@@ -45558,6 +47534,7 @@ export namespace Prisma {
     questionLikes?: QuestionLikeCreateNestedManyWithoutUserInput
     reviews?: ReviewCreateNestedManyWithoutUserInput
     guideReads?: GuideReadCreateNestedManyWithoutUserInput
+    docScanUsage?: DocScanUsageCreateNestedManyWithoutUserInput
     passwordSetupTokens?: PasswordSetupTokenCreateNestedManyWithoutUserInput
     buddyApplications?: BuddyApplicationCreateNestedManyWithoutUserInput
     adminInboxReads?: AdminInboxReadCreateNestedManyWithoutAdminUserInput
@@ -45599,6 +47576,7 @@ export namespace Prisma {
     questionLikes?: QuestionLikeUncheckedCreateNestedManyWithoutUserInput
     reviews?: ReviewUncheckedCreateNestedManyWithoutUserInput
     guideReads?: GuideReadUncheckedCreateNestedManyWithoutUserInput
+    docScanUsage?: DocScanUsageUncheckedCreateNestedManyWithoutUserInput
     passwordSetupTokens?: PasswordSetupTokenUncheckedCreateNestedManyWithoutUserInput
     buddyApplications?: BuddyApplicationUncheckedCreateNestedManyWithoutUserInput
     adminInboxReads?: AdminInboxReadUncheckedCreateNestedManyWithoutAdminUserInput
@@ -45691,6 +47669,7 @@ export namespace Prisma {
     questionLikes?: QuestionLikeUpdateManyWithoutUserNestedInput
     reviews?: ReviewUpdateManyWithoutUserNestedInput
     guideReads?: GuideReadUpdateManyWithoutUserNestedInput
+    docScanUsage?: DocScanUsageUpdateManyWithoutUserNestedInput
     passwordSetupTokens?: PasswordSetupTokenUpdateManyWithoutUserNestedInput
     buddyApplications?: BuddyApplicationUpdateManyWithoutUserNestedInput
     adminInboxReads?: AdminInboxReadUpdateManyWithoutAdminUserNestedInput
@@ -45732,6 +47711,7 @@ export namespace Prisma {
     questionLikes?: QuestionLikeUncheckedUpdateManyWithoutUserNestedInput
     reviews?: ReviewUncheckedUpdateManyWithoutUserNestedInput
     guideReads?: GuideReadUncheckedUpdateManyWithoutUserNestedInput
+    docScanUsage?: DocScanUsageUncheckedUpdateManyWithoutUserNestedInput
     passwordSetupTokens?: PasswordSetupTokenUncheckedUpdateManyWithoutUserNestedInput
     buddyApplications?: BuddyApplicationUncheckedUpdateManyWithoutUserNestedInput
     adminInboxReads?: AdminInboxReadUncheckedUpdateManyWithoutAdminUserNestedInput
@@ -45802,6 +47782,7 @@ export namespace Prisma {
     answers?: AnswerCreateNestedManyWithoutAuthorInput
     reviews?: ReviewCreateNestedManyWithoutUserInput
     guideReads?: GuideReadCreateNestedManyWithoutUserInput
+    docScanUsage?: DocScanUsageCreateNestedManyWithoutUserInput
     passwordSetupTokens?: PasswordSetupTokenCreateNestedManyWithoutUserInput
     buddyApplications?: BuddyApplicationCreateNestedManyWithoutUserInput
     adminInboxReads?: AdminInboxReadCreateNestedManyWithoutAdminUserInput
@@ -45843,6 +47824,7 @@ export namespace Prisma {
     answers?: AnswerUncheckedCreateNestedManyWithoutAuthorInput
     reviews?: ReviewUncheckedCreateNestedManyWithoutUserInput
     guideReads?: GuideReadUncheckedCreateNestedManyWithoutUserInput
+    docScanUsage?: DocScanUsageUncheckedCreateNestedManyWithoutUserInput
     passwordSetupTokens?: PasswordSetupTokenUncheckedCreateNestedManyWithoutUserInput
     buddyApplications?: BuddyApplicationUncheckedCreateNestedManyWithoutUserInput
     adminInboxReads?: AdminInboxReadUncheckedCreateNestedManyWithoutAdminUserInput
@@ -45935,6 +47917,7 @@ export namespace Prisma {
     answers?: AnswerUpdateManyWithoutAuthorNestedInput
     reviews?: ReviewUpdateManyWithoutUserNestedInput
     guideReads?: GuideReadUpdateManyWithoutUserNestedInput
+    docScanUsage?: DocScanUsageUpdateManyWithoutUserNestedInput
     passwordSetupTokens?: PasswordSetupTokenUpdateManyWithoutUserNestedInput
     buddyApplications?: BuddyApplicationUpdateManyWithoutUserNestedInput
     adminInboxReads?: AdminInboxReadUpdateManyWithoutAdminUserNestedInput
@@ -45976,6 +47959,7 @@ export namespace Prisma {
     answers?: AnswerUncheckedUpdateManyWithoutAuthorNestedInput
     reviews?: ReviewUncheckedUpdateManyWithoutUserNestedInput
     guideReads?: GuideReadUncheckedUpdateManyWithoutUserNestedInput
+    docScanUsage?: DocScanUsageUncheckedUpdateManyWithoutUserNestedInput
     passwordSetupTokens?: PasswordSetupTokenUncheckedUpdateManyWithoutUserNestedInput
     buddyApplications?: BuddyApplicationUncheckedUpdateManyWithoutUserNestedInput
     adminInboxReads?: AdminInboxReadUncheckedUpdateManyWithoutAdminUserNestedInput
@@ -46017,6 +48001,7 @@ export namespace Prisma {
     answers?: AnswerCreateNestedManyWithoutAuthorInput
     questionLikes?: QuestionLikeCreateNestedManyWithoutUserInput
     reviews?: ReviewCreateNestedManyWithoutUserInput
+    docScanUsage?: DocScanUsageCreateNestedManyWithoutUserInput
     passwordSetupTokens?: PasswordSetupTokenCreateNestedManyWithoutUserInput
     buddyApplications?: BuddyApplicationCreateNestedManyWithoutUserInput
     adminInboxReads?: AdminInboxReadCreateNestedManyWithoutAdminUserInput
@@ -46058,6 +48043,7 @@ export namespace Prisma {
     answers?: AnswerUncheckedCreateNestedManyWithoutAuthorInput
     questionLikes?: QuestionLikeUncheckedCreateNestedManyWithoutUserInput
     reviews?: ReviewUncheckedCreateNestedManyWithoutUserInput
+    docScanUsage?: DocScanUsageUncheckedCreateNestedManyWithoutUserInput
     passwordSetupTokens?: PasswordSetupTokenUncheckedCreateNestedManyWithoutUserInput
     buddyApplications?: BuddyApplicationUncheckedCreateNestedManyWithoutUserInput
     adminInboxReads?: AdminInboxReadUncheckedCreateNestedManyWithoutAdminUserInput
@@ -46115,6 +48101,7 @@ export namespace Prisma {
     answers?: AnswerUpdateManyWithoutAuthorNestedInput
     questionLikes?: QuestionLikeUpdateManyWithoutUserNestedInput
     reviews?: ReviewUpdateManyWithoutUserNestedInput
+    docScanUsage?: DocScanUsageUpdateManyWithoutUserNestedInput
     passwordSetupTokens?: PasswordSetupTokenUpdateManyWithoutUserNestedInput
     buddyApplications?: BuddyApplicationUpdateManyWithoutUserNestedInput
     adminInboxReads?: AdminInboxReadUpdateManyWithoutAdminUserNestedInput
@@ -46156,6 +48143,7 @@ export namespace Prisma {
     answers?: AnswerUncheckedUpdateManyWithoutAuthorNestedInput
     questionLikes?: QuestionLikeUncheckedUpdateManyWithoutUserNestedInput
     reviews?: ReviewUncheckedUpdateManyWithoutUserNestedInput
+    docScanUsage?: DocScanUsageUncheckedUpdateManyWithoutUserNestedInput
     passwordSetupTokens?: PasswordSetupTokenUncheckedUpdateManyWithoutUserNestedInput
     buddyApplications?: BuddyApplicationUncheckedUpdateManyWithoutUserNestedInput
     adminInboxReads?: AdminInboxReadUncheckedUpdateManyWithoutAdminUserNestedInput
@@ -46197,6 +48185,7 @@ export namespace Prisma {
     answers?: AnswerCreateNestedManyWithoutAuthorInput
     questionLikes?: QuestionLikeCreateNestedManyWithoutUserInput
     guideReads?: GuideReadCreateNestedManyWithoutUserInput
+    docScanUsage?: DocScanUsageCreateNestedManyWithoutUserInput
     passwordSetupTokens?: PasswordSetupTokenCreateNestedManyWithoutUserInput
     buddyApplications?: BuddyApplicationCreateNestedManyWithoutUserInput
     adminInboxReads?: AdminInboxReadCreateNestedManyWithoutAdminUserInput
@@ -46238,6 +48227,7 @@ export namespace Prisma {
     answers?: AnswerUncheckedCreateNestedManyWithoutAuthorInput
     questionLikes?: QuestionLikeUncheckedCreateNestedManyWithoutUserInput
     guideReads?: GuideReadUncheckedCreateNestedManyWithoutUserInput
+    docScanUsage?: DocScanUsageUncheckedCreateNestedManyWithoutUserInput
     passwordSetupTokens?: PasswordSetupTokenUncheckedCreateNestedManyWithoutUserInput
     buddyApplications?: BuddyApplicationUncheckedCreateNestedManyWithoutUserInput
     adminInboxReads?: AdminInboxReadUncheckedCreateNestedManyWithoutAdminUserInput
@@ -46295,6 +48285,7 @@ export namespace Prisma {
     answers?: AnswerUpdateManyWithoutAuthorNestedInput
     questionLikes?: QuestionLikeUpdateManyWithoutUserNestedInput
     guideReads?: GuideReadUpdateManyWithoutUserNestedInput
+    docScanUsage?: DocScanUsageUpdateManyWithoutUserNestedInput
     passwordSetupTokens?: PasswordSetupTokenUpdateManyWithoutUserNestedInput
     buddyApplications?: BuddyApplicationUpdateManyWithoutUserNestedInput
     adminInboxReads?: AdminInboxReadUpdateManyWithoutAdminUserNestedInput
@@ -46336,6 +48327,7 @@ export namespace Prisma {
     answers?: AnswerUncheckedUpdateManyWithoutAuthorNestedInput
     questionLikes?: QuestionLikeUncheckedUpdateManyWithoutUserNestedInput
     guideReads?: GuideReadUncheckedUpdateManyWithoutUserNestedInput
+    docScanUsage?: DocScanUsageUncheckedUpdateManyWithoutUserNestedInput
     passwordSetupTokens?: PasswordSetupTokenUncheckedUpdateManyWithoutUserNestedInput
     buddyApplications?: BuddyApplicationUncheckedUpdateManyWithoutUserNestedInput
     adminInboxReads?: AdminInboxReadUncheckedUpdateManyWithoutAdminUserNestedInput
@@ -46473,6 +48465,16 @@ export namespace Prisma {
     guideId: string
     guideType: string
     readAt?: Date | string
+  }
+
+  export type DocScanUsageCreateManyUserInput = {
+    id?: string
+    scanCount?: number
+    success?: boolean
+    exported?: boolean
+    source?: string | null
+    language?: string | null
+    createdAt?: Date | string
   }
 
   export type PasswordSetupTokenCreateManyUserInput = {
@@ -46718,7 +48720,6 @@ export namespace Prisma {
     appliedAt?: NullableDateTimeFieldUpdateOperationsInput | Date | string | null
     durationMonths?: NullableIntFieldUpdateOperationsInput | number | null
     id?: StringFieldUpdateOperationsInput | string
-    planId?: NullableStringFieldUpdateOperationsInput | string | null
     amount?: FloatFieldUpdateOperationsInput | number
     currency?: StringFieldUpdateOperationsInput | string
     description?: StringFieldUpdateOperationsInput | string
@@ -46727,6 +48728,7 @@ export namespace Prisma {
     yooKassaPaymentId?: NullableStringFieldUpdateOperationsInput | string | null
     createdAt?: DateTimeFieldUpdateOperationsInput | Date | string
     updatedAt?: DateTimeFieldUpdateOperationsInput | Date | string
+    plan?: SubscriptionPlanUpdateOneWithoutPaymentsNestedInput
     subscriptions?: SubscriptionUpdateManyWithoutPaymentNestedInput
     refunds?: PaymentRefundUpdateManyWithoutPaymentNestedInput
   }
@@ -46960,6 +48962,36 @@ export namespace Prisma {
     guideId?: StringFieldUpdateOperationsInput | string
     guideType?: StringFieldUpdateOperationsInput | string
     readAt?: DateTimeFieldUpdateOperationsInput | Date | string
+  }
+
+  export type DocScanUsageUpdateWithoutUserInput = {
+    id?: StringFieldUpdateOperationsInput | string
+    scanCount?: IntFieldUpdateOperationsInput | number
+    success?: BoolFieldUpdateOperationsInput | boolean
+    exported?: BoolFieldUpdateOperationsInput | boolean
+    source?: NullableStringFieldUpdateOperationsInput | string | null
+    language?: NullableStringFieldUpdateOperationsInput | string | null
+    createdAt?: DateTimeFieldUpdateOperationsInput | Date | string
+  }
+
+  export type DocScanUsageUncheckedUpdateWithoutUserInput = {
+    id?: StringFieldUpdateOperationsInput | string
+    scanCount?: IntFieldUpdateOperationsInput | number
+    success?: BoolFieldUpdateOperationsInput | boolean
+    exported?: BoolFieldUpdateOperationsInput | boolean
+    source?: NullableStringFieldUpdateOperationsInput | string | null
+    language?: NullableStringFieldUpdateOperationsInput | string | null
+    createdAt?: DateTimeFieldUpdateOperationsInput | Date | string
+  }
+
+  export type DocScanUsageUncheckedUpdateManyWithoutUserInput = {
+    id?: StringFieldUpdateOperationsInput | string
+    scanCount?: IntFieldUpdateOperationsInput | number
+    success?: BoolFieldUpdateOperationsInput | boolean
+    exported?: BoolFieldUpdateOperationsInput | boolean
+    source?: NullableStringFieldUpdateOperationsInput | string | null
+    language?: NullableStringFieldUpdateOperationsInput | string | null
+    createdAt?: DateTimeFieldUpdateOperationsInput | Date | string
   }
 
   export type PasswordSetupTokenUpdateWithoutUserInput = {
@@ -47369,6 +49401,21 @@ export namespace Prisma {
     updatedAt?: Date | string
   }
 
+  export type PaymentCreateManyPlanInput = {
+    appliedAt?: Date | string | null
+    durationMonths?: number | null
+    id?: string
+    userId?: string | null
+    amount: number
+    currency?: string
+    description: string
+    status?: string
+    paymentMethod?: string
+    yooKassaPaymentId?: string | null
+    createdAt?: Date | string
+    updatedAt?: Date | string
+  }
+
   export type SubscriptionUpdateWithoutPlanInput = {
     id?: StringFieldUpdateOperationsInput | string
     status?: StringFieldUpdateOperationsInput | string
@@ -47401,6 +49448,55 @@ export namespace Prisma {
     endDate?: DateTimeFieldUpdateOperationsInput | Date | string
     autoRenew?: BoolFieldUpdateOperationsInput | boolean
     paymentId?: StringFieldUpdateOperationsInput | string
+    createdAt?: DateTimeFieldUpdateOperationsInput | Date | string
+    updatedAt?: DateTimeFieldUpdateOperationsInput | Date | string
+  }
+
+  export type PaymentUpdateWithoutPlanInput = {
+    appliedAt?: NullableDateTimeFieldUpdateOperationsInput | Date | string | null
+    durationMonths?: NullableIntFieldUpdateOperationsInput | number | null
+    id?: StringFieldUpdateOperationsInput | string
+    amount?: FloatFieldUpdateOperationsInput | number
+    currency?: StringFieldUpdateOperationsInput | string
+    description?: StringFieldUpdateOperationsInput | string
+    status?: StringFieldUpdateOperationsInput | string
+    paymentMethod?: StringFieldUpdateOperationsInput | string
+    yooKassaPaymentId?: NullableStringFieldUpdateOperationsInput | string | null
+    createdAt?: DateTimeFieldUpdateOperationsInput | Date | string
+    updatedAt?: DateTimeFieldUpdateOperationsInput | Date | string
+    user?: UserUpdateOneWithoutPaymentsNestedInput
+    subscriptions?: SubscriptionUpdateManyWithoutPaymentNestedInput
+    refunds?: PaymentRefundUpdateManyWithoutPaymentNestedInput
+  }
+
+  export type PaymentUncheckedUpdateWithoutPlanInput = {
+    appliedAt?: NullableDateTimeFieldUpdateOperationsInput | Date | string | null
+    durationMonths?: NullableIntFieldUpdateOperationsInput | number | null
+    id?: StringFieldUpdateOperationsInput | string
+    userId?: NullableStringFieldUpdateOperationsInput | string | null
+    amount?: FloatFieldUpdateOperationsInput | number
+    currency?: StringFieldUpdateOperationsInput | string
+    description?: StringFieldUpdateOperationsInput | string
+    status?: StringFieldUpdateOperationsInput | string
+    paymentMethod?: StringFieldUpdateOperationsInput | string
+    yooKassaPaymentId?: NullableStringFieldUpdateOperationsInput | string | null
+    createdAt?: DateTimeFieldUpdateOperationsInput | Date | string
+    updatedAt?: DateTimeFieldUpdateOperationsInput | Date | string
+    subscriptions?: SubscriptionUncheckedUpdateManyWithoutPaymentNestedInput
+    refunds?: PaymentRefundUncheckedUpdateManyWithoutPaymentNestedInput
+  }
+
+  export type PaymentUncheckedUpdateManyWithoutPlanInput = {
+    appliedAt?: NullableDateTimeFieldUpdateOperationsInput | Date | string | null
+    durationMonths?: NullableIntFieldUpdateOperationsInput | number | null
+    id?: StringFieldUpdateOperationsInput | string
+    userId?: NullableStringFieldUpdateOperationsInput | string | null
+    amount?: FloatFieldUpdateOperationsInput | number
+    currency?: StringFieldUpdateOperationsInput | string
+    description?: StringFieldUpdateOperationsInput | string
+    status?: StringFieldUpdateOperationsInput | string
+    paymentMethod?: StringFieldUpdateOperationsInput | string
+    yooKassaPaymentId?: NullableStringFieldUpdateOperationsInput | string | null
     createdAt?: DateTimeFieldUpdateOperationsInput | Date | string
     updatedAt?: DateTimeFieldUpdateOperationsInput | Date | string
   }
@@ -47666,6 +49762,10 @@ export namespace Prisma {
      * @deprecated Use ChatDailyUsageDefaultArgs instead
      */
     export type ChatDailyUsageArgs<ExtArgs extends $Extensions.InternalArgs = $Extensions.DefaultArgs> = ChatDailyUsageDefaultArgs<ExtArgs>
+    /**
+     * @deprecated Use DocScanUsageDefaultArgs instead
+     */
+    export type DocScanUsageArgs<ExtArgs extends $Extensions.InternalArgs = $Extensions.DefaultArgs> = DocScanUsageDefaultArgs<ExtArgs>
     /**
      * @deprecated Use ChatMessageDefaultArgs instead
      */

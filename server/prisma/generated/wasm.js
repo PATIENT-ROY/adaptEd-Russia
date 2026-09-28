@@ -238,6 +238,17 @@ exports.Prisma.ChatDailyUsageScalarFieldEnum = {
   used: 'used'
 };
 
+exports.Prisma.DocScanUsageScalarFieldEnum = {
+  id: 'id',
+  userId: 'userId',
+  scanCount: 'scanCount',
+  success: 'success',
+  exported: 'exported',
+  source: 'source',
+  language: 'language',
+  createdAt: 'createdAt'
+};
+
 exports.Prisma.ChatMessageScalarFieldEnum = {
   id: 'id',
   userId: 'userId',
@@ -511,6 +522,7 @@ exports.Prisma.ModelName = {
   Reminder: 'Reminder',
   Guide: 'Guide',
   ChatDailyUsage: 'ChatDailyUsage',
+  DocScanUsage: 'DocScanUsage',
   ChatMessage: 'ChatMessage',
   SupportTicket: 'SupportTicket',
   SupportResponse: 'SupportResponse',

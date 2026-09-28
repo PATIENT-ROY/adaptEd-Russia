@@ -373,6 +373,22 @@ class ApiClient {
     return this.ensureData(response, 'Не удалось загрузить достижения');
   }
 
+  async logDocScan(payload: {
+    success?: boolean;
+    exported?: boolean;
+    source?: 'pdf' | 'ocr' | 'mixed';
+    language?: string;
+  }): Promise<void> {
+    try {
+      await this.request('/user/docscan/log', {
+        method: 'POST',
+        body: JSON.stringify(payload),
+      });
+    } catch {
+      /* analytics must not break scanning */
+    }
+  }
+
   // Напоминания
   async getReminders(): Promise<Reminder[]> {
     const response = await this.requestWithRetry<Reminder[]>('/reminders');

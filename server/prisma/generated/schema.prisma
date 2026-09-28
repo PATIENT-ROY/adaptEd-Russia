@@ -61,6 +61,7 @@ model User {
   questionLikes         QuestionLike[]
   reviews               Review[]
   guideReads            GuideRead[]
+  docScanUsage          DocScanUsage[]
   passwordSetupTokens   PasswordSetupToken[]
   buddyApplications     BuddyApplication[]
   adminInboxReads       AdminInboxRead[]
@@ -233,6 +234,23 @@ model ChatDailyUsage {
   @@map("chat_daily_usage")
 }
 
+model DocScanUsage {
+  id        String   @id @default(cuid())
+  userId    String
+  scanCount Int      @default(0)
+  success   Boolean  @default(true)
+  exported  Boolean  @default(false)
+  source    String?
+  language  String?
+  createdAt DateTime @default(now())
+
+  user User @relation(fields: [userId], references: [id], onDelete: Cascade)
+
+  @@index([userId])
+  @@index([createdAt])
+  @@map("doc_scan_usage")
+}
+
 model ChatMessage {
   id        String   @id @default(cuid())
   userId    String
@@ -375,6 +393,7 @@ model SubscriptionPlan {
 
   // Связи
   subscriptions Subscription[]
+  payments      Payment[]
 
   @@map("subscription_plans")
 }
@@ -391,12 +410,13 @@ model Payment {
   description       String
   status            String    @default("PENDING") // PENDING, SUCCEEDED, CANCELED, FAILED, REFUNDED
   paymentMethod     String    @default("CARD") // CARD, SBP, WALLET
-  yooKassaPaymentId String?
+  yooKassaPaymentId String?   @unique
   createdAt         DateTime  @default(now())
   updatedAt         DateTime  @updatedAt
 
   // Связи
-  user          User?           @relation(fields: [userId], references: [id], onDelete: SetNull)
+  user          User?             @relation(fields: [userId], references: [id], onDelete: SetNull)
+  plan          SubscriptionPlan? @relation(fields: [planId], references: [id], onDelete: SetNull)
   subscriptions Subscription[]
   refunds       PaymentRefund[]
 
