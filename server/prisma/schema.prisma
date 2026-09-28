@@ -61,6 +61,7 @@ model User {
   questionLikes         QuestionLike[]
   reviews               Review[]
   guideReads            GuideRead[]
+  docScanUsage          DocScanUsage[]
   passwordSetupTokens   PasswordSetupToken[]
   buddyApplications     BuddyApplication[]
   adminInboxReads       AdminInboxRead[]
@@ -231,6 +232,23 @@ model ChatDailyUsage {
 
   @@id([userId, day])
   @@map("chat_daily_usage")
+}
+
+model DocScanUsage {
+  id        String   @id @default(cuid())
+  userId    String
+  scanCount Int      @default(0)
+  success   Boolean  @default(true)
+  exported  Boolean  @default(false)
+  source    String?
+  language  String?
+  createdAt DateTime @default(now())
+
+  user User @relation(fields: [userId], references: [id], onDelete: Cascade)
+
+  @@index([userId])
+  @@index([createdAt])
+  @@map("doc_scan_usage")
 }
 
 model ChatMessage {

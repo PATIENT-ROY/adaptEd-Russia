@@ -1205,7 +1205,7 @@ export default function HomePage() {
                     type="button"
                     onClick={() => scrollToReview(activeReviewIndex - 1)}
                     className="flex h-12 w-12 items-center justify-center rounded-full border border-slate-200 bg-white text-slate-600 shadow-sm transition hover:border-blue-200 hover:bg-blue-50 hover:text-blue-600 focus-visible:outline-none focus-visible:ring-2 focus-visible:ring-blue-500 focus-visible:ring-offset-2"
-                    aria-label="Previous review"
+                    aria-label={t("home.section.testimonials.prev")}
                   >
                     <ChevronLeft className="h-5 w-5" aria-hidden />
                   </button>
@@ -1213,7 +1213,7 @@ export default function HomePage() {
                     type="button"
                     onClick={() => scrollToReview(activeReviewIndex + 1)}
                     className="flex h-12 w-12 items-center justify-center rounded-full border border-slate-200 bg-white text-slate-600 shadow-sm transition hover:border-blue-200 hover:bg-blue-50 hover:text-blue-600 focus-visible:outline-none focus-visible:ring-2 focus-visible:ring-blue-500 focus-visible:ring-offset-2"
-                    aria-label="Next review"
+                    aria-label={t("home.section.testimonials.next")}
                   >
                     <ChevronRight className="h-5 w-5" aria-hidden />
                   </button>
@@ -1259,26 +1259,75 @@ export default function HomePage() {
                   ))}
                 </div>
 
-                {reviews.length > 1 && (
-                  <div className="mt-5 flex items-center justify-center gap-4 sm:hidden">
-                    <button
-                      type="button"
-                      onClick={() => scrollToReview(activeReviewIndex - 1)}
-                      className="flex h-12 w-12 items-center justify-center rounded-full border border-slate-200 bg-white text-slate-600 shadow-sm transition hover:border-blue-200 hover:bg-blue-50 hover:text-blue-600 focus-visible:outline-none focus-visible:ring-2 focus-visible:ring-blue-500 focus-visible:ring-offset-2"
-                      aria-label="Previous review"
-                    >
-                      <ChevronLeft className="h-5 w-5" aria-hidden />
-                    </button>
-                    <button
-                      type="button"
-                      onClick={() => scrollToReview(activeReviewIndex + 1)}
-                      className="flex h-12 w-12 items-center justify-center rounded-full border border-slate-200 bg-white text-slate-600 shadow-sm transition hover:border-blue-200 hover:bg-blue-50 hover:text-blue-600 focus-visible:outline-none focus-visible:ring-2 focus-visible:ring-blue-500 focus-visible:ring-offset-2"
-                      aria-label="Next review"
-                    >
-                      <ChevronRight className="h-5 w-5" aria-hidden />
-                    </button>
+                <div className="mt-4 flex flex-col gap-4 sm:mt-5">
+                  <div className="flex items-center justify-between gap-2 rounded-2xl bg-white px-3 py-2 sm:gap-4 sm:px-6 sm:py-3.5">
+                    <p className="flex min-w-0 shrink items-center gap-1 text-[11px] leading-none text-slate-400 sm:gap-1.5 sm:text-sm">
+                      <span className="truncate">
+                        {t("home.section.testimonials.madeOn")}
+                      </span>
+                      <Star
+                        className="h-3 w-3 shrink-0 fill-current text-slate-400 sm:h-3.5 sm:w-3.5"
+                        aria-hidden
+                      />
+                      <span className="shrink-0 font-semibold text-slate-500">
+                        AdaptEd
+                      </span>
+                    </p>
+                    {reviews.length > 1 && (
+                      <div
+                        className="-mr-1 flex shrink-0 items-center sm:mr-0"
+                        role="tablist"
+                        aria-label={t("home.section.testimonials.title")}
+                      >
+                        {reviews.map((review, index) => {
+                          const isActive = index === activeReviewIndex;
+                          return (
+                            <button
+                              key={review.id}
+                              type="button"
+                              role="tab"
+                              aria-selected={isActive}
+                              aria-label={t(
+                                "home.section.testimonials.goTo",
+                              ).replace("{n}", String(index + 1))}
+                              onClick={() => scrollToReview(index)}
+                              className="flex h-11 w-5 items-center justify-center focus-visible:outline-none focus-visible:ring-2 focus-visible:ring-blue-500 focus-visible:ring-offset-2 sm:h-8 sm:w-7"
+                            >
+                              <span
+                                className={`h-2 w-2 rounded-full transition-colors ${
+                                  isActive
+                                    ? "bg-slate-500"
+                                    : "bg-slate-300"
+                                }`}
+                              />
+                            </button>
+                          );
+                        })}
+                      </div>
+                    )}
                   </div>
-                )}
+
+                  {reviews.length > 1 && (
+                    <div className="flex items-center justify-center gap-4 sm:hidden">
+                      <button
+                        type="button"
+                        onClick={() => scrollToReview(activeReviewIndex - 1)}
+                        className="flex h-12 w-12 items-center justify-center rounded-full border border-slate-200 bg-white text-slate-600 shadow-sm transition hover:border-blue-200 hover:bg-blue-50 hover:text-blue-600 focus-visible:outline-none focus-visible:ring-2 focus-visible:ring-blue-500 focus-visible:ring-offset-2"
+                        aria-label={t("home.section.testimonials.prev")}
+                      >
+                        <ChevronLeft className="h-5 w-5" aria-hidden />
+                      </button>
+                      <button
+                        type="button"
+                        onClick={() => scrollToReview(activeReviewIndex + 1)}
+                        className="flex h-12 w-12 items-center justify-center rounded-full border border-slate-200 bg-white text-slate-600 shadow-sm transition hover:border-blue-200 hover:bg-blue-50 hover:text-blue-600 focus-visible:outline-none focus-visible:ring-2 focus-visible:ring-blue-500 focus-visible:ring-offset-2"
+                        aria-label={t("home.section.testimonials.next")}
+                      >
+                        <ChevronRight className="h-5 w-5" aria-hidden />
+                      </button>
+                    </div>
+                  )}
+                </div>
               </>
             ) : (
               <div className="mx-auto max-w-xl rounded-2xl border border-blue-100 bg-gradient-to-br from-blue-50 via-white to-indigo-50 px-6 py-10 sm:px-8 sm:py-12 text-center shadow-sm">

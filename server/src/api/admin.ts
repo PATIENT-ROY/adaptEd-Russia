@@ -2,7 +2,7 @@ import { Router, Request, Response } from 'express';
 import { authMiddleware } from '../lib/auth';
 import { prisma } from '../lib/database';
 import { ApiResponse } from '../types/index.js';
-import { ACHIEVEMENT_CATALOG_SIZE } from './user';
+import { buildAchievementsAnalytics, buildDocscanAnalytics } from '../lib/admin-analytics';
 import { z } from 'zod';
 import { recordAdminAction } from '../lib/admin-audit';
 import { refundRatePercent } from '../lib/payment-metrics';
@@ -338,6 +338,12 @@ const adminUserListSelect = {
   registeredAt: true,
   university: true,
   plan: true,
+  subscriptions: {
+    select: {
+      status: true,
+      endDate: true,
+    },
+  },
   _count: {
     select: {
       guideReads: true,
@@ -363,6 +369,7 @@ type AdminUserListRecord = {
   language: string;
   role: string;
   plan: string;
+  subscriptions: Array<{ status: string; endDate: Date }>;
   registeredAt: Date;
   _count: { guideReads: number; chatMessages: number };
   chatMessages: Array<{ createdAt: Date }>;
@@ -377,6 +384,11 @@ type AdminUserListRecord = {
 function toAdminUserRow(u: AdminUserListRecord) {
   const unusedInvites = u.passwordSetupTokens.filter((token) => token.usedAt === null);
   const invitePending = unusedInvites.length > 0;
+  const now = Date.now();
+  const hasActiveSubscription = u.subscriptions.some(
+    (subscription) =>
+      subscription.status === 'ACTIVE' && subscription.endDate.getTime() > now,
+  );
   return {
     id: u.id,
     name: u.name,
@@ -384,7 +396,7 @@ function toAdminUserRow(u: AdminUserListRecord) {
     country: u.country,
     language: u.language.toLowerCase(),
     role: u.role.toLowerCase(),
-    plan: String(u.plan || 'FREEMIUM').toUpperCase() === 'PREMIUM' ? 'premium' : 'freemium',
+    plan: hasActiveSubscription ? 'premium' : 'freemium',
     status: u.blockedAt ? "blocked" : invitePending ? "pending" : "active",
     invitePending,
     registeredAt: u.registeredAt.toISOString().slice(0, 10),
@@ -810,23 +822,13 @@ router.get('/analytics/ai', async (_req, res) => {
   }
 });
 
-// GET /api/admin/analytics/docscan — guide-read engagement (no DocScan model yet)
+// GET /api/admin/analytics/docscan
 router.get('/analytics/docscan', async (_req, res) => {
   try {
-    const [totalReads, uniqueUsers] = await Promise.all([
-      prisma.guideRead.count(),
-      prisma.guideRead.groupBy({ by: ['userId'] }),
-    ]);
-
-    res.json({
-      success: true,
-      data: {
-        totalReads,
-        activeReaders: uniqueUsers.length,
-      },
-    } as ApiResponse);
+    const data = await buildDocscanAnalytics();
+    res.json({ success: true, data } as ApiResponse);
   } catch (error) {
-    console.error('Admin guide-read analytics error:', error);
+    console.error('Admin DocScan analytics error:', error);
     res.status(500).json({ success: false, error: 'Внутренняя ошибка сервера' } as ApiResponse);
   }
 });
@@ -834,37 +836,8 @@ router.get('/analytics/docscan', async (_req, res) => {
 // GET /api/admin/analytics/achievements
 router.get('/analytics/achievements', async (_req, res) => {
   try {
-    const thirtyDaysAgo = new Date();
-    thirtyDaysAgo.setDate(thirtyDaysAgo.getDate() - 30);
-
-    const [totalUsers, newUsersMonth, guideReaders, aiUsers] = await Promise.all([
-      prisma.user.count(),
-      prisma.user.count({ where: { registeredAt: { gte: thirtyDaysAgo } } }),
-      prisma.guideRead.groupBy({ by: ['userId'] }),
-      prisma.chatMessage.groupBy({
-        by: ['userId'],
-        where: { isUser: true },
-      }),
-    ]);
-
-    const engagedUsers = new Set([
-      ...guideReaders.map((g) => g.userId),
-      ...aiUsers.map((a) => a.userId),
-    ]).size;
-
-    // % of users with guide/AI activity (not unlock progress — no unlock table yet)
-    const engagedShare =
-      totalUsers > 0 ? Math.round((engagedUsers / totalUsers) * 100) : 0;
-
-    res.json({
-      success: true,
-      data: {
-        totalAchievements: ACHIEVEMENT_CATALOG_SIZE,
-        engagedShare,
-        activeUsers: engagedUsers,
-        newUsersMonth,
-      },
-    } as ApiResponse);
+    const data = await buildAchievementsAnalytics();
+    res.json({ success: true, data } as ApiResponse);
   } catch (error) {
     console.error('Admin achievements analytics error:', error);
     res.status(500).json({ success: false, error: 'Внутренняя ошибка сервера' } as ApiResponse);

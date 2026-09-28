@@ -45,7 +45,7 @@ function DocscanAnalyticsContent() {
         const data = await fetchAdminDocscanAnalytics();
         if (!cancelled) setAnalytics(data);
       } catch (error) {
-        console.error("Failed to load guide-read analytics:", error);
+        console.error("Failed to load DocScan analytics:", error);
       } finally {
         if (!cancelled) setLoading(false);
       }
@@ -58,15 +58,35 @@ function DocscanAnalyticsContent() {
   const kpis = [
     {
       label: t("admin.docscan.kpi.totalScans"),
-      value: loading ? "…" : String(analytics?.totalReads ?? 0),
+      value: loading ? "…" : String(analytics?.totalScans ?? 0),
       icon: ScanLine,
     },
     {
+      label: t("admin.docscan.kpi.successOcr"),
+      value: loading ? "…" : String(analytics?.successOcr ?? 0),
+      icon: TrendingUp,
+    },
+    {
       label: t("admin.docscan.kpi.activeUsers"),
-      value: loading ? "…" : String(analytics?.activeReaders ?? 0),
+      value: loading ? "…" : String(analytics?.activeUsers ?? 0),
       icon: Users,
     },
+    {
+      label: t("admin.docscan.kpi.ocrErrors"),
+      value: loading ? "…" : String(analytics?.ocrErrors ?? 0),
+      icon: Activity,
+    },
   ];
+
+  const trend = analytics?.trend ?? [];
+  const trendMax = Math.max(1, ...trend.map((point) => point.count));
+  const funnel = analytics?.funnel ?? { upload: 0, ocr: 0, export: 0 };
+  const funnelItems = [
+    { label: t("admin.docscan.funnel.upload"), value: funnel.upload },
+    { label: t("admin.docscan.funnel.ocr"), value: funnel.ocr },
+    { label: t("admin.docscan.funnel.export"), value: funnel.export },
+  ];
+  const funnelMax = Math.max(1, funnel.upload, funnel.ocr, funnel.export);
 
   if (!isAdmin) {
     return (
@@ -118,7 +138,7 @@ function DocscanAnalyticsContent() {
           </div>
         </div>
 
-        <div className="grid grid-cols-1 sm:grid-cols-2 gap-4 sm:gap-6">
+        <div className="grid grid-cols-1 sm:grid-cols-2 lg:grid-cols-4 gap-4 sm:gap-6">
           {kpis.map((item) => {
             const Icon = item.icon;
             return (
@@ -152,9 +172,33 @@ function DocscanAnalyticsContent() {
               </CardTitle>
             </CardHeader>
             <CardContent>
-              <div className="h-56 rounded-xl bg-slate-50 border border-slate-200 flex items-center justify-center text-slate-400 text-sm">
-                {t("admin.docscan.trendsPlaceholder")}
-              </div>
+              {loading ? (
+                <div className="h-56 rounded-xl bg-slate-50 border border-slate-200 flex items-center justify-center text-slate-400 text-sm">
+                  …
+                </div>
+              ) : trend.every((point) => point.count === 0) ? (
+                <div className="h-56 rounded-xl bg-slate-50 border border-slate-200 flex items-center justify-center text-slate-400 text-sm">
+                  {t("admin.docscan.trendsPlaceholder")}
+                </div>
+              ) : (
+                <div className="flex h-56 items-end gap-1.5">
+                  {trend.map((point) => (
+                    <div
+                      key={point.date}
+                      className="flex h-full min-w-0 flex-1 flex-col items-center justify-end gap-1"
+                      title={`${point.date}: ${point.count}`}
+                    >
+                      <div
+                        className="w-full rounded-t bg-indigo-500/80"
+                        style={{ height: `${Math.max(4, (point.count / trendMax) * 100)}%` }}
+                      />
+                      <span className="text-[10px] text-slate-400">
+                        {point.date.slice(5)}
+                      </span>
+                    </div>
+                  ))}
+                </div>
+              )}
             </CardContent>
           </Card>
 
@@ -166,9 +210,28 @@ function DocscanAnalyticsContent() {
               </CardTitle>
             </CardHeader>
             <CardContent className="space-y-3">
-              <p className="text-sm text-slate-500 text-center py-4">
-                {loading ? "…" : t("admin.analytics.noBreakdown")}
-              </p>
+              {loading ? (
+                <p className="text-sm text-slate-500 text-center py-4">…</p>
+              ) : funnelItems.every((item) => item.value === 0) ? (
+                <p className="text-sm text-slate-500 text-center py-4">
+                  {t("admin.analytics.noBreakdown")}
+                </p>
+              ) : (
+                funnelItems.map((item) => (
+                  <div key={item.label}>
+                    <div className="mb-1 flex items-center justify-between text-sm">
+                      <span className="text-slate-600">{item.label}</span>
+                      <span className="font-semibold text-slate-900">{item.value}</span>
+                    </div>
+                    <div className="h-2 overflow-hidden rounded-full bg-slate-100">
+                      <div
+                        className="h-full rounded-full bg-indigo-500"
+                        style={{ width: `${Math.round((item.value / funnelMax) * 100)}%` }}
+                      />
+                    </div>
+                  </div>
+                ))
+              )}
             </CardContent>
           </Card>
         </div>

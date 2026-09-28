@@ -23,6 +23,7 @@ import type { FileRejection } from "react-dropzone";
 import type { Worker } from "tesseract.js";
 import { OCR_LANGUAGES, prepareOcrImage, recognizeDocumentImage, withTimeout, type OcrLanguage } from "@/lib/docscan-ocr";
 import { extractPdfPageText } from "@/lib/docscan-pdf";
+import { apiClient } from "@/lib/api";
 
 // eslint-disable-next-line @typescript-eslint/no-explicit-any
 let pdfjsLib: any = null;
@@ -268,8 +269,16 @@ export function DocScanContent() {
       setResult(scanResult);
       setShowModal(true);
       setTranslatedText(null);
+      void apiClient.logDocScan({
+        success: true,
+        source: scanResult.textSource === "pdf" || scanResult.textSource === "ocr" || scanResult.textSource === "mixed"
+          ? scanResult.textSource
+          : "ocr",
+        language: scanResult.detectedLanguage,
+      });
     } catch (err) {
       console.error("OCR Error:", err);
+      void apiClient.logDocScan({ success: false });
       setError(err instanceof Error && err.message === t("docscan.error.noText")
         ? t("docscan.error.noText") : t("docscan.error.ocr"));
     } finally {
@@ -312,6 +321,7 @@ export function DocScanContent() {
     a.download = translatedText ? "docscan-translated.txt" : "docscan-result.txt";
     a.click();
     URL.revokeObjectURL(url);
+    void apiClient.logDocScan({ exported: true });
   }, [translatedText, result?.text]);
 
   const handleTranslate = useCallback(async () => {

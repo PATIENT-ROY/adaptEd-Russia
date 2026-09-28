@@ -64,8 +64,27 @@ function AchievementsContent() {
     { label: t("admin.achievements.kpi.newMonth"), value: loading ? "…" : `+${analytics?.newUsersMonth ?? 0}`, icon: Sparkles },
   ];
 
-  const categories: Array<{ label: string; value: string; color: string }> = [];
-  const recentAchievements: Array<{ title: string; category: string; rarity: string }> = [];
+  const categoryLabel: Record<string, string> = {
+    GETTING_STARTED: t("admin.achievements.categories.start"),
+    EDUCATION: t("admin.achievements.categories.study"),
+    LIFE: t("admin.achievements.categories.life"),
+    ACTIVITY: t("admin.achievements.categories.activity"),
+    EXPERT: t("admin.achievements.categories.expert"),
+  };
+  const categoryColor: Record<string, string> = {
+    GETTING_STARTED: "bg-emerald-100 text-emerald-700",
+    EDUCATION: "bg-blue-100 text-blue-700",
+    LIFE: "bg-amber-100 text-amber-800",
+    ACTIVITY: "bg-purple-100 text-purple-700",
+    EXPERT: "bg-rose-100 text-rose-700",
+  };
+  const rarityLabel = (rarity: string) =>
+    t(`admin.achievements.rarity.${rarity}`) === `admin.achievements.rarity.${rarity}`
+      ? rarity
+      : t(`admin.achievements.rarity.${rarity}`);
+
+  const categories = analytics?.categories ?? [];
+  const recentAchievements = analytics?.recent ?? [];
 
   if (!isAdmin) {
     return (
@@ -166,12 +185,12 @@ function AchievementsContent() {
               ) : (
               categories.map((item) => (
                 <div
-                  key={item.label}
+                  key={item.key}
                   className="flex items-center justify-between rounded-lg bg-slate-50 px-3 py-2 text-sm"
                 >
-                  <span>{item.label}</span>
-                  <span className={`rounded-full px-2 py-1 text-xs ${item.color}`}>
-                    {item.value}
+                  <span>{categoryLabel[item.key] ?? item.key}</span>
+                  <span className={`rounded-full px-2 py-1 text-xs ${categoryColor[item.key] ?? "bg-slate-100 text-slate-600"}`}>
+                    {item.share}% · {item.unlockedUsers}/{item.catalog}
                   </span>
                 </div>
               ))
@@ -194,13 +213,15 @@ function AchievementsContent() {
               ) : (
               recentAchievements.map((item) => (
                 <div
-                  key={item.title}
+                  key={item.id}
                   className="rounded-lg bg-slate-50 px-3 py-2"
                 >
-                  <p className="font-medium text-slate-900">{item.title}</p>
+                  <p className="font-medium text-slate-900">{item.name}</p>
                   <div className="flex items-center justify-between text-xs text-slate-500">
-                    <span>{item.category}</span>
-                    <span>{item.rarity}</span>
+                    <span>{categoryLabel[item.category] ?? item.category}</span>
+                    <span>
+                      {rarityLabel(item.rarity)} · {item.unlockedUsers}
+                    </span>
                   </div>
                 </div>
               ))
