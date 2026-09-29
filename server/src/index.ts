@@ -37,8 +37,11 @@ const HOST = process.env.APP_IP || '0.0.0.0';
 app.use(helmet());
 
       // CORS настройки
+      const clientUrl = (process.env.CLIENT_URL || '').replace(/\/$/, '');
       app.use(cors({
         origin: [
+          'https://adaptedrussia.ru',
+          'https://www.adaptedrussia.ru',
           'http://localhost:3000',
           'http://localhost:3001',
           'http://localhost:3002',
@@ -51,8 +54,8 @@ app.use(helmet());
           'http://192.168.0.101:3007',
           'http://192.168.0.101:3008',
           '127.0.4.240:56548',
-          'https://adaptedrussia.netlify.app', // Netlify production
-          ...(process.env.CLIENT_URL ? [process.env.CLIENT_URL] : [])
+          'https://adaptedrussia.netlify.app',
+          ...(clientUrl ? [clientUrl] : [])
         ],
         credentials: true,
         methods: ['GET', 'POST', 'PUT', 'PATCH', 'DELETE', 'OPTIONS'],
