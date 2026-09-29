@@ -11,7 +11,7 @@ import {
   type UserNotification,
 } from "@/lib/notifications-api";
 
-export function UserNotifications() {
+export function UserNotifications({ alwaysVisible = false }: { alwaysVisible?: boolean }) {
   const router = useRouter();
   const [items, setItems] = useState<UserNotification[]>([]);
   const [count, setCount] = useState(0);
@@ -21,8 +21,8 @@ export function UserNotifications() {
   const refresh = useCallback(async () => {
     try {
       const data = await fetchNotifications(1, 5);
-      setItems(data.items);
-      setCount(data.unreadCount);
+      setItems(Array.isArray(data.items) ? data.items : []);
+      setCount(Number(data.unreadCount) || 0);
     } catch (error) {
       console.error("Failed to load user notifications:", error);
     }
@@ -83,12 +83,14 @@ export function UserNotifications() {
     }
   };
 
+  if (!alwaysVisible && count < 1) return null;
+
   return (
-    <div ref={rootRef} className="relative">
+    <div ref={rootRef} className="relative shrink-0">
       <button
         type="button"
         onClick={() => { setOpen((value) => !value); void refresh(); }}
-        className="relative flex h-7 w-7 items-center justify-center rounded-lg border border-slate-200 bg-white text-slate-600 transition hover:bg-slate-50 sm:h-8 sm:w-8 sm:rounded-xl"
+        className="relative flex h-7 w-7 shrink-0 items-center justify-center rounded-lg border border-slate-200 bg-white text-slate-600 transition hover:bg-slate-50 sm:h-8 sm:w-8 sm:rounded-xl"
         aria-label={`Непрочитанные уведомления: ${count}`}
         aria-expanded={open}
       >
