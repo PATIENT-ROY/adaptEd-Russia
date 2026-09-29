@@ -598,6 +598,19 @@ router.post(
         data: { questionId, userId },
       });
 
+      if (question.authorId !== userId) {
+        await createUserNotification({
+          userId: question.authorId,
+          actorUserId: userId,
+          type: "COMMUNITY",
+          title: "Ваш вопрос получил лайк",
+          message: `Кто-то оценил ваш вопрос «${question.title}».`,
+          link: `/community/questions/${question.id}`,
+          entityType: "QuestionLike",
+          entityId: question.id,
+        });
+      }
+
       const likesCount = await prisma.questionLike.count({
         where: { questionId },
       });
