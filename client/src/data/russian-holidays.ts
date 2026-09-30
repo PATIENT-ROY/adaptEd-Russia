@@ -87,3 +87,10 @@ export function getUpcomingHoliday(
     isCurrent: next.restStart <= today && today <= next.restEnd,
   };
 }
+
+/** Whole days from today (Moscow) until a YYYY-MM-DD date. Negative if that date has passed. */
+export function daysUntilYmd(targetYmd: string, now = new Date()): number {
+  const today = moscowYmd(now);
+  const ms = Date.parse(`${targetYmd}T00:00:00Z`) - Date.parse(`${today}T00:00:00Z`);
+  return Math.round(ms / 86_400_000);
+}

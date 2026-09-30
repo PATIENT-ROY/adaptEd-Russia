@@ -51,7 +51,7 @@ export function DailyQuestsComponent({ quests }: DailyQuestsProps) {
   };
 
   return (
-    <Card className="shadow-lg border-0 bg-gradient-to-br from-orange-50 to-yellow-50 no-hover">
+    <Card className="shadow-lg border-0 bg-gradient-to-br from-orange-50 to-yellow-50 no-hover hover:!shadow-lg">
       <CardHeader className="pb-3">
         <div className="flex items-center justify-between">
           <CardTitle className="text-lg sm:text-xl flex items-center space-x-2">
