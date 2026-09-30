@@ -17,7 +17,6 @@ import {
   Users,
   Home,
   ChevronRight,
-  ArrowRight,
 } from "lucide-react";
 import Link from "next/link";
 import { useAuth } from "@/contexts/AuthContext";
@@ -32,9 +31,12 @@ import { AdaptationProgress } from "@/components/ui/adaptation-progress";
 import { fetchAchievementsOverview, fetchDashboardOverview } from "@/lib/api";
 import { lifeGuidePath } from "@/lib/guide-routes";
 import {
+  daysUntilYmd,
   getUpcomingHoliday,
   RUSSIAN_HOLIDAYS_GUIDE_ID,
+  type UpcomingHoliday,
 } from "@/data/russian-holidays";
+import { formatCountedLabel } from "@/lib/pluralize";
 
 const dashboardCardClass = "border-0 shadow-xl";
 const dashboardCardStyle = {
@@ -84,6 +86,229 @@ function formatHolidayRange(start: string, end: string, locale: string): string 
   }
   const needsYear = start.slice(0, 4) !== end.slice(0, 4);
   return `${startDate.toLocaleDateString(locale, needsYear ? withYear : sameYear)} – ${endDate.toLocaleDateString(locale, needsYear ? withYear : sameYear)}`;
+}
+
+type HolidayTone = {
+  background: string;
+  glow: string;
+  stamp: string;
+  kicker: string;
+  pill: string;
+  cta: string;
+  focus: string;
+};
+
+const HOLIDAY_TONES: Record<string, HolidayTone> = {
+  winter: {
+    background:
+      "radial-gradient(140px 90px at 100% 0%, rgba(129, 140, 248, 0.35), transparent 70%), linear-gradient(135deg, #eef2ff 0%, #ffffff 46%, #e0f2fe 100%)",
+    glow: "bg-indigo-300/50",
+    stamp: "from-indigo-500 to-blue-700",
+    kicker: "text-indigo-700/80",
+    pill: "bg-indigo-100 text-indigo-900",
+    cta: "text-indigo-700",
+    focus: "focus-visible:ring-indigo-500",
+  },
+  steel: {
+    background:
+      "radial-gradient(140px 90px at 100% 0%, rgba(148, 163, 184, 0.45), transparent 70%), linear-gradient(135deg, #f8fafc 0%, #ffffff 46%, #e2e8f0 100%)",
+    glow: "bg-slate-300/60",
+    stamp: "from-slate-600 to-slate-800",
+    kicker: "text-slate-600",
+    pill: "bg-slate-200 text-slate-800",
+    cta: "text-slate-700",
+    focus: "focus-visible:ring-slate-500",
+  },
+  rose: {
+    background:
+      "radial-gradient(140px 90px at 100% 0%, rgba(251, 113, 133, 0.35), transparent 70%), linear-gradient(135deg, #fff1f2 0%, #ffffff 46%, #ffe4e6 100%)",
+    glow: "bg-rose-300/50",
+    stamp: "from-rose-500 to-pink-600",
+    kicker: "text-rose-700/80",
+    pill: "bg-rose-100 text-rose-900",
+    cta: "text-rose-700",
+    focus: "focus-visible:ring-rose-500",
+  },
+  spring: {
+    background:
+      "radial-gradient(140px 90px at 100% 0%, rgba(52, 211, 153, 0.35), transparent 70%), linear-gradient(135deg, #ecfdf5 0%, #ffffff 46%, #d1fae5 100%)",
+    glow: "bg-emerald-300/50",
+    stamp: "from-emerald-500 to-teal-600",
+    kicker: "text-emerald-800/80",
+    pill: "bg-emerald-100 text-emerald-900",
+    cta: "text-emerald-700",
+    focus: "focus-visible:ring-emerald-500",
+  },
+  crimson: {
+    background:
+      "radial-gradient(140px 90px at 100% 0%, rgba(248, 113, 113, 0.32), transparent 70%), linear-gradient(135deg, #fef2f2 0%, #ffffff 46%, #fee2e2 100%)",
+    glow: "bg-red-300/45",
+    stamp: "from-red-600 to-rose-800",
+    kicker: "text-red-800/75",
+    pill: "bg-red-100 text-red-900",
+    cta: "text-red-700",
+    focus: "focus-visible:ring-red-500",
+  },
+  azure: {
+    background:
+      "radial-gradient(140px 90px at 100% 0%, rgba(56, 189, 248, 0.35), transparent 70%), linear-gradient(135deg, #f0f9ff 0%, #ffffff 46%, #e0f2fe 100%)",
+    glow: "bg-sky-300/50",
+    stamp: "from-sky-500 to-blue-700",
+    kicker: "text-sky-800/80",
+    pill: "bg-sky-100 text-sky-900",
+    cta: "text-sky-700",
+    focus: "focus-visible:ring-sky-500",
+  },
+  autumn: {
+    background:
+      "radial-gradient(140px 90px at 100% 0%, rgba(251, 146, 60, 0.38), transparent 70%), linear-gradient(135deg, #fff7ed 0%, #ffffff 46%, #ffedd5 100%)",
+    glow: "bg-orange-300/50",
+    stamp: "from-orange-500 to-rose-600",
+    kicker: "text-orange-800/80",
+    pill: "bg-orange-100 text-orange-950",
+    cta: "text-orange-700",
+    focus: "focus-visible:ring-orange-500",
+  },
+};
+
+const WELCOME_TONE = {
+  background:
+    "radial-gradient(160px 100px at 100% 0%, rgba(99, 102, 241, 0.28), transparent 70%), linear-gradient(135deg, #eff6ff 0%, #ffffff 48%, #eef2ff 100%)",
+  glow: "bg-indigo-300/40",
+  stamp: "from-blue-500 to-indigo-600",
+  pill: "bg-blue-100 text-blue-950",
+  cta: "text-blue-700",
+  focus: "focus-visible:ring-blue-500",
+} as const;
+
+function holidayTone(id: string): HolidayTone {
+  if (id.startsWith("new-year")) return HOLIDAY_TONES.winter;
+  if (id.startsWith("defender")) return HOLIDAY_TONES.steel;
+  if (id.startsWith("women")) return HOLIDAY_TONES.rose;
+  if (id.startsWith("labour")) return HOLIDAY_TONES.spring;
+  if (id.startsWith("victory")) return HOLIDAY_TONES.crimson;
+  if (id.startsWith("russia")) return HOLIDAY_TONES.azure;
+  return HOLIDAY_TONES.autumn;
+}
+
+function holidayStamp(start: string, locale: string): { day: string; month: string } {
+  const date = new Date(`${start}T12:00:00`);
+  const month = date
+    .toLocaleDateString(locale, { month: "short" })
+    .replace(/\./g, "");
+  return { day: String(date.getDate()), month };
+}
+
+function holidayWhenLabel(
+  days: number,
+  language: Language,
+  translate: (key: string) => string,
+): string | null {
+  if (days <= 0) return null;
+  if (days === 1) return translate("dashboard.holiday.tomorrow");
+  const when = formatCountedLabel(days, language, translate, "dashboard.holiday.day");
+  return translate("dashboard.holiday.in").replace("{when}", when);
+}
+
+function HolidayAnnounce({
+  holiday,
+  locale,
+  language,
+  translate,
+}: {
+  holiday: UpcomingHoliday;
+  locale: string;
+  language: Language;
+  translate: (key: string) => string;
+}) {
+  const tone = holidayTone(holiday.id);
+  const stamp = holidayStamp(holiday.restStart, locale);
+  const kicker = translate(
+    holiday.isCurrent ? "dashboard.holiday.now" : "dashboard.holiday.next",
+  );
+  const when = holiday.isCurrent
+    ? null
+    : holidayWhenLabel(daysUntilYmd(holiday.restStart), language, translate);
+  const name = translate(holiday.nameKey);
+  const range = formatHolidayRange(holiday.restStart, holiday.restEnd, locale);
+  const guideHref = lifeGuidePath(RUSSIAN_HOLIDAYS_GUIDE_ID);
+  const guideLabel = `${kicker}: ${name}. ${when ? `${when}. ` : ""}${translate("dashboard.holiday.closes")}`;
+  const guideClass = `group shrink-0 items-center gap-1 rounded-lg text-sm font-semibold transition hover:opacity-70 focus-visible:outline-none focus-visible:ring-2 focus-visible:ring-offset-2 ${tone.cta} ${tone.focus}`;
+
+  return (
+      <Card
+        className="relative overflow-hidden border-0 shadow-xl no-hover hover:!shadow-xl"
+        style={{ background: tone.background }}
+      >
+        <div
+          className={`pointer-events-none absolute -end-8 -top-12 h-28 w-28 rounded-full blur-2xl ${tone.glow}`}
+          aria-hidden
+        />
+        <CardContent className="relative p-4 sm:p-5">
+          <div className="flex items-center gap-3.5 sm:gap-4">
+            <div
+              className={`flex h-[4.5rem] w-16 shrink-0 flex-col items-center justify-center rounded-2xl bg-gradient-to-br text-white shadow-md ${tone.stamp}`}
+            >
+              <span className="text-[1.7rem] font-bold leading-none tabular-nums">
+                {stamp.day}
+              </span>
+              <span className="mt-1 max-w-full truncate px-1 text-[11px] font-semibold uppercase tracking-wide text-white/90">
+                {stamp.month}
+              </span>
+            </div>
+            <div className="min-w-0 flex-1">
+              <div className="flex flex-wrap items-center gap-x-2 gap-y-1">
+                <p className={`text-[11px] font-semibold uppercase tracking-wide sm:text-xs ${tone.kicker}`}>
+                  {kicker}
+                </p>
+                {when && (
+                  <span className={`rounded-full px-2 py-0.5 text-xs font-semibold ${tone.pill}`}>
+                    {when}
+                  </span>
+                )}
+              </div>
+              <h2 className="mt-1 text-base font-semibold leading-snug text-slate-900 sm:text-lg">
+                {name}
+              </h2>
+              <p className="mt-0.5 text-sm text-slate-600">
+                {translate("dashboard.holiday.rest").replace("{range}", range)}
+              </p>
+            </div>
+            <Link
+              href={guideHref}
+              aria-label={guideLabel}
+              className={`hidden sm:inline-flex ${guideClass}`}
+            >
+              {translate("dashboard.holiday.cta")}
+              <ChevronRight className="h-4 w-4 transition-transform group-hover:translate-x-0.5" />
+            </Link>
+            <Link
+              href={guideHref}
+              aria-label={guideLabel}
+              className={`inline-flex sm:hidden ${guideClass}`}
+            >
+              <ChevronRight className="h-5 w-5 transition-transform group-hover:translate-x-0.5" />
+            </Link>
+          </div>
+          <div className="mt-3 flex flex-wrap gap-1.5">
+            <span className="inline-flex items-center gap-1.5 whitespace-nowrap rounded-full bg-white/80 px-2.5 py-1 text-xs text-slate-700 ring-1 ring-black/5">
+              <span className="h-1.5 w-1.5 shrink-0 rounded-full bg-rose-500" aria-hidden />
+              <span className="font-semibold text-rose-700">
+                {translate("dashboard.holiday.closedTag")}
+              </span>
+              {translate("dashboard.holiday.closed")}
+            </span>
+            <span className="inline-flex items-center gap-1.5 whitespace-nowrap rounded-full bg-white/80 px-2.5 py-1 text-xs text-slate-700 ring-1 ring-black/5">
+              <span className="h-1.5 w-1.5 shrink-0 rounded-full bg-emerald-500" aria-hidden />
+              <span className="font-semibold text-emerald-700">
+                {translate("dashboard.holiday.openTag")}
+              </span>
+              {translate("dashboard.holiday.open")}
+            </span>
+          </div>
+        </CardContent>
+      </Card>
+  );
 }
 
 function reminderPriorityClass(priority: ReminderPriority): string {
@@ -360,94 +585,79 @@ function DashboardContent() {
       <Layout>
         <div className="space-y-6 sm:space-y-8 animate-fade-in-up">
           {/* Welcome Header */}
-          <Card className="bg-gradient-to-r from-blue-50 to-indigo-50 border-0 shadow-lg">
-            <CardContent className="p-4 sm:p-6 lg:p-8">
-              <div className="flex flex-row items-center gap-3 sm:gap-4">
-                <Link
-                  href="/profile"
-                  className="w-12 h-12 sm:w-16 sm:h-16 rounded-2xl bg-gradient-to-br from-blue-500 to-indigo-600 flex items-center justify-center shadow-lg hover:shadow-xl transition-shadow cursor-pointer shrink-0"
-                  aria-label={t("dashboard.welcome.profileAria")}
-                >
-                  <span className="text-white text-lg sm:text-2xl font-bold">
-                    {user?.name.charAt(0).toUpperCase() || t("dashboard.welcome.initialFallback")}
-                  </span>
-                </Link>
-                <div className="min-w-0 flex-1">
-                  <h1 className="text-xl sm:text-2xl lg:text-3xl font-bold text-slate-900 mb-0.5 sm:mb-2 flex items-center gap-2 flex-wrap">
-                    <span className="min-w-0">{welcomeMessage}</span>
-                    <span
-                      className="animate-wave text-2xl sm:text-3xl lg:text-4xl shrink-0"
-                      role="img"
-                      aria-label={t("dashboard.welcome.waveAria")}
-                    >
-                      👋
-                    </span>
-                  </h1>
-                  <p className="text-sm sm:text-base lg:text-lg text-slate-600">
-                    {t("dashboard.welcome.subtitle")}
-                  </p>
-                </div>
-              </div>
-            </CardContent>
-          </Card>
-
-          {upcomingHoliday && (
-            <Link
-              href={lifeGuidePath(RUSSIAN_HOLIDAYS_GUIDE_ID)}
-              className="group block rounded-2xl focus-visible:outline-none focus-visible:ring-2 focus-visible:ring-rose-500 focus-visible:ring-offset-2"
-              aria-label={`${t(
-                upcomingHoliday.isCurrent
-                  ? "dashboard.holiday.now"
-                  : "dashboard.holiday.next",
-              )}: ${t(upcomingHoliday.nameKey)}`}
-            >
+          {(() => {
+            const tone = WELCOME_TONE;
+            const initial =
+              user?.name.charAt(0).toUpperCase() || t("dashboard.welcome.initialFallback");
+            return (
               <Card
-                className={`${dashboardCardClass} border border-rose-100 transition-all duration-300 hover:shadow-2xl hover:-translate-y-0.5 active:scale-[0.99]`}
-                style={dashboardCardStyle}
+                className="relative overflow-hidden border-0 shadow-xl no-hover hover:!shadow-xl"
+                style={{ background: tone.background }}
               >
-                <CardContent className="p-4 sm:p-5">
-                  <div className="flex items-start gap-3 sm:gap-4">
-                    <div className="w-11 h-11 sm:w-12 sm:h-12 rounded-xl bg-gradient-to-br from-rose-500 to-red-600 flex items-center justify-center shadow-md shrink-0">
-                      <Calendar className="h-5 w-5 sm:h-6 sm:w-6 text-white" />
-                    </div>
+                <div
+                  className={`pointer-events-none absolute -end-8 -top-12 h-28 w-28 rounded-full blur-2xl ${tone.glow}`}
+                  aria-hidden
+                />
+                <CardContent className="relative p-4 sm:p-5">
+                  <div className="flex items-center gap-3.5 sm:gap-4">
+                    <Link
+                      href="/profile"
+                      className={`flex h-[4.5rem] w-16 shrink-0 items-center justify-center rounded-2xl bg-gradient-to-br text-2xl font-bold text-white shadow-md transition hover:-translate-y-0.5 hover:shadow-lg focus-visible:outline-none focus-visible:ring-2 focus-visible:ring-offset-2 ${tone.stamp} ${tone.focus}`}
+                      aria-label={t("dashboard.welcome.profileAria")}
+                    >
+                      {initial}
+                    </Link>
                     <div className="min-w-0 flex-1">
-                      <p className="text-xs sm:text-sm font-medium text-slate-500">
-                        {t(
-                          upcomingHoliday.isCurrent
-                            ? "dashboard.holiday.now"
-                            : "dashboard.holiday.next",
-                        )}
+                      <h1 className="text-xl font-semibold leading-snug text-slate-900 sm:text-2xl">
+                        {welcomeMessage}{" "}
+                        <span
+                          className="animate-wave inline-block text-2xl sm:text-3xl"
+                          role="img"
+                          aria-label={t("dashboard.welcome.waveAria")}
+                        >
+                          👋
+                        </span>
+                      </h1>
+                      <p className="mt-0.5 text-sm text-slate-600 sm:text-base">
+                        {t("dashboard.welcome.subtitle")}
                       </p>
-                      <h2 className="text-base sm:text-lg font-semibold text-slate-900 leading-snug mt-0.5">
-                        {t(upcomingHoliday.nameKey)}
-                      </h2>
-                      <p className="text-sm text-slate-600 mt-1">
-                        {t("dashboard.holiday.rest").replace(
-                          "{range}",
-                          formatHolidayRange(
-                            upcomingHoliday.restStart,
-                            upcomingHoliday.restEnd,
-                            dateLocale,
-                          ),
-                        )}
-                      </p>
-                      <p className="text-sm text-slate-600 mt-1 leading-relaxed">
-                        {t("dashboard.holiday.closes")}
-                      </p>
+                      {daysInRussia != null && (
+                        <p className={`mt-2 inline-flex rounded-full px-2.5 py-0.5 text-xs font-semibold ${tone.pill}`}>
+                          {t("dashboard.stats.daysInRussia")} · {daysInRussia}
+                        </p>
+                      )}
                     </div>
-                    <ChevronRight className="mt-1 h-5 w-5 shrink-0 text-slate-400 transition-colors group-hover:text-rose-600" />
+                    <Link
+                      href="/profile"
+                      className={`hidden shrink-0 items-center gap-1 rounded-lg text-sm font-semibold transition hover:opacity-70 focus-visible:outline-none focus-visible:ring-2 focus-visible:ring-offset-2 sm:inline-flex ${tone.cta} ${tone.focus}`}
+                    >
+                      {t("dashboard.welcome.profileAria")}
+                      <ChevronRight className="h-4 w-4" />
+                    </Link>
+                    <Link
+                      href="/profile"
+                      className={`inline-flex shrink-0 rounded-lg transition hover:opacity-70 focus-visible:outline-none focus-visible:ring-2 focus-visible:ring-offset-2 sm:hidden ${tone.cta} ${tone.focus}`}
+                      aria-label={t("dashboard.welcome.profileAria")}
+                    >
+                      <ChevronRight className="h-5 w-5" />
+                    </Link>
                   </div>
-                  <span className="mt-3 inline-flex min-h-11 w-full items-center justify-center gap-1.5 rounded-xl bg-rose-50 px-3 py-2 text-sm font-semibold text-rose-700 sm:w-auto sm:justify-start">
-                    {t("dashboard.holiday.cta")}
-                    <ArrowRight className="h-4 w-4" />
-                  </span>
                 </CardContent>
               </Card>
-            </Link>
+            );
+          })()}
+
+          {upcomingHoliday && (
+            <HolidayAnnounce
+              holiday={upcomingHoliday}
+              locale={dateLocale}
+              language={currentLanguage}
+              translate={t}
+            />
           )}
 
           {dashboardError && (
-            <Card className="border-red-200 bg-red-50 shadow-none" role="alert">
+            <Card className="border-red-200 bg-red-50 shadow-none no-hover hover:!shadow-none" role="alert">
               <CardContent className="p-4 sm:p-6">
                 <div className="flex flex-col sm:flex-row sm:items-center sm:justify-between gap-3 sm:gap-4">
                   <div className="flex items-start space-x-3">
@@ -485,7 +695,7 @@ function DashboardContent() {
             </div>
           ) : (
             !dashboardError && (
-              <Card className={dashboardCardClass} style={dashboardCardStyle}>
+              <Card className={`${dashboardCardClass} no-hover hover:!shadow-xl`} style={dashboardCardStyle}>
                 <CardContent className="p-6 text-center">
                   <p className="text-gray-600">{t("dashboard.error.loading")}</p>
                 </CardContent>
@@ -544,7 +754,7 @@ function DashboardContent() {
                 {[1, 2, 3].map((index) => (
                   <Card
                     key={`skeleton-reminder-${index}`}
-                    className="animate-pulse"
+                    className="animate-pulse no-hover hover:!shadow-xl"
                     style={dashboardCardStyle}
                   >
                     <CardContent className="p-4">
@@ -564,7 +774,7 @@ function DashboardContent() {
                 {upcomingReminders.map((reminder, index) => (
                   <Card
                     key={reminder.id}
-                    className={`${dashboardCardClass} animate-fade-in-up`}
+                    className={`${dashboardCardClass} animate-fade-in-up no-hover hover:!shadow-xl`}
                     style={{
                       animationDelay: `${index * 0.1}s`,
                       ...dashboardCardStyle,
@@ -600,7 +810,7 @@ function DashboardContent() {
                 ))}
               </div>
             ) : (
-              <Card className={dashboardCardClass} style={dashboardCardStyle}>
+              <Card className={`${dashboardCardClass} no-hover hover:!shadow-xl`} style={dashboardCardStyle}>
                 <CardContent className="p-4">
                   <div className="flex flex-col gap-4 sm:flex-row sm:items-center">
                     <div className="flex min-w-0 items-start gap-3.5">
@@ -632,7 +842,7 @@ function DashboardContent() {
             </h2>
             <div className="grid grid-cols-2 sm:grid-cols-2 lg:grid-cols-4 gap-3 sm:gap-4 lg:gap-6">
               <Card
-                className={`${dashboardCardClass} animate-fade-in-up`}
+                className={`${dashboardCardClass} animate-fade-in-up no-hover hover:!shadow-xl`}
                 style={{ animationDelay: "0.1s", ...dashboardCardStyle }}
               >
                 <CardContent className="p-4 sm:p-6">
@@ -653,7 +863,7 @@ function DashboardContent() {
               </Card>
 
               <Card
-                className={`${dashboardCardClass} animate-fade-in-up`}
+                className={`${dashboardCardClass} animate-fade-in-up no-hover hover:!shadow-xl`}
                 style={{ animationDelay: "0.2s", ...dashboardCardStyle }}
               >
                 <CardContent className="p-4 sm:p-6">
@@ -674,7 +884,7 @@ function DashboardContent() {
               </Card>
 
               <Card
-                className={`${dashboardCardClass} animate-fade-in-up`}
+                className={`${dashboardCardClass} animate-fade-in-up no-hover hover:!shadow-xl`}
                 style={{ animationDelay: "0.3s", ...dashboardCardStyle }}
               >
                 <CardContent className="p-4 sm:p-6">
@@ -695,7 +905,7 @@ function DashboardContent() {
               </Card>
 
               <Card
-                className={`${dashboardCardClass} animate-fade-in-up`}
+                className={`${dashboardCardClass} animate-fade-in-up no-hover hover:!shadow-xl`}
                 style={{ animationDelay: "0.4s", ...dashboardCardStyle }}
               >
                 <CardContent className="p-4 sm:p-6">

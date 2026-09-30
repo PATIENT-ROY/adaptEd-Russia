@@ -58,7 +58,7 @@ export function AdaptationProgress({ reminders = [] }: AdaptationProgressProps) 
   }, [reminders, user?.university, t]);
 
   return (
-    <Card className="border-0 shadow-xl">
+    <Card className="border-0 shadow-xl no-hover hover:!shadow-xl">
       <CardHeader className="pb-2">
         <CardTitle className="text-xl sm:text-2xl font-bold text-slate-900">
           {t("dashboard.adaptation.title")}

@@ -84,7 +84,7 @@ export function UserProgressComponent({ progress }: UserProgressProps) {
   const nextLevel = getNextLevel();
 
   return (
-    <Card className="bg-gradient-to-br from-blue-50 via-purple-50 to-pink-50 border-0 shadow-xl">
+    <Card className="bg-gradient-to-br from-blue-50 via-purple-50 to-pink-50 border-0 shadow-xl no-hover hover:!shadow-xl">
       <CardContent className="p-4 sm:p-6">
         <div className="flex flex-col space-y-4">
           {/* Header */}
