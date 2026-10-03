@@ -24,6 +24,8 @@ export function UserNotifications({ alwaysVisible = false }: { alwaysVisible?: b
       setItems(Array.isArray(data.items) ? data.items : []);
       setCount(Number(data.unreadCount) || 0);
     } catch (error) {
+      const message = error instanceof Error ? error.message : "";
+      if (message.includes("токен") || message.includes("401")) return;
       console.error("Failed to load user notifications:", error);
     }
   }, []);

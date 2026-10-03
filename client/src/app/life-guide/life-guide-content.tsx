@@ -25,6 +25,7 @@ import { HeroBackgroundImage } from "@/components/ui/hero-background-image";
 import { lifeGuidePath } from "@/lib/guide-routes";
 import { guideInLifeCategory, guideMatchesQuery } from "@/lib/guide-search";
 import { arrivalStepGuide } from "@/lib/life-guide-arrival";
+import { GuideFreshnessNote } from "@/components/guides/guide-freshness-note";
 
 type ArrivalStep = {
   id: string;
@@ -467,6 +468,7 @@ export function LifeGuideContent() {
             </div>
           )}
         </section>
+        <GuideFreshnessNote section="life" />
       </div>
     </Layout>
   );
