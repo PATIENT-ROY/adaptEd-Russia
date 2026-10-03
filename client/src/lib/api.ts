@@ -39,6 +39,16 @@ const logError = console.error.bind(console); // Ошибки всегда ло�
 // Event для уведомления приложения об unauthorized
 export const AUTH_INVALID_EVENT = 'auth:invalid';
 
+export function emitAuthInvalid() {
+  if (typeof window === 'undefined') return;
+  localStorage.removeItem('token');
+  if (!window.location.pathname.includes('/login')) {
+    window.dispatchEvent(
+      new CustomEvent(AUTH_INVALID_EVENT, { detail: { reason: 'token_expired' } }),
+    );
+  }
+}
+
 // Интерфейс для ответа чата
 interface ChatMessageResponse {
   userMessage?: ChatMessage;
@@ -79,14 +89,7 @@ class ApiClient {
   // Обработка 401 ошибки - отправляем событие вместо редиректа
   private handleUnauthorized(): void {
     this.clearToken();
-    
-    if (typeof window !== 'undefined' && !window.location.pathname.includes('/login')) {
-      window.dispatchEvent(
-        new CustomEvent(AUTH_INVALID_EVENT, {
-          detail: { reason: 'token_expired' }
-        })
-      );
-    }
+    emitAuthInvalid();
   }
 
   private getUiLanguage(): Language {

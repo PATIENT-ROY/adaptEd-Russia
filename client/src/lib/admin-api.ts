@@ -1,4 +1,4 @@
-import { API_BASE_URL } from '@/lib/api';
+import { API_BASE_URL, emitAuthInvalid } from '@/lib/api';
 
 function authHeaders(): HeadersInit {
   const token = typeof window !== 'undefined' ? localStorage.getItem('token') : null;
@@ -9,6 +9,7 @@ async function adminFetch<T>(path: string): Promise<T> {
   const res = await fetch(`${API_BASE_URL}/admin${path}`, {
     headers: authHeaders(),
   });
+  if (res.status === 401) emitAuthInvalid();
   if (!res.ok) {
     throw new Error(`Admin API error: ${res.status}`);
   }

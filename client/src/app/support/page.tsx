@@ -80,6 +80,15 @@ export default function SupportPage() {
       guideContextApplied.current = true;
 
       const params = new URLSearchParams(window.location.search);
+      if (params.get("request") === "add-university") {
+        setFormData((current) => ({
+          ...current,
+          category: "GENERAL",
+          subject: t("schedulePage.addUniversity.subject"),
+          message: t("schedulePage.addUniversity.message"),
+        }));
+        return;
+      }
       if (params.get("category") !== "content-error") return;
 
       const rawGuide = params.get("guide") ?? "";
@@ -93,25 +102,46 @@ export default function SupportPage() {
         .replace(/\s+/g, " ")
         .trim();
       const source = rawSource.trim();
-      const safeSource = /^\/guides\/(life|education)\/[a-zA-Z0-9-]+$/.test(source)
+      const articleSource = /^\/guides\/(life|education)\/[a-zA-Z0-9-]+$/.test(source)
         ? source
         : "";
-      if (!guide || !safeSource) return;
+      const sectionSource =
+        source === "/life-guide" || source === "/education-guide" ? source : "";
 
-      const subjectTemplate = t("support.form.guideReport.subject");
-      const message = [
-        t("support.form.guideReport.intro"),
-        `${t("support.form.guideReport.guideLabel")}: ${guide}`,
-        `${t("support.form.guideReport.sourceLabel")}: ${safeSource}`,
-        "",
-        t("support.form.guideReport.detailsPrompt"),
-      ].join("\n");
+      if (guide && articleSource) {
+        const subjectTemplate = t("support.form.guideReport.subject");
+        const message = [
+          t("support.form.guideReport.intro"),
+          `${t("support.form.guideReport.guideLabel")}: ${guide}`,
+          `${t("support.form.guideReport.sourceLabel")}: ${articleSource}`,
+          "",
+          t("support.form.guideReport.detailsPrompt"),
+        ].join("\n");
+
+        setFormData((current) => ({
+          ...current,
+          category: "CONTENT_ERROR",
+          subject: subjectTemplate.replace("{guide}", guide),
+          message,
+        }));
+        return;
+      }
+
+      const message = sectionSource
+        ? [
+            t("support.form.guideReport.intro"),
+            `${t("support.form.guideReport.sourceLabel")}: ${sectionSource}`,
+            "",
+            t("support.form.guideReport.detailsPrompt"),
+          ].join("\n")
+        : undefined;
 
       setFormData((current) => ({
         ...current,
         category: "CONTENT_ERROR",
-        subject: subjectTemplate.replace("{guide}", guide),
-        message,
+        ...(sectionSource
+          ? { subject: t("guides.freshness.reportSubject"), message }
+          : {}),
       }));
     }, 0);
 

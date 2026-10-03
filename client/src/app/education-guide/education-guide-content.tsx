@@ -23,6 +23,7 @@ import { useGuideDeeplink } from "@/hooks/useGuideDeeplink";
 import { educationGuides } from "@/data/education-guides";
 import { HeroBackgroundImage } from "@/components/ui/hero-background-image";
 import { guideInEducationCategory, guideMatchesQuery } from "@/lib/guide-search";
+import { GuideFreshnessNote } from "@/components/guides/guide-freshness-note";
 
 type Category = {
   id: string;
@@ -378,6 +379,7 @@ export function EducationGuideContent() {
             </div>
           )}
         </div>
+        <GuideFreshnessNote section="education" />
       </div>
     </Layout>
   );

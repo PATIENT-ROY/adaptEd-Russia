@@ -1,6 +1,7 @@
 "use client";
 
 import { useState } from "react";
+import Link from "next/link";
 import { Button } from "./button";
 import { Input } from "./input";
 import { Card, CardContent, CardHeader, CardTitle } from "./card";
@@ -152,6 +153,15 @@ export function ScheduleFilter({
               </select>
               <ChevronDown className="pointer-events-none absolute right-3 top-1/2 h-4 w-4 -translate-y-1/2 text-blue-600" />
             </div>
+            <p className="text-sm leading-5 text-slate-600">
+              {t("schedulePage.missingUniversity")}{" "}
+              <Link
+                href="/support?request=add-university"
+                className="font-semibold text-blue-700 underline-offset-2 hover:underline focus-visible:rounded-sm focus-visible:outline-none focus-visible:ring-2 focus-visible:ring-blue-500 focus-visible:ring-offset-2"
+              >
+                {t("schedulePage.missingUniversityCta")}
+              </Link>
+            </p>
           </div>
         </div>
 
