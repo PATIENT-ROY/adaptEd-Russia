@@ -58,7 +58,7 @@ const arrivalPhases: ArrivalPhase[] = [
     steps: [
       { id: "migration-reg", labelKey: "lifeGuide.arrival.steps.migrationReg", guideId: "7" },
       { id: "insurance", labelKey: "lifeGuide.arrival.steps.insurance", guideId: "insurance-dms" },
-      { id: "medical-docs", labelKey: "lifeGuide.arrival.steps.medicalDocs", guideId: "medical-checkup" },
+      { id: "medical-docs", labelKey: "lifeGuide.arrival.steps.medicalDocs", guideId: "student-medical-docs" },
     ],
   },
   {

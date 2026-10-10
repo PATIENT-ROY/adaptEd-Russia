@@ -225,6 +225,13 @@ export const LIFE_GUIDE_COPY: Record<string, Record<Language, GuideCopy>> = {
     { title: "ميزانية الطالب الأجنبي الكاملة", excerpt: "تقديرات السكن والطعام والاتصال والدراسة — أرقام تخطيط لا إعلانات بنوك." },
     { title: "国际学生完整预算", excerpt: "住宿、饮食、话费和学业的大致开销——规划数字，不是银行广告。" },
   ),
+  "student-medical-docs": pack(
+    { title: "Медицинские документы нового студента", excerpt: "Что вуз может попросить до зачисления и какое освидетельствование нужно уже после приезда." },
+    { title: "Medical papers for a new student", excerpt: "What a university may ask before enrollment, and which medical exam is required after you arrive." },
+    { title: "Documents médicaux d’un nouvel étudiant", excerpt: "Ce qu’une université peut demander avant l’inscription, et l’examen obligatoire après l’arrivée." },
+    { title: "الوثائق الطبية للطالب الجديد", excerpt: "ما قد تطلبه الجامعة قبل القبول وأي فحص إلزامي بعد الوصول." },
+    { title: "新生的医疗文件", excerpt: "入学前大学可能要求什么，以及到校后必须做的体检。" },
+  ),
   "gosuslugi-foreign-student": pack(
     { title: "Госуслуги для иностранного студента", excerpt: "Как создать подтверждённую учётную запись и какие услуги реально нужны студенту." },
     { title: "Gosuslugi for international students", excerpt: "How to create a verified account and which services students actually need." },
@@ -346,6 +353,13 @@ export const EDUCATION_GUIDE_COPY: Record<string, Record<Language, GuideCopy>> =
     { title: "Réintégration pour continuer les études", excerpt: "Se réinscrire après exclusion : délais, documents et visa." },
     { title: "إعادة القيد لمواصلة الدراسة", excerpt: "كيف تعود بعد الفصل: المهل والأوراق وماذا يحدث للتأشيرة." },
     { title: "退学后复学", excerpt: "开除后如何恢复学籍：期限、材料以及对签证的影响。" },
+  ),
+  "prep-faculty": pack(
+    { title: "Подготовительный факультет", excerpt: "Год русского и профиля перед основной программой: квота, договор, экзамены и виза." },
+    { title: "Preparatory faculty", excerpt: "A year of Russian and profile subjects before the degree: quota, contract, exams, and visa." },
+    { title: "Faculté préparatoire", excerpt: "Une année de russe et de matières de profil avant le cursus : quota, contrat, examens, visa." },
+    { title: "الكلية التحضيرية", excerpt: "سنة روسية ومواد تخصص قبل البرنامج الأساسي: الحصة والعقد والامتحانات والتأشيرة." },
+    { title: "预科", excerpt: "正式专业之前的一年俄语和专业课：配额、合同、考试和签证。" },
   ),
   "edu-apply-university": pack(
     { title: "Как подать документы в российский вуз", excerpt: "Квота, контракт и список документов для поступления — без лишнего канцелярита." },
