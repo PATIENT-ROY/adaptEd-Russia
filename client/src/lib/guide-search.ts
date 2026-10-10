@@ -4,7 +4,7 @@ const LIFE_CATEGORY_IDS: Record<string, readonly string[]> = {
   documents: ["2", "3", "migration-card", "7", "rvpo", "rvp", "vnzh"],
   housing: ["1", "6"],
   transport: ["5"],
-  health: ["4", "insurance-dms", "medical-checkup", "9", "10", "11", "12", "13", "14"],
+  health: ["4", "insurance-dms", "medical-checkup", "student-medical-docs", "9", "10", "11", "12", "13", "14"],
   services: [
     "sim-card",
     "8",
