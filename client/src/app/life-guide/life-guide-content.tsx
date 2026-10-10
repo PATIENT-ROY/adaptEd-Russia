@@ -160,11 +160,15 @@ export function LifeGuideContent() {
   }, [searchQuery, selectedCategory]);
 
   const filteredGuides = useMemo(() => {
-    return lifeGuides.filter((guide) => {
+    const list = lifeGuides.filter((guide) => {
       if (!guide.isPublished) return false;
       if (searchQuery.trim() && !guideMatchesQuery(guide, searchQuery)) return false;
       return guideInLifeCategory(guide, selectedCategory);
     });
+    const lead = new Map([["student-medical-docs", 0]]);
+    return [...list].sort(
+      (a, b) => (lead.get(a.id) ?? 1) - (lead.get(b.id) ?? 1),
+    );
   }, [searchQuery, selectedCategory]);
 
   return (

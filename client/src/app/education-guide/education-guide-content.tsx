@@ -136,11 +136,15 @@ export function EducationGuideContent() {
   }, [selectedCategory]);
 
   const filteredGuides = useMemo(() => {
-    return articleGuides.filter((guide) => {
+    const list = articleGuides.filter((guide) => {
       if (!guide.isPublished) return false;
       if (searchQuery.trim() && !guideMatchesQuery(guide, searchQuery)) return false;
       return guideInEducationCategory(guide, safeSelectedCategory);
     });
+    const lead = new Map([["prep-faculty", 0]]);
+    return [...list].sort(
+      (a, b) => (lead.get(a.id) ?? 1) - (lead.get(b.id) ?? 1),
+    );
   }, [searchQuery, safeSelectedCategory]);
 
   return (
