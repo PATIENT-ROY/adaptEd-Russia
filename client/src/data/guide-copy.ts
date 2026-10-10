@@ -354,6 +354,13 @@ export const EDUCATION_GUIDE_COPY: Record<string, Record<Language, GuideCopy>> =
     { title: "إعادة القيد لمواصلة الدراسة", excerpt: "كيف تعود بعد الفصل: المهل والأوراق وماذا يحدث للتأشيرة." },
     { title: "退学后复学", excerpt: "开除后如何恢复学籍：期限、材料以及对签证的影响。" },
   ),
+  "prep-faculty": pack(
+    { title: "Подготовительный факультет", excerpt: "Год русского и профиля перед основной программой: квота, договор, экзамены и виза." },
+    { title: "Preparatory faculty", excerpt: "A year of Russian and profile subjects before the degree: quota, contract, exams, and visa." },
+    { title: "Faculté préparatoire", excerpt: "Une année de russe et de matières de profil avant le cursus : quota, contrat, examens, visa." },
+    { title: "الكلية التحضيرية", excerpt: "سنة روسية ومواد تخصص قبل البرنامج الأساسي: الحصة والعقد والامتحانات والتأشيرة." },
+    { title: "预科", excerpt: "正式专业之前的一年俄语和专业课：配额、合同、考试和签证。" },
+  ),
   "edu-apply-university": pack(
     { title: "Как подать документы в российский вуз", excerpt: "Квота, контракт и список документов для поступления — без лишнего канцелярита." },
     { title: "How to apply to a Russian university", excerpt: "Quota vs paid track and the document list for admission, without the jargon." },
