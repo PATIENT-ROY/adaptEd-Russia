@@ -1,10 +1,15 @@
-"use client";
-
+import type { Metadata } from "next";
 import Link from "next/link";
 import { Button } from "@/components/ui/button";
 import { BackButton } from "@/components/ui/back-button";
 import { Search, Home } from "lucide-react";
 import { Layout } from "@/components/layout/layout";
+
+// Перекрывает robots корневого layout. Next дополнительно вставляет свой
+// `<meta name="robots" content="noindex">` на HTTP 404 — оба тега без index.
+export const metadata: Metadata = {
+  robots: { index: false, follow: false },
+};
 
 export default function NotFound() {
   return (
