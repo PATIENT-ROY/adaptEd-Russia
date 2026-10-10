@@ -225,6 +225,13 @@ export const LIFE_GUIDE_COPY: Record<string, Record<Language, GuideCopy>> = {
     { title: "ميزانية الطالب الأجنبي الكاملة", excerpt: "تقديرات السكن والطعام والاتصال والدراسة — أرقام تخطيط لا إعلانات بنوك." },
     { title: "国际学生完整预算", excerpt: "住宿、饮食、话费和学业的大致开销——规划数字，不是银行广告。" },
   ),
+  "student-medical-docs": pack(
+    { title: "Медицинские документы нового студента", excerpt: "Что вуз может попросить до зачисления и какое освидетельствование нужно уже после приезда." },
+    { title: "Medical papers for a new student", excerpt: "What a university may ask before enrollment, and which medical exam is required after you arrive." },
+    { title: "Documents médicaux d’un nouvel étudiant", excerpt: "Ce qu’une université peut demander avant l’inscription, et l’examen obligatoire après l’arrivée." },
+    { title: "الوثائق الطبية للطالب الجديد", excerpt: "ما قد تطلبه الجامعة قبل القبول وأي فحص إلزامي بعد الوصول." },
+    { title: "新生的医疗文件", excerpt: "入学前大学可能要求什么，以及到校后必须做的体检。" },
+  ),
   "gosuslugi-foreign-student": pack(
     { title: "Госуслуги для иностранного студента", excerpt: "Как создать подтверждённую учётную запись и какие услуги реально нужны студенту." },
     { title: "Gosuslugi for international students", excerpt: "How to create a verified account and which services students actually need." },
