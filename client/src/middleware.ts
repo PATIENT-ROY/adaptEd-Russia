@@ -25,9 +25,9 @@ export function middleware(request: NextRequest) {
     response.headers.set('Cache-Control', 'public, max-age=31536000, immutable');
   }
 
-  // Кэширование изображений
-  if (request.nextUrl.pathname.match(/\.(png|jpg|jpeg|gif|webp|svg)$/)) {
-    response.headers.set('Cache-Control', 'public, max-age=604800, must-revalidate');
+  // Кэширование изображений. Имена стабильные, смена файла — через ?v= или новый путь.
+  if (request.nextUrl.pathname.match(/\.(png|jpg|jpeg|gif|webp|avif|svg|ico)$/)) {
+    response.headers.set('Cache-Control', 'public, max-age=2592000');
   }
 
   // Отключение X-Frame-Options для встраиваемых элементов

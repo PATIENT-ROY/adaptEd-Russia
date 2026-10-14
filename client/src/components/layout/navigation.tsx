@@ -89,7 +89,6 @@ export function Navigation({
                   fill
                   className="object-contain"
                   sizes="(max-width: 640px) 32px, (max-width: 1024px) 36px, 44px"
-                  priority
                 />
               </div>
               <div className="flex flex-col sm:flex-row sm:items-center sm:space-x-1">

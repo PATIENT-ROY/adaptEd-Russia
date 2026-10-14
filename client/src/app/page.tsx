@@ -455,6 +455,8 @@ export default function HomePage() {
         <div className="relative mt-3 mb-5 overflow-hidden rounded-2xl bg-slate-200 pt-8 pb-14 sm:mt-6 sm:mb-8 sm:rounded-3xl sm:pt-14 sm:pb-20 md:pt-20 md:pb-24">
           <HeroBackgroundImage
             src="/image-banner/image-Home-page.png"
+            sizes="(max-width: 1280px) calc(100vw - 2rem), 1216px"
+            quality={60}
             imageClassName="object-cover object-center scale-105 blur-[3px]"
           />
           <div className="absolute inset-0 bg-black/35" aria-hidden />
