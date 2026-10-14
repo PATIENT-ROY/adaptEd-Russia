@@ -12,6 +12,8 @@ const nextConfig: NextConfig = {
   outputFileTracingRoot: path.join(process.cwd(), ".."),
   images: {
     unoptimized: process.env.NETLIFY ? true : false,
+    // /_next/image наследует TTL исходника. 30 дней — порог Lighthouse cache insight.
+    minimumCacheTTL: 60 * 60 * 24 * 30,
     formats: ['image/avif', 'image/webp'],
     localPatterns: [
       {
