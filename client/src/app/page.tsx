@@ -1262,22 +1262,20 @@ export default function HomePage() {
                 </div>
 
                 <div className="mt-4 flex flex-col gap-4 sm:mt-5">
-                  <div className="flex items-center justify-between gap-2 rounded-2xl bg-white px-3 py-2 sm:gap-4 sm:px-6 sm:py-3.5">
-                    <p className="flex min-w-0 shrink items-center gap-1 text-[11px] leading-none text-slate-400 sm:gap-1.5 sm:text-sm">
-                      <span className="truncate">
-                        {t("home.section.testimonials.madeOn")}
-                      </span>
+                  <div className="flex flex-col items-center gap-1 rounded-2xl bg-white px-3 py-2.5 sm:flex-row sm:justify-between sm:gap-4 sm:px-6 sm:py-3.5">
+                    <p className="flex items-center gap-1.5 text-xs leading-none text-slate-400 sm:text-sm">
+                      <span>{t("home.section.testimonials.madeOn")}</span>
                       <Star
-                        className="h-3 w-3 shrink-0 fill-current text-slate-400 sm:h-3.5 sm:w-3.5"
+                        className="h-3.5 w-3.5 shrink-0 fill-current text-slate-400"
                         aria-hidden
                       />
-                      <span className="shrink-0 font-semibold text-slate-500">
+                      <span className="font-semibold text-slate-500">
                         AdaptEd
                       </span>
                     </p>
                     {reviews.length > 1 && (
                       <div
-                        className="-mr-1 flex shrink-0 items-center sm:mr-0"
+                        className="flex max-w-full items-center justify-center overflow-x-auto [-ms-overflow-style:none] [scrollbar-width:none] [&::-webkit-scrollbar]:hidden"
                         role="tablist"
                         aria-label={t("home.section.testimonials.title")}
                       >
@@ -1293,7 +1291,7 @@ export default function HomePage() {
                                 "home.section.testimonials.goTo",
                               ).replace("{n}", String(index + 1))}
                               onClick={() => scrollToReview(index)}
-                              className="flex h-11 w-5 items-center justify-center focus-visible:outline-none focus-visible:ring-2 focus-visible:ring-blue-500 focus-visible:ring-offset-2 sm:h-8 sm:w-7"
+                              className="flex h-11 w-6 shrink-0 items-center justify-center focus-visible:outline-none focus-visible:ring-2 focus-visible:ring-blue-500 focus-visible:ring-offset-2 sm:h-8 sm:w-7"
                             >
                               <span
                                 className={`h-2 w-2 rounded-full transition-colors ${
