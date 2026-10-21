@@ -1,0 +1,4 @@
+interface:
+  display_name: "AdaptEd Russia SEO"
+  short_description: "SEO-аудит AdaptEd Russia с доказательствами"
+  default_prompt: "Используй $adaptedrussia-seo для аудита AdaptEd Russia с приоритетами и доказательствами, без изменения кода и deployment."
