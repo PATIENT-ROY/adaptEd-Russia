@@ -7,6 +7,11 @@ import { findEducationGuideByParam, guideSlug } from "@/lib/guide-slugs";
 
 type Props = { params: Promise<{ id: string }> };
 
+// Слаги фиксируются данными репозитория на сборке. Неизвестный параметр не
+// рендерится on-demand: этот путь отдавал HTTP 200 с пустым телом.
+// Старые id уходят в 308 через redirects в next.config до страницы.
+export const dynamicParams = false;
+
 export function generateStaticParams() {
   return educationGuides
     .filter((guide) => guide.isPublished)
@@ -15,13 +20,14 @@ export function generateStaticParams() {
 
 export async function generateMetadata({ params }: Props): Promise<Metadata> {
   const guide = findEducationGuideByParam((await params).id);
-  if (!guide) return {};
+  if (!guide) notFound();
   const path = `/guides/education/${guideSlug(guide)}`;
   return {
     title: guide.title,
     description: guideDescription(guide),
     keywords: guide.tags,
     alternates: { canonical: path },
+    robots: { index: true, follow: true },
     openGraph: {
       type: "article",
       url: `${SITE_URL}${path}`,

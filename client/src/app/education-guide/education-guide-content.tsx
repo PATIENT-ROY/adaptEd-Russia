@@ -23,6 +23,7 @@ import { useGuideDeeplink } from "@/hooks/useGuideDeeplink";
 import { educationGuides } from "@/data/education-guides";
 import { HeroBackgroundImage } from "@/components/ui/hero-background-image";
 import { guideInEducationCategory, guideMatchesQuery } from "@/lib/guide-search";
+import { guideSlug } from "@/lib/guide-slugs";
 import { GuideFreshnessNote } from "@/components/guides/guide-freshness-note";
 
 type Category = {
@@ -50,6 +51,14 @@ type ToolCard = {
 
 const articleGuides = educationGuides.filter(
   (guide) => guide.id !== "slang-dictionary",
+);
+
+// Карточка сленга в сетке не показывается: GuideCard увёл бы на
+// /education/student-slang. Отдельная ссылка оставляет URL гайда в HTML.
+const publishedOutsideCatalog = educationGuides.filter(
+  (guide) =>
+    guide.isPublished &&
+    !articleGuides.some((item) => item.id === guide.id),
 );
 
 const ENABLED_CATEGORY_IDS = new Set([
@@ -123,7 +132,6 @@ export function EducationGuideContent() {
     ? selectedCategory
     : "all";
 
-  // Сброс пагинации при смене фильтров (улучшает Performance — меньше DOM при первой отрисовке)
   useEffect(() => {
     setGuidesVisibleCount(12);
   }, [searchQuery, selectedCategory]);
@@ -346,16 +354,31 @@ export function EducationGuideContent() {
               </Button>
             )}
           </div>
+          {publishedOutsideCatalog.length > 0 ? (
+            <nav aria-label={t("educationGuide.header.title")} className="sr-only">
+              {publishedOutsideCatalog.map((guide) => (
+                <a key={guide.id} href={`/guides/education/${guideSlug(guide)}`}>
+                  {guide.title}
+                </a>
+              ))}
+            </nav>
+          ) : null}
           {filteredGuides.length > 0 ? (
             <>
               <div className="grid grid-cols-1 sm:grid-cols-2 lg:grid-cols-3 gap-4 sm:gap-6 transition-all duration-500 ease-out">
-                {filteredGuides.slice(0, guidesVisibleCount).map((guide) => (
-                  <GuideCard
+                {filteredGuides.map((guide, index) => (
+                  <div
                     key={`guide-${guide.id}`}
-                    guide={guide}
-                    isRead={isRead(guide.id)}
-                    onRead={handleMarkRead}
-                  />
+                    className={
+                      index >= guidesVisibleCount ? "hidden" : "contents"
+                    }
+                  >
+                    <GuideCard
+                      guide={guide}
+                      isRead={isRead(guide.id)}
+                      onRead={handleMarkRead}
+                    />
+                  </div>
                 ))}
               </div>
               {filteredGuides.length > guidesVisibleCount && (

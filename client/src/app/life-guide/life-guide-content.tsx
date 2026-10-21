@@ -438,13 +438,19 @@ export function LifeGuideContent() {
           {filteredGuides.length > 0 ? (
             <>
               <div className="grid grid-cols-1 sm:grid-cols-2 lg:grid-cols-3 gap-4 sm:gap-6">
-                {filteredGuides.slice(0, guidesVisibleCount).map((guide) => (
-                  <GuideCard
+                {filteredGuides.map((guide, index) => (
+                  <div
                     key={`guide-${guide.id}`}
-                    guide={guide}
-                    isRead={isRead(guide.id)}
-                    onRead={handleMarkRead}
-                  />
+                    className={
+                      index >= guidesVisibleCount ? "hidden" : "contents"
+                    }
+                  >
+                    <GuideCard
+                      guide={guide}
+                      isRead={isRead(guide.id)}
+                      onRead={handleMarkRead}
+                    />
+                  </div>
                 ))}
               </div>
               {filteredGuides.length > guidesVisibleCount && (
