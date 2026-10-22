@@ -21,8 +21,10 @@ import { useTranslation } from "@/hooks/useTranslation";
 import { useGuideProgress } from "@/hooks/useGuideProgress";
 import { useGuideDeeplink } from "@/hooks/useGuideDeeplink";
 import { educationGuides } from "@/data/education-guides";
+import { lifeGuides } from "@/data/life-guides";
+import { GuideCategoryEmpty, OtherGuideResults } from "@/components/guides/guide-search-feedback";
 import { HeroBackgroundImage } from "@/components/ui/hero-background-image";
-import { guideInEducationCategory, guideMatchesQuery } from "@/lib/guide-search";
+import { guideInEducationCategory, searchGuides } from "@/lib/guide-search";
 import { guideSlug } from "@/lib/guide-slugs";
 import { GuideFreshnessNote } from "@/components/guides/guide-freshness-note";
 
@@ -143,17 +145,15 @@ export function EducationGuideContent() {
     }
   }, [selectedCategory]);
 
-  const filteredGuides = useMemo(() => {
-    const list = articleGuides.filter((guide) => {
-      if (!guide.isPublished) return false;
-      if (searchQuery.trim() && !guideMatchesQuery(guide, searchQuery)) return false;
-      return guideInEducationCategory(guide, safeSelectedCategory);
-    });
-    const lead = new Map([["prep-faculty", 0]]);
-    return [...list].sort(
-      (a, b) => (lead.get(a.id) ?? 1) - (lead.get(b.id) ?? 1),
-    );
-  }, [searchQuery, safeSelectedCategory]);
+  const matchingGuides = useMemo(() => {
+    const list = searchGuides(articleGuides, searchQuery);
+    return searchQuery.trim() ? list : [...list].sort((a, b) =>
+      Number(b.id === "prep-faculty") - Number(a.id === "prep-faculty"));
+  }, [searchQuery]);
+  const filteredGuides = useMemo(() => matchingGuides.filter(guide =>
+    guideInEducationCategory(guide, safeSelectedCategory)), [matchingGuides, safeSelectedCategory]);
+  const otherGuides = useMemo(() => searchQuery.trim()
+    ? searchGuides(lifeGuides, searchQuery) : [], [searchQuery]);
 
   return (
     <Layout>
@@ -303,6 +303,7 @@ export function EducationGuideContent() {
               <Search className="absolute left-3 top-1/2 transform -translate-y-1/2 h-4 w-4 text-gray-400 transition-colors duration-300" />
               <input
                 id="education-guide-search-input"
+                aria-label={t("educationGuide.search.placeholder")}
                 type="text"
                 placeholder={t("educationGuide.search.placeholder")}
                 value={searchQuery}
@@ -394,6 +395,8 @@ export function EducationGuideContent() {
                 </div>
               )}
             </>
+          ) : matchingGuides.length > 0 ? (
+            <GuideCategoryEmpty onClear={() => setSelectedCategory("all")} />
           ) : (
             <div className="text-center py-12 animate-fade-in">
               <BookOpen className="h-12 w-12 text-gray-400 mx-auto mb-4 transition-all duration-300" />
@@ -406,6 +409,7 @@ export function EducationGuideContent() {
             </div>
           )}
         </div>
+        <OtherGuideResults guides={otherGuides} current="education" hasCurrent={matchingGuides.length > 0} />
         <GuideFreshnessNote section="education" />
       </div>
     </Layout>

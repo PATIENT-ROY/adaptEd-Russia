@@ -1,0 +1,214 @@
+--- a/client/src/app/forgot-password/page.tsx
++++ b/client/src/app/forgot-password/page.tsx
+@@ -1,6 +1,7 @@
+ "use client";
+ 
+ import { useState } from "react";
++import { API_BASE_URL } from "@/lib/api";
+ 
+ import Link from "next/link";
+ import { Button } from "@/components/ui/button";
+@@ -31,19 +32,31 @@
+   const [isLoading, setIsLoading] = useState(false);
+   const [isSubmitted, setIsSubmitted] = useState(false);
+ 
+-  const handleSubmit = async (e: React.FormEvent) => {
+-    e.preventDefault();
++  const requestReset = async () => {
++    if (isLoading) return;
+     setError("");
+     setIsLoading(true);
+ 
+     try {
+-      await new Promise((resolve) => setTimeout(resolve, 1000));
++      const response = await fetch(`${API_BASE_URL}/auth/forgot-password`, {
++        method: "POST",
++        headers: { "Content-Type": "application/json" },
++        body: JSON.stringify({ email: email.trim() }),
++      });
++      const result = await response.json();
++      if (!response.ok || !result?.success) throw new Error("Password reset request failed");
+       setIsSubmitted(true);
+     } catch {
++      setIsSubmitted(false);
+       setError(t("forgotPassword.error.sendFailed"));
+     } finally {
+       setIsLoading(false);
+     }
++  };
++
++  const handleSubmit = async (e: React.FormEvent) => {
++    e.preventDefault();
++    await requestReset();
+   };
+ 
+   if (isSubmitted) {
+@@ -84,7 +97,8 @@
+ 
+                 <div className="space-y-3">
+                   <Button
+-                    onClick={() => setIsSubmitted(false)}
++                    onClick={requestReset}
++                    disabled={isLoading}
+                     className="w-full h-12 bg-gradient-to-r from-blue-500 to-purple-600 hover:from-blue-600 hover:to-purple-700 text-white shadow-lg hover:shadow-xl transform sm:hover:scale-105 transition-all duration-300"
+                   >
+                     {t("forgotPassword.success.resend")}
+--- a/server/src/api/auth.ts
++++ b/server/src/api/auth.ts
+@@ -9,7 +9,7 @@
+   authMiddleware,
+   passwordFitsBcryptLimit,
+ } from '../lib/auth';
+-import { sendInviteEmail } from '../lib/email';
++import { sendInviteEmail, sendPasswordResetEmail } from '../lib/email';
+ import { RegisterRequest, LoginRequest, AuthResponse, ApiResponse } from '../types/index.js';
+ import crypto from 'crypto';
+ 
+@@ -252,6 +252,63 @@
+   }
+ });
+ 
++// Public response deliberately does not depend on account existence or mail delivery.
++router.post('/forgot-password', async (req: Request, res: Response) => {
++  const parsed = z.object({ email: z.string().trim().email().max(254) }).safeParse(req.body);
++  if (!parsed.success) {
++    return res.status(400).json({ success: false, error: 'Неверный формат email' });
++  }
++  const requestId = crypto.randomUUID();
++  let stage = 'lookup';
++  let createdTokenId: string | undefined;
++  try {
++    const user = await prisma.user.findUnique({
++      where: { email: parsed.data.email.toLowerCase() },
++      select: { id: true, email: true },
++    });
++    if (user) {
++      stage = 'configuration';
++      const configuredUrl = process.env.APP_BASE_URL || process.env.CLIENT_URL;
++      if (!configuredUrl && process.env.NODE_ENV === 'production') throw new Error('Missing app URL');
++      const base = new URL(configuredUrl || 'http://localhost:3000');
++      if (base.username || base.password || base.search || base.hash || base.pathname !== '/' ||
++          !['http:', 'https:'].includes(base.protocol) ||
++          (process.env.NODE_ENV === 'production' && (base.protocol !== 'https:' || ['localhost', '127.0.0.1', '[::1]'].includes(base.hostname)))) {
++        throw new Error('Invalid app URL');
++      }
++      const { rawToken, tokenHash } = createPasswordSetupToken();
++      const expiresAt = new Date(Date.now() + 60 * 60 * 1000);
++      const link = new URL('/set-password', base);
++      link.searchParams.set('token', rawToken);
++      stage = 'token';
++      const token = await prisma.passwordSetupToken.create({ data: { userId: user.id, tokenHash, expiresAt } });
++      createdTokenId = token.id;
++      stage = 'email';
++      const result = await sendPasswordResetEmail({ to: user.email, resetLink: link.toString() });
++      // Never log provider text: it can echo recipient addresses or the token-bearing URL.
++      if (result.sent) {
++        console.info('password_reset.email_accepted', { requestId, provider: result.provider, attempts: result.attempts });
++      } else {
++        console.error('password_reset.email_failed', {
++          requestId, provider: result.provider, attempts: result.attempts,
++          status: result.status, reason: result.provider === 'none' ? 'missing_configuration' : 'provider_failure',
++        });
++        await prisma.passwordSetupToken.updateMany({ where: { id: token.id, usedAt: null }, data: { usedAt: new Date() } });
++      }
++    }
++  } catch {
++    console.error('password_reset.failed', { requestId, stage });
++    if (createdTokenId) {
++      try {
++        await prisma.passwordSetupToken.updateMany({ where: { id: createdTokenId, usedAt: null }, data: { usedAt: new Date() } });
++      } catch {
++        console.error('password_reset.token_cleanup_failed', { requestId });
++      }
++    }
++  }
++  return res.json({ success: true, message: 'Если аккаунт существует, инструкция по восстановлению будет отправлена на почту.' });
++});
++
+ // Проверка токена установки пароля
+ router.get('/set-password/verify', async (req: Request, res: Response) => {
+   const token = String(req.query.token || '');
+@@ -272,7 +329,7 @@
+     }
+   });
+ 
+-  if (!setupToken || setupToken.usedAt || setupToken.expiresAt < new Date()) {
++  if (!setupToken || setupToken.usedAt || setupToken.expiresAt <= new Date()) {
+     return res.status(400).json({
+       success: false,
+       error: 'Ссылка недействительна или истекла'
+--- a/server/src/index.ts
++++ b/server/src/index.ts
+@@ -91,6 +91,17 @@
+   legacyHeaders: false,
+ });
+ 
++// Separate store: password recovery must not consume login attempts.
++const passwordRecoveryLimiter = rateLimit({
++  windowMs: 15 * 60 * 1000,
++  max: 10,
++  handler: (_req, res) => {
++    res.status(429).json({ error: 'AUTH_RATE_LIMITED' });
++  },
++  standardHeaders: true,
++  legacyHeaders: false,
++});
++
+ const aiLimiter = rateLimit({
+   windowMs: 60 * 1000,
+   max: 10,
+@@ -126,6 +137,7 @@
+   // Строгий лимит для аутентификации
+   app.use('/api/auth/login', authLimiter);
+   app.use('/api/auth/register', authLimiter);
++  app.use('/api/auth/forgot-password', passwordRecoveryLimiter);
+   
+   // Лимит для AI запросов
+   app.use('/api/chat', aiLimiter);
+--- a/server/src/lib/email.ts
++++ b/server/src/lib/email.ts
+@@ -1,3 +1,5 @@
++import crypto from 'node:crypto';
++
+ interface SendInviteEmailParams {
+   to: string;
+   recipientName: string;
+@@ -16,6 +18,7 @@
+   sent: boolean;
+   provider: 'resend' | 'none';
+   attempts?: number;
++  status?: number;
+   error?: string;
+ }
+ 
+@@ -125,6 +128,7 @@
+         provider: 'resend',
+         attempts,
+         error: lastError,
++        status: response.status,
+       };
+     } catch (error) {
+       clearTimeout(timeoutId);
+@@ -248,3 +252,22 @@
+     idempotencyKey: `reminder:${params.reminderId}:${params.dueDate.toISOString()}`,
+   });
+ }
++
++/** Resend acceptance is not confirmation of inbox delivery. */
++export async function sendPasswordResetEmail(params: {
++  to: string;
++  resetLink: string;
++}): Promise<SendInviteEmailResult> {
++  const link = escapeHtml(params.resetLink);
++  return sendEmail({
++    to: params.to,
++    subject: 'Восстановление пароля — AdaptEd Russia',
++    html: `<div style="font-family:Arial,sans-serif;max-width:560px;margin:0 auto;padding:24px;color:#1f2937">
++      <h2>Восстановление пароля AdaptEd Russia</h2>
++      <p>Чтобы установить новый пароль, откройте <a href="${link}">ссылку восстановления</a>.</p>
++      <p>Ссылка действует один час и может быть использована один раз.</p>
++      <p>Если вы не запрашивали восстановление, проигнорируйте это письмо. Ваш пароль не изменён.</p>
++    </div>`,
++    idempotencyKey: `password-reset:${crypto.createHash('sha256').update(params.resetLink).digest('hex')}`,
++  });
++}

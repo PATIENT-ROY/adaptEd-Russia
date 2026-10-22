@@ -1,0 +1,11 @@
+# Password recovery — production deployed
+
+## Production-релиз завершён — 23 октября 2026
+
+- Развёрнуты только 4 runtime source-файла password recovery. Backend: только auth.js, email.js и index.js поверх сохранённого dist. Frontend собран из текущих production-исходников с единственным изменением forgot-password; посторонние локальные изменения не включены. Зависимости runtime и schema не менялись.
+- Создан Sending-only Resend key для verified adaptedrussia.ru. Mail config сохранена в backend envdir и фактически используемом server/.env; после reload успешный вызов Resend подтвердил runtime-настройку. Значения секретов не выводились.
+- Первая проверка API: generic HTTP200, но server event missing_configuration/provider none/attempts0 — реального письма не было. После исправления загрузки конфигурации второй API-вызов дал email_accepted/provider resend/attempts1. В Resend Emails проверена ровно одна запись владельцу, subject «Восстановление пароля — AdaptEd Russia», статус Delivered. Это подтверждение принятия почтовым сервером получателя; попадание во Входящие и открытие ссылки не проверялись. Дополнительных писем не отправлять.
+- Backup: /home/c502756/backups/password-recovery-20261022T202758Z/database.before.dump и runtime.before.tgz (listing проверены, mode600, вне webroot). Предыдущая frontend .next также сохранена как frontend.next.before. Миграции не требовались, данные не удалялись.
+- После релиза: главная, forgot-password, все запрошенные JS-ресурсы и API /health HTTP200; опубликованный JS содержит реальный recovery POST, общий chunk содержит production API URL. Невалидный email HTTP400.
+- Локальные проверки до публикации: 10 mocked HTTP-тестов recovery, 2 PG-сценария recovery, 5 существующих PG auth-тестов, 4 UI desktop/mobile теста; сборки/typecheck/lint прошли (подробности выше). Production UI формы с повторной отправкой не нажимался, чтобы не создавать лишние письма; смена пароля/переход по реальному токену оставлены владельцу.
+- Откат не потребовался. Для отката кода восстановить source/dist/.next из runtime.before.tgz и выполнить штатный touch reload нужного сайта; при обычном откате кода не восстанавливать БД поверх новых данных. Mail .env до изменения есть в архиве, новые envdir-файлы учитывать отдельно.

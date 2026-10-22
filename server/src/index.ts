@@ -91,6 +91,17 @@ const authLimiter = rateLimit({
   legacyHeaders: false,
 });
 
+// Separate store: password recovery must not consume login attempts.
+const passwordRecoveryLimiter = rateLimit({
+  windowMs: 15 * 60 * 1000,
+  max: 10,
+  handler: (_req, res) => {
+    res.status(429).json({ error: 'AUTH_RATE_LIMITED' });
+  },
+  standardHeaders: true,
+  legacyHeaders: false,
+});
+
 const aiLimiter = rateLimit({
   windowMs: 60 * 1000,
   max: 10,
@@ -126,6 +137,7 @@ if (ENABLE_RATE_LIMIT) {
   // Строгий лимит для аутентификации
   app.use('/api/auth/login', authLimiter);
   app.use('/api/auth/register', authLimiter);
+  app.use('/api/auth/forgot-password', passwordRecoveryLimiter);
   
   // Лимит для AI запросов
   app.use('/api/chat', aiLimiter);

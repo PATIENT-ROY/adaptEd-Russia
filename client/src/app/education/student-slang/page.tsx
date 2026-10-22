@@ -96,17 +96,23 @@ export default function StudentSlangPage() {
           </div>
 
           <Card className="mb-8">
-            <CardContent className="pt-6">
+            <CardContent className="p-4 sm:p-6">
               <div className="space-y-4">
-                <div className="relative">
-                  <Search className="absolute left-3 top-1/2 transform -translate-y-1/2 h-5 w-5 text-gray-400" />
-                  <Input
-                    type="text"
-                    placeholder={t("studentSlang.searchPlaceholder")}
-                    value={searchTerm}
-                    onChange={(e) => setSearchTerm(e.target.value)}
-                    className="pl-10"
-                  />
+                <div>
+                  <label htmlFor="student-slang-search" className="sr-only">
+                    {t("studentSlang.searchPlaceholder")}
+                  </label>
+                  <div className="relative">
+                    <Search className="absolute left-3 top-1/2 transform -translate-y-1/2 h-5 w-5 text-gray-400 pointer-events-none" aria-hidden="true" />
+                    <Input
+                      id="student-slang-search"
+                      type="search"
+                      placeholder={t("studentSlang.searchPlaceholder")}
+                      value={searchTerm}
+                      onChange={(e) => setSearchTerm(e.target.value)}
+                      className="pl-10"
+                    />
+                  </div>
                 </div>
 
                 <div className="flex flex-wrap gap-2">
@@ -114,7 +120,9 @@ export default function StudentSlangPage() {
                     <button
                       key={category.value}
                       onClick={() => setSelectedCategory(category.value)}
-                      className={`px-4 py-2 rounded-lg text-sm font-medium transition-all ${
+                      type="button"
+                      aria-pressed={selectedCategory === category.value}
+                      className={`min-h-11 px-4 py-2 rounded-lg text-sm font-medium transition-all ${
                         selectedCategory === category.value
                           ? "bg-blue-600 text-white"
                           : "bg-gray-100 text-gray-700 hover:bg-gray-200"

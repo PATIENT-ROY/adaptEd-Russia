@@ -21,9 +21,11 @@ import { useTranslation } from "@/hooks/useTranslation";
 import { useGuideProgress } from "@/hooks/useGuideProgress";
 import { useGuideDeeplink } from "@/hooks/useGuideDeeplink";
 import { lifeGuides } from "@/data/life-guides";
+import { educationGuides } from "@/data/education-guides";
+import { GuideCategoryEmpty, OtherGuideResults } from "@/components/guides/guide-search-feedback";
 import { HeroBackgroundImage } from "@/components/ui/hero-background-image";
 import { lifeGuidePath } from "@/lib/guide-routes";
-import { guideInLifeCategory, guideMatchesQuery } from "@/lib/guide-search";
+import { guideInLifeCategory, searchGuides } from "@/lib/guide-search";
 import { arrivalStepGuide } from "@/lib/life-guide-arrival";
 import { GuideFreshnessNote } from "@/components/guides/guide-freshness-note";
 
@@ -159,17 +161,15 @@ export function LifeGuideContent() {
     setGuidesVisibleCount(12);
   }, [searchQuery, selectedCategory]);
 
-  const filteredGuides = useMemo(() => {
-    const list = lifeGuides.filter((guide) => {
-      if (!guide.isPublished) return false;
-      if (searchQuery.trim() && !guideMatchesQuery(guide, searchQuery)) return false;
-      return guideInLifeCategory(guide, selectedCategory);
-    });
-    const lead = new Map([["student-medical-docs", 0]]);
-    return [...list].sort(
-      (a, b) => (lead.get(a.id) ?? 1) - (lead.get(b.id) ?? 1),
-    );
-  }, [searchQuery, selectedCategory]);
+  const matchingGuides = useMemo(() => {
+    const list = searchGuides(lifeGuides, searchQuery);
+    return searchQuery.trim() ? list : [...list].sort((a, b) =>
+      Number(b.id === "student-medical-docs") - Number(a.id === "student-medical-docs"));
+  }, [searchQuery]);
+  const filteredGuides = useMemo(() => matchingGuides.filter(guide =>
+    guideInLifeCategory(guide, selectedCategory)), [matchingGuides, selectedCategory]);
+  const otherGuides = useMemo(() => searchQuery.trim()
+    ? searchGuides(educationGuides, searchQuery) : [], [searchQuery]);
 
   return (
     <Layout>
@@ -383,6 +383,7 @@ export function LifeGuideContent() {
               <Search className="absolute left-3.5 top-1/2 -translate-y-1/2 h-4 w-4 text-slate-400" />
               <input
                 id="life-guide-search-input"
+                aria-label={t("lifeGuide.search.placeholder")}
                 type="text"
                 placeholder={t("lifeGuide.search.placeholder")}
                 value={searchQuery}
@@ -466,6 +467,8 @@ export function LifeGuideContent() {
                 </div>
               )}
             </>
+          ) : matchingGuides.length > 0 ? (
+            <GuideCategoryEmpty onClear={() => setSelectedCategory("all")} />
           ) : (
             <div className="text-center py-12">
               <Home className="h-12 w-12 text-slate-300 mx-auto mb-4" />
@@ -478,6 +481,7 @@ export function LifeGuideContent() {
             </div>
           )}
         </section>
+        <OtherGuideResults guides={otherGuides} current="life" hasCurrent={matchingGuides.length > 0} />
         <GuideFreshnessNote section="life" />
       </div>
     </Layout>
