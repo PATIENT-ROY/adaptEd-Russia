@@ -3,6 +3,7 @@ import { Guide, GuideCategory, Language, Difficulty } from "@/types";
 export const educationGuides: Guide[] = [
   {
     id: "slang-dictionary",
+    filterCategories: ["structure"],
     title: "Словарь студенческого сленга",
     category: GuideCategory.EDUCATION,
     content:
@@ -16,6 +17,7 @@ export const educationGuides: Guide[] = [
   },
   {
     id: "0-main",
+    filterCategories: ["structure"],
     title:
       "Как проходит обучение в российском вузе: полный гид для иностранных студентов",
     category: GuideCategory.EDUCATION,
@@ -30,6 +32,7 @@ export const educationGuides: Guide[] = [
   },
   {
     id: "0",
+    filterCategories: ["exams"],
     title: "Разница между экзаменом и зачётом",
     category: GuideCategory.EDUCATION,
     content: `# Экзамен и зачёт — в чём разница
@@ -89,6 +92,7 @@ export const educationGuides: Guide[] = [
   },
   {
     id: "1",
+    filterCategories: ["exams"],
     title: "Как сдать сессию в российском вузе",
     category: GuideCategory.EDUCATION,
     content: `# 1. Когда проходит сессия
@@ -189,6 +193,7 @@ export const educationGuides: Guide[] = [
   },
   {
     id: "2",
+    filterCategories: ["papers"],
     title: "Что такое ГОСТ и как его использовать",
     category: GuideCategory.EDUCATION,
     content: `# 1. Объяснение ГОСТ
@@ -284,6 +289,7 @@ export const educationGuides: Guide[] = [
   },
   {
     id: "3",
+    filterCategories: ["structure"],
     title: "Структура вуза: кафедры, деканаты, ректорат",
     category: GuideCategory.EDUCATION,
     content: `# 1. Иерархия: Ректор → Декан → Кафедра → Завкафедрой
@@ -377,6 +383,7 @@ export const educationGuides: Guide[] = [
   },
   {
     id: "4",
+    filterCategories: ["papers"],
     title: "Как писать курсовую работу",
     category: GuideCategory.EDUCATION,
     content: `# 1. Выбор темы и согласование с научным руководителем
@@ -635,6 +642,7 @@ export const educationGuides: Guide[] = [
   },
   {
     id: "5",
+    filterCategories: ["exams"],
     title: "Что делать при незачёте",
     category: GuideCategory.EDUCATION,
     content: `# 1. Что делать при получении незачёта
@@ -708,6 +716,7 @@ export const educationGuides: Guide[] = [
   },
   {
     id: "6",
+    filterCategories: ["documents"],
     title: "Академический отпуск: когда и как",
     category: GuideCategory.EDUCATION,
     content: `# Академический отпуск
@@ -743,6 +752,7 @@ export const educationGuides: Guide[] = [
 
   {
     id: "edu-academic-docs",
+    filterCategories: ["documents"],
     title: "Учебные справки и документы вуза",
     category: GuideCategory.EDUCATION,
     content: `# Учебные документы — только про учёбу
@@ -807,6 +817,7 @@ export const educationGuides: Guide[] = [
   },
   {
     id: "expulsion-academic",
+    filterCategories: ["expulsion-risks"],
     title: "Академическая неуспеваемость",
     category: GuideCategory.EDUCATION,
     content: `# Академическая неуспеваемость
@@ -850,6 +861,7 @@ export const educationGuides: Guide[] = [
   },
   {
     id: "expulsion-attendance",
+    filterCategories: ["expulsion-risks"],
     title: "Пропуски занятий",
     category: GuideCategory.EDUCATION,
     content: `# Пропуски занятий
@@ -885,6 +897,7 @@ export const educationGuides: Guide[] = [
   },
   {
     id: "expulsion-migration",
+    filterCategories: ["expulsion-risks"],
     title: "Нарушение миграционных правил",
     category: GuideCategory.EDUCATION,
     content: `# Нарушение миграционных правил
@@ -927,6 +940,7 @@ export const educationGuides: Guide[] = [
   },
   {
     id: "expulsion-payment",
+    filterCategories: ["expulsion-risks"],
     title: "Если не оплатил обучение вовремя",
     category: GuideCategory.EDUCATION,
     content: `# Если вы не оплатили обучение вовремя
@@ -961,6 +975,7 @@ export const educationGuides: Guide[] = [
   },
   {
     id: "expulsion-disciplinary",
+    filterCategories: ["expulsion-risks"],
     title: "Дисциплинарные нарушения",
     category: GuideCategory.EDUCATION,
     content: `# Дисциплинарные нарушения
@@ -1009,6 +1024,7 @@ export const educationGuides: Guide[] = [
   },
   {
     id: "edu-reinstatement",
+    filterCategories: ["admission", "expulsion-risks"],
     title: "Восстановление для продолжения обучения",
     category: GuideCategory.EDUCATION,
     content: `# Восстановление для продолжения обучения
@@ -1085,6 +1101,7 @@ export const educationGuides: Guide[] = [
   },
   {
     id: "edu-apply-university",
+    filterCategories: ["admission"],
     title: "Как подать документы в российский вуз",
     category: GuideCategory.EDUCATION,
     content: `# Как подать документы в российский вуз
@@ -1169,6 +1186,7 @@ export const educationGuides: Guide[] = [
   },
   {
     id: "prep-faculty",
+    filterCategories: ["admission"],
     title: "Подготовительный факультет",
     category: GuideCategory.EDUCATION,
     content: `# Подготовительный факультет

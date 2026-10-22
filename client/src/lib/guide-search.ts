@@ -1,38 +1,5 @@
 import { Guide } from "@/types";
 
-const LIFE_CATEGORY_IDS: Record<string, readonly string[]> = {
-  documents: ["2", "3", "migration-card", "7", "rvpo", "rvp", "vnzh"],
-  housing: ["1", "6"],
-  transport: ["5"],
-  health: ["4", "insurance-dms", "medical-checkup", "student-medical-docs", "9", "10", "11", "12", "13", "14"],
-  services: [
-    "sim-card",
-    "8",
-    "daily-life",
-    "social-adapt",
-    "russian-cultural-code",
-    "mandatory-expenses",
-    "contact-university",
-    "russian-holidays",
-  ],
-};
-
-const EDUCATION_CATEGORY_IDS: Record<string, readonly string[]> = {
-  exams: ["0", "1", "5"],
-  papers: ["2", "4"],
-  documents: ["edu-academic-docs", "6"],
-  structure: ["0-main", "3"],
-  admission: ["edu-apply-university", "prep-faculty", "edu-reinstatement"],
-  "expulsion-risks": [
-    "expulsion-academic",
-    "expulsion-attendance",
-    "expulsion-migration",
-    "expulsion-payment",
-    "expulsion-disciplinary",
-    "edu-reinstatement",
-  ],
-};
-
 const SEARCH_SYNONYMS: Record<string, string[]> = {
   dorm: ["общежитие", "общага", "dormitory"],
   dormitory: ["общежитие"],
@@ -62,9 +29,9 @@ const SEARCH_SYNONYMS: Record<string, string[]> = {
   expulsion: ["отчисление", "восстановление"],
   reinstatement: ["восстановление", "отчисление"],
   admission: ["поступление", "приём", "документы", "подфак"],
-  preparatory: ["подготовительный", "подфак", "русский"],
-  "подфак": ["подготовительный", "русский"],
-  "подготовительный": ["подфак", "русский"],
+  preparatory: ["подготовительный", "подфак"],
+  "подфак": ["подготовительный"],
+  "подготовительный": ["подфак"],
   "восстановление": ["отчисление", "поступление"],
   "поступление": ["приём", "документы", "квота"],
   "приём": ["поступление", "документы"],
@@ -95,39 +62,52 @@ const SEARCH_SYNONYMS: Record<string, string[]> = {
   "签证": ["виза", "миграция"],
 };
 
-function expandSearchTokens(query: string): string[] {
-  const raw = query.toLowerCase().trim();
-  if (!raw) return [];
+// Normalize both indexed fields and queries, including synonym keys/values.
+export function normalizeGuideSearch(value: string): string {
+  return value.toLowerCase().replace(/ё/g, "е").replace(/[^\p{L}\p{N}]+/gu, " ").trim().replace(/\s+/g, " ");
+}
 
-  const tokens = raw.split(/\s+/).filter((token) => token.length > 1);
-  const extra: string[] = [];
+const synonyms = Object.fromEntries(Object.entries(SEARCH_SYNONYMS).map(
+  ([key, values]) => [normalizeGuideSearch(key), values.map(normalizeGuideSearch)],
+));
 
-  for (const token of tokens) {
-    extra.push(...(SEARCH_SYNONYMS[token] ?? []));
-  }
+const WHOLE_WORD_TERMS = new Set(["гост", "инн", "снилс", "дмс", "омс", "рвп", "рвпо", "внж", "sim"]);
 
-  return [...new Set([...tokens, ...extra])];
+function matchesToken(text: string, token: string): boolean {
+  // Abbreviations must be whole words; longer terms retain prefix matching.
+  return text.split(" ").some(word => word === token || (token.length >= 3 && !WHOLE_WORD_TERMS.has(token) && word.startsWith(token)));
+}
+
+/** Lower scores are better. Every query term must match, even across fields. */
+export function guideSearchRank(guide: Guide, query: string): number | null {
+  const normalized = normalizeGuideSearch(query);
+  if (!normalized) return 0;
+  const title = normalizeGuideSearch(guide.title);
+  const tags = normalizeGuideSearch(guide.tags.join(" "));
+  // URLs are references rather than article text.
+  const content = normalizeGuideSearch(guide.content.replace(/https?:\/\/\S+/g, " "));
+  const groups = normalized.split(" ").map(token => [token, ...(synonyms[token] ?? [])]);
+  const inField = (field: string, group: string[]) => group.some(token => matchesToken(field, token));
+  if (!groups.every(group => [title, tags, content].some(field => inField(field, group)))) return null;
+  if (title === normalized) return 0;
+  if (groups.every(group => inField(title, group))) return 1;
+  if (groups.every(group => inField(title, group) || inField(tags, group))) return 2;
+  return 3;
 }
 
 export function guideMatchesQuery(guide: Guide, query: string): boolean {
-  const raw = query.toLowerCase().trim();
-  if (!raw) return true;
+  return guideSearchRank(guide, query) !== null;
+}
 
-  const userTokens = raw.split(/\s+/).filter((token) => token.length > 1);
-  const expanded = expandSearchTokens(raw);
-  const titleTags = `${guide.title} ${guide.tags.join(" ")}`.toLowerCase();
-  if (expanded.some((token) => titleTags.includes(token))) return true;
-
-  const content = guide.content.toLowerCase();
-  return userTokens.some((token) => content.includes(token));
+export function searchGuides(guides: Guide[], query: string): Guide[] {
+  return guides.filter(guide => guide.isPublished)
+    .map(guide => ({ guide, rank: guideSearchRank(guide, query) }))
+    .filter((item): item is { guide: Guide; rank: number } => item.rank !== null)
+    .sort((a, b) => a.rank - b.rank).map(item => item.guide);
 }
 
 export function guideInLifeCategory(guide: Guide, categoryId: string): boolean {
-  if (categoryId === "all") return true;
-  return LIFE_CATEGORY_IDS[categoryId]?.includes(guide.id) ?? false;
+  return categoryId === "all" || (guide.filterCategories?.some(id => id === categoryId) ?? false);
 }
 
-export function guideInEducationCategory(guide: Guide, categoryId: string): boolean {
-  if (categoryId === "all") return true;
-  return EDUCATION_CATEGORY_IDS[categoryId]?.includes(guide.id) ?? false;
-}
+export const guideInEducationCategory = guideInLifeCategory;

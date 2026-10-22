@@ -1,3 +1,5 @@
+import crypto from 'node:crypto';
+
 interface SendInviteEmailParams {
   to: string;
   recipientName: string;
@@ -16,6 +18,7 @@ interface SendInviteEmailResult {
   sent: boolean;
   provider: 'resend' | 'none';
   attempts?: number;
+  status?: number;
   error?: string;
 }
 
@@ -125,6 +128,7 @@ export async function sendEmail(params: SendEmailParams): Promise<SendInviteEmai
         provider: 'resend',
         attempts,
         error: lastError,
+        status: response.status,
       };
     } catch (error) {
       clearTimeout(timeoutId);
@@ -246,5 +250,24 @@ export async function sendReminderEmail(params: {
       </div>
     `,
     idempotencyKey: `reminder:${params.reminderId}:${params.dueDate.toISOString()}`,
+  });
+}
+
+/** Resend acceptance is not confirmation of inbox delivery. */
+export async function sendPasswordResetEmail(params: {
+  to: string;
+  resetLink: string;
+}): Promise<SendInviteEmailResult> {
+  const link = escapeHtml(params.resetLink);
+  return sendEmail({
+    to: params.to,
+    subject: 'Восстановление пароля — AdaptEd Russia',
+    html: `<div style="font-family:Arial,sans-serif;max-width:560px;margin:0 auto;padding:24px;color:#1f2937">
+      <h2>Восстановление пароля AdaptEd Russia</h2>
+      <p>Чтобы установить новый пароль, откройте <a href="${link}">ссылку восстановления</a>.</p>
+      <p>Ссылка действует один час и может быть использована один раз.</p>
+      <p>Если вы не запрашивали восстановление, проигнорируйте это письмо. Ваш пароль не изменён.</p>
+    </div>`,
+    idempotencyKey: `password-reset:${crypto.createHash('sha256').update(params.resetLink).digest('hex')}`,
   });
 }

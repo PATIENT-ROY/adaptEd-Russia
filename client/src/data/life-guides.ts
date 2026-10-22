@@ -4,6 +4,7 @@ import { priorityLifeGuides } from "@/data/life-guides-priority-2026";
 export const lifeGuides: Guide[] = [
   {
     id: "1",
+    filterCategories: ["housing"],
     title: "Как зарегистрироваться в общежитии",
     category: GuideCategory.LIFE,
     content: `# Как зарегистрироваться в общежитии
@@ -51,6 +52,7 @@ export const lifeGuides: Guide[] = [
   },
   {
     id: "2",
+    filterCategories: ["documents"],
     title: "Получение ИНН и СНИЛС",
     category: GuideCategory.LIFE,
     content: `# 1. Что такое ИНН и СНИЛС
@@ -226,6 +228,7 @@ export const lifeGuides: Guide[] = [
   },
   {
     id: "3",
+    filterCategories: ["documents"],
     title: "Что делать при потере паспорта",
     category: GuideCategory.LIFE,
     content: `# Что делать при потере паспорта
@@ -258,6 +261,7 @@ export const lifeGuides: Guide[] = [
   },
   {
     id: "4",
+    filterCategories: ["health"],
     title: "Как вызвать врача в России",
     category: GuideCategory.LIFE,
     content: `# Как вызвать врача в России
@@ -300,6 +304,7 @@ export const lifeGuides: Guide[] = [
   },
   {
     id: "5",
+    filterCategories: ["transport"],
     title: "Транспорт в России: метро, автобусы, такси",
     category: GuideCategory.LIFE,
     content: `# 1. Виды общественного транспорта
@@ -531,6 +536,7 @@ export const lifeGuides: Guide[] = [
   },
   {
     id: "6",
+    filterCategories: ["housing"],
     title: "Аренда квартиры: права и обязанности",
     category: GuideCategory.LIFE,
     content: "Всё об аренде жилья: договоры, оплата, коммунальные услуги...",
@@ -543,6 +549,7 @@ export const lifeGuides: Guide[] = [
   },
   {
     id: "migration-card",
+    filterCategories: ["documents"],
     title: "Миграционная карта",
     category: GuideCategory.LIFE,
     content: `# Миграционная карта
@@ -583,6 +590,7 @@ export const lifeGuides: Guide[] = [
   },
   {
     id: "contact-university",
+    filterCategories: ["services"],
     title: "Связаться с университетом после приезда",
     category: GuideCategory.LIFE,
     content: `# Связаться с университетом после приезда
@@ -633,6 +641,7 @@ export const lifeGuides: Guide[] = [
   },
   {
     id: "7",
+    filterCategories: ["documents"],
     title: "Миграционный учёт и регистрация",
     category: GuideCategory.LIFE,
     content: `# Миграционный учёт и регистрация
@@ -790,6 +799,7 @@ export const lifeGuides: Guide[] = [
   },
   {
     id: "rvpo",
+    filterCategories: ["documents"],
     // INTERNAL LEGAL REVIEW: Перепроверить после 1 сентября 2026 года в связи с изменениями статьи 6.2 Федерального закона № 115-ФЗ.
     title: "РВПО — разрешение на временное проживание по обучению",
     category: GuideCategory.LIFE,
@@ -826,6 +836,7 @@ export const lifeGuides: Guide[] = [
   },
   {
     id: "rvp",
+    filterCategories: ["documents"],
     title: "РВП — разрешение на временное проживание",
     category: GuideCategory.LIFE,
     content: `# Что такое РВП?
@@ -870,6 +881,7 @@ export const lifeGuides: Guide[] = [
   },
   {
     id: "vnzh",
+    filterCategories: ["documents"],
     title: "ВНЖ — вид на жительство",
     category: GuideCategory.LIFE,
     content: `# Что такое ВНЖ?
@@ -918,6 +930,7 @@ export const lifeGuides: Guide[] = [
   },
   {
     id: "mandatory-expenses",
+    filterCategories: ["services"],
     title: "Обязательные расходы иностранного студента",
     category: GuideCategory.LIFE,
     content: `# Обязательные расходы
@@ -977,6 +990,7 @@ export const lifeGuides: Guide[] = [
   },
   {
     id: "insurance-dms",
+    filterCategories: ["health"],
     title: "Медицинская страховка (ДМС)",
     category: GuideCategory.LIFE,
     content: `# Медицинская страховка (ДМС)
@@ -1008,6 +1022,7 @@ export const lifeGuides: Guide[] = [
   },
   {
     id: "medical-checkup",
+    filterCategories: ["health"],
     title: "Медицинский осмотр для иностранцев",
     category: GuideCategory.LIFE,
     content: `# Медицинский осмотр для иностранцев
@@ -1113,6 +1128,7 @@ export const lifeGuides: Guide[] = [
   },
   {
     id: "sim-card",
+    filterCategories: ["services"],
     title: "SIM-карта в России",
     category: GuideCategory.LIFE,
     content: `# Как купить SIM-карту?
@@ -1186,6 +1202,7 @@ export const lifeGuides: Guide[] = [
   },
   {
     id: "8",
+    filterCategories: ["services"],
     title: "Банковские услуги для студента",
     category: GuideCategory.LIFE,
     content: `# Как открыть счёт и карту в России?
@@ -1265,6 +1282,7 @@ export const lifeGuides: Guide[] = [
   },
   {
     id: "daily-life",
+    filterCategories: ["services"],
     title: "Быт в первый месяц",
     category: GuideCategory.LIFE,
     content: `# Быт в первый месяц
@@ -1320,6 +1338,7 @@ export const lifeGuides: Guide[] = [
   },
   {
     id: "social-adapt",
+    filterCategories: ["services"],
     title: "Социальная адаптация",
     category: GuideCategory.LIFE,
     content: `# Социальная адаптация
@@ -1380,6 +1399,7 @@ export const lifeGuides: Guide[] = [
   },
   {
     id: "9",
+    filterCategories: ["health"],
     title: "Как получить полис ОМС",
     category: GuideCategory.LIFE,
     content:
@@ -1393,6 +1413,7 @@ export const lifeGuides: Guide[] = [
   },
   {
     id: "10",
+    filterCategories: ["health"],
     title: "Как записаться к врачу",
     category: GuideCategory.LIFE,
     content:
@@ -1406,6 +1427,7 @@ export const lifeGuides: Guide[] = [
   },
   {
     id: "11",
+    filterCategories: ["health"],
     title: "Стоматология в России",
     category: GuideCategory.LIFE,
     content:
@@ -1419,6 +1441,7 @@ export const lifeGuides: Guide[] = [
   },
   {
     id: "12",
+    filterCategories: ["health"],
     title: "Аптеки и лекарства",
     category: GuideCategory.LIFE,
     content:
@@ -1432,6 +1455,7 @@ export const lifeGuides: Guide[] = [
   },
   {
     id: "13",
+    filterCategories: ["health"],
     title: "Экстренная медицинская помощь",
     category: GuideCategory.LIFE,
     content:
@@ -1445,6 +1469,7 @@ export const lifeGuides: Guide[] = [
   },
   {
     id: "14",
+    filterCategories: ["health"],
     title: "Медицинские анализы",
     category: GuideCategory.LIFE,
     content: `# 1. Где сдать анализы
@@ -1676,6 +1701,7 @@ export const lifeGuides: Guide[] = [
   },
   {
     id: "russian-holidays",
+    filterCategories: ["services"],
     title: "Государственные праздники России",
     category: GuideCategory.LIFE,
     content: `# Государственные праздники России
@@ -1765,6 +1791,7 @@ export const lifeGuides: Guide[] = [
   },
   {
     id: "russian-cultural-code",
+    filterCategories: ["services"],
     title: "Культурный код России",
     category: GuideCategory.LIFE,
     content: `# Культурный код России
@@ -1879,6 +1906,7 @@ export const lifeGuides: Guide[] = [
   },
   {
     id: "student-medical-docs",
+    filterCategories: ["health"],
     title: "Медицинские документы нового студента",
     category: GuideCategory.LIFE,
     content: `# Медицинские документы нового студента

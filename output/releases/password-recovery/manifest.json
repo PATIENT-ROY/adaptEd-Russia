@@ -1,0 +1,28 @@
+{
+  "baseline_commit": "f8e198c33b51239f6265913018cccd2e46020bf1",
+  "runtime_files": [
+    {
+      "path": "client/src/app/forgot-password/page.tsx",
+      "baseline_sha256": "f6a357b0e152cbda5e7287bba40b6baa841a961a15179967c9e8cef66d41fc5c",
+      "updated_sha256": "6fafa16bb1db9d8a218fe932c56527841fdeb5e3e12a0712c38635f76760a71d"
+    },
+    {
+      "path": "server/src/api/auth.ts",
+      "baseline_sha256": "59542c9b7e23f2bc8c6262e5b5da1852ddc87a96e8f040bddfb54df4c321b35c",
+      "updated_sha256": "32778a5c15657cff1bcc23489aa0211614c465785783c3530a1606695ee5d0c1"
+    },
+    {
+      "path": "server/src/index.ts",
+      "baseline_sha256": "aea65b3df3d49a079e2353a2d8cc68ff4c463a980b5025a25062450ce6eddd98",
+      "updated_sha256": "c4b4bcdee14ee9c2e13c2d4b190bc3d5b668967689cf0c2dcda595efa0ccac27"
+    },
+    {
+      "path": "server/src/lib/email.ts",
+      "baseline_sha256": "6ec27e454ee42b3eb6bc22a4b39df1c7ec65a1a126d251a2fa7b698eb3f43870",
+      "updated_sha256": "3d6f6d15281fc3626c031dd2b80b922d90d3f22b3766ddd91bee9f9a1ec1d9ae"
+    }
+  ],
+  "dependency_changes": false,
+  "schema_changes": false,
+  "deployment_status": "not_deployed"
+}

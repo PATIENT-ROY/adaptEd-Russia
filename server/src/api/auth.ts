@@ -9,7 +9,7 @@ import {
   authMiddleware,
   passwordFitsBcryptLimit,
 } from '../lib/auth';
-import { sendInviteEmail } from '../lib/email';
+import { sendInviteEmail, sendPasswordResetEmail } from '../lib/email';
 import { RegisterRequest, LoginRequest, AuthResponse, ApiResponse } from '../types/index.js';
 import crypto from 'crypto';
 
@@ -252,6 +252,63 @@ router.post('/admin/invite', authMiddleware, async (req: Request, res: Response)
   }
 });
 
+// Public response deliberately does not depend on account existence or mail delivery.
+router.post('/forgot-password', async (req: Request, res: Response) => {
+  const parsed = z.object({ email: z.string().trim().email().max(254) }).safeParse(req.body);
+  if (!parsed.success) {
+    return res.status(400).json({ success: false, error: 'Неверный формат email' });
+  }
+  const requestId = crypto.randomUUID();
+  let stage = 'lookup';
+  let createdTokenId: string | undefined;
+  try {
+    const user = await prisma.user.findUnique({
+      where: { email: parsed.data.email.toLowerCase() },
+      select: { id: true, email: true },
+    });
+    if (user) {
+      stage = 'configuration';
+      const configuredUrl = process.env.APP_BASE_URL || process.env.CLIENT_URL;
+      if (!configuredUrl && process.env.NODE_ENV === 'production') throw new Error('Missing app URL');
+      const base = new URL(configuredUrl || 'http://localhost:3000');
+      if (base.username || base.password || base.search || base.hash || base.pathname !== '/' ||
+          !['http:', 'https:'].includes(base.protocol) ||
+          (process.env.NODE_ENV === 'production' && (base.protocol !== 'https:' || ['localhost', '127.0.0.1', '[::1]'].includes(base.hostname)))) {
+        throw new Error('Invalid app URL');
+      }
+      const { rawToken, tokenHash } = createPasswordSetupToken();
+      const expiresAt = new Date(Date.now() + 60 * 60 * 1000);
+      const link = new URL('/set-password', base);
+      link.searchParams.set('token', rawToken);
+      stage = 'token';
+      const token = await prisma.passwordSetupToken.create({ data: { userId: user.id, tokenHash, expiresAt } });
+      createdTokenId = token.id;
+      stage = 'email';
+      const result = await sendPasswordResetEmail({ to: user.email, resetLink: link.toString() });
+      // Never log provider text: it can echo recipient addresses or the token-bearing URL.
+      if (result.sent) {
+        console.info('password_reset.email_accepted', { requestId, provider: result.provider, attempts: result.attempts });
+      } else {
+        console.error('password_reset.email_failed', {
+          requestId, provider: result.provider, attempts: result.attempts,
+          status: result.status, reason: result.provider === 'none' ? 'missing_configuration' : 'provider_failure',
+        });
+        await prisma.passwordSetupToken.updateMany({ where: { id: token.id, usedAt: null }, data: { usedAt: new Date() } });
+      }
+    }
+  } catch {
+    console.error('password_reset.failed', { requestId, stage });
+    if (createdTokenId) {
+      try {
+        await prisma.passwordSetupToken.updateMany({ where: { id: createdTokenId, usedAt: null }, data: { usedAt: new Date() } });
+      } catch {
+        console.error('password_reset.token_cleanup_failed', { requestId });
+      }
+    }
+  }
+  return res.json({ success: true, message: 'Если аккаунт существует, инструкция по восстановлению будет отправлена на почту.' });
+});
+
 // Проверка токена установки пароля
 router.get('/set-password/verify', async (req: Request, res: Response) => {
   const token = String(req.query.token || '');
@@ -272,7 +329,7 @@ router.get('/set-password/verify', async (req: Request, res: Response) => {
     }
   });
 
-  if (!setupToken || setupToken.usedAt || setupToken.expiresAt < new Date()) {
+  if (!setupToken || setupToken.usedAt || setupToken.expiresAt <= new Date()) {
     return res.status(400).json({
       success: false,
       error: 'Ссылка недействительна или истекла'

@@ -153,7 +153,10 @@ export interface ReminderQuota {
   plan: "FREEMIUM" | "PREMIUM";
 }
 
+export type GuideFilterCategory = "documents" | "housing" | "transport" | "health" | "services" | "exams" | "papers" | "structure" | "admission" | "expulsion-risks";
+
 export interface Guide {
+  filterCategories?: GuideFilterCategory[];
   id: string;
   title: string;
   content: string;

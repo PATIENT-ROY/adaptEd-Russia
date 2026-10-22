@@ -1,6 +1,7 @@
 "use client";
 
 import { useState } from "react";
+import { API_BASE_URL } from "@/lib/api";
 
 import Link from "next/link";
 import { Button } from "@/components/ui/button";
@@ -31,19 +32,31 @@ export default function ForgotPasswordPage() {
   const [isLoading, setIsLoading] = useState(false);
   const [isSubmitted, setIsSubmitted] = useState(false);
 
-  const handleSubmit = async (e: React.FormEvent) => {
-    e.preventDefault();
+  const requestReset = async () => {
+    if (isLoading) return;
     setError("");
     setIsLoading(true);
 
     try {
-      await new Promise((resolve) => setTimeout(resolve, 1000));
+      const response = await fetch(`${API_BASE_URL}/auth/forgot-password`, {
+        method: "POST",
+        headers: { "Content-Type": "application/json" },
+        body: JSON.stringify({ email: email.trim() }),
+      });
+      const result = await response.json();
+      if (!response.ok || !result?.success) throw new Error("Password reset request failed");
       setIsSubmitted(true);
     } catch {
+      setIsSubmitted(false);
       setError(t("forgotPassword.error.sendFailed"));
     } finally {
       setIsLoading(false);
     }
+  };
+
+  const handleSubmit = async (e: React.FormEvent) => {
+    e.preventDefault();
+    await requestReset();
   };
 
   if (isSubmitted) {
@@ -84,7 +97,8 @@ export default function ForgotPasswordPage() {
 
                 <div className="space-y-3">
                   <Button
-                    onClick={() => setIsSubmitted(false)}
+                    onClick={requestReset}
+                    disabled={isLoading}
                     className="w-full h-12 bg-gradient-to-r from-blue-500 to-purple-600 hover:from-blue-600 hover:to-purple-700 text-white shadow-lg hover:shadow-xl transform sm:hover:scale-105 transition-all duration-300"
                   >
                     {t("forgotPassword.success.resend")}

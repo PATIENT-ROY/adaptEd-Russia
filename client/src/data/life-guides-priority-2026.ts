@@ -11,6 +11,7 @@ import { Guide, GuideCategory, Language, Difficulty } from "@/types";
 export const priorityLifeGuides: Guide[] = [
   {
     id: "visa-vs-visa-free",
+    filterCategories: ["documents"],
     title: "Визовые и безвизовые студенты: в чём разница",
     category: GuideCategory.LIFE,
     content: `# Визовые и безвизовые студенты: в чём разница
@@ -75,6 +76,7 @@ export const priorityLifeGuides: Guide[] = [
   },
   {
     id: "study-visa-extend",
+    filterCategories: ["documents"],
     title: "Как получить и продлить учебную визу",
     category: GuideCategory.LIFE,
     content: `# Как получить и продлить учебную визу
@@ -147,6 +149,7 @@ export const priorityLifeGuides: Guide[] = [
   },
   {
     id: "migration-rereg",
+    filterCategories: ["documents"],
     title: "Повторная миграционная регистрация",
     category: GuideCategory.LIFE,
     content: `# Повторная миграционная регистрация
@@ -213,6 +216,7 @@ export const priorityLifeGuides: Guide[] = [
   },
   {
     id: "biometrics-medexam",
+    filterCategories: ["documents", "health"],
     title: "Дактилоскопия, фотографирование и обязательный медосмотр",
     category: GuideCategory.LIFE,
     content: `# Дактилоскопия, фотографирование и обязательный медосмотр
@@ -301,6 +305,7 @@ export const priorityLifeGuides: Guide[] = [
   },
   {
     id: "ru-id",
+    filterCategories: ["documents", "services"],
     title: "RU ID: что это и кому он нужен",
     category: GuideCategory.LIFE,
     content: `# RU ID: что это и кому он нужен
@@ -368,6 +373,7 @@ export const priorityLifeGuides: Guide[] = [
   },
   {
     id: "work-while-studying",
+    filterCategories: ["services"],
     title: "Работа во время учёбы",
     category: GuideCategory.LIFE,
     content: `# Работа во время учёбы
@@ -439,6 +445,7 @@ export const priorityLifeGuides: Guide[] = [
   },
   {
     id: "police-safety",
+    filterCategories: ["documents", "services"],
     title: "Безопасность и общение с полицией",
     category: GuideCategory.LIFE,
     content: `# Безопасность и общение с полицией
@@ -518,6 +525,7 @@ export const priorityLifeGuides: Guide[] = [
   },
   {
     id: "student-full-budget",
+    filterCategories: ["services"],
     title: "Полный бюджет иностранного студента",
     category: GuideCategory.LIFE,
     content: `# Полный бюджет иностранного студента
@@ -621,6 +629,7 @@ export const priorityLifeGuides: Guide[] = [
   },
   {
     id: "gosuslugi-foreign-student",
+    filterCategories: ["documents", "services"],
     title: "Госуслуги для иностранного студента",
     category: GuideCategory.LIFE,
     content: `# Госуслуги для иностранного студента
