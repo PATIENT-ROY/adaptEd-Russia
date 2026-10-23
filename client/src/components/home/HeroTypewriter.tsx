@@ -1,7 +1,7 @@
 "use client";
 
 import { useState, useEffect, useRef, memo } from "react";
-import { useReducedMotion } from "framer-motion";
+import { useMotionPreference } from "@/hooks/useMotionPreference";
 
 interface HeroTypewriterProps {
   slogans: string[];
@@ -11,7 +11,7 @@ export const HeroTypewriter = memo(function HeroTypewriter({
   slogans,
 }: HeroTypewriterProps) {
   const containerRef = useRef<HTMLParagraphElement>(null);
-  const shouldReduceMotion = useReducedMotion();
+  const shouldReduceMotion = useMotionPreference();
   const [visible, setVisible] = useState(false);
   const [sloganIndex, setSloganIndex] = useState(0);
   const [displayText, setDisplayText] = useState(slogans[0] ?? "");
@@ -78,9 +78,9 @@ export const HeroTypewriter = memo(function HeroTypewriter({
       ref={containerRef}
       className="mx-auto mb-3 flex min-h-[3.25rem] max-w-3xl cursor-default select-none items-center justify-center px-2 text-center sm:mb-6 sm:min-h-[3.5rem] sm:px-4 lg:mb-8 lg:min-h-[4rem]"
     >
+      <span className="sr-only">{slogans[0] ?? ""}</span>
       <span
-        aria-live="polite"
-        aria-atomic="true"
+        aria-hidden="true"
         className="text-sm font-medium leading-snug text-white/90 sm:text-base md:text-lg lg:text-xl drop-shadow-[0_1px_8px_rgba(0,0,0,0.35)]"
       >
         {displayText}

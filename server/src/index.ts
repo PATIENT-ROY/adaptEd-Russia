@@ -43,6 +43,7 @@ app.use(helmet());
           'https://adaptedrussia.ru',
           'https://www.adaptedrussia.ru',
           'http://localhost:3000',
+          ...(process.env.NODE_ENV !== 'production' ? ['http://127.0.0.1:3000'] : []),
           'http://localhost:3001',
           'http://localhost:3002',
           'http://localhost:3007',

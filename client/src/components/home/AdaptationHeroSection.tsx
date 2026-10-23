@@ -12,7 +12,8 @@ import {
   Check,
   type LucideIcon,
 } from "lucide-react";
-import { motion, useReducedMotion } from "framer-motion";
+import { motion } from "framer-motion";
+import { useMotionPreference } from "@/hooks/useMotionPreference";
 import { useTranslation } from "@/hooks/useTranslation";
 import { useAdaptationCta } from "@/hooks/useAdaptationCta";
 import { useRevealInView } from "@/components/home/useRevealInView";
@@ -55,20 +56,16 @@ function FadeIn({
   className?: string;
   delay?: number;
 }) {
-  const shouldReduceMotion = useReducedMotion();
+  const shouldReduceMotion = useMotionPreference();
   const { ref, show } = useRevealInView();
-
-  if (shouldReduceMotion) {
-    return <div className={className}>{children}</div>;
-  }
 
   return (
     <motion.div
       ref={ref}
       className={["home-fade-in", className].filter(Boolean).join(" ")}
       initial={{ opacity: 0, y: 18 }}
-      animate={show ? { opacity: 1, y: 0 } : { opacity: 0, y: 22 }}
-      transition={{ duration: 0.55, ease, delay: show ? delay : 0 }}
+      animate={shouldReduceMotion || show ? { opacity: 1, y: 0 } : { opacity: 0, y: 22 }}
+      transition={{ duration: shouldReduceMotion ? 0 : 0.55, ease, delay: !shouldReduceMotion && show ? delay : 0 }}
     >
       {children}
     </motion.div>

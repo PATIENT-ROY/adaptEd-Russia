@@ -1,6 +1,7 @@
 "use client";
 
 import { useState } from "react";
+import { useTranslation } from "@/hooks/useTranslation";
 import { Star, Crown, BadgeCheck } from "lucide-react";
 import { Card, CardContent } from "@/components/ui/card";
 import { PublicReview } from "@/types";
@@ -24,6 +25,7 @@ export function ReviewCard({
   publishedLabel,
   premiumLabel,
 }: ReviewCardProps) {
+  const { currentLanguage } = useTranslation();
   const [expanded, setExpanded] = useState(false);
   const needsTruncate = review.text.length > TRUNCATE_LENGTH;
   const displayText =
@@ -32,7 +34,7 @@ export function ReviewCard({
       : review.text;
 
   const createdAtDate = new Date(review.createdAt);
-  const formattedDate = createdAtDate.toLocaleDateString("ru-RU", {
+  const formattedDate = createdAtDate.toLocaleDateString(currentLanguage, {
     month: "long",
     year: "numeric",
   });

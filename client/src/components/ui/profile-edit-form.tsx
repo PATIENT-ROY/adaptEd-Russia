@@ -1,7 +1,7 @@
 "use client";
 
 import { useState, useEffect, useMemo, useRef } from "react";
-import { useBodyScrollLock } from "@/hooks/useBodyScrollLock";
+import { ProfileDialog } from "./profile-dialog";
 import { Button } from "./button";
 import { Input } from "./input";
 import {
@@ -61,7 +61,6 @@ export function ProfileEditForm({
   onCancel,
   isVisible,
 }: ProfileEditFormProps) {
-  useBodyScrollLock(isVisible);
   const { t } = useTranslation();
   const [formData, setFormData] = useState({
     name: user.name || "",
@@ -220,13 +219,14 @@ export function ProfileEditForm({
   if (!isVisible) return null;
 
   return (
-    <div className="fixed inset-0 z-50 flex items-center justify-center p-4 bg-black/20 backdrop-blur-sm animate-fade-in">
-      <Card className="w-full max-w-md max-h-[90vh] overflow-y-auto overscroll-contain border-0 shadow-2xl animate-slide-in-from-top">
+    <ProfileDialog open={isVisible} onClose={onCancel} title={t("profile.personalInfo.edit")} closeOnOutside={false}>
+      <Card className="no-hover !m-0 w-full border-0 shadow-none !transition-none">
         <CardHeader className="text-center pb-4 relative">
           <Button
             variant="ghost"
             size="sm"
             onClick={onCancel}
+            aria-label={t("profile.billing.invoice.close")}
             className="absolute top-2 right-2 h-8 w-8 p-0 rounded-full hover:bg-slate-100"
           >
             <X className="h-4 w-4" />
@@ -590,6 +590,6 @@ export function ProfileEditForm({
           </form>
         </CardContent>
       </Card>
-    </div>
+    </ProfileDialog>
   );
 }

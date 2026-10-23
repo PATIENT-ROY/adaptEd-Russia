@@ -1,4 +1,5 @@
 import React, { useState } from "react";
+import { useTranslation } from "@/hooks/useTranslation";
 import { Star as StarIcon } from "lucide-react";
 
 interface RatingStarsProps {
@@ -9,6 +10,7 @@ interface RatingStarsProps {
 }
 
 export function RatingStars({ value, onChange, readOnly = false, max = 5 }: RatingStarsProps) {
+  const { t } = useTranslation();
   const [hovered, setHovered] = useState<number | null>(null);
 
   const handleClick = (i: number) => {
@@ -38,10 +40,12 @@ export function RatingStars({ value, onChange, readOnly = false, max = 5 }: Rati
             onMouseLeave={() => setHovered(null)}
             onKeyDown={(e) => handleKeyDown(e, i)}
             disabled={readOnly}
-            aria-label={`${i} звезд`}
-            className="focus:outline-none"
+            aria-label={t("profile.review.ratingValue").replace("{n}", String(i)).replace("{max}", String(max))}
+            aria-pressed={value === i}
+            className="flex h-11 w-11 shrink-0 items-center justify-center rounded-lg focus-visible:outline-none focus-visible:ring-2 focus-visible:ring-blue-500"
           >
             <StarIcon
+              aria-hidden
               className={`h-6 w-6 ${filled ? "text-yellow-400" : "text-gray-300"}`}
             />
           </button>

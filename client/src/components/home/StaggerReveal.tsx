@@ -1,10 +1,12 @@
 "use client";
 
-import { motion, useReducedMotion } from "framer-motion";
+import { motion } from "framer-motion";
+import { useMotionPreference } from "@/hooks/useMotionPreference";
 import type { ReactNode } from "react";
 import {
   staggerContainerVariants,
   staggerItemVariants,
+  noMotionVariants,
 } from "@/components/home/home-motion";
 import { useRevealInView } from "@/components/home/useRevealInView";
 
@@ -14,19 +16,15 @@ type StaggerRevealProps = {
 };
 
 export function StaggerReveal({ children, className }: StaggerRevealProps) {
-  const shouldReduceMotion = useReducedMotion();
+  const shouldReduceMotion = useMotionPreference();
   const { ref, show } = useRevealInView();
-
-  if (shouldReduceMotion) {
-    return <div className={className}>{children}</div>;
-  }
 
   return (
     <motion.div
       ref={ref}
       initial="hidden"
-      animate={show ? "visible" : "hidden"}
-      variants={staggerContainerVariants}
+      animate={shouldReduceMotion || show ? "visible" : "hidden"}
+      variants={shouldReduceMotion ? noMotionVariants : staggerContainerVariants}
       className={className}
     >
       {children}
@@ -40,15 +38,11 @@ type StaggerItemProps = {
 };
 
 export function StaggerItem({ children, className }: StaggerItemProps) {
-  const shouldReduceMotion = useReducedMotion();
-
-  if (shouldReduceMotion) {
-    return <div className={className}>{children}</div>;
-  }
+  const shouldReduceMotion = useMotionPreference();
 
   return (
     <motion.div
-      variants={staggerItemVariants}
+      variants={shouldReduceMotion ? noMotionVariants : staggerItemVariants}
       className={["home-stagger-item", className].filter(Boolean).join(" ")}
     >
       {children}

@@ -1,7 +1,7 @@
 "use client";
 
 import Link from "next/link";
-import { useReducedMotion } from "framer-motion";
+import { useMotionPreference } from "@/hooks/useMotionPreference";
 import { useAdaptationCta } from "@/hooks/useAdaptationCta";
 import { useLanguage } from "@/contexts/LanguageContext";
 import { useTranslation } from "@/hooks/useTranslation";
@@ -184,7 +184,7 @@ function MarqueeTrack({
   phrases: Phrase[];
   reverse?: boolean;
 }) {
-  const shouldReduceMotion = useReducedMotion();
+  const shouldReduceMotion = useMotionPreference();
   const items = shouldReduceMotion ? phrases : [...phrases, ...phrases];
   const loopStart = phrases.length;
 

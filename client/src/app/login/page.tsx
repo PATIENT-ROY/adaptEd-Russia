@@ -125,24 +125,24 @@ export default function LoginPage() {
   }, []);
 
   return (
-    <div className="min-h-screen bg-gradient-to-br from-slate-50 via-blue-50 to-indigo-50 flex items-start sm:items-center justify-center p-4 py-6 sm:py-8 overflow-y-auto">
-      <div className="w-full max-w-md my-auto">
+    <div className="min-h-screen bg-gradient-to-br from-slate-50 via-blue-50 to-indigo-50 flex items-start sm:items-center justify-center p-3 py-4 sm:p-4 sm:py-6 xl:py-8 overflow-y-auto">
+      <div className="w-full max-w-sm xl:max-w-md my-auto">
         {/* Logo */}
-        <div className="text-center mb-6 sm:mb-8">
-          <Link href="/" className="inline-flex items-center space-x-3 group">
-            <div className="h-12 w-12 rounded-2xl bg-gradient-to-br from-blue-600 to-indigo-600 flex items-center justify-center shadow-lg group-hover:shadow-xl transition-all duration-300 group-hover:scale-105">
-              <span className="text-white font-bold text-xl">A</span>
+        <div className="text-center mb-4 sm:mb-5 xl:mb-8">
+          <Link href="/" className="inline-flex items-center gap-2 xl:gap-3 group">
+            <div className="h-10 w-10 shrink-0 rounded-xl xl:h-12 xl:w-12 xl:rounded-2xl bg-gradient-to-br from-blue-600 to-indigo-600 flex items-center justify-center shadow-lg group-hover:shadow-xl transition-all duration-300 group-hover:scale-105">
+              <span className="text-white font-bold text-lg xl:text-xl">A</span>
             </div>
-            <span className="text-2xl font-bold text-slate-900 group-hover:text-blue-600 transition-colors duration-200">
+            <span className="text-xl xl:text-2xl font-bold text-slate-900 group-hover:text-blue-600 transition-colors duration-200">
               AdaptEd Russia
             </span>
           </Link>
         </div>
 
         {/* Login Card */}
-        <Card className="border-0 shadow-2xl relative">
+        <Card className="border-0 shadow-2xl relative max-xl:!m-0">
           {/* Go Back Button */}
-          <div className="absolute top-4 left-4 z-10">
+          <div className="absolute top-3 left-3 xl:top-4 xl:left-4 z-10">
             <Link
               href="/"
               className="inline-flex items-center justify-center w-10 h-10 rounded-full bg-slate-100 hover:bg-slate-200 text-slate-600 hover:text-slate-900 transition-all duration-200 group"
@@ -152,11 +152,11 @@ export default function LoginPage() {
             </Link>
           </div>
 
-          <CardHeader className="text-center pb-6">
-            <div className="w-16 h-16 rounded-2xl bg-gradient-to-br from-blue-500 to-purple-600 flex items-center justify-center mx-auto mb-4 shadow-lg">
-              <LogIn className="h-8 w-8 text-white" />
+          <CardHeader className="p-4 pb-4 text-center sm:p-5 sm:pb-4 xl:p-6">
+            <div className="w-12 h-12 xl:w-16 xl:h-16 rounded-2xl bg-gradient-to-br from-blue-500 to-purple-600 flex items-center justify-center mx-auto mb-2 xl:mb-4 shadow-lg">
+              <LogIn className="h-6 w-6 xl:h-8 xl:w-8 text-white" />
             </div>
-            <CardTitle className="text-2xl font-bold text-slate-900">
+            <CardTitle className="text-xl xl:text-2xl font-bold text-slate-900">
               {t("login.welcome")}
             </CardTitle>
             <CardDescription className="text-slate-600">
@@ -166,18 +166,17 @@ export default function LoginPage() {
             </CardDescription>
           </CardHeader>
 
-          <CardContent className="space-y-4 sm:space-y-6 relative overflow-hidden min-h-[320px] sm:min-h-[360px]">
+          <CardContent className="space-y-4 xl:space-y-6 relative overflow-hidden p-4 pt-0 sm:p-5 sm:pt-0 xl:p-6 xl:pt-0 xl:min-h-[360px]">
             <AnimatePresence mode="wait">
               {step === "email" ? (
                 <motion.form
                   key="email-step"
                   onSubmit={handleEmailSubmit}
-                  className="space-y-4"
+                  className="space-y-4 xl:min-h-[200px]"
                   initial={{ opacity: 0, y: 24 }}
                   animate={{ opacity: 1, y: 0 }}
                   exit={{ opacity: 0, y: -16 }}
                   transition={{ duration: 0.35, ease: [0.16, 1, 0.3, 1] }}
-                  style={{ minHeight: "200px" }}
                 >
               <div className="space-y-2">
                 <label
@@ -214,32 +213,31 @@ export default function LoginPage() {
               ) : (
                 <motion.div
                   key="password-step"
-                  className="space-y-5"
+                  className="space-y-4 xl:space-y-5 xl:min-h-[200px]"
                   initial={{ opacity: 0, y: 24 }}
                   animate={{ opacity: 1, y: 0 }}
                   exit={{ opacity: 0, y: -16 }}
                   transition={{ duration: 0.35, ease: [0.16, 1, 0.3, 1] }}
-                  style={{ minHeight: "200px" }}
                 >
                   <motion.div
-                    className="rounded-xl border border-slate-200 bg-slate-50 p-4 text-left"
+                    className="rounded-xl border border-slate-200 bg-slate-50 p-3 xl:p-4 text-left"
                     initial={{ opacity: 0, scale: 0.97 }}
                     animate={{ opacity: 1, scale: 1 }}
                     transition={{ duration: 0.3, ease: [0.16, 1, 0.3, 1] }}
                   >
-                    <div className="flex items-center justify-between">
-                      <div>
+                    <div className="flex items-center justify-between gap-3">
+                      <div className="min-w-0 flex-1">
                         <p className="text-xs uppercase tracking-wide text-slate-400">
                           {t("login.confirmedEmail")}
                         </p>
-                        <p className="text-sm font-semibold text-slate-900">
+                        <p className="break-all text-sm font-semibold text-slate-900">
                           {email}
                         </p>
                       </div>
                       <button
                         type="button"
                         onClick={handleBackToEmail}
-                        className="text-sm font-medium text-blue-600 hover:text-blue-700"
+                        className="shrink-0 text-sm font-medium text-blue-600 hover:text-blue-700"
                         aria-label={t("login.changeEmail")}
                       >
                         {t("login.back")}
@@ -383,26 +381,26 @@ export default function LoginPage() {
         </Card>
 
         {/* Features */}
-        <div className="mt-6 sm:mt-8 grid grid-cols-3 gap-3 sm:gap-4">
+        <div className="mt-4 sm:mt-5 xl:mt-8 grid grid-cols-3 gap-2 sm:gap-3 xl:gap-4">
           <Link
             href="/education-guide"
-            className="text-center p-4 rounded-xl bg-white/50 backdrop-blur-sm border border-white/20 transition-colors hover:bg-white/80"
+            className="text-center p-2.5 sm:p-3 xl:p-4 rounded-xl bg-white/50 backdrop-blur-sm border border-white/20 transition-colors hover:bg-white/80"
           >
-            <BookOpen className="h-6 w-6 text-blue-600 mx-auto mb-2" />
+            <BookOpen className="h-5 w-5 xl:h-6 xl:w-6 text-blue-600 mx-auto mb-1.5 xl:mb-2" />
             <p className="text-xs text-slate-600">{t("login.feature.education")}</p>
           </Link>
           <Link
             href="/life-guide"
-            className="text-center p-4 rounded-xl bg-white/50 backdrop-blur-sm border border-white/20 transition-colors hover:bg-white/80"
+            className="text-center p-2.5 sm:p-3 xl:p-4 rounded-xl bg-white/50 backdrop-blur-sm border border-white/20 transition-colors hover:bg-white/80"
           >
-            <Globe className="h-6 w-6 text-green-600 mx-auto mb-2" />
+            <Globe className="h-5 w-5 xl:h-6 xl:w-6 text-green-600 mx-auto mb-1.5 xl:mb-2" />
             <p className="text-xs text-slate-600">{t("login.feature.life")}</p>
           </Link>
           <Link
             href="/community/questions"
-            className="text-center p-4 rounded-xl bg-white/50 backdrop-blur-sm border border-white/20 transition-colors hover:bg-white/80"
+            className="text-center p-2.5 sm:p-3 xl:p-4 rounded-xl bg-white/50 backdrop-blur-sm border border-white/20 transition-colors hover:bg-white/80"
           >
-            <Users className="h-6 w-6 text-purple-600 mx-auto mb-2" />
+            <Users className="h-5 w-5 xl:h-6 xl:w-6 text-purple-600 mx-auto mb-1.5 xl:mb-2" />
             <p className="text-xs text-slate-600">{t("login.feature.community")}</p>
           </Link>
         </div>
