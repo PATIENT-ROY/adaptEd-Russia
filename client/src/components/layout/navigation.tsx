@@ -21,7 +21,7 @@ import {
   ScanLine,
   Users,
 } from "lucide-react";
-import { useState } from "react";
+import { useEffect, useRef, useState } from "react";
 import type { Language } from "@/types";
 import { Role } from "@/types";
 import { UserNotifications } from "@/components/notifications/user-notifications";
@@ -50,8 +50,22 @@ export function Navigation({
 }: NavigationProps) {
   const pathname = usePathname();
   const [isMobileMenuOpen, setIsMobileMenuOpen] = useState(false);
+  const menuButtonRef = useRef<HTMLButtonElement>(null);
   const { user } = useAuth();
   const { t } = useTranslation();
+
+  useEffect(() => {
+    if (!isMobileMenuOpen) return;
+
+    const closeOnEscape = (event: KeyboardEvent) => {
+      if (event.key !== "Escape" || event.defaultPrevented) return;
+      event.preventDefault();
+      setIsMobileMenuOpen(false);
+      menuButtonRef.current?.focus();
+    };
+    document.addEventListener("keydown", closeOnEscape);
+    return () => document.removeEventListener("keydown", closeOnEscape);
+  }, [isMobileMenuOpen]);
 
   const isNavActive = (href: string) =>
     pathname === href ||
@@ -246,7 +260,10 @@ export function Navigation({
               variant="outline"
               className="lg:hidden rounded-lg sm:rounded-xl p-1.5 sm:p-2 h-7 sm:h-8 w-7 sm:w-8 border-indigo-200 bg-white text-indigo-600 hover:border-indigo-300 hover:bg-indigo-50 hover:text-indigo-700"
               onClick={() => setIsMobileMenuOpen(!isMobileMenuOpen)}
-              aria-label="Toggle menu"
+              ref={menuButtonRef}
+              aria-label={t(isMobileMenuOpen ? "nav.closeMenu" : "nav.openMenu")}
+              aria-expanded={isMobileMenuOpen}
+              aria-controls="mobile-navigation"
             >
               {isMobileMenuOpen ? (
                 <X className="h-3.5 w-3.5 sm:h-4 sm:w-4" />
@@ -259,7 +276,7 @@ export function Navigation({
 
         {/* Mobile Navigation */}
         {isMobileMenuOpen && (
-          <div className="absolute top-full left-0 right-0 bg-white shadow-lg border-t border-slate-200 lg:hidden z-50 animate-slide-down">
+          <div id="mobile-navigation" className="absolute top-full left-0 right-0 bg-white shadow-lg border-t border-slate-200 lg:hidden z-50 animate-slide-down">
             <ul className="flex flex-col space-y-2 p-4">
               {/* Основная навигация для всех */}
               {navigationItems.map((item, index) => {

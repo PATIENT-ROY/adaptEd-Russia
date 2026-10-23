@@ -50,6 +50,7 @@ import {
   organizationStructuredData,
 } from "@/components/seo/structured-data";
 import { useTranslation } from "@/hooks/useTranslation";
+import { useMotionPreference } from "@/hooks/useMotionPreference";
 import { useEffect, useRef, useState, useMemo } from "react";
 import { API_BASE_URL } from "@/lib/api";
 import { PublicReview, TrustStats as TrustStatsType } from "@/types";
@@ -202,6 +203,7 @@ export default function HomeContent({
   SUPPORTED_LANGUAGES_COUNT,
 }: HomeContentProps) {
   const { t, currentLanguage } = useTranslation();
+  const shouldReduceMotion = useMotionPreference();
   const { href: adaptationCtaHref, label: adaptationCtaLabel } =
     useAdaptationCta();
   const [showScrollIndicator, setShowScrollIndicator] = useState(true);
@@ -232,7 +234,7 @@ export default function HomeContent({
   }, []);
 
   const scrollToTop = () => {
-    window.scrollTo({ top: 0, behavior: "smooth" });
+    window.scrollTo({ top: 0, behavior: shouldReduceMotion ? "instant" : "smooth" });
   };
 
   useEffect(() => {
@@ -271,7 +273,7 @@ export default function HomeContent({
 
     const nextIndex = (index + reviewCount) % reviewCount;
     reviewCardRefs.current[nextIndex]?.scrollIntoView({
-      behavior: "smooth",
+      behavior: shouldReduceMotion ? "instant" : "smooth",
       block: "nearest",
       inline: "center",
     });
@@ -799,6 +801,12 @@ export default function HomeContent({
                           <div className="mt-2 max-w-[92%] rounded-2xl bg-gray-100 px-3 py-2 text-[11px] text-slate-800">
                             {t("aiHelper.tips.study.2")}
                           </div>
+                          <div className="ml-auto mt-2 max-w-[90%] rounded-2xl bg-blue-500 px-3 py-2 text-[11px] text-white">
+                            {t("aiHelper.quickQuestions.study.2")}
+                          </div>
+                          <div className="mt-2 max-w-[92%] rounded-2xl bg-gray-100 px-3 py-2 text-[11px] text-slate-800">
+                            {t("aiHelper.tips.study.3")}
+                          </div>
                           <div className="mt-2 flex items-center gap-1.5 rounded-xl border border-slate-200 bg-slate-50 px-2 py-1.5">
                             <span className="flex-1 text-[11px] text-slate-400">
                               {t("aiHelper.input.placeholder")}
@@ -835,7 +843,7 @@ export default function HomeContent({
                       </div>
                       <div className="p-3 space-y-2 flex-1">
                         <div className="rounded-2xl bg-white p-3 shadow-sm">
-                          <div className="flex items-center gap-2">
+                          <div className="grid grid-cols-[2rem_minmax(0,1fr)] items-start gap-2">
                             <div className="flex h-8 w-8 shrink-0 items-center justify-center rounded-lg bg-indigo-50">
                               <MessageCircle className="h-4 w-4 text-indigo-600" />
                             </div>
@@ -843,37 +851,37 @@ export default function HomeContent({
                               <p className="text-xs font-bold text-slate-900">
                                 {t("community.questions.title")}
                               </p>
-                              <p className="text-[11px] text-slate-500 line-clamp-1">
+                              <p className="text-[11px] leading-relaxed text-slate-500">
                                 {t("community.questions.subtitle")}
                               </p>
                             </div>
-                            <span className="inline-flex items-center gap-1 rounded-lg bg-gradient-to-r from-blue-600 to-purple-600 px-2 py-1 text-[10px] font-semibold text-white">
-                              <Plus className="h-3 w-3" />
+                            <span className="col-span-2 inline-flex max-w-full items-center justify-self-start gap-1 rounded-lg bg-gradient-to-r from-blue-600 to-purple-600 px-2 py-1 text-[10px] font-semibold text-white">
+                              <Plus className="h-3 w-3 shrink-0" />
                               {t("community.questions.ask")}
                             </span>
                           </div>
-                          <div className="mt-2 grid grid-cols-3 gap-1.5">
+                          <div className="mt-2 grid grid-cols-[repeat(auto-fit,minmax(min(100%,4rem),1fr))] gap-1.5">
                             <div className="rounded-xl border-2 border-indigo-500 bg-indigo-50 px-1.5 py-1.5 text-center">
                               <p className="text-sm font-bold text-slate-900">24</p>
-                              <p className="text-[9px] text-slate-500 leading-tight">
+                              <p className="break-words text-[9px] text-slate-500 leading-tight">
                                 {t("community.questions.stats.total")}
                               </p>
                             </div>
                             <div className="rounded-xl border-2 border-gray-100 bg-gray-50 px-1.5 py-1.5 text-center">
                               <p className="text-sm font-bold text-emerald-700">18</p>
-                              <p className="text-[9px] text-slate-500 leading-tight">
+                              <p className="break-words text-[9px] text-slate-500 leading-tight">
                                 {t("community.questions.stats.answered")}
                               </p>
                             </div>
                             <div className="rounded-xl border-2 border-gray-100 bg-gray-50 px-1.5 py-1.5 text-center">
                               <p className="text-sm font-bold text-amber-700">6</p>
-                              <p className="text-[9px] text-slate-500 leading-tight">
+                              <p className="break-words text-[9px] text-slate-500 leading-tight">
                                 {t("community.questions.stats.waiting")}
                               </p>
                             </div>
                           </div>
                         </div>
-                        <div className="flex items-center gap-2 rounded-2xl bg-gradient-to-br from-indigo-50 to-emerald-50 p-2 ring-1 ring-indigo-100">
+                        <div className="grid grid-cols-[1.75rem_minmax(0,1fr)] items-start gap-2 rounded-2xl bg-gradient-to-br from-indigo-50 to-emerald-50 p-2 ring-1 ring-indigo-100">
                           <span className="flex h-7 w-7 shrink-0 items-center justify-center rounded-lg bg-gradient-to-br from-indigo-500 to-emerald-500 text-white">
                             <HeartHandshake className="h-3.5 w-3.5" />
                           </span>
@@ -881,12 +889,12 @@ export default function HomeContent({
                             <p className="text-[11px] font-bold text-slate-900">
                               {buddyT(currentLanguage, "name")}
                             </p>
-                            <p className="text-[9px] leading-tight text-slate-500 line-clamp-1">
+                            <p className="text-[9px] leading-relaxed text-slate-500">
                               {buddyT(currentLanguage, "subtitle")} ·{" "}
                               {buddyT(currentLanguage, "free")}
                             </p>
                           </div>
-                          <span className="inline-flex shrink-0 items-center gap-0.5 text-[9px] font-semibold text-indigo-700">
+                          <span className="col-span-2 inline-flex max-w-full items-center justify-self-start gap-0.5 text-[9px] font-semibold text-indigo-700">
                             {buddyT(currentLanguage, "openForm")}
                             <ArrowRight className="h-3 w-3 rtl:rotate-180" />
                           </span>
@@ -1101,7 +1109,7 @@ export default function HomeContent({
             <p className="text-base sm:text-lg text-white/90 mb-8">
               {t("home.cta.subtitle")}
             </p>
-            <motion.div whileHover={{ scale: 1.02 }} whileTap={{ scale: 0.98 }}>
+            <motion.div animate={shouldReduceMotion ? { scale: 1 } : undefined} whileHover={shouldReduceMotion ? undefined : { scale: 1.02 }} whileTap={shouldReduceMotion ? undefined : { scale: 0.98 }}>
               <Link
                 href={adaptationCtaHref}
                 className="cta-wave-button inline-flex min-h-12 items-center justify-center rounded-xl bg-white px-8 py-3.5 text-base sm:text-lg font-semibold text-indigo-700 shadow-lg hover:bg-white/95 focus-visible:outline-none focus-visible:ring-2 focus-visible:ring-white focus-visible:ring-offset-2 focus-visible:ring-offset-indigo-600"
@@ -1283,7 +1291,7 @@ export default function HomeContent({
                     {reviews.length > 1 && (
                       <div
                         className="flex max-w-full items-center justify-center overflow-x-auto [-ms-overflow-style:none] [scrollbar-width:none] [&::-webkit-scrollbar]:hidden"
-                        role="tablist"
+                        role="group"
                         aria-label={t("home.section.testimonials.title")}
                       >
                         {reviews.map((review, index) => {
@@ -1292,8 +1300,7 @@ export default function HomeContent({
                             <button
                               key={review.id}
                               type="button"
-                              role="tab"
-                              aria-selected={isActive}
+                              aria-pressed={isActive}
                               aria-label={t(
                                 "home.section.testimonials.goTo",
                               ).replace("{n}", String(index + 1))}

@@ -35,7 +35,7 @@ export function HomeFeatureCard({
         <h3 className="mt-5 text-xl font-bold leading-snug text-slate-900">
           {title}
         </h3>
-        <p className="mt-2 line-clamp-3 text-[15px] leading-relaxed text-slate-500">
+        <p className="mt-2 text-[15px] leading-relaxed text-slate-500">
           {description}
         </p>
         <div className="mt-auto pt-6">

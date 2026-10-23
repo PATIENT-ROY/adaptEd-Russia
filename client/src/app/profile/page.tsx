@@ -4,7 +4,7 @@ import { Layout } from "@/components/layout/layout";
 import { Card, CardContent, CardHeader, CardTitle } from "@/components/ui/card";
 import { Button } from "@/components/ui/button";
 import { useTranslation } from "@/hooks/useTranslation";
-import { useBodyScrollLock } from "@/hooks/useBodyScrollLock";
+import { ProfileDialog } from "@/components/ui/profile-dialog";
 import { PREMIUM_CHECKOUT_PATH } from "@/constants/routes";
 import { ProtectedRoute } from "@/components/auth/ProtectedRoute";
 import { FeaturePreviewGate } from "@/components/auth/FeaturePreviewGate";
@@ -374,7 +374,6 @@ function ProfileContent() {
     null,
   );
   const [isReviewModalOpen, setIsReviewModalOpen] = useState(false);
-  useBodyScrollLock(!!viewingInvoice);
   const [deferBelowFold, setDeferBelowFold] = useState(false);
   const [profileOverview, setProfileOverview] =
     useState<ProfileOverview | null>(null);
@@ -881,9 +880,9 @@ function ProfileContent() {
                   onClick={() => avatarInputRef.current?.click()}
                   disabled={isUploadingAvatar}
                   aria-label={t("profile.avatar.uploadAria")}
-                  className="absolute inset-0 w-20 h-20 sm:w-24 sm:h-24 md:w-28 md:h-28 lg:w-32 lg:h-32 rounded-full bg-black/0 group-hover:bg-black/40 flex items-center justify-center transition-all duration-200 cursor-pointer"
+                  className="absolute inset-0 w-20 h-20 sm:w-24 sm:h-24 md:w-28 md:h-28 lg:w-32 lg:h-32 rounded-full bg-black/0 group-hover:bg-black/40 flex items-end justify-end transition-colors duration-200 cursor-pointer focus-visible:outline-none focus-visible:ring-4 focus-visible:ring-white"
                 >
-                  <Camera className="h-6 w-6 sm:h-8 sm:w-8 text-white opacity-0 group-hover:opacity-100 transition-opacity duration-200" />
+                  <span className="absolute -bottom-1 -left-1 flex h-8 w-8 items-center justify-center rounded-full border-2 border-white bg-indigo-700 text-white shadow-md sm:h-9 sm:w-9"><Camera className="h-4 w-4" aria-hidden /></span>
                 </button>
                 <input
                   ref={avatarInputRef}
@@ -902,8 +901,8 @@ function ProfileContent() {
               </div>
 
               {/* User Info */}
-              <div className="text-center lg:text-left text-white flex-1">
-                <h1 className="text-xl sm:text-3xl md:text-4xl lg:text-5xl font-bold mb-1 sm:mb-2">
+              <div className="min-w-0 text-center lg:text-left text-white flex-1">
+                <h1 className="break-words text-xl sm:text-3xl md:text-4xl lg:text-5xl font-bold text-white mb-1 sm:mb-2">
                   {extendedUser.name}
                 </h1>
                 <p className="text-xs sm:text-base md:text-lg lg:text-xl text-white/80 mb-2 sm:mb-4">
@@ -1006,7 +1005,7 @@ function ProfileContent() {
             <h2 className="text-xl sm:text-2xl font-bold text-slate-900 mb-4 sm:mb-6">
               {t("profile.quickActions.title")}
             </h2>
-            <div className="grid auto-rows-fr grid-cols-1 sm:grid-cols-2 lg:grid-cols-3 gap-3 sm:gap-4">
+            <div className="grid auto-rows-auto sm:auto-rows-fr grid-cols-1 sm:grid-cols-2 lg:grid-cols-3 gap-3 sm:gap-4">
               {customQuickActions.map((action) => {
                 const Icon = getIconByName(action.icon);
                 const isReviewAction = action.id === "leave-review";
@@ -1030,12 +1029,12 @@ function ProfileContent() {
                         : null;
                 const card = (
                   <Card
-                    className={`${profileCardClass} cursor-pointer h-full hover:-translate-y-0.5 transition-transform ${
+                    className={`${profileCardClass} cursor-pointer h-full hover:-translate-y-0.5 motion-reduce:hover:translate-y-0 transition-transform motion-reduce:transition-none ${
                       isProfileLoading ? "animate-pulse" : ""
                     }`}
                     style={profileCardStyle}
                   >
-                    <CardContent className="p-4 sm:p-5 relative z-10">
+                    <CardContent className="p-4 sm:p-5 relative z-10 flex h-full flex-col">
                       {statusBadge && (
                         <span
                           className={`absolute top-2.5 right-2.5 inline-flex items-center px-2 py-0.5 rounded-full text-xs font-medium ${statusBadge.className}`}
@@ -1049,14 +1048,20 @@ function ProfileContent() {
                         >
                           <Icon className="h-5 w-5 sm:h-6 sm:w-6 text-white" />
                         </div>
-                        <div className="min-w-0 pr-12">
-                          <h3 className="text-base sm:text-lg font-semibold text-slate-900 leading-snug line-clamp-2">
+                        <div className={`min-w-0 flex-1 ${statusBadge ? "pt-5" : ""}`}>
+                          <h3 className="text-base sm:text-lg font-semibold text-slate-900 leading-snug">
                             {action.title}
                           </h3>
-                          <p className="mt-1 text-sm text-slate-600 leading-snug line-clamp-2">
+                          <p className="mt-1 text-sm text-slate-600 leading-relaxed">
                             {action.description}
                           </p>
                         </div>
+                      </div>
+                      <div className="mt-3 sm:mt-auto sm:pt-4">
+                        <span className="inline-flex items-center gap-1.5 rounded-lg bg-blue-50 px-3 py-1.5 text-sm font-semibold text-blue-700">
+                          {isReviewAction ? reviewCardTitle : t("guideCard.open")}
+                          <ChevronRight aria-hidden="true" className="h-4 w-4 shrink-0 rtl:rotate-180" />
+                        </span>
                       </div>
                       {review?.status === "APPROVED" && isReviewAction && (
                         <p className="mt-2 text-xs sm:text-sm text-green-700 bg-green-50 rounded-lg px-2 py-1">
@@ -1071,14 +1076,14 @@ function ProfileContent() {
                     <button
                       key={action.id}
                       onClick={() => setIsReviewModalOpen(true)}
-                      className="h-full w-full text-left"
+                      className="h-full w-full rounded-2xl text-left focus-visible:outline-none focus-visible:ring-2 focus-visible:ring-blue-600 focus-visible:ring-offset-4"
                     >
                       {card}
                     </button>
                   );
                 }
                 return (
-                  <Link key={action.id} href={action.href} className="block h-full">
+                  <Link key={action.id} href={action.href} className="block h-full rounded-2xl focus-visible:outline-none focus-visible:ring-2 focus-visible:ring-blue-600 focus-visible:ring-offset-4">
                     {card}
                   </Link>
                 );
@@ -1323,11 +1328,11 @@ function ProfileContent() {
                 </CardHeader>
                 <CardContent className="relative z-10 space-y-4">
                   <div className="space-y-3">
-                    <div className="flex items-center space-x-3 p-3 rounded-xl bg-slate-50">
-                      <Mail className="h-5 w-5 text-slate-500" />
-                      <div>
+                    <div className="flex items-center gap-3 p-3 rounded-xl bg-slate-50">
+                      <Mail className="h-5 w-5 shrink-0 text-slate-500" />
+                      <div className="min-w-0 flex-1">
                         <p className="text-sm text-slate-500">{t("profile.personalInfo.email")}</p>
-                        <p className="font-medium text-slate-900">
+                        <p className="break-all font-medium text-slate-900">
                           {extendedUser.email}
                         </p>
                       </div>
@@ -1356,12 +1361,12 @@ function ProfileContent() {
                     </div>
                   </div>
                   <Button
-                    className="w-full bg-gradient-to-r from-blue-600 to-purple-700 lg:hover:from-blue-700 lg:hover:to-purple-800 text-white shadow-lg transition-all duration-300 h-12 font-bold text-base"
+                    className="w-full bg-gradient-to-r from-blue-600 to-purple-700 lg:hover:from-blue-700 lg:hover:to-purple-800 text-white shadow-lg transition-all duration-300 h-12 gap-2 whitespace-normal px-3 font-bold text-sm sm:text-base"
                     onClick={() => setIsEditFormVisible(true)}
                   >
-                    <Edit className="mr-3 h-5 w-5" />
-                    {t("profile.personalInfo.edit")}
-                    <ChevronRight className="ml-auto h-4 w-4" />
+                    <Edit className="h-5 w-5 shrink-0" aria-hidden />
+                    <span className="min-w-0 flex-1 text-left">{t("profile.personalInfo.edit")}</span>
+                    <ChevronRight className="h-4 w-4 shrink-0" aria-hidden />
                   </Button>
                 </CardContent>
               </Card>
@@ -1554,13 +1559,13 @@ function ProfileContent() {
                             className={`block p-4 rounded-2xl border-2 transition-all duration-300 cursor-pointer focus-visible:outline-none focus-visible:ring-2 focus-visible:ring-amber-400 ${
                               achievement.unlocked
                                 ? "border-green-200 bg-green-50 hover:bg-green-100 hover:border-green-300 hover:shadow-md"
-                                : "border-slate-200 bg-slate-50 opacity-60 hover:opacity-80 hover:bg-slate-100"
+                                : "border-slate-200 bg-slate-50 hover:bg-slate-100"
                             }`}
                           >
                             <div className="flex items-center space-x-3">
                               <div
                                 className={`w-10 h-10 sm:w-12 sm:h-12 rounded-2xl bg-gradient-to-br ${
-                                  achievement.color
+                                  achievement.unlocked ? achievement.color : "from-slate-400 to-slate-500"
                                 } flex items-center justify-center shadow-lg ${
                                   achievement.unlocked ? "" : "grayscale"
                                 }`}
@@ -1581,7 +1586,7 @@ function ProfileContent() {
                                   className={`text-xs sm:text-sm ${
                                     achievement.unlocked
                                       ? "text-slate-600"
-                                      : "text-slate-400"
+                                      : "text-slate-600"
                                   }`}
                                 >
                                   {achievement.description}
@@ -1634,17 +1639,8 @@ function ProfileContent() {
 
         {/* Invoice detail modal */}
         {viewingInvoice && (
-          <div
-            className="fixed inset-0 z-[120] flex items-center justify-center bg-black/40 p-4"
-            role="dialog"
-            aria-modal="true"
-            aria-labelledby="invoice-modal-title"
-            onClick={() => setViewingInvoice(null)}
-          >
-            <div
-              className="w-full max-w-md rounded-2xl bg-white p-5 sm:p-6 shadow-2xl overscroll-contain"
-              onClick={(e) => e.stopPropagation()}
-            >
+          <ProfileDialog open={!!viewingInvoice} onClose={() => setViewingInvoice(null)} title={t("profile.billing.invoice.details")}>
+            <div className="p-4 sm:p-6">
               <div className="mb-4 flex items-start justify-between gap-3">
                 <div>
                   <h3
@@ -1653,7 +1649,7 @@ function ProfileContent() {
                   >
                     {t("profile.billing.invoice.details")}
                   </h3>
-                  <p className="mt-1 text-sm text-slate-500">
+                  <p className="mt-1 break-all text-sm text-slate-500">
                     {viewingInvoice.invoiceNumber}
                   </p>
                 </div>
@@ -1716,7 +1712,7 @@ function ProfileContent() {
                 </div>
               </div>
 
-              <div className="mt-6 flex justify-end gap-2">
+              <div className="mt-6 flex flex-wrap justify-end gap-2">
                 {viewingInvoice.status === "paid" && (
                   <Button
                     type="button"
@@ -1732,7 +1728,7 @@ function ProfileContent() {
                 </Button>
               </div>
             </div>
-          </div>
+          </ProfileDialog>
         )}
 
         {toastMessage && (

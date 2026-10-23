@@ -55,7 +55,7 @@ interface SupportTicket {
 }
 
 export default function SupportPage() {
-  const { t } = useTranslation();
+  const { t, currentLanguage } = useTranslation();
   const { user } = useAuth();
   const { submitSupportForm } = useSupport();
   const [formData, setFormData] = useState({
@@ -71,22 +71,32 @@ export default function SupportPage() {
   const [privacyConsent, setPrivacyConsent] = useState(false);
   const [myTickets, setMyTickets] = useState<SupportTicket[]>([]);
   const [expandedTicketId, setExpandedTicketId] = useState<string | null>(null);
-  const guideContextApplied = useRef(false);
+  const generatedContext = useRef<Partial<Pick<typeof formData, "category" | "subject" | "message">> | null>(null);
   const successRef = useRef<HTMLDivElement>(null);
 
   useEffect(() => {
     const timer = window.setTimeout(() => {
-      if (guideContextApplied.current) return;
-      guideContextApplied.current = true;
+      const applyContext = (fields: Partial<Pick<typeof formData, "category" | "subject" | "message">>) => {
+        const previous = generatedContext.current;
+        generatedContext.current = fields;
+        setFormData((current) => ({
+          ...current,
+          ...(fields.category !== undefined && (!previous || current.category === previous.category)
+            ? { category: fields.category } : {}),
+          ...(fields.subject !== undefined && (!previous || current.subject === previous.subject)
+            ? { subject: fields.subject } : {}),
+          ...(fields.message !== undefined && (!previous || current.message === previous.message)
+            ? { message: fields.message } : {}),
+        }));
+      };
 
       const params = new URLSearchParams(window.location.search);
       if (params.get("request") === "add-university") {
-        setFormData((current) => ({
-          ...current,
+        applyContext({
           category: "GENERAL",
           subject: t("schedulePage.addUniversity.subject"),
           message: t("schedulePage.addUniversity.message"),
-        }));
+        });
         return;
       }
       if (params.get("category") !== "content-error") return;
@@ -118,12 +128,11 @@ export default function SupportPage() {
           t("support.form.guideReport.detailsPrompt"),
         ].join("\n");
 
-        setFormData((current) => ({
-          ...current,
+        applyContext({
           category: "CONTENT_ERROR",
           subject: subjectTemplate.replace("{guide}", guide),
           message,
-        }));
+        });
         return;
       }
 
@@ -136,13 +145,12 @@ export default function SupportPage() {
           ].join("\n")
         : undefined;
 
-      setFormData((current) => ({
-        ...current,
+      applyContext({
         category: "CONTENT_ERROR",
         ...(sectionSource
           ? { subject: t("guides.freshness.reportSubject"), message }
           : {}),
-      }));
+      });
     }, 0);
 
     return () => window.clearTimeout(timer);
@@ -241,20 +249,20 @@ export default function SupportPage() {
     setSubmitError(null);
 
     if (!privacyConsent) {
-      setSubmitError(t("support.form.error.privacyRequired"));
+      setSubmitError("support.form.error.privacyRequired");
       return;
     }
 
     if (formData.name.length < 2) {
-      setSubmitError(t("support.form.error.nameMin"));
+      setSubmitError("support.form.error.nameMin");
       return;
     }
     if (formData.subject.length < 5) {
-      setSubmitError(t("support.form.error.subjectMin"));
+      setSubmitError("support.form.error.subjectMin");
       return;
     }
     if (formData.message.length < 10) {
-      setSubmitError(t("support.form.error.messageMin"));
+      setSubmitError("support.form.error.messageMin");
       return;
     }
 
@@ -274,7 +282,7 @@ export default function SupportPage() {
       loadMyTickets();
     } catch (err) {
       console.error("Error submitting form:", err);
-      setSubmitError(err instanceof Error ? err.message : t("support.form.error.generic"));
+      setSubmitError(err instanceof Error ? err.message : "support.form.error.generic");
     } finally {
       setIsSubmitting(false);
     }
@@ -480,7 +488,7 @@ export default function SupportPage() {
                       {submitError && (
                         <div className="flex items-center gap-2 p-3 bg-red-50 border border-red-200 rounded-lg text-red-700 text-sm">
                           <AlertCircle className="h-4 w-4 flex-shrink-0" />
-                          {submitError}
+                          {t(submitError)}
                         </div>
                       )}
 
@@ -661,7 +669,7 @@ export default function SupportPage() {
                               {getStatusBadge(ticket.status)}
                             </div>
                             <p className="text-sm text-gray-500">
-                              {new Date(ticket.createdAt).toLocaleDateString("ru-RU", {
+                              {new Date(ticket.createdAt).toLocaleDateString(currentLanguage, {
                                 day: "numeric",
                                 month: "long",
                                 year: "numeric",
@@ -709,7 +717,7 @@ export default function SupportPage() {
                                       {response.isAdmin ? t("support.tickets.support") : t("support.tickets.you")}
                                     </span>
                                     <span className="text-xs text-gray-400">
-                                      {new Date(response.createdAt).toLocaleString("ru-RU")}
+                                      {new Date(response.createdAt).toLocaleString(currentLanguage)}
                                     </span>
                                   </div>
                                   <p className="text-gray-700">{response.content}</p>

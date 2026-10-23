@@ -4,7 +4,7 @@ import { Review } from "@/types";
 import { Button } from "@/components/ui/button";
 import { X } from "lucide-react";
 import { useTranslation } from "@/hooks/useTranslation";
-import { useBodyScrollLock } from "@/hooks/useBodyScrollLock";
+import { ProfileDialog } from "@/components/ui/profile-dialog";
 
 const TEXT_MIN = 20;
 const TEXT_MAX = 500;
@@ -51,7 +51,6 @@ export function ReviewModal({
     }
   }, [review]);
 
-  useBodyScrollLock(isOpen);
 
   useEffect(() => {
     if (!isOpen) {
@@ -77,27 +76,15 @@ export function ReviewModal({
   if (!isOpen) return null;
 
   return (
-    <div
-      className="fixed inset-0 z-[100] flex items-center justify-center p-4"
-      onClick={onClose}
-      role="dialog"
-      aria-modal="true"
-    >
-      <div
-        className="absolute inset-0 bg-black/50 backdrop-blur-sm"
-        onClick={onClose}
-      />
-      <div
-        className="relative z-10 w-full max-w-md max-h-[90vh] overflow-y-auto overscroll-contain bg-white rounded-lg shadow-lg p-6"
-        onClick={(e) => e.stopPropagation()}
-      >
+    <ProfileDialog open={isOpen} onClose={onClose} title={t(review ? "profile.review.modal.title.edit" : "profile.review.modal.title.new")}>
+      <div className="p-4 sm:p-6">
         <div className="flex justify-between items-center mb-4">
           <h2 className="text-lg font-bold">
             {review
               ? tt("profile.review.modal.title.edit", "Редактировать отзыв")
               : tt("profile.review.modal.title.new", "Оставить отзыв")}
           </h2>
-          <button onClick={onClose} className="text-gray-500 hover:text-gray-700">
+          <button type="button" onClick={onClose} aria-label={t("profile.billing.invoice.close")} className="flex h-11 w-11 shrink-0 items-center justify-center rounded-lg text-gray-500 hover:bg-slate-100 hover:text-gray-700 focus-visible:ring-2 focus-visible:ring-blue-500">
             <X className="h-5 w-5" />
           </button>
         </div>
@@ -114,10 +101,11 @@ export function ReviewModal({
           )}
         </div>
         <div className="mb-4">
-          <label className="block text-sm font-medium text-gray-700 mb-1">
+          <label htmlFor="review-text" className="block text-sm font-medium text-gray-700 mb-1">
             {tt("profile.review.modal.text", "Текст отзыва")}
           </label>
           <textarea
+            id="review-text"
             maxLength={TEXT_MAX}
             rows={4}
             placeholder={tt("profile.review.modal.placeholder", "Например: Понравились гайды про сессию и напоминания…")}
@@ -187,6 +175,6 @@ export function ReviewModal({
           </Button>
         </div>
       </div>
-    </div>
+    </ProfileDialog>
   );
 }

@@ -3,6 +3,7 @@
 import Link from "next/link";
 
 import {
+  ArrowRight,
   Globe2,
   HeartHandshake,
   MessageCircle,
@@ -11,6 +12,7 @@ import {
   type LucideIcon,
 } from "lucide-react";
 import { Language } from "@/types";
+import { buddyT } from "@/lib/buddy-i18n";
 import { useTranslation } from "@/hooks/useTranslation";
 import { ScrollReveal } from "@/components/home/ScrollReveal";
 import { StaggerReveal, StaggerItem } from "@/components/home/StaggerReveal";
@@ -46,6 +48,7 @@ function BuddyTrackCard({
   role,
   title,
   description,
+  actionLabel,
   href,
   tone,
 }: {
@@ -54,6 +57,7 @@ function BuddyTrackCard({
   role: string;
   title: string;
   description: string;
+  actionLabel: string;
   href: string;
   tone: "student" | "mentor";
 }) {
@@ -84,6 +88,14 @@ function BuddyTrackCard({
       <p className="mt-2 text-[15px] leading-relaxed text-slate-500">
         {description}
       </p>
+      <span
+        className={`mt-auto inline-flex items-center gap-2 pt-5 text-sm font-semibold ${
+          tone === "student" ? "text-blue-600" : "text-emerald-700"
+        }`}
+      >
+        {actionLabel}
+        <ArrowRight className="h-4 w-4 shrink-0 rtl:rotate-180" aria-hidden />
+      </span>
     </Link>
   );
 }
@@ -140,6 +152,7 @@ export function BuddyProgramSection() {
               role={t("home.buddy.student.role")}
               title={t("home.buddy.student.title")}
               description={t("home.buddy.student.description")}
+              actionLabel={buddyT(currentLanguage, "openForm")}
               href="/buddy?form=student#application"
               tone="student"
             />
@@ -156,6 +169,7 @@ export function BuddyProgramSection() {
               role={t("home.buddy.mentor.role")}
               title={t("home.buddy.mentor.title")}
               description={t("home.buddy.mentor.description")}
+              actionLabel={buddyT(currentLanguage, "openForm")}
               href="/buddy?form=mentor#application"
               tone="mentor"
             />

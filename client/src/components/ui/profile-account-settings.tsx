@@ -1,8 +1,7 @@
 "use client";
 
 import { useEffect, useState, type ReactNode } from "react";
-import { createPortal } from "react-dom";
-import { useBodyScrollLock } from "@/hooks/useBodyScrollLock";
+import { ProfileDialog } from "./profile-dialog";
 import {
   Bell,
   CheckCircle2,
@@ -32,17 +31,17 @@ interface ProfileAccountSettingsProps {
 }
 
 const TIMEZONES = [
-  ["Europe/Kaliningrad", "UTC+2 — Калининград"],
-  ["Europe/Moscow", "UTC+3 — Москва"],
-  ["Europe/Samara", "UTC+4 — Самара"],
-  ["Asia/Yekaterinburg", "UTC+5 — Екатеринбург"],
-  ["Asia/Omsk", "UTC+6 — Омск"],
-  ["Asia/Krasnoyarsk", "UTC+7 — Красноярск"],
-  ["Asia/Irkutsk", "UTC+8 — Иркутск"],
-  ["Asia/Yakutsk", "UTC+9 — Якутск"],
-  ["Asia/Vladivostok", "UTC+10 — Владивосток"],
-  ["Asia/Magadan", "UTC+11 — Магадан"],
-  ["Asia/Kamchatka", "UTC+12 — Камчатка"],
+  ["Europe/Kaliningrad", "Kaliningrad"],
+  ["Europe/Moscow", "Moscow"],
+  ["Europe/Samara", "Samara"],
+  ["Asia/Yekaterinburg", "Yekaterinburg"],
+  ["Asia/Omsk", "Omsk"],
+  ["Asia/Krasnoyarsk", "Krasnoyarsk"],
+  ["Asia/Irkutsk", "Irkutsk"],
+  ["Asia/Yakutsk", "Yakutsk"],
+  ["Asia/Vladivostok", "Vladivostok"],
+  ["Asia/Magadan", "Magadan"],
+  ["Asia/Kamchatka", "Kamchatka"],
 ] as const;
 
 const fieldClass =
@@ -99,40 +98,12 @@ function SettingsModalShell({
   closeLabel: string;
   children: ReactNode;
 }) {
-  useBodyScrollLock(open);
-
-  useEffect(() => {
-    if (!open) return;
-    const onKey = (e: KeyboardEvent) => {
-      if (e.key === "Escape") onClose();
-    };
-    window.addEventListener("keydown", onKey);
-    return () => {
-      window.removeEventListener("keydown", onKey);
-    };
-  }, [open, onClose]);
-
-  if (!open || typeof document === "undefined") return null;
-
-  return createPortal(
-    <div
-      className="fixed inset-0 z-[120] flex items-end justify-center p-3 pb-[max(0.75rem,env(safe-area-inset-bottom))] sm:items-center sm:p-4"
-      role="dialog"
-      aria-modal="true"
-      aria-label={title}
+  return (
+    <ProfileDialog
+      open={open} onClose={onClose} title={title}
+      overlayClassName="items-end pb-[max(0.75rem,env(safe-area-inset-bottom))] sm:items-center"
+      className="flex flex-col overflow-hidden border border-slate-200/80 sm:max-h-[88dvh]"
     >
-      <button
-        type="button"
-        aria-label={closeLabel}
-        className="absolute inset-0 bg-black/40 backdrop-blur-[2px]"
-        onClick={onClose}
-      />
-      <div
-        className={cn(
-          "relative z-10 flex w-full max-w-md max-h-[calc(100dvh-1.5rem)] flex-col overflow-hidden overscroll-contain rounded-2xl border border-slate-200/80 bg-white shadow-2xl sm:max-h-[88dvh]",
-          "animate-slide-in-from-bottom",
-        )}
-      >
         <div className="mx-auto mt-2.5 h-1 w-10 shrink-0 rounded-full bg-slate-200 sm:hidden" />
         <div className="flex items-center gap-2.5 border-b border-slate-100 px-4 py-3 sm:py-3.5">
           <div className="flex h-9 w-9 shrink-0 items-center justify-center rounded-xl bg-slate-100 text-slate-700">
@@ -153,9 +124,7 @@ function SettingsModalShell({
         <div className="min-h-0 flex-1 overflow-y-auto overscroll-contain px-4 py-4 pb-5 sm:px-5 sm:py-5">
           {children}
         </div>
-      </div>
-    </div>,
-    document.body,
+    </ProfileDialog>
   );
 }
 
@@ -415,9 +384,9 @@ export function ProfileAccountSettings({
                 }
                 className={cn(fieldClass, "appearance-none pr-10")}
               >
-                {TIMEZONES.map(([value, label]) => (
+                {TIMEZONES.map(([value, city], index) => (
                   <option key={value} value={value}>
-                    {label}
+                    UTC+{index + 2} — {t(`profile.settings.timezoneCity.${city}`)}
                   </option>
                 ))}
               </select>

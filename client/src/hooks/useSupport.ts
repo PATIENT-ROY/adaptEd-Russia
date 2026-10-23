@@ -56,14 +56,25 @@ export const useSupport = () => {
       const data = await response.json();
 
       if (!response.ok) {
-        throw new Error(data.message || 'Ошибка при отправке формы');
+        const errorKey = response.status === 400
+          ? 'api.error.badRequest'
+          : response.status === 401
+            ? 'api.error.unauthorized'
+            : response.status === 429
+              ? 'api.error.tooManyRequests'
+              : 'support.form.error.generic';
+        throw new Error(errorKey);
       }
 
       return data;
     } catch (err) {
-      const errorMessage = err instanceof Error ? err.message : 'Неизвестная ошибка';
+      const errorMessage = err instanceof TypeError
+        ? 'api.error.connection'
+        : err instanceof Error && /^(api\.error\.|support\.form\.error\.)/.test(err.message)
+          ? err.message
+          : 'support.form.error.generic';
       setError(errorMessage);
-      throw err;
+      throw new Error(errorMessage);
     } finally {
       setIsLoading(false);
     }

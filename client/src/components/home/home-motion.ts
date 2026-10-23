@@ -82,3 +82,9 @@ export const glowPulse = {
     ease: "easeInOut" as const,
   },
 };
+
+// Keep wrappers mounted so visibility observers survive preference changes.
+export const noMotionVariants: Variants = {
+  hidden: { opacity: 1, y: 0, transition: { duration: 0 } },
+  visible: { opacity: 1, y: 0, transition: { duration: 0 } },
+};

@@ -4,7 +4,7 @@ import { useEffect, useRef, useState } from "react";
 import { TrustStats as TrustStatsType } from "@/types";
 import { Users, GraduationCap, Globe, Star } from "lucide-react";
 import { CountUp } from "@/components/ui/count-up";
-import { useReducedMotion } from "framer-motion";
+import { useMotionPreference } from "@/hooks/useMotionPreference";
 
 interface TrustStatsProps {
   stats: TrustStatsType;
@@ -27,7 +27,7 @@ export function TrustStats({
   const isDark = variant === "dark";
   const sectionRef = useRef<HTMLDivElement | null>(null);
   const [hasEnteredView, setHasEnteredView] = useState(false);
-  const shouldReduceMotion = useReducedMotion();
+  const shouldReduceMotion = useMotionPreference();
 
   useEffect(() => {
     if (shouldReduceMotion) return;

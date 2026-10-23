@@ -1,7 +1,7 @@
 "use client";
 
 import { useEffect, useMemo, useRef, useState } from "react";
-import { useReducedMotion } from "framer-motion";
+import { useMotionPreference } from "@/hooks/useMotionPreference";
 
 interface CountUpProps {
   end: number;
@@ -24,7 +24,7 @@ export function CountUp({
   const frameRef = useRef<number | null>(null);
   const timeoutRef = useRef<number | null>(null);
   const animatedEndRef = useRef<number | null>(null);
-  const shouldReduceMotion = useReducedMotion();
+  const shouldReduceMotion = useMotionPreference();
   const safeEnd = Number.isFinite(end) ? Math.max(0, end) : 0;
   const safeDuration = Number.isFinite(duration) ? Math.max(0, duration) : 0;
   const safeDelay = Number.isFinite(delay) ? Math.max(0, delay) : 0;
